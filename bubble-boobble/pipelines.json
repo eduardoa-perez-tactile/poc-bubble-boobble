@@ -45,7 +45,7 @@
    "r": "3d",
    "key": {
     "Forward": {
-     "program": "ad82d3855fa8013b",
+     "program": "9dfe6619dd02ad81",
      "alpha": 1,
      "double_sided": true,
      "prepassed": false,
@@ -71,7 +71,7 @@
    "r": "3d",
    "key": {
     "Shadow": {
-     "program": "ad82d3855fa8013b",
+     "program": "9dfe6619dd02ad81",
      "alpha": 1,
      "double_sided": true,
      "skinned": false
@@ -133,7 +133,7 @@
    "r": "3d",
    "key": {
     "Forward": {
-     "program": "ad82d3855fa8013b",
+     "program": "9dfe6619dd02ad81",
      "alpha": 1,
      "double_sided": true,
      "prepassed": true,
@@ -161,7 +161,7 @@
    "r": "3d",
    "key": {
     "Prepass": {
-     "program": "ad82d3855fa8013b",
+     "program": "9dfe6619dd02ad81",
      "alpha": 1,
      "double_sided": true,
      "samples": 4,
@@ -185,7 +185,7 @@
    "r": "3d",
    "key": {
     "Shadow": {
-     "program": "ad82d3855fa8013b",
+     "program": "9dfe6619dd02ad81",
      "alpha": 1,
      "double_sided": true,
      "skinned": false
@@ -247,7 +247,7 @@
    "r": "3d",
    "key": {
     "Forward": {
-     "program": "ad82d3855fa8013b",
+     "program": "9dfe6619dd02ad81",
      "alpha": 1,
      "double_sided": true,
      "prepassed": false,
@@ -273,7 +273,7 @@
    "r": "3d",
    "key": {
     "Shadow": {
-     "program": "ad82d3855fa8013b",
+     "program": "9dfe6619dd02ad81",
      "alpha": 1,
      "double_sided": true,
      "skinned": false

@@ -10,8 +10,13 @@ the centered logical canvas. Editor tiles begin at (24,146) with 16-pixel cells.
 
 ## Integer texture loads and ordered composition
 
-`src/arcade/pixel-renderer/ordered.ts` builds one dynamic mesh in original draw
-order. `assets/materials/pixel-ordered.material.ts` uses the supported material
+`src/arcade/pixel-renderer/ordered.ts` builds ordered quad geometry in original
+draw order. Production renders it as instances of one imported static unit quad,
+with per-instance transforms, atlas rectangles and colors. The installed runtime
+omits dynamic meshes from cold live viewports until an offscreen screenshot
+initializes them; static file meshes render immediately. The dynamic mesh helper
+remains for the isolated pixel prototype, not the production world.
+`assets/materials/pixel-ordered.material.ts` uses the supported material
 DSL's raw WGSL function to call `textureLoad` at integer, mip-zero coordinates.
 This bypasses the built-in Sprite sampler, which visibly interpolated the
 original tile colors. All original assets remain unchanged; a deterministic
@@ -30,9 +35,10 @@ Geometry is clipped to the logical canvas. Mesh scratch capacity is 262,144
 vertices and 393,216 indices (10.61 MiB including normals, colors, UVs and the
 contributor stack). The 2048×1024 RGBA atlas requires 8 MiB before engine copies.
 Capacity overflow throws rather than dropping objects. Scratch arrays are fully
-rewritten and contain no authoritative or temporal game state. Only text
-particles and editor labels use pooled Text2D entities; the pool grows to its
-observed peak and hides unused entries.
+rewritten and contain no authoritative or temporal game state. Static pixel instances and Text2D particles/editor labels use disjoint pooled
+slots. The fixed-step pool uses a conservative count of immutable source partial
+texels; full source-over composition runs only during presentation. Pools retain
+their observed capacity and hide unused entries.
 
 ## Verification and its limits
 
@@ -98,3 +104,32 @@ scenes/arcade.scene.json`, then `npm run harness:perf-combat`. The probe writes
 measurements establish scenario execution and CPU/structural cost on this Mac;
 the sampled presentation values and final frame are not a real-time GPU
 frame-rate measurement. Stop that owned headless session when finished.
+
+## Cold live viewport regression
+
+The user-reported HUD-only black frame was reproduced through the engine's
+`viewport.create` readback path without computer-use access. CPU dynamic geometry
+was present, but the live frame had only two draws and 125 triangles. Calling
+`render.screenshot` made the same world's geometry appear, which explains why the
+older screenshot tests passed. The working `round1.scene` used ordinary 2D
+sprites and rendered its character and level in the same cold viewport.
+
+`tools/harness/viewport-smoke.mjs` now captures actual viewport frames before any
+offscreen render or diagnostic preload. With static quad instances, the complete
+tile band and player render in five draws and 1,065 triangles. It checks world
+pixels independently of the HUD and runs in both verification lanes.
+
+The atlas image and layout metadata also had the same cooked alias. Layout data
+is now `atlas-layout.json`; the texture retains `pixel-renderer/atlas`. The asset
+guard rejects duplicate nonempty aliases across all cooked asset kinds. Removing
+this collision alone did not fix the reproduced viewport failure.
+
+Static unit-quad interpolation changes nearest-sample ties relative to the old
+per-quad vertex UVs. Reviewed native/wide/tall baseline differences were 9,551,
+9,614 and 4,742 pixels: respectively 9,140/9,184/3,910 were the two original tile
+colors exchanging at texel boundaries, 402/419/639 were the same exchanges under
+the banner, and 9/11/193 were glyph or sprite-edge texels. Native player artwork
+matched the previous baseline. No UV bias or broader threshold was introduced;
+only the inspected renderer baselines were refreshed. The unchanged isolated
+prototype still passes all 128 exact RGB/source-over probes. These limits remain
+distinct from the cold live-viewport visibility regression.

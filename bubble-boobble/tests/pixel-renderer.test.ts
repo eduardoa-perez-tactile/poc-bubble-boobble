@@ -1,9 +1,23 @@
-import { expect, renderTest } from "@gameengine/test";
+import { expect, renderTest, worldTest } from "@gameengine/test";
 import {
   updateOrderedPixels,
   composedColorAt,
+  orderedArrays,
+  orderedCapacity,
 } from "../src/arcade/pixel-renderer/ordered.ts";
 import probes from "../assets/pixel-renderer/prototype-probes.json";
+worldTest("pixel instance capacity bounds clipped scaled alpha runs", () => {
+  for (const scale of [0.1, 0.777, 1, 1.5, 2.75]) {
+    const draws = [
+      { image: "reference/logo", x: -17, y: 18, w: 450 * scale, h: 324 * scale },
+      { image: "reference/food/1/0", x: 730, y: 695, w: 32 * scale, h: 32 * scale, flip: true },
+      { image: "reference/green/jump/0", x: 96, y: 604, w: 48, h: 48 },
+    ];
+    expect(orderedArrays(draws).vertices / 4).toBeLessThanOrEqual(orderedCapacity(draws));
+    expect(orderedCapacity(draws)).toBeLessThanOrEqual(65536);
+  }
+  expect(orderedCapacity([{ image: "reference/logo", x: 768, y: 0, w: 450, h: 324 }])).toBe(0);
+}, { scene: "scenes/pixel-prototype.scene.json" });
 renderTest(
   "pixel renderer exact texel prototype",
   async ({ step, render, input }) => {

@@ -44,11 +44,13 @@ npm run harness:verify-full
 npm run harness:milestone
 ```
 
-Verify runs provenance/comparator checks, all V8 T0 tests, all desktop T1 tests
+Verify runs provenance/comparator checks, the aborted-HTTP-body regression, a
+fresh-host cold live-viewport regression, all V8 T0 tests, all desktop T1 tests
 (including the complete 17-shot presentation route and its draw budget), four
 engine replays with their explicit recorded scenes, then `gameengine check`
 (typecheck, validation, desktop cook and cooked smoke), followed by the original/
-derived audio provenance and duplicate-alias guard. It never changes expected
+derived audio provenance and nonempty cooked-alias uniqueness guard across all
+asset kinds. Empty script/config aliases are ignored. It never changes expected
 fixtures, goldens or replay files. Any failed or unavailable required stage blocks
 a passing result. Warnings from engine check remain visible. `verify-full` adds
 an independently rendered 170-frame structural replay. Run it at checkpoints;
@@ -189,9 +191,9 @@ The final verify sample is 0.62 seconds above the warm 30-second target. Its
 check stage took 14.59 seconds versus 13.48 seconds in the preceding checkpoint,
 accounting for most of the difference. Every required test, all 600 cooked smoke
 frames and the asset guard remain enabled; this is an observed timing, not a
-claimed target pass. The latest all-tier pipeline recording remains applicable:
-the subsequent audio/schema work changed no material or rendered flow, and the
-final desktop route again verified all 506 recorded steps with 170 GPU probes.
+claimed target pass. That earlier all-tier recording covered the audio/schema checkpoint. The static
+renderer changes below have a fresh all-tier recording; old program keys are not
+reused as evidence for the new material.
 
 After checkpoint `373e266`, the audio schema added the SFX priority cursor and
 platform marker coverage. All four world replays were intentionally refreshed
@@ -263,7 +265,7 @@ built-in 3D keys during the loaded-material mapping pass, while its earlier
 warm-up reports 11/11 records and loaded materials still warm their pipelines.
 A genuine game-owned re-export of unchanged Standard, including a direct scene
 reference and public material preview, did not remove that drop; the experiment
-was removed. Actual records and the valid custom program `ad82d3855fa8013b` are
+was removed. Actual records and the currently compiled custom material program are
 preserved. No duplicate material or invented key is retained merely to silence
 the validator. Release packaging must account for this known warning explicitly;
 it is not evidence of a stale custom shader. This dropped subset remains a
@@ -284,3 +286,56 @@ async request was busy. The controller regression now delays health/state by
 720 steps, five acknowledgements and 183 status polls. Earlier failed runs are
 preserved separately; startup baselines wait for saved settings and test inputs
 wait for focus and observed changes.
+
+
+## Cold live viewport and deferred OS surface check
+
+Both verification lanes now run `tools/harness/viewport-smoke.mjs` on its own
+fresh host before their screenshot suites. The tool creates a 1920×1080 engine
+readback viewport and saves its live RGBA frame before any offscreen screenshot,
+material preview or render probe. It requires the top world tile band, the green
+player and more than 500 submitted triangles. Earlier offscreen tests could
+initialize 3D and conceal the reproduced HUD-only startup failure.
+
+The original dynamic-mesh path failed with zero matching world/player pixels and
+125 triangles. The imported static-quad candidate independently passed with
+34,380/34,380 tile pixels, 1,136 green player pixels and 1,065 triangles in five
+draws. These observations establish world rendering in the engine's live viewport;
+they do not establish full Go pixel equality. Evidence is saved under
+`artifacts/viewport-smoke.{png,json,log}`.
+
+Per the user's current instruction, OS/computer-use access is unavailable.
+Physical OS-surface and foreground-window image checks are explicitly deferred
+without blocking merge. The required cold engine-viewport regression remains an
+active gate; its coverage concerns engine frame contents rather than the OS
+compositor's final displayed pixels.
+
+
+### Static renderer checkpoint observations
+
+After the cold-start repair, all 94 V8 T0 cases passed. Re-recording the four
+engine tests took 9.10 seconds; independent explicit-scene verification took
+1.40 seconds and passed every stream. The starter and movement files changed
+only their bundle-hash headers. The two arcade replays also changed world hashes
+because the imported static quad uses presentation entities in place of the
+previous dynamic mesh. The schema and pure Go fixtures did not change. These
+reviewed world-hash refreshes establish engine determinism, not new Go behavior.
+
+A new actual all-tier pipeline recording took 30.35 seconds. Desktop, mobile and
+compat each completed 506 recorded steps and 170 explicit GPU frames, observing
+every required page/effect. Peak draws were 11/9/9 against the unchanged limit
+of 14; recorded pipeline counts were 11/9/9. This replaces the prior material's
+records. It does not establish mobile/compat RGB parity or real-time frame rate.
+Evidence is `artifacts/pipeline-recording.json`.
+
+The renderer owner's bounded steady live-viewport sample reported gameplay p95
+simulation/presentation times of 0.755/6.706 ms and title p95 times of
+0.569/8.873 ms, with five draws and a 2,574-entity pixel pool plus one text entity.
+These are development-host CPU observations, not a GPU/device guarantee; see
+`artifacts/viewport-static-steady.json` and [rendering.md](rendering.md).
+
+The broadened asset guard rejects the saved pre-fix manifest's duplicate
+`pixel-renderer/atlas` texture/data alias. The corrected cooked manifest passes
+with 75 unique nonempty aliases and 36 reference audio aliases; original asset
+and derived-audio provenance checks also pass. This proves collision detection
+and removal, independently of the live-viewport rendering diagnosis.

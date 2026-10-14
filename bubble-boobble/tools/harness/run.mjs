@@ -214,6 +214,11 @@ async function main() {
       const bridgeHTTP = run(process.execPath, ['--test', 'tools/desktop/bridge-http.test.mjs']);
       console.log(bridgeHTTP.stdout.trim());
       measurements.push({ command: 'desktop bridge aborted-body regression', wallMs: bridgeHTTP.wallMs });
+      // A fresh host captures its real live viewport before any offscreen
+      // screenshot/probe can initialize 3D and hide a cold-start failure.
+      const viewport = run(process.execPath, ['tools/harness/viewport-smoke.mjs']);
+      console.log(viewport.stdout.trim());
+      measurements.push({ command: 'cold live-viewport startup regression', wallMs: viewport.wallMs });
       engine(['test', '--js', 'v8']);
       // An explicit wildcard still selects every T1 test. It bypasses the
       // installed CLI's unrendered structural-replay lane, which stalls while

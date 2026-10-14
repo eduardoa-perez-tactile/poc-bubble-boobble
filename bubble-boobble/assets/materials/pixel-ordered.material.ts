@@ -12,6 +12,8 @@ import {
   materialGlobal,
   worldPosition,
   vec3,
+  instanceParams,
+  abs,
 } from "@gameengine/materials";
 const srgbToLinear = fn(
   "pixel_srgb_to_linear",
@@ -37,8 +39,12 @@ export default material("PixelOrdered", {
   fog: false,
   params: { atlas: texture2d({ default: "white", srgb: false }) },
   surface: () => {
-    const pixel = loadPixel(uv().mul(vec2(2048, 1024))),
-      direct = step(uv().x, -0.5);
+    // All-zero params retain the dynamic-mesh prototype's original UV path.
+    const rect = instanceParams();
+    const useRect = step(0.000001, abs(rect.x).add(abs(rect.z)));
+    const atlasUV = mix(uv(), rect.swizzle('xy').add(uv().mul(rect.swizzle('zw'))), vec2(useRect));
+    const pixel = loadPixel(atlasUV.mul(vec2(2048, 1024))),
+      direct = step(atlasUV.x, -0.5);
     const globals = materialGlobal(0),
       pos = worldPosition(),
       screenY = pos.y.neg().add(720);

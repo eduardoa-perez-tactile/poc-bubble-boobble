@@ -1,4 +1,4 @@
-// Check source provenance and the manifest keys used by real engine music fallback.
+// Check source provenance and unique cooked keys, including engine music fallback.
 import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 const read=path=>JSON.parse(readFileSync(path,'utf8'));
@@ -8,13 +8,18 @@ for(const source of provenance.imported)if(sha(source.target)!==source.sha256)th
 for(const file of provenance.music.files)if(sha(file.file)!==file.sha256)throw new Error(`Converted music changed: ${file.file}`);
 if(sha('tools/port/export-music.go')!==provenance.music.exporterSha256)throw new Error('Music exporter provenance is stale');
 const manifest=read(process.argv[2]??'.gameengine/cooked/desktop/manifest.json');
-const aliases=new Map();
-for(const entry of manifest.entries.filter(e=>e.alias?.startsWith('reference/audio/'))){
- if(aliases.has(entry.alias))throw new Error(`Duplicate audio alias ${entry.alias}: ${aliases.get(entry.alias).kind} and ${entry.kind}`);
- aliases.set(entry.alias,entry);
+const cookedAliases=new Map();
+for(const entry of manifest.entries){
+ // Scripts/configs may intentionally have no alias; only named assets resolve
+ // through these keys, which must identify exactly one entry across all kinds.
+ if(typeof entry.alias!=='string'||entry.alias.length===0)continue;
+ const previous=cookedAliases.get(entry.alias);
+ if(previous)throw new Error(`Duplicate cooked alias ${entry.alias}: ${previous.kind} (${previous.guid}) and ${entry.kind} (${entry.guid})`);
+ cookedAliases.set(entry.alias,entry);
 }
+const aliases=new Map([...cookedAliases].filter(([alias])=>alias.startsWith('reference/audio/')));
 for(let i=1;i<=5;i++){
  if(aliases.get(`reference/audio/bubble-${i}`)?.kind!=='binary')throw new Error(`Original YM key missing: bubble-${i}`);
  if(aliases.get(`reference/audio/music-bubble-${i}`)?.kind!=='audio')throw new Error(`Converted music key missing: music-bubble-${i}`);
 }
-console.log(`Original provenance intact; ${aliases.size} unique reference audio aliases; five distinct playable music keys.`);
+console.log(`Original provenance intact; ${cookedAliases.size} unique nonempty cooked aliases; ${aliases.size} reference audio aliases; five distinct playable music keys.`);
