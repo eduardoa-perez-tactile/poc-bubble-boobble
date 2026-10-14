@@ -5,8 +5,9 @@ import {ResetArcade} from '../src/arcade/arcade.cheats.ts';
 import {session} from '../src/arcade/session.ts';
 worldTest('arcade audio bank original shoot trigger and music request',async({step,cheat,input,audio,world})=>{
  await step(10);
+ expect(audio.status().music).toBe('reference/audio/music-bubble-2');
  await cheat(ResetArcade,{ready:false});
- expect(world.events(PlayMusic).some(e=>e.track==='reference/audio/bubble-1')).toBe(true);
+ expect(world.events(PlayMusic).some(e=>e.track==='reference/audio/music-bubble-1')).toBe(true);
  input.action('fire',1);await step(1);
  expect(session.get().game!.Sounds).toEqual(['shoot']);
  expect(world.events(PlaySound).some(e=>e.sound==='reference/audio/shoot')).toBe(true);
@@ -15,6 +16,41 @@ worldTest('arcade audio bank original shoot trigger and music request',async({st
  expect(s.sounds).toBeGreaterThanOrEqual(10);
  expect(s.buses.SFX).toBe(0.75);
  expect(s.buses.Music).toBe(0.5);
+ expect(s.music).toBe('reference/audio/music-bubble-1');
  input.emit(DesktopIntent,{action:'sound',index:-1});await step(1);
  expect(audio.status().buses.SFX).toBe(0.5);
+},{scene:'scenes/arcade.scene.json'});
+
+import {ArcadeAudio,ArcadeInput} from '../src/schema.gen.ts';
+import {canonicalState,copyGame,stepGame} from '../src/arcade/game.ts';
+import {match} from './arcade-assert';
+worldTest('arcade audio native connection restores fallback without gameplay changes',async({step,cheat,input,audio,world})=>{
+ await step(10);
+ await cheat(ResetArcade,{ready:false});
+ const tick=async(action:string,value='')=>{
+  const expected=copyGame(session.get().game!);
+  stepGame(expected,{Move:0,Jump:false,Fire:false});
+  input.emit(DesktopIntent,{action,value,index:0,x:0,y:0});await step(1);
+  match(canonicalState(expected),canonicalState(session.get().game!),`native-audio.${value}.canonical`);
+ };
+ expect(world.resource(ArcadeAudio).native).toBe(false);
+ await tick('native-audio','1');
+ expect(world.resource(ArcadeAudio).native).toBe(true);
+ expect(audio.status().buses.Music).toBe(0);
+ expect(audio.status().buses.SFX).toBe(.75);
+ input.emit(DesktopIntent,{action:'music',index:-1});await step(1);
+ expect(audio.status().buses.Music).toBe(0);
+ await tick('native-audio','0');
+ expect(world.resource(ArcadeAudio).native).toBe(false);
+ expect(audio.status().buses.Music).toBe(.25);
+ expect(audio.status().music).toBe('reference/audio/music-bubble-1');
+ expect(world.events(PlayMusic).some(e=>e.track==='reference/audio/music-bubble-1')).toBe(true);
+ input.emit(ArcadeInput,{player:0,move:0,jump:false,fire:false,paused:true});await step(1);
+ const paused=canonicalState(session.get().game!);
+ await tick('native-audio','1');
+ await tick('native-audio','0');
+ match(paused,canonicalState(session.get().game!),'native-audio.paused.canonical');
+ expect(audio.status().buses.Music).toBe(0);
+ input.emit(ArcadeInput,{player:0,move:0,jump:false,fire:false,paused:false});await step(1);
+ expect(audio.status().buses.Music).toBe(.25);
 },{scene:'scenes/arcade.scene.json'});

@@ -1,0 +1,23 @@
+{
+  "$schemaVersion": 2,
+  "id": "pixel-prototype",
+  "entities": [
+    {
+      "name": "Camera",
+      "id": "camera",
+      "Camera": { "clearColor": "#000000ff", "orthoSize": 8, "space": "Space3D", "msaa": 1 },
+      "LocalTransform": {}
+    },
+    {
+      "name": "Ordered original pixels",
+      "id": "ordered-pixels",
+      "LocalTransform": {},
+      "MeshRenderer": {
+        "mesh": "dynamic:pixel-ordered-prototype",
+        "material": "materials/pixel-ordered.mat.json",
+        "castShadows": false,
+        "receiveShadows": false
+      }
+    }
+  ]
+}

@@ -21,6 +21,12 @@ export const schemaIr = {
           "lanes": 1
         },
         {
+          "name": "native",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
           "name": "muted",
           "kind": "bool",
           "scalar": "u8",
@@ -502,6 +508,7 @@ registerSchema(schemaIr);
 
 export interface ArcadeAudioViews {
   track: Uint32Array;
+  native: Uint8Array;
   muted: Uint8Array;
   music: Int32Array;
   sound: Int32Array;
@@ -510,6 +517,7 @@ export interface ArcadeAudioViews {
 }
 export interface ArcadeAudioValue {
   track: string;
+  native: boolean;
   muted: boolean;
   music: number;
   sound: number;
@@ -517,7 +525,7 @@ export interface ArcadeAudioValue {
   exitSequence: number;
 }
 /** ArcadeAudio (resource, sim) */
-export const ArcadeAudio = typeToken<ArcadeAudioViews, ArcadeAudioValue>('ArcadeAudio', 'resource', { sig: 'track:string:1,muted:bool:1,music:i32:1,sound:i32:1,paused:bool:1,exitSequence:u32:1', read: (v: ArcadeAudioViews, i: number, o: Record<string, unknown>) => { o.track = $r.str(v.track[i]!); o.muted = v.muted[i] !== 0; o.music = v.music[i]; o.sound = v.sound[i]; o.paused = v.paused[i] !== 0; o.exitSequence = v.exitSequence[i]; return o; } });
+export const ArcadeAudio = typeToken<ArcadeAudioViews, ArcadeAudioValue>('ArcadeAudio', 'resource', { sig: 'track:string:1,native:bool:1,muted:bool:1,music:i32:1,sound:i32:1,paused:bool:1,exitSequence:u32:1', read: (v: ArcadeAudioViews, i: number, o: Record<string, unknown>) => { o.track = $r.str(v.track[i]!); o.native = v.native[i] !== 0; o.muted = v.muted[i] !== 0; o.music = v.music[i]; o.sound = v.sound[i]; o.paused = v.paused[i] !== 0; o.exitSequence = v.exitSequence[i]; return o; } });
 
 export interface ArcadeControlViews {
   active: Uint8Array;

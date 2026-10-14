@@ -33,7 +33,7 @@ export function desktopAction(action:string,value='',index=0,x=0,y=0,now=0){
  if(action==='new-profile'){patch({name:''});navigate('new-profile');return;}
  if(action==='create-profile'){if(!desktopSaveState.loaded()){patch({status:'SAVE IS LOADING'});return;}const r=desktopSaveState.dispatch('create',s.name,now);if(r.ok)navigate('profiles');else patch({status:r.reason});return;}
  if(action==='delete-char'){patch({name:s.name.slice(0,-1)});return;}
- if(['avatar','music','sound','fullscreen'].includes(action)){if(desktopSaveState.loaded())desktopSaveState.dispatch('setting',{action,delta:index===-1?-25:25},now);if(action==='fullscreen')patch({status:'FULLSCREEN REQUIRES ENGINE WINDOW SUPPORT'});return;}
+ if(['avatar','music','sound','fullscreen'].includes(action)){if(desktopSaveState.loaded())desktopSaveState.dispatch('setting',{action,delta:index===-1?-25:25},now);return;}
  if(action==='pause'){request('pause');showDesktopPause();return;}
  if(action==='resume'){request('resume');navigate('play');return;}
  if(action==='start'||action==='restart'||action==='test-level'){
@@ -64,6 +64,7 @@ export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(Ar
  for(const e of ctx.events.read(DesktopIntent))desktopAction(e.action,e.value,e.index,e.x,e.y,ctx.time);
  for(const c of q.chunks())for(let i=0;i<c.length;i++)if(c.is(ActionState,i,'name','fullscreen')&&c.col(ActionState).justPressed[i])desktopAction('fullscreen','',0,0,0,ctx.time);
  let s=desktopState.get();if(s.screen==='play')return;
+ let editorModifier=false;for(const c of q.chunks())for(let i=0;i<c.length;i++)if(c.is(ActionState,i,'name','editorModifier')&&c.col(ActionState).pressed[i])editorModifier=true;
  if(s.screen==='new-profile')for(const e of ctx.events.read(TextInput))desktopAction('name',desktopState.get().name+e.text.replace(/[^A-Za-z0-9 _-]/g,'').toUpperCase());
  for(const c of q.chunks())for(let i=0;i<c.length;i++){
   const a=c.col(ActionState);s=desktopState.get();
@@ -73,6 +74,6 @@ export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(Ar
   if(c.is(ActionState,i,'name','menuX')&&s.screen==='settings'){const b=buttons[s.selected];if(b)desktopAction(b.key,'',a.value[i]!<0?-1:1);}
   if((s.screen!=='new-profile'&&c.is(ActionState,i,'name','confirm'))||(s.screen==='new-profile'&&c.is(ActionState,i,'name','profileConfirm'))){const b=buttons[s.selected];if(b)desktopAction(b.key,'',0,0,0,ctx.time);}
   if(c.is(ActionState,i,'name','back'))desktopAction(s.screen==='pause'?'resume':s.screen==='new-profile'?'profiles':'menu');
-  if(s.screen==='editor'){if(c.is(ActionState,i,'name','undo'))desktopAction('undo');if(c.is(ActionState,i,'name','save'))desktopAction('save-level');if(c.is(ActionState,i,'name','playtest'))desktopAction('test-level');}
+  if(s.screen==='editor'){if(editorModifier&&c.is(ActionState,i,'name','undo'))desktopAction('undo');if(editorModifier&&c.is(ActionState,i,'name','save'))desktopAction('save-level');if(c.is(ActionState,i,'name','playtest'))desktopAction('test-level');}
  }
 }});

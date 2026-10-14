@@ -15,6 +15,12 @@
           "lanes": 1
         },
         {
+          "name": "native",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
           "name": "muted",
           "kind": "bool",
           "scalar": "u8",

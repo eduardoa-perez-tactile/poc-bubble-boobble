@@ -1,5 +1,5 @@
 import {worldTest,expect} from '@gameengine/test';
-import {ArcadeControl,DesktopIntent} from '../src/schema.gen.ts';
+import {ArcadeControl,ArcadeInput,DesktopIntent} from '../src/schema.gen.ts';
 import {ResetArcade} from '../src/arcade/arcade.cheats.ts';
 import {session} from '../src/arcade/session.ts';
 import {desktopState} from '../src/desktop/state.ts';
@@ -39,4 +39,28 @@ worldTest('arcade editor real pointer painting erasing and stroke undo',async({i
  input.pointer('down',112,234,0,2);await step(1);
  input.pointer('up',112,234,0,2);await step(1);
  expect(desktopState.get().level.tiles[5]![5]).toBe(0);
+},{scene});
+
+worldTest('arcade physical Escape pauses and resumes once',async({input,step,cheat})=>{
+ await step(2);await cheat(ResetArcade,{ready:false});
+ input.key(39,true);await step(1);
+ expect(session.get().game!.Paused).toBe(true);
+ expect(desktopState.get().screen).toBe('pause');
+ const tick=session.get().game!.Tick;
+ input.key(39,false);await step(3);
+ expect(session.get().game!.Tick).toBe(tick);
+ input.key(39,true);await step(1);
+ expect(session.get().game!.Paused).toBe(false);
+ expect(desktopState.get().screen).toBe('play');
+ expect(session.get().game!.Tick).toBe(tick+1);
+},{scene});
+
+worldTest('arcade semantic pause keeps desktop presentation synchronized',async({input,step,cheat})=>{
+ await step(2);await cheat(ResetArcade,{ready:false});
+ input.emit(ArcadeInput,{player:0,move:0,jump:false,fire:false,paused:true});await step(1);
+ expect(session.get().game!.Paused).toBe(true);expect(desktopState.get().screen).toBe('pause');
+ const tick=session.get().game!.Tick;
+ input.emit(ArcadeInput,{player:0,move:0,jump:false,fire:false,paused:false});await step(1);
+ expect(session.get().game!.Paused).toBe(false);expect(desktopState.get().screen).toBe('play');
+ expect(session.get().game!.Tick).toBe(tick+1);
 },{scene});

@@ -17,8 +17,12 @@ copy(source+'/resources/arcade.ttf',target+'/arcade.ttf','font');copy(source+'/r
 if(process.argv.includes('--music')){
  const dir=source+'/cmd/port-audio';mkdirSync(dir,{recursive:true});copyFileSync('tools/port/export-music.go',dir+'/main.go');const out=resolve('.cache/audio-export');mkdirSync(out,{recursive:true});
  const r=spawnSync(resolve('.cache/toolchains/go/bin/go'),['run','./cmd/port-audio',out],{cwd:source,encoding:'utf8'});if(r.status!==0)throw new Error(r.stderr);console.log(r.stdout.trim());
- for(let i=1;i<=5;i++)copyFileSync(`${out}/bubble-${i}.wav`,`${target}/audio/bubble-${i}.wav`);
+ for(let i=1;i<=5;i++){
+  const destination=`${target}/audio/music-bubble-${i}.wav`;
+  copyFileSync(`${out}/music-bubble-${i}.wav`,destination);
+  if(!existsSync(destination+'.gmeta'))writeFileSync(destination+'.gmeta',`guid = "${randomUUID()}"\nimporter = "audio"\n[settings]\nnormalize = false\ncodec = "opus"\nstream_after = 0\nbitrate = 128000\n`);
+ }
 }
-const music=Array.from({length:5},(_,i)=>({file:`assets/reference/audio/bubble-${i+1}.wav`,sha256:sha(`${target}/audio/bubble-${i+1}.wav`)}));
+const music=Array.from({length:5},(_,i)=>({file:`assets/reference/audio/music-bubble-${i+1}.wav`,sha256:sha(`${target}/audio/music-bubble-${i+1}.wav`)}));
 writeFileSync('data/reference-assets.json',JSON.stringify({revision:lock.revision,imported:imported.sort((a,b)=>a.source.localeCompare(b.source)),music:{decoder:'unchanged upstream internal/ym.Stream, loop=false, 48000Hz stereo PCM16',exporterSha256:sha('tools/port/export-music.go'),library:'github.com/olivierh59500/ym-player@v0.0.0-20260913215440-3f73bdca82e5',files:music}},null,2)+'\n');
 console.log(`Imported${imported.length} source files at${lock.revision}`);

@@ -164,14 +164,15 @@ declare module '@gameengine/ui' {
      *   - `showBanner`: yesno, default false
      *   - `clear`: yesno, default false
      *   - `freeze`: text, default ""
+     *   - `shade`: enum normal | pause | result, default "normal"
      * Events: none
      * Code areas: none
-     * Refs: none
+     * Refs: `banner`, `banner-title`, `banner-hint`
      */
     'desktop-hud': {
-      props: { name: string | { loc: string } | LocText; score: string | { loc: string } | LocText; round: string | { loc: string } | LocText; high: string | { loc: string } | LocText; lives: string | { loc: string } | LocText; enemies: string | { loc: string } | LocText; banner: string | { loc: string } | LocText; hint: string | { loc: string } | LocText; showBanner: boolean; clear: boolean; freeze: string | { loc: string } | LocText };
+      props: { name: string | { loc: string } | LocText; score: string | { loc: string } | LocText; round: string | { loc: string } | LocText; high: string | { loc: string } | LocText; lives: string | { loc: string } | LocText; enemies: string | { loc: string } | LocText; banner: string | { loc: string } | LocText; hint: string | { loc: string } | LocText; showBanner: boolean; clear: boolean; freeze: string | { loc: string } | LocText; shade: 'normal' | 'pause' | 'result' };
       areas: never;
-      refs: never;
+      refs: 'banner' | 'banner-title' | 'banner-hint';
     };
     /**
      * Desktop key button: a widget, button (ui/docs/desktop-key-button.ui.json)
@@ -274,14 +275,17 @@ declare module '@gameengine/ui' {
      *   - `logo`: yesno, default false
      *   - `keys`: list of desktop-key-button
      *   - `page`: enum title | menu | profiles | new-profile | settings | scores | help | credits | play | pause | result | editor, default "title"
+     *   - `resultScore`: text, default ""
+     *   - `resultStats`: text, default ""
+     *   - `showResultStats`: yesno, default false
      * Events: `press (<item>)`, `press (<item>) (<item>)`
      * Code areas: none
-     * Refs: none
+     * Refs: `pause-panel`, `title`, `result-score`, `result-stats`
      */
     'desktop-shell': {
-      props: { title: string | { loc: string } | LocText; subtitle: string | { loc: string } | LocText; body: string | { loc: string } | LocText; status: string | { loc: string } | LocText; buttons: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; rows: readonly { key: string; cells?: readonly { key: string; image?: string; label?: string | { loc: string } | LocText }[] }[]; logo: boolean; keys: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; page: 'title' | 'menu' | 'profiles' | 'new-profile' | 'settings' | 'scores' | 'help' | 'credits' | 'play' | 'pause' | 'result' | 'editor' };
+      props: { title: string | { loc: string } | LocText; subtitle: string | { loc: string } | LocText; body: string | { loc: string } | LocText; status: string | { loc: string } | LocText; buttons: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; rows: readonly { key: string; cells?: readonly { key: string; image?: string; label?: string | { loc: string } | LocText }[] }[]; logo: boolean; keys: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; page: 'title' | 'menu' | 'profiles' | 'new-profile' | 'settings' | 'scores' | 'help' | 'credits' | 'play' | 'pause' | 'result' | 'editor'; resultScore: string | { loc: string } | LocText; resultStats: string | { loc: string } | LocText; showResultStats: boolean };
       areas: never;
-      refs: never;
+      refs: 'pause-panel' | 'title' | 'result-score' | 'result-stats';
     };
     /**
      * Desktop small button: a widget, button (ui/docs/desktop-small-button.ui.json)

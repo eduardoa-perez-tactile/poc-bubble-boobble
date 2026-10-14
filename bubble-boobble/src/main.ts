@@ -72,3 +72,5 @@ export { ArcadeBoot, ArcadePool, ArcadePresentation } from './arcade/presentatio
 export { ArcadeStep } from './arcade/engine.ts';
 export { ArcadeEditorInput } from './arcade/editor-input.ts';
 export { ArcadeAudioSystem, ArcadePlatform } from './arcade/audio.ts';
+
+export { DesktopPlatformBridge } from './desktop-platform/index.ts';

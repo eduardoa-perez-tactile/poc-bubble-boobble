@@ -9,6 +9,9 @@ import {
   Sprite,
   Text2D,
   Shape,
+  MeshRenderer,
+  MaterialGlobals,
+  Time,
   WorldView,
 } from "@gameengine/runtime";
 import { ArcadeControl, ArcadeVisual } from "../schema.gen.ts";
@@ -16,6 +19,8 @@ import { desktopState } from "../desktop/state.ts";
 import { desktopSaveState } from "../desktop/save.ts";
 import manifest from "../../data/sprites.json";
 import { session } from "./session.ts";
+import { updateOrderedPixels } from "./pixel-renderer/ordered.ts";
+import type { PixelQuad } from "./pixel-renderer/types.ts";
 import { EnemyState, position } from "./types.ts";
 import type { GameState, Level } from "./types.ts";
 
@@ -194,7 +199,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
       }
   return out;
 }
-function editorDrawPlan(level: Level, avatar: string): Draw[] {
+function editorDrawPlan(level: Level, avatar: string, tick = 0): Draw[] {
   const out: Draw[] = [];
   const spawn = (
     cell: { col: number; row: number },
@@ -204,7 +209,7 @@ function editorDrawPlan(level: Level, avatar: string): Draw[] {
     const [px, py] = position(cell, 44),
       x = 24 + (px * 2) / 3,
       y = 146 + (py * 2) / 3;
-    out.push(image(name, 0, x, y, 30));
+    out.push(image(name, tick, x, y, 30));
     if (marker) out.push(label(marker, x, y - 9, 9));
   };
   for (const e of level.enemies) spawn(e, e.kind + "/walk");
@@ -237,24 +242,11 @@ export const ArcadePool = defineSystem({
   runIf: { resource: ArcadeControl, field: "active", value: true },
   run(ctx, q) {
     const ui = desktopState.get(),
-      s = session.get();
-    let needed = 0;
-    if (ui.screen === "editor")
-      needed = TILE_BASE + TILE_SLOTS + ui.level.enemies.length + 6;
-    else if (s.active && s.game) {
-      const g = s.game;
-      needed =
-        TILE_BASE +
-        TILE_SLOTS +
-        g.Items.length +
-        g.Enemies.length +
-        g.Bubbles.length +
-        g.Projectiles.length +
-        g.Effects.length +
-        g.Players.length +
-        g.Particles.length +
-        9;
-    }
+      g = session.get().game;
+    const needed =
+      ui.screen === "editor"
+        ? 4
+        : 1 + (g?.Particles.filter((p) => p.Text).length ?? 0);
     let count = 0;
     for (const c of q.chunks())
       for (let i = 0; i < c.length; i++)
@@ -270,117 +262,190 @@ export const ArcadePool = defineSystem({
       });
   },
 });
+function sceneDraws(tick: number) {
+  const ui = desktopState.get(),
+    s = session.get(),
+    save = desktopSaveState.get(),
+    avatar = save.profiles[save.active]?.avatar ?? "green";
+  const images: PixelQuad[] = [],
+    texts: Draw[] = [];
+  const push = (d: Draw) => {
+    if (d.text) texts.push(d);
+    else if (d.image) images.push(d);
+  };
+  const solid = (name: string, x: number, y: number, w: number, h: number) =>
+    images.push({ image: "solid/" + name, x, y, w, h });
+  solid("ink", 0, 0, 768, 720);
+  const editor = ui.screen === "editor",
+    g =
+      s.active && ["play", "pause", "result"].includes(ui.screen)
+        ? s.game
+        : null,
+    level = editor ? ui.level : g?.Level;
+  if (level) {
+    solid(
+      editor ? "panel" : "black",
+      editor ? 24 : 0,
+      editor ? 146 : 48,
+      editor ? 512 : 768,
+      editor ? 416 : 624,
+    );
+    for (let row = 0; row < 26; row++)
+      for (let col = 0; col < 32; col++) {
+        const tile = level.tiles[row]?.[col] ?? 0,
+          size = editor ? 16 : 24,
+          x = (editor ? 24 : 0) + col * size,
+          y = (editor ? 146 : 48) + row * size;
+        if (tile)
+          images.push({
+            image: `reference/tiles/${String(tile).padStart(2, "0")}`,
+            x,
+            y,
+            w: size,
+            h: size,
+          });
+        else if (editor) solid("black", x + 1, y + 1, 15, 15);
+      }
+    if (editor) editorDrawPlan(ui.level, avatar, tick).forEach(push);
+    else if (g) {
+      const actors = arcadeDrawPlan(g, avatar);
+      actors.filter((d) => !d.footer).forEach(push);
+      solid("ink", 0, 0, 768, 48);
+      solid("ink", 0, 672, 768, 48);
+      actors.filter((d) => d.footer).forEach(push);
+    }
+  } else if (ui.screen === "title" || ui.screen === "menu") {
+    // Source rings are isolated on ink, never overlap, and precede the logo.
+    for (let index = 0; index < 18; index++) {
+      const radius = 8 + (index % 4) * 5,
+        size = radius * 2 + 4,
+        x = (index * 137 + 39) % 768,
+        y = (((index * 91 - Math.floor(tick / 2)) % 720) + 720) % 720;
+      images.push({
+        image: `derived/circle/${index % 4}`,
+        x: x - radius - 2,
+        y: y - radius - 2,
+        w: size,
+        h: size,
+      });
+    }
+    images.push({ image: "reference/logo", x: 209, y: 26, w: 350, h: 252 });
+    push(image("green/walk", tick, 80, 550, 96, 96, 1));
+    push(image("blue/walk", tick, 592, 550, 96, 96, -1));
+  } else if (ui.screen === "profiles")
+    for (let index = 0; index < save.profiles.length; index++)
+      push(
+        image(
+          save.profiles[index]!.avatar + "/walk",
+          tick,
+          114,
+          132 + index * 46,
+          36,
+          36,
+          1,
+        ),
+      );
+  else if (ui.screen === "settings")
+    push(image(avatar + "/walk", tick, 336, 476, 96));
+  return { images, texts };
+}
 export const ArcadePresentation = defineSystem({
   name: "ArcadePresentation",
   stage: "LateUpdate",
-  query: query(
-    read(ArcadeVisual),
-    write(VisualOffset),
-    write(Sprite),
-    write(Text2D),
-    write(Shape),
-  ),
-  resources: [read(ArcadeControl)],
+  queries: {
+    visuals: query(
+      read(ArcadeVisual),
+      write(VisualOffset),
+      write(Sprite),
+      write(Text2D),
+      write(Shape),
+    ),
+    mesh: query(read(ArcadeVisual), write(MeshRenderer)),
+  },
+  resources: [read(ArcadeControl), read(Time), write(MaterialGlobals)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
-  run(_ctx, q) {
-    const ui = desktopState.get(),
-      s = session.get(),
-      save = desktopSaveState.get(),
-      avatar = save.profiles[save.active]?.avatar ?? "green";
-    const editor = ui.screen === "editor",
-      game = s.active ? s.game : null;
-    const level = editor ? ui.level : game?.Level;
-    const draws = editor
-      ? editorDrawPlan(ui.level, avatar)
-      : game
-        ? arcadeDrawPlan(game, avatar)
-        : [];
-    for (const c of q.chunks())
+  run(ctx, q) {
+    const plan = sceneDraws(ctx.get(Time).step),
+      ui = desktopState.get(),
+      g = session.get().game;
+    const fade =
+      ui.screen === "pause"
+        ? 195 / 255
+        : ui.screen === "result"
+          ? 220 / 255
+          : 0;
+    const banner =
+      !!g &&
+      (ui.screen === "play" || ui.screen === "pause" || ui.screen === "result") &&
+      (g.State === 0 ||
+        g.State === 2 ||
+        (g.Hurry && g.State === 1 && g.LevelTicks < 1980 && g.Tick % 30 < 24));
+    const bannerTop = g?.State === 2 ? 84 : 240;
+    ctx.set(MaterialGlobals, { v0: [fade, bannerTop, banner ? 1 : 0, 0] });
+    if (plan.images.length) updateOrderedPixels("arcade-pixels", plan.images);
+    for (const c of q.mesh.chunks())
+      for (let i = 0; i < c.length; i++)
+        if (!c.is(MeshRenderer, i, "mesh", "dynamic:arcade-pixels"))
+          c.set(MeshRenderer, i, {
+            mesh: "dynamic:arcade-pixels",
+            material: "materials/pixel-ordered.mat.json",
+            castShadows: false,
+            receiveShadows: false,
+          });
+    for (const c of q.visuals.chunks())
       for (let i = 0; i < c.length; i++) {
         const slot = c.col(ArcadeVisual).slot[i]!;
+        if (c.col(Sprite).visible[i]) c.set(Sprite, i, { visible: false });
         if (c.col(Shape).visible[i]) c.set(Shape, i, { visible: false });
-        if (!level) {
-          if (c.col(Sprite).visible[i]) c.set(Sprite, i, { visible: false });
+        if (slot === 0) {
+          c.set(VisualOffset, i, {
+            position: [0, 0, 0],
+            scale: plan.images.length ? [1, 1, 1] : [0, 0, 0],
+          });
           if (c.col(Text2D).visible[i]) c.set(Text2D, i, { visible: false });
           continue;
         }
-        if (slot < TILE_BASE) {
-          const x = slot === 0 && editor ? 24 : 0,
-            y = slot === 0 ? (editor ? 146 : 48) : slot === 1 ? 0 : 672,
-            w = slot === 0 && editor ? 512 : 768,
-            h = slot === 0 ? (editor ? 416 : 624) : 48;
-          c.set(VisualOffset, i, { position: [x + w / 2, 720 - y - h / 2, 0] });
-          c.set(Shape, i, {
-            visible: slot === 0 || !editor,
-            kind: "Rect",
-            size: [w, h],
-            color:
-              slot === 0 ? (editor ? "#131d31ff" : "#000000ff") : "#080c1bff",
-            softness: 0,
-            order: slot === 0 ? -3 : 100000,
-          });
-          c.set(Sprite, i, { visible: false });
-          c.set(Text2D, i, { visible: false });
-          continue;
-        }
-        if (slot < TILE_BASE + TILE_SLOTS) {
-          const index = slot - TILE_BASE,
-            row = Math.floor(index / 32),
-            col = index % 32,
-            tile = level.tiles[row]?.[col] ?? 0;
-          const size = editor ? 16 : 24,
-            x = (editor ? 24 : 0) + col * size,
-            y = (editor ? 146 : 48) + row * size;
-          c.set(VisualOffset, i, {
-            position: [x + size / 2, 720 - y - size / 2, 0],
-          });
-          c.set(Sprite, i, {
-            visible: tile !== 0,
-            image: `reference/tiles/${String(tile || 1).padStart(2, "0")}`,
-            size: [size, size],
-            anchor: [0.5, 0.5],
-            flipX: false,
-            order: slot,
-          });
-          c.set(Text2D, i, { visible: false });
-          if (editor && tile === 0) {
-            c.set(VisualOffset, i, {
-              position: [x + size / 2 + 0.5, 720 - y - size / 2 - 0.5, 0],
-            });
-            c.set(Shape, i, {
-              visible: true,
-              kind: "Rect",
-              size: [15, 15],
-              color: "#000000ff",
-              softness: 0,
-              order: slot,
-            });
-          }
-          continue;
-        }
-        const d = draws[slot - TILE_BASE - TILE_SLOTS];
+        const d = plan.texts[slot - 1];
         if (!d) {
-          c.set(Sprite, i, { visible: false });
-          c.set(Text2D, i, { visible: false });
+          if (c.col(Text2D).visible[i]) c.set(Text2D, i, { visible: false });
           continue;
         }
         c.set(VisualOffset, i, {
-          position: [d.x + d.w / 2, 720 - d.y - d.h / 2, 0],
-        });
-        c.set(Sprite, i, {
-          visible: !!d.image,
-          image: d.image || "reference/pop/0",
-          size: [d.w, d.h],
-          anchor: [0.5, 0.5],
-          flipX: d.flip,
-          order: d.footer ? 100001 + slot : slot,
+          position: [d.x, 720 - d.y, 0],
+          scale: [1, 1, 1],
         });
         c.set(Text2D, i, {
-          visible: !!d.text,
+          visible: true,
           text: d.text,
           font: "reference/arcade",
           size: d.size,
-          color: "#ffdc6aff",
+          color: (() => {
+            let r = 255,
+              g = 220,
+              b = 106;
+            if (
+              banner &&
+              d.x >= 108 &&
+              d.x < 660 &&
+              d.y >= bannerTop &&
+              d.y < bannerTop + 82
+            ) {
+              r = 8 + (r * 25) / 255;
+              g = 12 + (g * 25) / 255;
+              b = 27 + (b * 25) / 255;
+            }
+            return (
+              "#" +
+              [r, g, b]
+                .map((v) =>
+                  Math.max(0, Math.min(255, Math.round(v * (1 - fade))))
+                    .toString(16)
+                    .padStart(2, "0"),
+                )
+                .join("") +
+              "ff"
+            );
+          })(),
           align: "Left",
           order: slot,
         });

@@ -1,0 +1,6 @@
+{
+  "replay": "tests/replays/desktop_complete_presentation_flows.greplay",
+  "structural": {
+    "drawCallsMax": 14
+  }
+}

@@ -1,6 +1,6 @@
 # Git workflow for fast port iteration
 
-Status: active. Starter/contracts bootstrap commit `8fe0169` is published on `main`; the harness is developed on `codex/port-harness`. See [harness.md](harness.md) for validation.
+Status: active. The harness (#1), movement (#2), and campaign/desktop core (#3) are merged on `main`. Game-owned desktop workarounds are developed on `codex/port-desktop-workarounds`. See [harness.md](harness.md) for validation.
 
 Repository: https://github.com/eduardoa-perez-tactile/poc-bubble-boobble
 Git root: `bubblebooble/`; engine project: `bubblebooble/bubble-boobble/`.
@@ -10,7 +10,8 @@ Keep this layout. Run Git at the repository root and engine commands in the proj
 
 The repository began empty. Initial `main` commit `8fe0169` contains the starter and contracts, with passing starter T0/check evidence. It establishes the recovery point; it is not a completed port. `main` is published to origin as the integration branch.
 
-Next branch: `codex/port-harness`. Implement and verify the harness bootstrap gate before starting `codex/port-movement`.
+The initial implementation order was `codex/port-harness`, then `codex/port-movement`.
+Each subsequent slice follows the same gates below.
 
 ## Daily flow
 

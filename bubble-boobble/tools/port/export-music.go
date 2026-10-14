@@ -14,7 +14,7 @@ func main() {
   stream,err:=ym.New(data,false); if err!=nil {panic(err)}
   pcm,err:=io.ReadAll(io.LimitReader(stream,48000*4*600)); stream.Close(); if err!=nil {panic(err)}
   if len(pcm)>=48000*4*600 {panic("YM exceeds export safety bound")}
-  file,err:=os.Create(fmt.Sprintf("%s/bubble-%d.wav",os.Args[1],i));if err!=nil {panic(err)}
+  file,err:=os.Create(fmt.Sprintf("%s/music-bubble-%d.wav",os.Args[1],i));if err!=nil {panic(err)}
   file.Write([]byte("RIFF"));binary.Write(file,binary.LittleEndian,uint32(len(pcm)+36));file.Write([]byte("WAVEfmt "))
   binary.Write(file,binary.LittleEndian,uint32(16));binary.Write(file,binary.LittleEndian,uint16(1));binary.Write(file,binary.LittleEndian,uint16(2));binary.Write(file,binary.LittleEndian,uint32(48000));binary.Write(file,binary.LittleEndian,uint32(48000*4));binary.Write(file,binary.LittleEndian,uint16(4));binary.Write(file,binary.LittleEndian,uint16(16))
   file.Write([]byte("data"));binary.Write(file,binary.LittleEndian,uint32(len(pcm)));file.Write(pcm);file.Close()

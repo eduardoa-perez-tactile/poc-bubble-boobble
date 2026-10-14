@@ -1,0 +1,292 @@
+{
+ "compat": [
+  {
+   "r": "2d",
+   "key": {
+    "Blit": {
+     "format": 22
+    }
+   }
+  },
+  {
+   "r": "2d",
+   "key": {
+    "Shape": {
+     "samples": 1,
+     "format": 22
+    }
+   }
+  },
+  {
+   "r": "2d",
+   "key": {
+    "Text": {
+     "samples": 1,
+     "format": 22
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Forward": {
+     "program": "7946469ed20397e0",
+     "alpha": 0,
+     "double_sided": false,
+     "prepassed": false,
+     "samples": 1,
+     "format": 22,
+     "skinned": false,
+     "debug": 0
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Forward": {
+     "program": "ad82d3855fa8013b",
+     "alpha": 1,
+     "double_sided": true,
+     "prepassed": false,
+     "samples": 1,
+     "format": 22,
+     "skinned": false,
+     "debug": 0
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Shadow": {
+     "program": "7946469ed20397e0",
+     "alpha": 0,
+     "double_sided": false,
+     "skinned": false
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Shadow": {
+     "program": "ad82d3855fa8013b",
+     "alpha": 1,
+     "double_sided": true,
+     "skinned": false
+    }
+   }
+  },
+  {
+   "r": "3d-program",
+   "program": "builtin:standard"
+  },
+  {
+   "r": "3d-program",
+   "program": "materials/pixel-ordered.material.ts"
+  }
+ ],
+ "desktop": [
+  {
+   "r": "2d",
+   "key": {
+    "Blit": {
+     "format": 22
+    }
+   }
+  },
+  {
+   "r": "2d",
+   "key": {
+    "Shape": {
+     "samples": 4,
+     "format": 40
+    }
+   }
+  },
+  {
+   "r": "2d",
+   "key": {
+    "Text": {
+     "samples": 4,
+     "format": 40
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Forward": {
+     "program": "7946469ed20397e0",
+     "alpha": 0,
+     "double_sided": false,
+     "prepassed": true,
+     "samples": 4,
+     "format": 40,
+     "skinned": false,
+     "debug": 0
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Forward": {
+     "program": "ad82d3855fa8013b",
+     "alpha": 1,
+     "double_sided": true,
+     "prepassed": true,
+     "samples": 4,
+     "format": 40,
+     "skinned": false,
+     "debug": 0
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Prepass": {
+     "program": "7946469ed20397e0",
+     "alpha": 0,
+     "double_sided": false,
+     "samples": 4,
+     "format": 40,
+     "skinned": false
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Prepass": {
+     "program": "ad82d3855fa8013b",
+     "alpha": 1,
+     "double_sided": true,
+     "samples": 4,
+     "format": 40,
+     "skinned": false
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Shadow": {
+     "program": "7946469ed20397e0",
+     "alpha": 0,
+     "double_sided": false,
+     "skinned": false
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Shadow": {
+     "program": "ad82d3855fa8013b",
+     "alpha": 1,
+     "double_sided": true,
+     "skinned": false
+    }
+   }
+  },
+  {
+   "r": "3d-program",
+   "program": "builtin:standard"
+  },
+  {
+   "r": "3d-program",
+   "program": "materials/pixel-ordered.material.ts"
+  }
+ ],
+ "mobile": [
+  {
+   "r": "2d",
+   "key": {
+    "Blit": {
+     "format": 22
+    }
+   }
+  },
+  {
+   "r": "2d",
+   "key": {
+    "Shape": {
+     "samples": 1,
+     "format": 22
+    }
+   }
+  },
+  {
+   "r": "2d",
+   "key": {
+    "Text": {
+     "samples": 1,
+     "format": 22
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Forward": {
+     "program": "7946469ed20397e0",
+     "alpha": 0,
+     "double_sided": false,
+     "prepassed": false,
+     "samples": 1,
+     "format": 22,
+     "skinned": false,
+     "debug": 0
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Forward": {
+     "program": "ad82d3855fa8013b",
+     "alpha": 1,
+     "double_sided": true,
+     "prepassed": false,
+     "samples": 1,
+     "format": 22,
+     "skinned": false,
+     "debug": 0
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Shadow": {
+     "program": "7946469ed20397e0",
+     "alpha": 0,
+     "double_sided": false,
+     "skinned": false
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Shadow": {
+     "program": "ad82d3855fa8013b",
+     "alpha": 1,
+     "double_sided": true,
+     "skinned": false
+    }
+   }
+  },
+  {
+   "r": "3d-program",
+   "program": "builtin:standard"
+  },
+  {
+   "r": "3d-program",
+   "program": "materials/pixel-ordered.material.ts"
+  }
+ ]
+}
