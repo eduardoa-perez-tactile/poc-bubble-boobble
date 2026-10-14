@@ -1,0 +1,67 @@
+{
+  "source": "tools/port/reference-captures/go-menu-r1-smoke1.png",
+  "pngSHA256": "d0baa7e216f09ca19b9daba06c81684cab500a196780df4549a6d3a5e9ca0abc",
+  "reference": "783cf6aa26ac3c57cdab43f2d7a5b3725a3991cc",
+  "circles": [
+    {
+      "radius": 8,
+      "sourceCenter": [
+        587,
+        362
+      ],
+      "sourceBox": [
+        577,
+        352,
+        597,
+        372
+      ],
+      "pixels": 20
+    },
+    {
+      "radius": 13,
+      "sourceCenter": [
+        724,
+        453
+      ],
+      "sourceBox": [
+        709,
+        438,
+        739,
+        468
+      ],
+      "pixels": 30
+    },
+    {
+      "radius": 18,
+      "sourceCenter": [
+        641,
+        188
+      ],
+      "sourceBox": [
+        621,
+        168,
+        661,
+        208
+      ],
+      "pixels": 40
+    },
+    {
+      "radius": 23,
+      "sourceCenter": [
+        558,
+        643
+      ],
+      "sourceBox": [
+        533,
+        618,
+        583,
+        668
+      ],
+      "pixels": 50
+    }
+  ],
+  "inferredPresentationFrameRange": [
+    4,
+    5
+  ]
+}

@@ -1,0 +1,1909 @@
+{
+  "width": 2048,
+  "height": 1024,
+  "rects": {
+    "reference/banebou/angry/0": [
+      2,
+      2,
+      17,
+      16
+    ],
+    "reference/banebou/angry/1": [
+      66,
+      2,
+      18,
+      17
+    ],
+    "reference/banebou/angry/2": [
+      130,
+      2,
+      18,
+      18
+    ],
+    "reference/banebou/bubble/0": [
+      194,
+      2,
+      17,
+      19
+    ],
+    "reference/banebou/bubble/1": [
+      258,
+      2,
+      16,
+      19
+    ],
+    "reference/banebou/bubble/2": [
+      322,
+      2,
+      17,
+      19
+    ],
+    "reference/banebou/dead/0": [
+      386,
+      2,
+      18,
+      16
+    ],
+    "reference/banebou/dead/1": [
+      450,
+      2,
+      16,
+      18
+    ],
+    "reference/banebou/dead/2": [
+      514,
+      2,
+      18,
+      16
+    ],
+    "reference/banebou/dead/3": [
+      578,
+      2,
+      17,
+      18
+    ],
+    "reference/banebou/escape/0": [
+      642,
+      2,
+      17,
+      19
+    ],
+    "reference/banebou/escape/1": [
+      706,
+      2,
+      17,
+      19
+    ],
+    "reference/banebou/escape/2": [
+      770,
+      2,
+      17,
+      19
+    ],
+    "reference/banebou/walk/0": [
+      834,
+      2,
+      17,
+      16
+    ],
+    "reference/banebou/walk/1": [
+      898,
+      2,
+      18,
+      17
+    ],
+    "reference/banebou/walk/2": [
+      962,
+      2,
+      18,
+      18
+    ],
+    "reference/banebou/warning/0": [
+      1026,
+      2,
+      17,
+      19
+    ],
+    "reference/banebou/warning/1": [
+      1090,
+      2,
+      17,
+      19
+    ],
+    "reference/banebou/warning/2": [
+      1154,
+      2,
+      17,
+      19
+    ],
+    "reference/blue/dead/0": [
+      1218,
+      2,
+      16,
+      17
+    ],
+    "reference/blue/dead/1": [
+      1282,
+      2,
+      17,
+      18
+    ],
+    "reference/blue/dead/2": [
+      1346,
+      2,
+      17,
+      17
+    ],
+    "reference/blue/dead/3": [
+      1410,
+      2,
+      17,
+      17
+    ],
+    "reference/blue/jump/0": [
+      1474,
+      2,
+      18,
+      18
+    ],
+    "reference/blue/jump/1": [
+      1538,
+      2,
+      17,
+      18
+    ],
+    "reference/blue/jump/2": [
+      1602,
+      2,
+      18,
+      17
+    ],
+    "reference/blue/jump/3": [
+      1666,
+      2,
+      18,
+      17
+    ],
+    "reference/blue/shoot/0": [
+      1730,
+      2,
+      18,
+      18
+    ],
+    "reference/blue/shoot/1": [
+      1794,
+      2,
+      18,
+      17
+    ],
+    "reference/blue/shoot/2": [
+      1858,
+      2,
+      18,
+      19
+    ],
+    "reference/blue/shoot/3": [
+      1922,
+      2,
+      18,
+      19
+    ],
+    "reference/blue/walk/0": [
+      1986,
+      2,
+      18,
+      17
+    ],
+    "reference/blue/walk/1": [
+      2,
+      66,
+      18,
+      17
+    ],
+    "reference/blue/walk/2": [
+      66,
+      66,
+      18,
+      18
+    ],
+    "reference/blue/walk/3": [
+      130,
+      66,
+      18,
+      18
+    ],
+    "reference/blue/walk/4": [
+      194,
+      66,
+      19,
+      18
+    ],
+    "reference/blue/walk/5": [
+      258,
+      66,
+      17,
+      18
+    ],
+    "reference/blue/walk/6": [
+      322,
+      66,
+      18,
+      18
+    ],
+    "reference/boulder/0": [
+      386,
+      66,
+      18,
+      19
+    ],
+    "reference/boulder/1": [
+      450,
+      66,
+      18,
+      19
+    ],
+    "reference/boulder/2": [
+      514,
+      66,
+      17,
+      19
+    ],
+    "reference/boulder/3": [
+      578,
+      66,
+      18,
+      19
+    ],
+    "reference/bubble-warning/0": [
+      642,
+      66,
+      17,
+      17
+    ],
+    "reference/bubble-warning/1": [
+      706,
+      66,
+      17,
+      17
+    ],
+    "reference/bubble/0": [
+      770,
+      66,
+      15,
+      19
+    ],
+    "reference/bubble/1": [
+      834,
+      66,
+      17,
+      19
+    ],
+    "reference/bubble/2": [
+      898,
+      66,
+      17,
+      17
+    ],
+    "reference/bubble/3": [
+      962,
+      66,
+      17,
+      17
+    ],
+    "reference/fire-bubble/0": [
+      1026,
+      66,
+      17,
+      19
+    ],
+    "reference/fire-bubble/1": [
+      1090,
+      66,
+      17,
+      19
+    ],
+    "reference/fire-bubble/2": [
+      1154,
+      66,
+      17,
+      19
+    ],
+    "reference/fire/0": [
+      1218,
+      66,
+      8,
+      12
+    ],
+    "reference/fire/1": [
+      1282,
+      66,
+      8,
+      11
+    ],
+    "reference/fire/2": [
+      1346,
+      66,
+      8,
+      10
+    ],
+    "reference/flame/0": [
+      1410,
+      66,
+      8,
+      8
+    ],
+    "reference/flame/1": [
+      1474,
+      66,
+      8,
+      7
+    ],
+    "reference/flame/2": [
+      1538,
+      66,
+      8,
+      6
+    ],
+    "reference/flame/3": [
+      1602,
+      66,
+      8,
+      5
+    ],
+    "reference/flame/4": [
+      1666,
+      66,
+      7,
+      4
+    ],
+    "reference/flame/5": [
+      1730,
+      66,
+      5,
+      3
+    ],
+    "reference/food/1/0": [
+      1794,
+      66,
+      14,
+      16
+    ],
+    "reference/food/10/0": [
+      1858,
+      66,
+      12,
+      16
+    ],
+    "reference/food/11/0": [
+      1922,
+      66,
+      16,
+      16
+    ],
+    "reference/food/12/0": [
+      1986,
+      66,
+      16,
+      16
+    ],
+    "reference/food/13/0": [
+      2,
+      130,
+      14,
+      16
+    ],
+    "reference/food/14/0": [
+      66,
+      130,
+      13,
+      16
+    ],
+    "reference/food/15/0": [
+      130,
+      130,
+      13,
+      14
+    ],
+    "reference/food/16/0": [
+      194,
+      130,
+      13,
+      15
+    ],
+    "reference/food/17/0": [
+      258,
+      130,
+      14,
+      16
+    ],
+    "reference/food/18/0": [
+      322,
+      130,
+      16,
+      16
+    ],
+    "reference/food/19/0": [
+      386,
+      130,
+      16,
+      16
+    ],
+    "reference/food/2/0": [
+      450,
+      130,
+      16,
+      16
+    ],
+    "reference/food/20/0": [
+      514,
+      130,
+      16,
+      13
+    ],
+    "reference/food/21/0": [
+      578,
+      130,
+      11,
+      14
+    ],
+    "reference/food/22/0": [
+      642,
+      130,
+      12,
+      16
+    ],
+    "reference/food/23/0": [
+      706,
+      130,
+      14,
+      13
+    ],
+    "reference/food/24/0": [
+      770,
+      130,
+      11,
+      13
+    ],
+    "reference/food/25/0": [
+      834,
+      130,
+      12,
+      15
+    ],
+    "reference/food/3/0": [
+      898,
+      130,
+      16,
+      16
+    ],
+    "reference/food/4/0": [
+      962,
+      130,
+      14,
+      16
+    ],
+    "reference/food/5/0": [
+      1026,
+      130,
+      15,
+      16
+    ],
+    "reference/food/6/0": [
+      1090,
+      130,
+      15,
+      16
+    ],
+    "reference/food/7/0": [
+      1154,
+      130,
+      16,
+      16
+    ],
+    "reference/food/8/0": [
+      1218,
+      130,
+      16,
+      16
+    ],
+    "reference/food/9/0": [
+      1282,
+      130,
+      16,
+      16
+    ],
+    "reference/green/dead/0": [
+      1346,
+      130,
+      16,
+      17
+    ],
+    "reference/green/dead/1": [
+      1410,
+      130,
+      17,
+      18
+    ],
+    "reference/green/dead/2": [
+      1474,
+      130,
+      17,
+      17
+    ],
+    "reference/green/dead/3": [
+      1538,
+      130,
+      17,
+      17
+    ],
+    "reference/green/jump/0": [
+      1602,
+      130,
+      18,
+      18
+    ],
+    "reference/green/jump/1": [
+      1666,
+      130,
+      17,
+      18
+    ],
+    "reference/green/jump/2": [
+      1730,
+      130,
+      18,
+      17
+    ],
+    "reference/green/jump/3": [
+      1794,
+      130,
+      18,
+      17
+    ],
+    "reference/green/shoot/0": [
+      1858,
+      130,
+      18,
+      18
+    ],
+    "reference/green/shoot/1": [
+      1922,
+      130,
+      18,
+      17
+    ],
+    "reference/green/shoot/2": [
+      1986,
+      130,
+      18,
+      19
+    ],
+    "reference/green/shoot/3": [
+      2,
+      194,
+      18,
+      19
+    ],
+    "reference/green/walk/0": [
+      66,
+      194,
+      18,
+      17
+    ],
+    "reference/green/walk/1": [
+      130,
+      194,
+      18,
+      17
+    ],
+    "reference/green/walk/2": [
+      194,
+      194,
+      18,
+      18
+    ],
+    "reference/green/walk/3": [
+      258,
+      194,
+      18,
+      18
+    ],
+    "reference/green/walk/4": [
+      322,
+      194,
+      19,
+      18
+    ],
+    "reference/green/walk/5": [
+      386,
+      194,
+      17,
+      18
+    ],
+    "reference/green/walk/6": [
+      450,
+      194,
+      18,
+      18
+    ],
+    "reference/invader/angry/0": [
+      514,
+      194,
+      19,
+      19
+    ],
+    "reference/invader/angry/1": [
+      578,
+      194,
+      19,
+      19
+    ],
+    "reference/invader/bubble/0": [
+      642,
+      194,
+      16,
+      18
+    ],
+    "reference/invader/bubble/1": [
+      706,
+      194,
+      17,
+      19
+    ],
+    "reference/invader/bubble/2": [
+      770,
+      194,
+      16,
+      18
+    ],
+    "reference/invader/dead/0": [
+      834,
+      194,
+      18,
+      19
+    ],
+    "reference/invader/dead/1": [
+      898,
+      194,
+      19,
+      18
+    ],
+    "reference/invader/dead/2": [
+      962,
+      194,
+      19,
+      19
+    ],
+    "reference/invader/dead/3": [
+      1026,
+      194,
+      19,
+      19
+    ],
+    "reference/invader/escape/0": [
+      1090,
+      194,
+      17,
+      19
+    ],
+    "reference/invader/escape/1": [
+      1154,
+      194,
+      17,
+      18
+    ],
+    "reference/invader/escape/2": [
+      1218,
+      194,
+      16,
+      19
+    ],
+    "reference/invader/walk/0": [
+      1282,
+      194,
+      19,
+      18
+    ],
+    "reference/invader/walk/1": [
+      1346,
+      194,
+      19,
+      19
+    ],
+    "reference/invader/warning/0": [
+      1410,
+      194,
+      16,
+      18
+    ],
+    "reference/invader/warning/1": [
+      1474,
+      194,
+      17,
+      19
+    ],
+    "reference/invader/warning/2": [
+      1538,
+      194,
+      16,
+      18
+    ],
+    "reference/items/amethyst_ring": [
+      1602,
+      194,
+      8,
+      14
+    ],
+    "reference/items/blue_candy": [
+      1666,
+      194,
+      15,
+      10
+    ],
+    "reference/items/clock": [
+      1730,
+      194,
+      11,
+      15
+    ],
+    "reference/items/crystal_ring": [
+      1794,
+      194,
+      8,
+      14
+    ],
+    "reference/items/dynamite": [
+      1858,
+      194,
+      14,
+      13
+    ],
+    "reference/items/orange_parasol": [
+      1922,
+      194,
+      13,
+      16
+    ],
+    "reference/items/pink_candy": [
+      1986,
+      194,
+      15,
+      10
+    ],
+    "reference/items/purple_parasol": [
+      2,
+      258,
+      13,
+      16
+    ],
+    "reference/items/red_parasol": [
+      66,
+      258,
+      13,
+      16
+    ],
+    "reference/items/ruby_ring": [
+      130,
+      258,
+      8,
+      14
+    ],
+    "reference/items/shoes": [
+      194,
+      258,
+      13,
+      9
+    ],
+    "reference/items/yellow_candy": [
+      258,
+      258,
+      15,
+      10
+    ],
+    "reference/laser/0": [
+      322,
+      258,
+      7,
+      16
+    ],
+    "reference/laser/1": [
+      386,
+      258,
+      7,
+      16
+    ],
+    "reference/mighta/angry/0": [
+      450,
+      258,
+      17,
+      18
+    ],
+    "reference/mighta/angry/1": [
+      514,
+      258,
+      17,
+      18
+    ],
+    "reference/mighta/angry/2": [
+      578,
+      258,
+      17,
+      18
+    ],
+    "reference/mighta/angry/3": [
+      642,
+      258,
+      17,
+      18
+    ],
+    "reference/mighta/angry/4": [
+      706,
+      258,
+      17,
+      18
+    ],
+    "reference/mighta/bubble/0": [
+      770,
+      258,
+      17,
+      19
+    ],
+    "reference/mighta/bubble/1": [
+      834,
+      258,
+      17,
+      19
+    ],
+    "reference/mighta/bubble/2": [
+      898,
+      258,
+      17,
+      19
+    ],
+    "reference/mighta/dead/0": [
+      962,
+      258,
+      18,
+      17
+    ],
+    "reference/mighta/dead/1": [
+      1026,
+      258,
+      18,
+      18
+    ],
+    "reference/mighta/dead/2": [
+      1090,
+      258,
+      18,
+      18
+    ],
+    "reference/mighta/dead/3": [
+      1154,
+      258,
+      17,
+      18
+    ],
+    "reference/mighta/escape/0": [
+      1218,
+      258,
+      16,
+      19
+    ],
+    "reference/mighta/escape/1": [
+      1282,
+      258,
+      16,
+      19
+    ],
+    "reference/mighta/escape/2": [
+      1346,
+      258,
+      16,
+      19
+    ],
+    "reference/mighta/shoot-angry/0": [
+      1410,
+      258,
+      17,
+      18
+    ],
+    "reference/mighta/shoot-angry/1": [
+      1474,
+      258,
+      18,
+      18
+    ],
+    "reference/mighta/shoot-angry/2": [
+      1538,
+      258,
+      20,
+      18
+    ],
+    "reference/mighta/shoot-angry/3": [
+      1602,
+      258,
+      23,
+      18
+    ],
+    "reference/mighta/shoot-angry/4": [
+      1666,
+      258,
+      25,
+      18
+    ],
+    "reference/mighta/shoot/0": [
+      1730,
+      258,
+      16,
+      16
+    ],
+    "reference/mighta/shoot/1": [
+      1794,
+      258,
+      16,
+      16
+    ],
+    "reference/mighta/shoot/2": [
+      1858,
+      258,
+      18,
+      16
+    ],
+    "reference/mighta/shoot/3": [
+      1922,
+      258,
+      21,
+      16
+    ],
+    "reference/mighta/shoot/4": [
+      1986,
+      258,
+      23,
+      16
+    ],
+    "reference/mighta/walk/0": [
+      2,
+      322,
+      16,
+      16
+    ],
+    "reference/mighta/walk/1": [
+      66,
+      322,
+      16,
+      16
+    ],
+    "reference/mighta/walk/2": [
+      130,
+      322,
+      16,
+      16
+    ],
+    "reference/mighta/walk/3": [
+      194,
+      322,
+      16,
+      16
+    ],
+    "reference/mighta/walk/4": [
+      258,
+      322,
+      16,
+      16
+    ],
+    "reference/mighta/warning/0": [
+      322,
+      322,
+      17,
+      19
+    ],
+    "reference/mighta/warning/1": [
+      386,
+      322,
+      17,
+      19
+    ],
+    "reference/mighta/warning/2": [
+      450,
+      322,
+      17,
+      19
+    ],
+    "reference/monsta/angry/0": [
+      514,
+      322,
+      18,
+      17
+    ],
+    "reference/monsta/angry/1": [
+      578,
+      322,
+      18,
+      17
+    ],
+    "reference/monsta/bubble/0": [
+      642,
+      322,
+      17,
+      19
+    ],
+    "reference/monsta/bubble/1": [
+      706,
+      322,
+      17,
+      19
+    ],
+    "reference/monsta/bubble/2": [
+      770,
+      322,
+      17,
+      19
+    ],
+    "reference/monsta/dead/0": [
+      834,
+      322,
+      18,
+      18
+    ],
+    "reference/monsta/dead/1": [
+      898,
+      322,
+      17,
+      18
+    ],
+    "reference/monsta/dead/2": [
+      962,
+      322,
+      17,
+      17
+    ],
+    "reference/monsta/dead/3": [
+      1026,
+      322,
+      18,
+      17
+    ],
+    "reference/monsta/dead/4": [
+      1090,
+      322,
+      18,
+      17
+    ],
+    "reference/monsta/escape/0": [
+      1154,
+      322,
+      17,
+      19
+    ],
+    "reference/monsta/escape/1": [
+      1218,
+      322,
+      16,
+      18
+    ],
+    "reference/monsta/escape/2": [
+      1282,
+      322,
+      16,
+      19
+    ],
+    "reference/monsta/walk/0": [
+      1346,
+      322,
+      18,
+      17
+    ],
+    "reference/monsta/walk/1": [
+      1410,
+      322,
+      18,
+      17
+    ],
+    "reference/monsta/warning/0": [
+      1474,
+      322,
+      17,
+      19
+    ],
+    "reference/monsta/warning/1": [
+      1538,
+      322,
+      17,
+      19
+    ],
+    "reference/monsta/warning/2": [
+      1602,
+      322,
+      17,
+      19
+    ],
+    "reference/pop/0": [
+      1666,
+      322,
+      17,
+      19
+    ],
+    "reference/pulpul/angry/0": [
+      1730,
+      322,
+      18,
+      17
+    ],
+    "reference/pulpul/angry/1": [
+      1794,
+      322,
+      19,
+      17
+    ],
+    "reference/pulpul/angry/2": [
+      1858,
+      322,
+      18,
+      17
+    ],
+    "reference/pulpul/angry/3": [
+      1922,
+      322,
+      19,
+      17
+    ],
+    "reference/pulpul/bubble/0": [
+      1986,
+      322,
+      17,
+      19
+    ],
+    "reference/pulpul/bubble/1": [
+      2,
+      386,
+      17,
+      19
+    ],
+    "reference/pulpul/bubble/2": [
+      66,
+      386,
+      17,
+      19
+    ],
+    "reference/pulpul/dead/0": [
+      130,
+      386,
+      17,
+      16
+    ],
+    "reference/pulpul/dead/1": [
+      194,
+      386,
+      17,
+      17
+    ],
+    "reference/pulpul/dead/2": [
+      258,
+      386,
+      16,
+      17
+    ],
+    "reference/pulpul/dead/3": [
+      322,
+      386,
+      16,
+      18
+    ],
+    "reference/pulpul/escape/0": [
+      386,
+      386,
+      17,
+      19
+    ],
+    "reference/pulpul/escape/1": [
+      450,
+      386,
+      17,
+      18
+    ],
+    "reference/pulpul/escape/2": [
+      514,
+      386,
+      16,
+      19
+    ],
+    "reference/pulpul/walk/0": [
+      578,
+      386,
+      17,
+      17
+    ],
+    "reference/pulpul/walk/1": [
+      642,
+      386,
+      17,
+      16
+    ],
+    "reference/pulpul/walk/2": [
+      706,
+      386,
+      17,
+      17
+    ],
+    "reference/pulpul/walk/3": [
+      770,
+      386,
+      17,
+      17
+    ],
+    "reference/pulpul/warning/0": [
+      834,
+      386,
+      17,
+      19
+    ],
+    "reference/pulpul/warning/1": [
+      898,
+      386,
+      17,
+      19
+    ],
+    "reference/pulpul/warning/2": [
+      962,
+      386,
+      17,
+      19
+    ],
+    "reference/thunder-bubble/0": [
+      1026,
+      386,
+      15,
+      19
+    ],
+    "reference/thunder-bubble/1": [
+      1090,
+      386,
+      15,
+      19
+    ],
+    "reference/thunder-bubble/2": [
+      1154,
+      386,
+      15,
+      19
+    ],
+    "reference/thunder/0": [
+      1218,
+      386,
+      34,
+      58
+    ],
+    "reference/thunder/1": [
+      1282,
+      386,
+      34,
+      58
+    ],
+    "reference/thunder/2": [
+      1346,
+      386,
+      34,
+      58
+    ],
+    "reference/tiles/01": [
+      1410,
+      386,
+      16,
+      16
+    ],
+    "reference/tiles/02": [
+      1474,
+      386,
+      16,
+      16
+    ],
+    "reference/tiles/03": [
+      1538,
+      386,
+      16,
+      16
+    ],
+    "reference/tiles/04": [
+      1602,
+      386,
+      15,
+      15
+    ],
+    "reference/tiles/05": [
+      1666,
+      386,
+      16,
+      16
+    ],
+    "reference/tiles/06": [
+      1730,
+      386,
+      16,
+      16
+    ],
+    "reference/tiles/07": [
+      1794,
+      386,
+      16,
+      16
+    ],
+    "reference/tiles/08": [
+      1858,
+      386,
+      16,
+      16
+    ],
+    "reference/tiles/09": [
+      1922,
+      386,
+      16,
+      16
+    ],
+    "reference/tiles/10": [
+      1986,
+      386,
+      16,
+      16
+    ],
+    "reference/tiles/11": [
+      2,
+      450,
+      15,
+      15
+    ],
+    "reference/tiles/12": [
+      66,
+      450,
+      16,
+      16
+    ],
+    "reference/tiles/13": [
+      130,
+      450,
+      16,
+      16
+    ],
+    "reference/tiles/14": [
+      194,
+      450,
+      16,
+      16
+    ],
+    "reference/tiles/15": [
+      258,
+      450,
+      16,
+      16
+    ],
+    "reference/tiles/16": [
+      322,
+      450,
+      16,
+      16
+    ],
+    "reference/tiles/17": [
+      386,
+      450,
+      16,
+      16
+    ],
+    "reference/tiles/18": [
+      450,
+      450,
+      16,
+      16
+    ],
+    "reference/tiles/19": [
+      514,
+      450,
+      16,
+      16
+    ],
+    "reference/tiles/20": [
+      578,
+      450,
+      14,
+      14
+    ],
+    "reference/tiles/21": [
+      642,
+      450,
+      16,
+      16
+    ],
+    "reference/tiles/22": [
+      706,
+      450,
+      16,
+      16
+    ],
+    "reference/tiles/23": [
+      770,
+      450,
+      16,
+      16
+    ],
+    "reference/tiles/24": [
+      834,
+      450,
+      16,
+      16
+    ],
+    "reference/tiles/25": [
+      898,
+      450,
+      16,
+      16
+    ],
+    "reference/water-bubble/0": [
+      962,
+      450,
+      17,
+      19
+    ],
+    "reference/water-bubble/1": [
+      1026,
+      450,
+      17,
+      19
+    ],
+    "reference/water-bubble/2": [
+      1090,
+      450,
+      17,
+      19
+    ],
+    "reference/water/0": [
+      1154,
+      450,
+      8,
+      8
+    ],
+    "reference/zenchan/angry/0": [
+      1218,
+      450,
+      16,
+      18
+    ],
+    "reference/zenchan/angry/1": [
+      1282,
+      450,
+      16,
+      18
+    ],
+    "reference/zenchan/angry/2": [
+      1346,
+      450,
+      16,
+      19
+    ],
+    "reference/zenchan/angry/3": [
+      1410,
+      450,
+      16,
+      19
+    ],
+    "reference/zenchan/bubble/0": [
+      1474,
+      450,
+      17,
+      18
+    ],
+    "reference/zenchan/bubble/1": [
+      1538,
+      450,
+      17,
+      19
+    ],
+    "reference/zenchan/bubble/2": [
+      1602,
+      450,
+      17,
+      18
+    ],
+    "reference/zenchan/dead/0": [
+      1666,
+      450,
+      19,
+      17
+    ],
+    "reference/zenchan/dead/1": [
+      1730,
+      450,
+      16,
+      18
+    ],
+    "reference/zenchan/dead/2": [
+      1794,
+      450,
+      17,
+      16
+    ],
+    "reference/zenchan/dead/3": [
+      1858,
+      450,
+      16,
+      19
+    ],
+    "reference/zenchan/escape/0": [
+      1922,
+      450,
+      16,
+      19
+    ],
+    "reference/zenchan/escape/1": [
+      1986,
+      450,
+      16,
+      18
+    ],
+    "reference/zenchan/escape/2": [
+      2,
+      514,
+      16,
+      19
+    ],
+    "reference/zenchan/walk/0": [
+      66,
+      514,
+      16,
+      18
+    ],
+    "reference/zenchan/walk/1": [
+      130,
+      514,
+      16,
+      18
+    ],
+    "reference/zenchan/walk/2": [
+      194,
+      514,
+      17,
+      19
+    ],
+    "reference/zenchan/walk/3": [
+      258,
+      514,
+      16,
+      19
+    ],
+    "reference/zenchan/warning/0": [
+      322,
+      514,
+      17,
+      19
+    ],
+    "reference/zenchan/warning/1": [
+      386,
+      514,
+      17,
+      19
+    ],
+    "reference/zenchan/warning/2": [
+      450,
+      514,
+      17,
+      19
+    ],
+    "reference/logo": [
+      0,
+      640,
+      450,
+      324
+    ],
+    "solid/black": [
+      2040,
+      1020,
+      1,
+      1
+    ],
+    "solid/ink": [
+      2041,
+      1020,
+      1,
+      1
+    ],
+    "solid/panel": [
+      2042,
+      1020,
+      1,
+      1
+    ],
+    "derived/circle/0": [
+      512,
+      640,
+      20,
+      20
+    ],
+    "derived/circle/1": [
+      576,
+      640,
+      30,
+      30
+    ],
+    "derived/circle/2": [
+      640,
+      640,
+      40,
+      40
+    ],
+    "derived/circle/3": [
+      704,
+      640,
+      50,
+      50
+    ]
+  },
+  "sources": {
+    "banebou/angry/0.png": "b6a0a43095d26e1a299b1a9af4d07e8d3c07f0317fa111c1ae8bb70b95f51351",
+    "banebou/angry/1.png": "bb9154afdaa25ecdda3ca224e0685d3b7e2d773555edebfd0ff1f1d9e7336e9b",
+    "banebou/angry/2.png": "147ebf6bd11170dc3819441457941f507a8deb4fe12ea050c682727bc3e740c2",
+    "banebou/bubble/0.png": "62e532c800dbbdc490f8107da2f3aa8656240da21ff218965c95522cf12a9119",
+    "banebou/bubble/1.png": "4e15954afd7fe51a6c585803285196c78667a5500f3838abf53f5ba4c233e0c2",
+    "banebou/bubble/2.png": "29f29f9963bc6427ead2e0b928cb82e05befe628a3da0781286b0b6ad783d87c",
+    "banebou/dead/0.png": "bf0c28db0535f63a60d74268620f0408971a8ab75208abadcde68826f52f5e1b",
+    "banebou/dead/1.png": "494617ce2bce8ca34bcf79ab2c7b496192098fea377ccd44717e37e6823a78c2",
+    "banebou/dead/2.png": "357bc493c1df5b44b49c1436520af7574df230d6abea5f61369555092d66b169",
+    "banebou/dead/3.png": "0e3f3f4a35787a61dab92e44a5920ab4606f85d9f1ea42ce6d797eb457720fce",
+    "banebou/escape/0.png": "92f36d6d7df09711aa974a20d65fa8da2ac5e7470d5cc04d8c5879a206c2cc5d",
+    "banebou/escape/1.png": "128d25d19ee0f009b4a56a789c3c301536838c26038e42af7649f9a0b1c039e0",
+    "banebou/escape/2.png": "57d14bcf0cc781e590407afc6ac462a15dcaa9ebd675e8b7ccbb0959dad96b2a",
+    "banebou/walk/0.png": "4fe5782862c5271ee311b59ca9aa53ba03f722098b04aeac32e795398c89c7de",
+    "banebou/walk/1.png": "5d004e2b5c388f42a963fd056f70c3ea1b39e41843bcc909a95652d31980a91f",
+    "banebou/walk/2.png": "e6ca101ce961ffdae859e51d3d2342dca12d5d23d77c339b69d451744b099132",
+    "banebou/warning/0.png": "c74a6e77d61138eb7d4b8bd471bc8c820918c538c36109a21a1b64c5fafa2f7f",
+    "banebou/warning/1.png": "df503e8311aac16203973fa846f187c8a5a3372ee0dcf3b70dcf36b4a0417c77",
+    "banebou/warning/2.png": "f31859d70ad7769fcc1f5e00947e2ea6c2de9a1871d8a13f90df26117ff3631f",
+    "blue/dead/0.png": "aae6dca1bd6548b05bdadfa285104085e6f9a3a7f2975003b081872b29ea4f54",
+    "blue/dead/1.png": "f5ecae77bcd5277ec6a0b05c4c9b0e8f108ab702fb57c651c7f9df45b4d1d39d",
+    "blue/dead/2.png": "1865d2d6886d720fceefdc5a2966bea1b9f41e3e45cae01f6bf7afdcb71edf09",
+    "blue/dead/3.png": "8296338cece34c31fe9afa8cbc470aa80810b48022e82da63b77ad3b5d896cb5",
+    "blue/jump/0.png": "c0ea2bb89fc0941a3c998ec19ea475eb45118adc647378d626e19ba3908a7e12",
+    "blue/jump/1.png": "d17a7d4b266308b668dd77f6d1d3277371732c1db9c7d826bc3f2588282d62bc",
+    "blue/jump/2.png": "69f9a32e2e1f8fe7aa953c9beb648c61e9e7e0f6cf9e897de6ea50d4f8296eb7",
+    "blue/jump/3.png": "0ce1b9b7281b63d6043ef738f4ecc692694aa446e289a81d97675f16217f9811",
+    "blue/shoot/0.png": "3e52e6573492c4956c6c0b3d69c8277e60a1ee6c0f564f13d9622fff63299607",
+    "blue/shoot/1.png": "8c4a939df5156d8a8d287cc27ad2a46bbfc59b07918f28b5863254f236b92957",
+    "blue/shoot/2.png": "8b431ad318f64a5305be32d00c502aa9513b4db65bcd212906eb6e9d032fcc0f",
+    "blue/shoot/3.png": "d998a762323f5657124d4a875575957bb3ba3d8beaa17971cda215d166fa2559",
+    "blue/walk/0.png": "b26aae4ae0546fcd921d5e8d6fdfe4060bac9a31c0e9944c8a9b730231bfd6a3",
+    "blue/walk/1.png": "cf3fa0cc28810ff7dea676ddfa2222d316a0eda191ba0897e054069060dddf97",
+    "blue/walk/2.png": "0a6139a6d9345a6c5439931f6a72634d46792bf9ca9133abcfe5063cb4884aa6",
+    "blue/walk/3.png": "325f251b9907da4270d65283b260489bd47471bff284f5de398eb04f2bce269f",
+    "blue/walk/4.png": "00ced520b02ed680ebe043fec4fc1770d5e0537255f2d5048bbdd82b0ec7e19f",
+    "blue/walk/5.png": "380b6d3b4d1ebf1779d61c4287d44d3505c38c3e0985f9d86661bcf63811ecbf",
+    "blue/walk/6.png": "763e53425f0a10af661ed753a2cdefdcf94ae050691893ccfe6d769731e753ff",
+    "boulder/0.png": "791e654023fe9ac1e3c25f1945a2d2bdac9e4c5362830e15dcbb351a330f6556",
+    "boulder/1.png": "cdc9fb142c49d88b3abb749b955fd987496c0d5062a0d94ec03651492f28a0f8",
+    "boulder/2.png": "0afdf0c39a97fecb8c4bfe513a74d18ea604a46e0e2f98ffe34f143560d9f538",
+    "boulder/3.png": "8d339bc883cdb317406d55c40f68b5f7634030567e97851d279f764329a297cf",
+    "bubble-warning/0.png": "ce8152370be1f595b0d311f28d852e82ea5c1701e4e139964fc71c4012972d88",
+    "bubble-warning/1.png": "dd95acce415acae47be5bb516c5def72a5128e9e6b9607e29720f1c9c88f6fdd",
+    "bubble/0.png": "60b2171abd5a18fdf6ebed3b20eb8026cec6a441e0d36a576c503eca5d56fd7a",
+    "bubble/1.png": "938170be72d5a83a754d6c2cb791b3491e98280562ab232ee8a668c0276d95e5",
+    "bubble/2.png": "72c17ed8fcf2677362db046bf293769f0f5d4142b3e5aa259077dde504dda35d",
+    "bubble/3.png": "57ffbac061503afca29e16febe8e8b419f34e838112b2fc64d50c11c6848ab72",
+    "fire-bubble/0.png": "9b0dd2aa5479f88bdf707e7eb6163dfb0bf12b27386cc5cd488fa84c0d4f3774",
+    "fire-bubble/1.png": "301927e84adca22780b65708eadd7cbbe2f11e86fa06b399316762ee441a0b0d",
+    "fire-bubble/2.png": "f760f72e4d09eea8fdb6fe41f84ff9f86a5f1baf4c68469b9fdf7be5e82288e0",
+    "fire/0.png": "9319d3e27d8522501b2b6e92be427e25b5f818b81d12c2dca0779fdf22e39370",
+    "fire/1.png": "73ba39ad8369217adb8c57de25d807c80304483f5b7afa828c45a0c08188a88b",
+    "fire/2.png": "54be12642ea5826be9b0bb92f64904713196ef5048f1eaeba127389d1d07c5d0",
+    "flame/0.png": "581884b515a13178ac743bb7e99357b6e24ed497644b86759f86ef643e9856cb",
+    "flame/1.png": "908d4f900f1e8dcfdf83aab4a4acf6e5ae5f0720a0f7c438b483008b68105baa",
+    "flame/2.png": "62b35826cb6784694383fc3515a1bd9684f801ee5951c0dbc616aff825d92109",
+    "flame/3.png": "c28083a09868aac22b3a79b7288fa7f852f34d0153bd186a73dc239db29aaa62",
+    "flame/4.png": "087dc6269b7f99feffba892cfaedde9e16e0c5347552b55ecd476279f07042c7",
+    "flame/5.png": "f0d5642be74623b6e0cb19d81854b722648f914f44e47163a79c2e50910e9dc1",
+    "food/1/0.png": "5d0afb0523919678745369f84dc3a38d9a52df38c9f9ecf077b9fbc22fab29ae",
+    "food/10/0.png": "6967483f20077770444ffe66445bfcad646445374eeecdda4e0c7b4beed7dc93",
+    "food/11/0.png": "582f52df3f610bb47d6e7829bb5f9a3ba5146402277420ed07e5c5a69f874bde",
+    "food/12/0.png": "dd2b3767bd34c4b72b4905dfceb25340ef632f2769cf61c651259fdb27dd0ac1",
+    "food/13/0.png": "dc0e00d943a7748a687ccb1a1cdfbfe6a3a170d03eac31b1e7290a1734cbdc31",
+    "food/14/0.png": "76f219201acf388af5ad72718e5ee351e86f57e69d662785cc8480df253e5407",
+    "food/15/0.png": "5ee7bc364c6c6c348067a0824ee20a905beae0711e05af0230b5aa445c8aacb2",
+    "food/16/0.png": "fef25adfb693643a278bbca51472f2788d53079fa70c79ea756b9b60957869df",
+    "food/17/0.png": "0505b06cfd6f1e2dbb9c00de0aa2768d4c8df8d214a22499dbf6a69b2d3fd87c",
+    "food/18/0.png": "a5b5896c96c18cbfd1e98de1b1db4594901c5e3ea2a83238c6bb8dac4600e4e9",
+    "food/19/0.png": "01e0e5c75b228b4ab37a703be88687a581a98f80272cbed9c68ad0598dc807bf",
+    "food/2/0.png": "4c20d667d7c5150b9d1a2bf3f5636059e2fb6523c5b9997d0aca5ba1b770f81a",
+    "food/20/0.png": "ff00e1f4ac8cbef6f1aed3fda0c12b5508bc406eabce8e9d68b6a0c17c8cbb21",
+    "food/21/0.png": "2fbcda715a199481b2f2ba42bb7ce188275cddb47cee7131411ad3483651c8a9",
+    "food/22/0.png": "1f5aabcbc6808770011140655b0a975c9cd5f36bed5d55307f5579d9ee0e8f51",
+    "food/23/0.png": "f5483342770d706d7bc11eb84aff0399bda84e9c86509910647ab7014fa2929f",
+    "food/24/0.png": "e01f530123dd1695e326ee5f42301672bdc11d24b754175265a418e0c7cd05a2",
+    "food/25/0.png": "23088d82a70c332c12d768e33716a18aa6b5d03010a52846a9bbf1309007da66",
+    "food/3/0.png": "1df76ea822bd02fb8a566d1d909f85115855ee1dd51c25bd7174fd7b5517cd2c",
+    "food/4/0.png": "f7983fbb05abaf161337aefa611f9fbc7fa7fb4e5ab6cb5955d945393fc8fd41",
+    "food/5/0.png": "4817111125ce9344bb6bbb52ce65b902784cf181f7ca3ae945564240eb64ef2f",
+    "food/6/0.png": "77da4fd551929cec84b637f8ea24c31925100107fcd1fe1c6156dd92bbdd25e7",
+    "food/7/0.png": "15aeab2e2844074bf52c9981a8fba75e009b66d805d296b236177ea9f0c5235d",
+    "food/8/0.png": "924e6d7dbeb1ae57d3d1cba2ffc6cfb0fbdac76c60213b394526bd96ab7f84dc",
+    "food/9/0.png": "51ce53e4aaa34638f4b16cf5e42c5ebc1bb6a891566236cb73899a362c1b4ca8",
+    "green/dead/0.png": "f99870004eee4cb8ea14fbd73dabe6e9d527cd738160ff48c90db66f280412ae",
+    "green/dead/1.png": "e59e48580ba10d83f48c344a4a19b44cceefc8625a966588540c5b06c79f0444",
+    "green/dead/2.png": "edb6d679267ea677cb7924f252ecb685f261c79ab9fb02dc1480d1d9eccf0943",
+    "green/dead/3.png": "5bcd245abeb3fb3460f7b62c1d1846cf7989c27bf85935039c3cd63a74c11926",
+    "green/jump/0.png": "299c3a7a3ab54d44afb18e7e5c99cfdd060bd61923901e80de4ec9969605df13",
+    "green/jump/1.png": "e2b440ad3154b0a190fdfb8fd4896568ad8f45176097241406807e45882cf1a8",
+    "green/jump/2.png": "5df3fe8130918d695b5b1e49abacb75f1c32179ec6ab502326c94baf53a46761",
+    "green/jump/3.png": "7d7781f1eca3b4ac575deb8c9910d8af716c143b72fe266471637ba02aedb4a3",
+    "green/shoot/0.png": "1e1bb30ae24f86d8b642f20829d12c14f25d6b2a586fbf8826fc013d7bdbe587",
+    "green/shoot/1.png": "bdeec2e8aa9af04e1c0cf48d0d83347584f786e70b9d4fcc80054a15e6ac4462",
+    "green/shoot/2.png": "699880380048efa80b77649c1c3e89a71bf4925d38cdd87dcd5e2fab4c0bb2e1",
+    "green/shoot/3.png": "6e2952ad6fa43b8dc648880049542d7bf0f4e432aadbf5a2082522ca196fe869",
+    "green/walk/0.png": "461a711d47295bb33b3c7d227b76040349b5d5933551ec7ddd75c18a7135e0dc",
+    "green/walk/1.png": "098b66a43ed732e7cd0ff68d6b126691db7e7bad3728db456bb4a78c649cb738",
+    "green/walk/2.png": "6df287949947bab740b5ab2a4fe9741181a258e2b6bb1497582e0b6b60c56107",
+    "green/walk/3.png": "9353d400d42cee920679795c2a850430efbe5ac94a2c193a9f8bb3f01f472f6b",
+    "green/walk/4.png": "25b4b8e70d6a1782604281f40a9788fec9c55f930d7c885d21258f35b1db1248",
+    "green/walk/5.png": "c48005cbaf168c3289e473d738006b7f335ab501559095ff5057cb85fb0414ac",
+    "green/walk/6.png": "fdcabf2563bb0d75ffcf8f3c9c88bbf0137eb70623ef98a830a9d21a00a53425",
+    "invader/angry/0.png": "4d25237fdec3cece78ccd64f59324fa9ebab317e3174cd30cf2bf0852da54cb0",
+    "invader/angry/1.png": "053f0e18d327dcd3a57f932a4f6d5265a5c98c9b3f7fcc680477467abf77c48f",
+    "invader/bubble/0.png": "bae3ac45007f24c33e4c353f01e79ee6e9921b107a583ee521e0c9e58c58d64c",
+    "invader/bubble/1.png": "183a739d87f67bdbb560bf7de5217a552af979f30e19c64f885afa2f146a092e",
+    "invader/bubble/2.png": "704e07d5a2b9e55dcc842280b25be9ee5a7607548ac9ec8d078dfee17978b260",
+    "invader/dead/0.png": "13c23a23bdca19583037269ca67a8a2e2e40c5b371753b4f1a8a3d4ddb03d410",
+    "invader/dead/1.png": "82d5bf9d9abaa42c83da2913bceda23247bae00f0a9d9b390865efe8177d8e1d",
+    "invader/dead/2.png": "7ba159c9f8a2b10257121f6c59ccf8c3592dc02abdb0d04b37b63301697e9677",
+    "invader/dead/3.png": "3e37057ea7e83dee3e1446cf0be104a74bd074b1dc91416c655763c5f5179ae5",
+    "invader/escape/0.png": "51821c0d79abf6569feb5ee3bbab203d445f1c1f5a346a8b8e7e20914451af2b",
+    "invader/escape/1.png": "02c48cba77ee04358d9eb866589ce3954ae67446e4bb3ed53cf0c88e71fe39d2",
+    "invader/escape/2.png": "518d3b0b4056ebea6e7bd1b7931fb3cf0fa1b550e0cdb2e665cd9fa23ad709dd",
+    "invader/walk/0.png": "8070cd54015dd199af497a1817232ee6f88730860d5e8798b57ad8aedba8df47",
+    "invader/walk/1.png": "70cc9881fb0b2cd729107f4ff1ebee5f3b207c747002bd9fc26990061dbde705",
+    "invader/warning/0.png": "8230c716010d1a430dd6e7e04c4d0b66727daee1c9cb64e26b0bb65927ab9187",
+    "invader/warning/1.png": "125433da826b769b548e2426ad9520e3333e7a7d2d52cb000d7d32c19695d223",
+    "invader/warning/2.png": "9912263acc35fd0197ba973072ef0af06293ce72cdbf04b3a2b16e544e5f081a",
+    "items/amethyst_ring.png": "92327c0d2d364b963a1e7950e0c0f800528259325e6d696d9e8535d3f638aa2b",
+    "items/blue_candy.png": "0a71ce5d8ea6e97602497ce583e8f01bdaeffa00c6b0f12ee8b542aa480738b2",
+    "items/clock.png": "558f74393ad0b95912b44512611719041fbb6477550631fe01e8942a5b70df39",
+    "items/crystal_ring.png": "98497c6f553074d003dc22d4fd9b4bd7e301898645a5dae747da68344d623bbb",
+    "items/dynamite.png": "cb0f0283bc9b08875f3fddb733f6d510b91624ff08646a34276c44ce6bc94d39",
+    "items/orange_parasol.png": "6d848cd243c908883c4ff3b9aa3ec5d4c8a3369dca56107af001e200acfa4bba",
+    "items/pink_candy.png": "f9d0a8e2437e2bbb62a58f5b480b2cfbe5df38449c7d928a297633e1d33de24f",
+    "items/purple_parasol.png": "eb7a24a9f998f29f55d8fd31eb70ecdea66b78ca65600aa86e05dff282eaca7a",
+    "items/red_parasol.png": "b0d325d1b714e8bc706be135b3ebfdca3a28d9247359d51454cf670d89c3024f",
+    "items/ruby_ring.png": "f03763933ae7a735569767f358eabbd3a01c91d3e57b582721a963aaff6ab08b",
+    "items/shoes.png": "4a916cd5ebeddd3e63c97ed0b9d1fcc0280056c1a7d9ba0b5355f064bbd3269a",
+    "items/yellow_candy.png": "492357265b6fcc1ac079d6d1e985defeea8466c40b8dce7924d958353eb419f3",
+    "laser/0.png": "c8e304065bf1a287486bdbb03a147e712a7617f58a7a34101cfe75707875eec2",
+    "laser/1.png": "d22015deb683a29d6ea2c611a302d6ad1b1391e8823f1f271ef7f64fcdaaf2ab",
+    "mighta/angry/0.png": "22891de57577a01052c673aead04d6cf82bcfc70b0a854f38875ca22e097266a",
+    "mighta/angry/1.png": "37e8af2150332875e63c89504195f0672d6effdf8e861f38004ed05eba0264d6",
+    "mighta/angry/2.png": "c58ff2f8b019015c4855d80428c81b68074a2cebd90bb774579bf92440f9e162",
+    "mighta/angry/3.png": "0ec0b422c01eb391aa2fe6f896f53290a1bb3190e64cbc62b1868125fcbe67a0",
+    "mighta/angry/4.png": "c4e2d9650443558d4b04c604a5ee52ce5c57ff12daba695a3e481fbacaeb71ac",
+    "mighta/bubble/0.png": "ce4b308c541f09e2ee109cfd95fd35fc1b7303e1d61dc0741315c284f545189c",
+    "mighta/bubble/1.png": "1959267957dc476390e8f37df808443a74fa4c8366bf2ea05fce513faa1580ec",
+    "mighta/bubble/2.png": "f14a3e097c544987b400490a92216e2c88b8637ce60b07805bd99d010249658a",
+    "mighta/dead/0.png": "1b72d24a902b68009c245ed63c9198b1c677c5417b2934be32e266faac26f23b",
+    "mighta/dead/1.png": "54d999d97b1f0449b42e35b4c1bf4d336dbea51cdfbbba247951e974182d82b5",
+    "mighta/dead/2.png": "1c3f679bef45cdb5815d11b7379822c61d1fc5590ef6e354e8652fa663e32e17",
+    "mighta/dead/3.png": "e363c0fbde5be704bd06e77cd1ea3af60b46c10e7cb644a81b606b2204803668",
+    "mighta/escape/0.png": "a015515c1b56f634255c9fc0a0271edc2880060a604cf8b7337528f18fde234d",
+    "mighta/escape/1.png": "b9a7ce8d166e7983330f9fa357807500e854ec09855c7e561747612072ba9a32",
+    "mighta/escape/2.png": "faa43cfc05c3ccb24e869e2870ed48162937e8e01403ce33ee737a04ab0639bf",
+    "mighta/shoot-angry/0.png": "a4f0597ade1a20382d679cde07a14d54ef53609f1c4eb266fefb7a6a27764b13",
+    "mighta/shoot-angry/1.png": "a00198e17d11f74b2b2a6f89ae8496f895828a78289589b73fc0fde7842d2564",
+    "mighta/shoot-angry/2.png": "b3038a981259bf63a6501e4868ede14e215b1bc8ff36f8401487ea443affd553",
+    "mighta/shoot-angry/3.png": "a6b6a9084fa5c65a45d5183932b8a0214cd064e9c999fd032ae8b93765af18cb",
+    "mighta/shoot-angry/4.png": "0f421da957b5596e58d25eb96dc77dc95b5bdf9e8c0387864eb720a4c1ddfd58",
+    "mighta/shoot/0.png": "d6cf499b58dc9e92a891af3144d3d1cfb1a1efc40584e76a2b59b32e241c0cea",
+    "mighta/shoot/1.png": "d4c44f15a1a3e3958536c36b0052e3b8d07546fd7b3f45dfe03c94306feda61d",
+    "mighta/shoot/2.png": "10c24bebc6e76525f64f202b14b4b0615b45b93ef8573673bbc7d3e428801e90",
+    "mighta/shoot/3.png": "d5bea0b7fc7cde9f8dde17e0f12afa9d437638b145bb3bf5201ebfe6984f1ad7",
+    "mighta/shoot/4.png": "bae6ecf4215ea1e23be7381e0811dc942224087dd399f37ee2d511dcc95f7323",
+    "mighta/walk/0.png": "748917d5314c6e18927248f6688a0454852874e20a34e0fe0643196b47f4ba84",
+    "mighta/walk/1.png": "2332c186fc74477ab94afedc67a995408b4768c984ac58c0eb591e844d4a7666",
+    "mighta/walk/2.png": "c1f5599616d1bb036bc7aaeaca7d4f2b527d3974a6b6816ac8ec4b8cdb4eb3b9",
+    "mighta/walk/3.png": "d076538ed5a191822da3c044675de0abd3abe24853d7c57f4ee3913c8e7feb1f",
+    "mighta/walk/4.png": "4ca6b4bfcf6b22b2898a14570a2acbf89d4dc592f04f3dd39fee2329eb2db09a",
+    "mighta/warning/0.png": "cba3ea9a1829da4876076e66713e48b57695cf83542b1cffee0a43164fe1a02d",
+    "mighta/warning/1.png": "40be062d92e5210e1a11d4b0f43fef68d118d8a43656d65c9908d7be6771c1d6",
+    "mighta/warning/2.png": "cb2f6e9d16ae61b90e44b71cffe160d24568a376ab1898d4a3184e680e82231e",
+    "monsta/angry/0.png": "959faa12fa1b66830b26e80759ca3d01c7434c36e395eb7c9968385b2f2e9ac8",
+    "monsta/angry/1.png": "11382774350284b366ea383111a7fd9bc7a6247631d1ffda532ab6222ec8ef0d",
+    "monsta/bubble/0.png": "29a8135c3f03a06f5ea445156ed91de217948c3cbfa04769ffc6e17fc548ac8a",
+    "monsta/bubble/1.png": "b4b900ab5fc6bd69d7691623adad981fd066a6c3a0104ec49ad3e72ada36a1a4",
+    "monsta/bubble/2.png": "cb1927b1eb3aabbedf39d4bae220722fc31241d09e551094bd3a4c8db46832db",
+    "monsta/dead/0.png": "a565bea194c5b8710e54285075b1360f93f4f0701fb09d608b2f9039711cb5c7",
+    "monsta/dead/1.png": "5740202bb294a8739e38ff5ee803631af22e1bea54e9387597ff426a201c4b4b",
+    "monsta/dead/2.png": "38aa1cdf55f75611bc2ff988d6dcd1df361e64afa60255d54838d325015afb90",
+    "monsta/dead/3.png": "a9fb3addcfec1d68f8a52891fc1981e97961dfb4f7d4fddfe3f00a20558c3fa0",
+    "monsta/dead/4.png": "e2fde766b4743cf860d4ab27ba333816eb5d6b53ba882d7685737ff77e44f119",
+    "monsta/escape/0.png": "15bd42e9b05e5396100b47967d87a3a4ab824b34eaf491dcac82cdea5c57ee4c",
+    "monsta/escape/1.png": "dbd8a4e53e37b7a939339973e0d30583908c9174de4cebee71244eed4ff2dfe8",
+    "monsta/escape/2.png": "e33bb3adfc3e48a43168b212660798252cdfc8c4f5a4f44d57a85ed48be72ac8",
+    "monsta/walk/0.png": "71fe08c83ee7304ad2dc1f9c10d137586d7b97c80d9fb9de1ff93c2b08033a74",
+    "monsta/walk/1.png": "d420a3963b52db85af353f49c326665277f20dbf82223999baedcb6a0dbf5e62",
+    "monsta/warning/0.png": "e76b03e978e6d5b82e03ce6e6d68f9328be5a83c239496c305821dd2c71cd1ec",
+    "monsta/warning/1.png": "06dfe77fe8fe45319c9011388a097eebdd83a8630d4b3ace1e3966488b8f9d16",
+    "monsta/warning/2.png": "ee4148e9f0fa1db3a9cc07819d66da1c8784b9bd00e77136d73897c1a65c3ca7",
+    "pop/0.png": "8a5d5a4de01d73824048309dc174cf0f0bb2c406beecd0e8a02731b4fd0886e2",
+    "pulpul/angry/0.png": "1d4c6755e9f040454f751db2ca46582e5660df3e6e9ebb4d157cba7455e1074f",
+    "pulpul/angry/1.png": "0ec2890ae07cfbd3134ffebb66191381b9ea290245c00fc84d9041ba289cd37f",
+    "pulpul/angry/2.png": "a00638cedba32635dbde5d07c534c4f1772b652c19299ece53eb8641c7526b06",
+    "pulpul/angry/3.png": "e894cc2887e70debeb08f439ffa140156719ffe529fd75fbca02d5460986e6d7",
+    "pulpul/bubble/0.png": "89e7cf2709d8fef613876381d1f1856f64f034ffc3334b5a992d2b46c325c3b5",
+    "pulpul/bubble/1.png": "14ec12bedb5ced54c9e43e9df458181607b22633b52b4fddc1e0f85557e248f0",
+    "pulpul/bubble/2.png": "cbe29eca6b47f938372f5e4aa68b1d038d8e9aff6d017e97efe0edff08482b0e",
+    "pulpul/dead/0.png": "ed504d01d439bbf2ff7b76ba078a21ba9034fa9e81bf8ce1f045989fcaa86661",
+    "pulpul/dead/1.png": "91c0bc2040625cc470495d561e524e713164748d8c605e768e6d4d1384adfe51",
+    "pulpul/dead/2.png": "6717b02982e9acc08fd1b3531f15716a9a30610af62b332cae126ad82bc5845a",
+    "pulpul/dead/3.png": "c9145e58019643d3b08b09e0f6dbda4693219740bb90a5ba99ca6c3a06941e84",
+    "pulpul/escape/0.png": "f0e07df6564383d8da04c40d79b647e386abb8e56161049e16f8d3591ecf6b0d",
+    "pulpul/escape/1.png": "5135f2b2667d9498ecf12b61980a80d662b20b996fc2917da72d30f7c6d79368",
+    "pulpul/escape/2.png": "58330ddb885670c8f98b93fb2d5d387cb0897690c6fdd2969051329b69c15513",
+    "pulpul/walk/0.png": "1dd4ed6f4f175e81f7ed4610d3873a7af70706fc0912865d3dc235767b9f2fd4",
+    "pulpul/walk/1.png": "8a3a7bf38d3d4f0295145a244b1cf8476aad6f9f09537fab7bbde7ee5149c1ca",
+    "pulpul/walk/2.png": "d3436af7af248516a7645789aa6e766530285f40c010f53e8fa15d63c680ef73",
+    "pulpul/walk/3.png": "cd03653e21a0e27edcaee1f12154f86aac5709804fb8bba2c6f99ab1f020d083",
+    "pulpul/warning/0.png": "b2773ba1b8438ae01f6406f7738368310bebe9d82afa53d4068f340aa2b2b20e",
+    "pulpul/warning/1.png": "f08a36c005be96ac82c980eca538439a52ebe129c3989135a72cde69f4927c4e",
+    "pulpul/warning/2.png": "f7accaf06977b10ca73d7f75eaecf28c6a5151dd4b7869ba7bcfee465e7e0c65",
+    "thunder-bubble/0.png": "12474f75985d5f9423d29bc4e9f2143cbc536d0280fc8b751a4e7981fbb11727",
+    "thunder-bubble/1.png": "bd85cc95e697bf23b04cdd2fbc853d1ae43f972c7c1326bf344fe897815cf541",
+    "thunder-bubble/2.png": "024f8cda3b4cf9ff267dd8ac2b380bf852bd08d65f7d0e8a99e5f53d0f094987",
+    "thunder/0.png": "15c05cd86948b2f177a27481a508ac799dc73b6dc8a97b67f8c109b2e6afc229",
+    "thunder/1.png": "f1bfcd78e168343bd1077d1ab05a398a3463a9449e91afce061eb5af34adb099",
+    "thunder/2.png": "4bbc1aec630cad94c26c433d4f8cfd2a11241c46ffd9b0a71aec7ad48544441a",
+    "tiles/01.png": "facd6635a347ecc0821e4df8da8c0eeeabf9e275d4251971c3ad93fc3a1e4acb",
+    "tiles/02.png": "ee15faf94a7f3881b7121cb2a17860115867474ea17a7a7752d59a0d9e0e30f7",
+    "tiles/03.png": "b5b7a528802e647ce741639375d885fe20faaa49db8d18b6139b7b673b039911",
+    "tiles/04.png": "5777a47257f76e4f18bcc97af31f3185fa91c18144c5e775510da43db8e842e6",
+    "tiles/05.png": "cbe3a7912bae00c99671f4af447c7ec3d131b2febc322ef22f253d0c2f571616",
+    "tiles/06.png": "79fc3d51b77f8dcff95dfc91a89083044abe8c73d92dcca151822de63d5b3c9c",
+    "tiles/07.png": "673944821d5bfc54c67cf5e2ae3aa9d6616dd9f0f01e63aa9bcd0e4c55160bad",
+    "tiles/08.png": "66a9c1b68e8d42a97db1a7abdd6914083dcbec7389ef749ba7ffd501e095928c",
+    "tiles/09.png": "5ec54b7174bdd6276bcdb75cc7bf72bc718959c0a8109e70ad7e66259df2f3cc",
+    "tiles/10.png": "8513b46894ef1728a55f401fef698ad6416a5a1c316314d24226c0293a3aa8f3",
+    "tiles/11.png": "07346aca5e693ed3ea59b07179df0875715d39c9fc17fdfeebf4e237ca85e173",
+    "tiles/12.png": "c14970fe08b200b0b5db9777e49b37a1a8afb3fa7bfa24eccd6f8a2d46637c5e",
+    "tiles/13.png": "f97aa2d99075f47ace36efe58551ed5993e4418ba9bed3c9d976a345934a1627",
+    "tiles/14.png": "3fe802a1ab9d40347aeb150db8f9c705ad8d1c5ca320d30cd961aa065cfb090d",
+    "tiles/15.png": "f4347c51b1ae24b447200d3a230853d609ad40bd5599a3455bb5eecf0e1fb902",
+    "tiles/16.png": "5687f6bcf1832bcaf842ae983c39656dc95459fce93b235abbb43915d80e5cba",
+    "tiles/17.png": "2eca6fb13a985be41fe21e8fdae8901a3595c1205cd77135357644e4e75daa7c",
+    "tiles/18.png": "54381b56b31d15026ac744c359f4210400b98a6d2594f32eb65b3f310f34f280",
+    "tiles/19.png": "c2a6c6f9bef8b8eb224576ab56d49a2e17a01d38c570d6ac2f42666f5c7c501e",
+    "tiles/20.png": "15544f99cae80330a5e5019489532ca946fb3cc9ce4224c59f94f61ff320f8cb",
+    "tiles/21.png": "ad7ff06590211a0cdba59acfbe1812ce746d9d09ae3673f64e41e5cff915b488",
+    "tiles/22.png": "88e917bad90ddca66476b2666b24d648811e5de6ca495c1597a0f71937b1ad3d",
+    "tiles/23.png": "f44d4103748b0876d4885c244b316c438f9a7cb956bf0a4838c482a40a175048",
+    "tiles/24.png": "6b587c0b21629a0e828a1242efa206942b09609db44559d7837d904f3b2fcee1",
+    "tiles/25.png": "02914bafb681f49137cce99ecf85471780f3d5975fd7db522db3e87c05dfdeab",
+    "water-bubble/0.png": "36d9c9bbb661bee482f3b603244731aee51ab1173a04e174996d13ae608a4902",
+    "water-bubble/1.png": "e0aa58a9f28f64f4aaab3f7a3171a059371da703ea0a13453d6031fe7d13aa03",
+    "water-bubble/2.png": "0796ab1eae48b4b694ae5d5e4f4806872bde40b1cc7e0017e6c4771491c411b7",
+    "water/0.png": "05f4aab92d13fb7d9e3714fd0361d31632e4c91dc0b41ff3cc01f464560f88ec",
+    "zenchan/angry/0.png": "cfe312317d199b985c2ea02646be928459c448bb5a3385f2ebc2e19cad854d54",
+    "zenchan/angry/1.png": "4fef416018cbed4fa00df904ff585ad930452b1fbe48f3a4832870458fedc971",
+    "zenchan/angry/2.png": "744e545450fee6365801e39849d9b2ddfd40c37729d222c5d28d4125e01c1e70",
+    "zenchan/angry/3.png": "d0cf13df74fdb46b82237fc31f4cf27671e6a70e669d95a029b18559e5ecfb19",
+    "zenchan/bubble/0.png": "74988b0cf1303bc72b38541dd434d593b74ab92b56c3af8de85cf4195ca45462",
+    "zenchan/bubble/1.png": "36cada9344374c50859f6382e015d3015db3d1835506f8fe9c94fe34c96e25e4",
+    "zenchan/bubble/2.png": "0824ada7ec8f572d160721e408ef056b902dc8fca70d1ba8e288ed6e36405ad6",
+    "zenchan/dead/0.png": "7a24d9c9ea8398afcf6aa17e6fb8e7ec2f46b68cb8ec1a908288af9c7dbe3b89",
+    "zenchan/dead/1.png": "e1a25d20562bfec2620b4bb4411185a20b2417ae2dcca70b16412526f11424b0",
+    "zenchan/dead/2.png": "5e465a96c0a84f6f6aec4b02c1625cf4a2d485f321e692c9f4b72c7859781bcd",
+    "zenchan/dead/3.png": "e630c6db7560068498b9c26331de9e0a11dd75d6d641e7a328e434a478d08ff7",
+    "zenchan/escape/0.png": "1b68157601af824d91996fe10417464074b3af97f87f03f78f3d7c184bf37b16",
+    "zenchan/escape/1.png": "ec3cff0450fa1b3be6093ae7f6dcd18349c9ca4f720f7d7969675750d9a6520f",
+    "zenchan/escape/2.png": "271d375bc800222d7de4b8922a19797305bb9e8cc6f07310df1582b35c22a351",
+    "zenchan/walk/0.png": "30e1f7b1cf998561ac6c489efe0590654a07eec44c4144987b1948dc86646902",
+    "zenchan/walk/1.png": "63a4714dd98f7c9d3afd15eb133cd6d29a3941808a45d4e223a2a96ba3726b0e",
+    "zenchan/walk/2.png": "1185832b4bb96c284e5eafcf78b3ac6fa9bec269d073d681016fc01b8255a997",
+    "zenchan/walk/3.png": "3ace068e3efc3987dc341347d6f701e812d31841e0a3cce9ea2d89f54300efaf",
+    "zenchan/warning/0.png": "a8d87d11c88fed11a34fa7ad496e1644649ba88033ea2852ceba2bd7e2a056fc",
+    "zenchan/warning/1.png": "b7d7e6eade36192f9e8c76670d3f3c3761eb89ac42bde65489736c1c4bc7bc27",
+    "zenchan/warning/2.png": "1b30674bc85e1d26e8c9f66ca80de10741d015a67adae1eee29ad5c3c8fde865",
+    "logo.png": "6ef3ae0a9f2a5184e0c7d9a689e500326f5f188af4da6aace27b5bd9f064533b",
+    "derived/circle/0": "ff61cb6307d37f91acd483c45cfef73926427661554f865b80175f568479237a",
+    "derived/circle/1": "f139b58f27b0e53bc48003d999e5d5eb410baa30fac945a186e5caff46e18560",
+    "derived/circle/2": "42c323c9d61c5dc2bc7db1107ccf8e382ae7fdc5cbd218a12cdd0740bc60a751",
+    "derived/circle/3": "e1f661432805beffebaec514502a8a52ead9583773b3fa17619af1f760023591"
+  }
+}

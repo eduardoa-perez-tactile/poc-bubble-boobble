@@ -51,7 +51,8 @@
       "style": {
         "size": 32,
         "w": 36,
-        "h": 36
+        "h": 36,
+        "hide": true
       },
       "property": "avatar"
     },

@@ -5,7 +5,7 @@
     {
       "name": "Camera",
       "id": "camera",
-      "Camera": { "clearColor": "#080c1bff", "orthoSize": 360 },
+      "Camera": { "clearColor": "#000000ff", "orthoSize": 360 },
       "LocalTransform": { "position": [384, 360, 0] }
     },
     {
@@ -13,10 +13,16 @@
       "id": "visuals",
       "ArcadeVisual": {},
       "LocalTransform": {},
+      "MeshRenderer": {
+        "mesh": "",
+        "material": "materials/pixel-ordered.mat.json",
+        "castShadows": false,
+        "receiveShadows": false
+      },
       "Shape": { "visible": false },
       "Sprite": { "visible": false },
       "Text2D": { "font": "reference/arcade", "visible": false },
-      "VisualOffset": {}
+      "VisualOffset": { "scale": [0, 0, 0] }
     }
   ]
 }

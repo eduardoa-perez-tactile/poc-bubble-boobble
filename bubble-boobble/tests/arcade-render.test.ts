@@ -49,7 +49,7 @@ for (const [width, height] of [
         y: 0,
       });
       await step(2);
-      await cheat(ResetArcade, { round: 1, seed: 42, players: 1, ready: true });
+      await cheat(ResetArcade, { round: 1, seed: 1, players: 1, ready: true });
       await step(2);
       expect(world.resource(WorldView).designAspect).toBeCloseTo(768 / 720, 5);
       const [left, top] = input.worldToScreen([0, 720]);
@@ -58,6 +58,12 @@ for (const [width, height] of [
       expect(top).toBeGreaterThanOrEqual(-0.01);
       expect(right).toBeLessThanOrEqual(width + 0.01);
       expect(bottom).toBeLessThanOrEqual(height + 0.01);
+      if (width !== 768 || height !== 720) {
+        const outside: [number, number] = width > height ? [20, 360] : [320, 20];
+        const rgba = render.probe({ width, height, points: [outside] }).points[0]!.rgba;
+        expect(rgba.slice(0, 3)).toEqual([0, 0, 0]);
+        expect(rgba[3]).toBe(255);
+      }
       // HUD must follow the same centered reference canvas as the world.
       // Board containment alone would miss a HUD stranded at viewport top-left.
       const scale = (right - left) / 768;
@@ -93,6 +99,47 @@ renderTest(
     });
     await step(3);
     render.expectScreenshot("editor", { width: 768, height: 720 });
+  },
+  { scene },
+);
+
+renderTest(
+  "arcade reference encoded overlays",
+  async ({ input, step, render, cheat }) => {
+    input.view(768, 720, 1);
+    await step(2);
+    await cheat(ResetArcade, { round: 1, seed: 1, players: 1, ready: true });
+    await step(1);
+    const points: [number, number][] = [[1, 49], [5, 49], [200, 280]];
+    const ready = render.probe({ width: 768, height: 720, points });
+    expect(ready.points[0]!.rgba.slice(0, 3)).toEqual([244, 106, 252]);
+    expect(ready.points[1]!.rgba.slice(0, 3)).toEqual([252, 194, 252]);
+    // Source banner uses premultiplied color.RGBA{8,12,27,230} over black.
+    expect(ready.points[2]!.rgba.slice(0, 3)).toEqual([8, 12, 27]);
+    input.emit(DesktopIntent, { action: "pause" });
+    await step(1);
+    const paused = render.probe({ width: 768, height: 720, points });
+    expect(paused.points[0]!.rgba.slice(0, 3)).toEqual([57, 25, 59]);
+    expect(paused.points[1]!.rgba.slice(0, 3)).toEqual([59, 46, 59]);
+    // Compare solid glyph interiors only: source encoded-RGB dimming rounds
+    // channels. Glyph-edge raster coverage is a separate parity limitation.
+    const hudPoints: [number, number][] = [[315,20],[25,29]];
+    const pausedHud = render.probe({width:768,height:720,points:hudPoints});
+    expect(pausedHud.points[0]!.rgba.slice(0,3)).toEqual([60,52,25]);
+    expect(pausedHud.points[1]!.rgba.slice(0,3)).toEqual([55,58,60]);
+    render.expectScreenshot("pause", { width: 768, height: 720 });
+    await cheat(ResetArcade, { scenario: "boundary-campaign-win" });
+    await step(1);
+    const result = render.probe({ width: 768, height: 720, points: [[1,49]] });
+    // Round 25 has a different tile; test the encoded dim factor against its
+    // source palette in the dedicated visual golden, not round-one colors.
+    expect(result.points[0]!.rgba[0]).toBeLessThanOrEqual(35);
+    expect(result.points[0]!.rgba[1]).toBeLessThanOrEqual(35);
+    expect(result.points[0]!.rgba[2]).toBeLessThanOrEqual(35);
+    const resultHud = render.probe({width:768,height:720,points:hudPoints});
+    expect(resultHud.points[0]!.rgba.slice(0,3)).toEqual([35,30,15]);
+    expect(resultHud.points[1]!.rgba.slice(0,3)).toEqual([32,34,35]);
+    render.expectScreenshot("result", { width: 768, height: 720 });
   },
   { scene },
 );

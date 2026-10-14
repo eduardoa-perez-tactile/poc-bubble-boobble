@@ -13,7 +13,6 @@
         "w": 768,
         "h": 720,
         "pad": 0,
-        "bg": "#080c1b",
         "position": "anchored",
         "anchor": [
           0.5,

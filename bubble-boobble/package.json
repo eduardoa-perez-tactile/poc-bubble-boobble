@@ -19,6 +19,15 @@
     "harness:failure-probe": "node tools/harness/run.mjs failure-probe",
     "harness:coverage": "node tools/harness/run.mjs coverage",
     "harness:starter-hot-reload": "node tools/harness/hot-reload.mjs",
-    "harness:milestone": "node tools/harness/run.mjs milestone"
+    "harness:milestone": "node tools/harness/run.mjs milestone",
+    "desktop": "node tools/desktop/launch.mjs",
+    "desktop:probe": "node tools/desktop/probe.mjs",
+    "desktop:integration": "node tools/desktop/integration.mjs",
+    "harness:visual-reference": "node tools/harness/visual-reference.mjs",
+    "harness:pipelines": "node tools/harness/record-pipelines.mjs",
+    "harness:pipeline-check": "node tools/harness/record-pipelines.mjs --check",
+    "harness:perf-combat": "node tools/harness/perf-combat.mjs",
+    "harness:verify-full": "node tools/harness/run.mjs verify-full",
+    "desktop:transport-probe": "node tools/desktop/transport-probe.mjs"
   }
 }

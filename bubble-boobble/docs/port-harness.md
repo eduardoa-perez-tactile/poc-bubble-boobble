@@ -1,9 +1,10 @@
 # Strict-port harness contract
 
-Current progress: [round 1 movement](movement.md) implements scoped oracle parity.
-The full strict-port contract below continues to govern subsequent slices.
+Current progress: movement and the campaign/desktop core are merged through PR #3.
+Game-owned rendering and native desktop adapters are the next verification slice.
+The strict-port contract below continues to govern subsequent slices.
 
-Bootstrap status (historical): bootstrap implemented on `codex/port-harness`. See [harness.md](harness.md) for commands and measured evidence. Gameplay remains unimplemented; the strict-port contract below governs subsequent slices.
+Bootstrap status (historical): bootstrap implemented on `codex/port-harness`. See [harness.md](harness.md) for commands and measured evidence. This paragraph describes the original bootstrap gate; gameplay has since been ported.
 
 ## Objective and reference
 

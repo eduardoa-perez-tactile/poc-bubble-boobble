@@ -21,6 +21,12 @@ export const schemaIr = {
           "lanes": 1
         },
         {
+          "name": "native",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
           "name": "muted",
           "kind": "bool",
           "scalar": "u8",
@@ -39,6 +45,14 @@ export const schemaIr = {
           "scalar": "i32",
           "lanes": 1,
           "default": -1
+        },
+        {
+          "name": "sfxPriority",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": 2147483647,
+          "doc": "Strictly descending SFX priorities preserve older voices at the 24-slot cap; mute safely resets after bank unload"
         },
         {
           "name": "paused",
@@ -502,22 +516,28 @@ registerSchema(schemaIr);
 
 export interface ArcadeAudioViews {
   track: Uint32Array;
+  native: Uint8Array;
   muted: Uint8Array;
   music: Int32Array;
   sound: Int32Array;
+  /** Strictly descending SFX priorities preserve older voices at the 24-slot cap; mute safely resets after bank unload */
+  sfxPriority: Int32Array;
   paused: Uint8Array;
   exitSequence: Uint32Array;
 }
 export interface ArcadeAudioValue {
   track: string;
+  native: boolean;
   muted: boolean;
   music: number;
   sound: number;
+  /** Strictly descending SFX priorities preserve older voices at the 24-slot cap; mute safely resets after bank unload */
+  sfxPriority: number;
   paused: boolean;
   exitSequence: number;
 }
 /** ArcadeAudio (resource, sim) */
-export const ArcadeAudio = typeToken<ArcadeAudioViews, ArcadeAudioValue>('ArcadeAudio', 'resource', { sig: 'track:string:1,muted:bool:1,music:i32:1,sound:i32:1,paused:bool:1,exitSequence:u32:1', read: (v: ArcadeAudioViews, i: number, o: Record<string, unknown>) => { o.track = $r.str(v.track[i]!); o.muted = v.muted[i] !== 0; o.music = v.music[i]; o.sound = v.sound[i]; o.paused = v.paused[i] !== 0; o.exitSequence = v.exitSequence[i]; return o; } });
+export const ArcadeAudio = typeToken<ArcadeAudioViews, ArcadeAudioValue>('ArcadeAudio', 'resource', { sig: 'track:string:1,native:bool:1,muted:bool:1,music:i32:1,sound:i32:1,sfxPriority:i32:1,paused:bool:1,exitSequence:u32:1', read: (v: ArcadeAudioViews, i: number, o: Record<string, unknown>) => { o.track = $r.str(v.track[i]!); o.native = v.native[i] !== 0; o.muted = v.muted[i] !== 0; o.music = v.music[i]; o.sound = v.sound[i]; o.sfxPriority = v.sfxPriority[i]; o.paused = v.paused[i] !== 0; o.exitSequence = v.exitSequence[i]; return o; } });
 
 export interface ArcadeControlViews {
   active: Uint8Array;

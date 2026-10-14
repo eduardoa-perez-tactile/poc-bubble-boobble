@@ -27,7 +27,9 @@ function engine(args) {
   if (args[0] === 'test' && !Object.values(output.results ?? {}).some(results => Array.isArray(results) && results.length > 0)) throw new Error('Test filter matched no tests');
   for (const check of output.checks ?? []) if (check.warning) console.log(`Warning: ${check.detail}`);
   console.log(`gameengine ${args.join(' ')}: ${(result.wallMs / 1000).toFixed(3)} s`);
-  measurements.push({ command: `gameengine ${args.join(' ')}`, wallMs: result.wallMs });
+  const testCases = args[0] === 'test' ? Object.values(output.results ?? {}).flatMap(results => Array.isArray(results) ? results : []) : [];
+  if (testCases.length) console.log(`${testCases.length} selected test cases passed`);
+  measurements.push({ command: `gameengine ${args.join(' ')}`, wallMs: result.wallMs, ...(testCases.length ? { tests: testCases.length } : {}) });
   return { ...result, output };
 }
 function goBinary() {
@@ -160,6 +162,7 @@ const replays = [
   { path: 'tests/replays/harness_reset_and_tap.greplay', scene: 'scenes/main.scene.json', filter: 'harness reset and tap' },
   { path: 'tests/replays/movement_physical_keyboard_hold_release_and_jump.greplay', scene: 'scenes/round1.scene.json', filter: 'movement physical keyboard hold release and jump' },
   { path: 'tests/replays/arcade_engine_input_full_go_parity_reference_round1_smoke.greplay', scene: 'scenes/arcade.scene.json', filter: 'arcade engine input full Go parity reference-round1-smoke' },
+  { path: 'tests/replays/desktop_complete_presentation_flows.greplay', scene: 'scenes/arcade.scene.json', filter: 'desktop complete presentation flows', tier: 't1' },
 ];
 function verifyReplays(selected = replays) {
   const bundle = engine(['bundle']).output.path;
@@ -174,7 +177,7 @@ function verifyReplays(selected = replays) {
   }
 }
 function recordReplays() {
-  for (const replay of replays) engine(['test', '--js', 'v8', '--record-replays', '--filter', replay.filter]);
+  for (const replay of replays) engine(['test', '--js', 'v8', ...(replay.tier ? ['--tier', replay.tier, '--gpu-tier', 'desktop'] : []), '--record-replays', '--filter', replay.filter]);
 }
 function reset() {
   const probe = spawnSync('gameengine', ['editor', 'state', '--json'], { encoding: 'utf8' });
@@ -205,8 +208,37 @@ async function main() {
       if (process.argv[3]) engine(['test', '--js', 'v8', '--filter', process.argv[3]]);
       else for (const filter of ['*movement*', '*arcade engine input*', '*arcade Go*']) engine(['test', '--js', 'v8', '--filter', filter]);
       break;
-    case 'verify': selftest(); engine(['test', '--js', 'v8']); engine(['test', '--js', 'v8', '--tier', 't1', '--gpu-tier', 'desktop']); verifyReplays(); engine(['check']); break;
-    case 'record': if (process.argv[3]) engine(['test', '--js', 'v8', '--record-replays', '--filter', process.argv[3]]); else recordReplays(); break;
+    case 'verify':
+    case 'verify-full': {
+      selftest();
+      const bridgeHTTP = run(process.execPath, ['--test', 'tools/desktop/bridge-http.test.mjs']);
+      console.log(bridgeHTTP.stdout.trim());
+      measurements.push({ command: 'desktop bridge aborted-body regression', wallMs: bridgeHTTP.wallMs });
+      engine(['test', '--js', 'v8']);
+      // An explicit wildcard still selects every T1 test. It bypasses the
+      // installed CLI's unrendered structural-replay lane, which stalls while
+      // assets wait for GPU requests. The public-protocol check below replaces
+      // that lane at material/checkpoint gates and requires every page/effect.
+      engine(['test', '--js', 'v8', '--tier', 't1', '--gpu-tier', 'desktop', '--filter', '*']);
+      if (command === 'verify-full') {
+        const structural = run(process.execPath, ['tools/harness/record-pipelines.mjs', '--check']);
+        console.log(structural.stdout.trim());
+        measurements.push({ command: 'presentation replay structural check (explicit GPU probes)', wallMs: structural.wallMs });
+      }
+      verifyReplays();
+      engine(['check']);
+      const audio = run(process.execPath, ['tools/port/check-audio-assets.mjs']);
+      console.log(audio.stdout.trim());
+      measurements.push({ command: 'audio asset provenance and alias guard', wallMs: audio.wallMs });
+      break;
+    }
+    case 'record': {
+      if (process.argv[3]) {
+        const known = replays.find(replay => replay.filter === process.argv[3]);
+        engine(['test', '--js', 'v8', ...(known?.tier ? ['--tier', known.tier, '--gpu-tier', 'desktop'] : []), '--record-replays', '--filter', process.argv[3]]);
+      } else recordReplays();
+      break;
+    }
     case 'replay': {
       if (!process.argv[3]) verifyReplays();
       else {

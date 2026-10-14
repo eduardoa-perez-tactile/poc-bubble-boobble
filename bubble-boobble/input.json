@@ -44,18 +44,13 @@
         "positive": "ArrowDown"
       },
       {
-        "negative": "KeyW",
-        "positive": "KeyS"
+        "key": "Tab"
       }
     ],
     "menuX": [
       {
         "negative": "ArrowLeft",
         "positive": "ArrowRight"
-      },
-      {
-        "negative": "KeyA",
-        "positive": "KeyD"
       }
     ],
     "confirm": [
@@ -73,18 +68,12 @@
     ],
     "undo": [
       {
-        "key": "KeyZ",
-        "mods": [
-          "Ctrl"
-        ]
+        "key": "KeyZ"
       }
     ],
     "save": [
       {
-        "key": "KeyS",
-        "mods": [
-          "Ctrl"
-        ]
+        "key": "KeyS"
       }
     ],
     "playtest": [
@@ -126,6 +115,20 @@
     "profileConfirm": [
       {
         "key": "Enter"
+      }
+    ],
+    "editorModifier": [
+      {
+        "key": "ControlLeft"
+      },
+      {
+        "key": "ControlRight"
+      },
+      {
+        "key": "MetaLeft"
+      },
+      {
+        "key": "MetaRight"
       }
     ]
   }

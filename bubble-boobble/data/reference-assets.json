@@ -1409,27 +1409,27 @@
   ],
   "music": {
     "decoder": "unchanged upstream internal/ym.Stream, loop=false, 48000Hz stereo PCM16",
-    "exporterSha256": "6f400220b58ea895da7fae3ffd3410ea10ed89751bfd64880c19368a038494f7",
+    "exporterSha256": "8c1a2008d05d676a8789b34a30b8a55ff0ee22703abfa08f41c9dd6f6d2fe44f",
     "library": "github.com/olivierh59500/ym-player@v0.0.0-20260913215440-3f73bdca82e5",
     "files": [
       {
-        "file": "assets/reference/audio/bubble-1.wav",
+        "file": "assets/reference/audio/music-bubble-1.wav",
         "sha256": "cb00e431359fdef409b7e7876fcfc8dc587a6f634d5e102507ff7c0498e6b47a"
       },
       {
-        "file": "assets/reference/audio/bubble-2.wav",
+        "file": "assets/reference/audio/music-bubble-2.wav",
         "sha256": "f4af068c187e0141f7da423e6a75e8e751cba769e742477e44d3ab0939399793"
       },
       {
-        "file": "assets/reference/audio/bubble-3.wav",
+        "file": "assets/reference/audio/music-bubble-3.wav",
         "sha256": "a76aa44f8b5863d6435f438b2ea312bad6475a7041eb8d77d9df482a285919e2"
       },
       {
-        "file": "assets/reference/audio/bubble-4.wav",
+        "file": "assets/reference/audio/music-bubble-4.wav",
         "sha256": "9de7373b516cddd9571aee56dd7710c1024d65e283ccc496dcc83f978e342404"
       },
       {
-        "file": "assets/reference/audio/bubble-5.wav",
+        "file": "assets/reference/audio/music-bubble-5.wav",
         "sha256": "53749120b205b4ad4da8e68e0c9dca4e2f92c3532b360e8faab8945c7464806a"
       }
     ]

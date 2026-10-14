@@ -1,4 +1,4 @@
-import { ActionState, WorldView, defineSystem, query, read, write, PlaySound } from '@gameengine/runtime';
+import { ActionState, WorldView, defineSystem, query, read, write } from '@gameengine/runtime';
 import { ArcadeControl, ArcadeInput } from '../schema.gen.ts';
 import campaign from '../../data/levels.json';
 import { session } from './session.ts';
@@ -12,6 +12,7 @@ export const ArcadeStep=defineSystem({
     if(!ctx.get(ArcadeControl).active)return;
     const control=ctx.get(ArcadeControl), request=desktopGameRequest.get();
     let current=session.get();
+    let handledPauseRequest=false;
     if(request.sequence!==control.requestSequence){
       ctx.setField(ArcadeControl,'requestSequence',request.sequence);
       if(request.action==='start'||request.action==='playtest'){
@@ -20,6 +21,7 @@ export const ArcadeStep=defineSystem({
         game.Custom=!!custom;current={active:true,mode:custom?'custom':'campaign',game};session.set(current);
       } else if(request.action==='quit'||request.action==='exit'){current={...current,active:false};session.set(current);}
       else if(current.game&&(request.action==='pause'||request.action==='resume')){
+        handledPauseRequest=true;
         const game=copyGame(current.game);game.Paused=request.action==='pause';current={...current,game};session.set(current);
       }
     }
@@ -39,16 +41,17 @@ export const ArcadeStep=defineSystem({
     }
     if(!pause && ctx.events.count(ArcadeInput)===0 && current.game.Sounds.length===0 && (current.game.Paused||current.game.State===3||current.game.State===4))return;
     const game=copyGame(current.game);
-    if(pause&&desktopState.get().screen==='play'){game.Paused=!game.Paused;showDesktopPause(game.Paused);}
+    if(pause&&!handledPauseRequest&&desktopState.get().screen==='play'){game.Paused=!game.Paused;showDesktopPause(game.Paused);}
     for(const e of ctx.events.read(ArcadeInput)){
       if(inputs[e.player])inputs[e.player]={Move:e.move,Jump:e.jump,Fire:e.fire};
       game.Paused=e.paused;
     }
+    const screen=desktopState.get().screen;
+    if((screen==='play'||screen==='pause')&&game.Paused!==(screen==='pause'))showDesktopPause(game.Paused);
     const oldState=game.State;
     stepGame(game,inputs);
     session.set({...current,game});
     setDesktopRunScore(game.Score,game.Level.number);
     if(game.State!==oldState&&(game.State===3||game.State===4))finishDesktopRun(game.State===4,game.Score,game.Level.number);
-    for(const sound of game.Sounds)if(sound!=='opening')ctx.events.emit(PlaySound,{sound:`reference/audio/${sound}`,maxVoices:24});
   },
 });

@@ -18,7 +18,7 @@ export function getDesktopButtons(s:DesktopState,p:DesktopSave):DesktopButton[]{
  }
 }
 const help='MOVE — LEFT / RIGHT OR A / D\nJUMP — UP OR W - HOLD TO BOUNCE ON BUBBLES\nBLOW BUBBLES — SPACE OR CTRL - TOUCH A BUBBLE TO POP IT\nTAKE A BREAK — ESC TO PAUSE / F11 FULLSCREEN / M MUTE\nGAMEPAD — STICK OR D-PAD / A JUMP / X FIRE / START PAUSE\nBONUSES — CANDIES, SHOES, RINGS, PARASOLS, CLOCK, DYNAMITE\nELEMENTS — WATER FLOWS, LIGHTNING STRIKES, FIRE SPREADS\nSURVIVE — 3 LIVES / ENEMIES GET ANGRY AFTER 30 SECONDS';
-export function desktopModel(s:DesktopState,p:DesktopSave,frame=0){
+export function desktopModel(s:DesktopState,p:DesktopSave,frame=0,nativeFullscreen=false){
  const profile=p.profiles[p.active]!;let title='',subtitle='',body='';
  switch(s.screen){case 'title':case 'menu':subtitle=`${profile.name}  /  BEST ${String(profile.high_score).padStart(7,'0')}`;break;
 
@@ -36,6 +36,6 @@ export function desktopModel(s:DesktopState,p:DesktopSave,frame=0){
  const profiles=p.profiles.map((v,i)=>({key:`profile:${i}`,label:`${i===p.active?'* ':''}${v.name}`,avatar:v.avatar,selected:i===s.selected}));
  const scores=leaderboard(p).map((v,i)=>({key:String(i),name:v.name,score:String(v.high_score).padStart(7,'0'),round:String(v.best_round).padStart(2,'0'),record:`${v.won}/${v.lost}`}));
  const keyRows=Array.from({length:4},(_,i)=>({key:String(i),keys:buttons.slice(i*10,Math.min(36,i*10+10))}));
- return {frame,name:s.name,avatar:profile.avatar,profiles,scores,keyRows,statsName:`${profile.name}  /  PLAYER LEVEL ${Math.floor(profile.xp/100)+1}`,stats:`PLAYED ${profile.played}  WON ${profile.won}  LOST ${profile.lost}  XP ${profile.xp}`,profileCount:p.profiles.length,enemyCount:`ENEMIES ${String(s.level.enemies.length).padStart(2,'0')} / 32`,selected:s.selected,page:s.screen,title,subtitle,body,status:s.status.toUpperCase(),buttons:s.screen==='new-profile'?buttons.slice(-2):buttons,keys:s.screen==='new-profile'?buttons.slice(0,-2):[],rows,logo:s.screen==='title'||s.screen==='menu',editor:s.screen==='editor',keyboard:s.screen==='new-profile',toolbar:buttons.slice(0,5),tools:buttons.slice(5,16),editorButtons:buttons.slice(16,20),footer:buttons.slice(20)};
+ return {resultScore:`SCORE  ${String(s.score).padStart(7,'0')}`,resultStats:`BEST ${String(profile.high_score).padStart(7,'0')}  /  LEVEL ${Math.floor(profile.xp/100)+1}  /  XP ${profile.xp}`,showResultStats:!s.custom,frame,name:s.name,avatar:profile.avatar,profiles,scores,keyRows,statsName:`${profile.name}  /  PLAYER LEVEL ${Math.floor(profile.xp/100)+1}`,stats:`PLAYED ${profile.played}  WON ${profile.won}  LOST ${profile.lost}  XP ${profile.xp}`,profileCount:p.profiles.length,enemyCount:`ENEMIES ${String(s.level.enemies.length).padStart(2,'0')} / 32`,selected:s.selected,page:s.screen,title,subtitle,body,status:s.status.toUpperCase()||(!nativeFullscreen&&p.settings.fullscreen&&s.screen==='settings'?'FULLSCREEN REQUIRES ENGINE WINDOW SUPPORT':''),buttons:s.screen==='new-profile'?buttons.slice(-2):buttons,keys:s.screen==='new-profile'?buttons.slice(0,-2):[],rows,logo:s.screen==='title'||s.screen==='menu',editor:s.screen==='editor',keyboard:s.screen==='new-profile',toolbar:buttons.slice(0,5),tools:buttons.slice(5,16),editorButtons:buttons.slice(16,20),footer:buttons.slice(20)};
 }
 export type DesktopModel=ReturnType<typeof desktopModel>;

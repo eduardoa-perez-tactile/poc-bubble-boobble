@@ -97,10 +97,10 @@
           240
         ],
         "w": 552,
-        "h": 82,
-        "bg": "#080c1be6"
+        "h": 82
       },
-      "show": "showBanner"
+      "show": "showBanner",
+      "point": "banner"
     },
     "dh_name": {
       "type": "label",
@@ -269,7 +269,8 @@
         "fontSize": 24,
         "color": "#ffdc6a"
       },
-      "property": "banner"
+      "property": "banner",
+      "point": "banner-title"
     },
     "dh_banner_hint": {
       "type": "label",
@@ -288,7 +289,8 @@
         "fontSize": 12,
         "color": "#ebf5ff"
       },
-      "property": "hint"
+      "property": "hint",
+      "point": "banner-hint"
     },
     "dh_freeze": {
       "type": "label",
@@ -369,6 +371,94 @@
     "freeze": {
       "type": "text",
       "default": ""
+    },
+    "shade": {
+      "type": "enum",
+      "values": [
+        "normal",
+        "pause",
+        "result"
+      ],
+      "default": "normal",
+      "poses": {
+        "pause": {
+          "set": {
+            "dh_name": {
+              "color": "#1a3820"
+            },
+            "dh_score": {
+              "color": "#373a3c"
+            },
+            "dh_round": {
+              "color": "#3c3419"
+            },
+            "dh_high_title": {
+              "color": "#3c192a"
+            },
+            "dh_high": {
+              "color": "#373a3c"
+            },
+            "dh_lives": {
+              "color": "#373a3c"
+            },
+            "dh_enemies": {
+              "color": "#1f252a"
+            },
+            "dh_footer": {
+              "color": "#1f252a"
+            },
+            "dh_banner_title": {
+              "color": "#3c3419"
+            },
+            "dh_banner_hint": {
+              "color": "#373a3c"
+            },
+            "dh_freeze": {
+              "color": "#3c3419"
+            }
+          }
+        },
+        "result": {
+          "set": {
+            "dh_name": {
+              "color": "#0f2113"
+            },
+            "dh_score": {
+              "color": "#202223"
+            },
+            "dh_round": {
+              "color": "#231e0f"
+            },
+            "dh_high_title": {
+              "color": "#230f18"
+            },
+            "dh_high": {
+              "color": "#202223"
+            },
+            "dh_lives": {
+              "color": "#202223"
+            },
+            "dh_enemies": {
+              "color": "#121618"
+            },
+            "dh_footer": {
+              "color": "#121618"
+            },
+            "dh_banner_title": {
+              "color": "#231e0f"
+            },
+            "dh_banner_hint": {
+              "color": "#202223"
+            },
+            "dh_freeze": {
+              "color": "#231e0f"
+            }
+          }
+        }
+      }
     }
+  },
+  "transition": {
+    "type": "instant"
   }
 }

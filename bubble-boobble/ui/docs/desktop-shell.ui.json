@@ -28,6 +28,7 @@
         ]
       },
       "children": [
+        "ds_pause_panel",
         "ds_logo",
         "ds_title",
         "ds_subtitle",
@@ -39,7 +40,8 @@
         "ds_help",
         "ds_credits",
         "ds_brand",
-        "ds_dash"
+        "ds_dash",
+        "ds_result"
       ]
     },
     "ds_logo": {
@@ -80,7 +82,8 @@
           0,
           65
         ]
-      }
+      },
+      "point": "title"
     },
     "ds_subtitle": {
       "type": "label",
@@ -785,6 +788,92 @@
         "h": 4,
         "bg": "#70f089"
       }
+    },
+    "ds_pause_panel": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          124,
+          210
+        ],
+        "w": 520,
+        "h": 310,
+        "bg": "#080c1b",
+        "hide": true
+      },
+      "point": "pause-panel"
+    },
+    "ds_result": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "ds_result_score",
+        "ds_result_stats"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 768,
+        "h": 720,
+        "hide": true
+      }
+    },
+    "ds_result_score": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "resultScore",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          312
+        ],
+        "fontSize": 26,
+        "color": "#ffdc6a"
+      },
+      "point": "result-score"
+    },
+    "ds_result_stats": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "resultStats",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          368
+        ],
+        "fontSize": 12,
+        "color": "#829fb1"
+      },
+      "show": "showResultStats",
+      "point": "result-stats"
     }
   },
   "view": {
@@ -979,14 +1068,17 @@
               "fontSize": 32,
               "color": "#70f089"
             },
-            "root": {
-              "bg": "#000000c3"
-            },
             "ds_brand": {
               "hide": true
             },
             "ds_dash": {
               "hide": true
+            },
+            "ds_pause_panel": {
+              "hide": false
+            },
+            "root": {
+              "bg": "#00000000"
             }
           }
         },
@@ -1020,20 +1112,39 @@
                 312
               ],
               "fontSize": 26,
-              "color": "#ffdc6a"
-            },
-            "root": {
-              "bg": "#000000dc"
+              "color": "#ffdc6a",
+              "hide": true
             },
             "ds_brand": {
               "hide": true
             },
             "ds_dash": {
               "hide": true
+            },
+            "ds_result": {
+              "hide": false
+            },
+            "root": {
+              "bg": "#00000000"
             }
           }
         }
       }
+    },
+    "resultScore": {
+      "type": "text",
+      "default": ""
+    },
+    "resultStats": {
+      "type": "text",
+      "default": ""
+    },
+    "showResultStats": {
+      "type": "yesno",
+      "default": false
     }
+  },
+  "transition": {
+    "type": "instant"
   }
 }

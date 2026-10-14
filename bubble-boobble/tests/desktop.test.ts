@@ -1,7 +1,8 @@
 import { expect, worldTest, renderTest } from '@gameengine/test';
-import { TextInput } from '@gameengine/runtime';
+import { TextInput, Time } from '@gameengine/runtime';
+import { ResetArcade } from '../src/arcade/arcade.cheats.ts';
 import { DesktopIntent } from '../src/schema.gen.ts';
-import { desktopState, desktopGameRequest, desktopSaveState, desktopSave, initialDesktopSave, paintLevel, validateLevel, cloneLevel, validateName, desktopModel, initialDesktopState } from '../src/desktop/index.ts';
+import { desktopState, desktopGameRequest, desktopSaveState, desktopSave, initialDesktopSave, paintLevel, validateLevel, cloneLevel, validateName, desktopModel, initialDesktopState, menuBubble } from '../src/desktop/index.ts';
 import levels from '../data/levels.json';
 import type { Level } from '../src/arcade/types.ts';
 const scene='scenes/arcade.scene.json';
@@ -77,9 +78,45 @@ renderTest('desktop account buttons match reference hit rectangles',async({input
  expect(desktopState.get().status).toBe('use 1 to 16 characters');
  render.expectScreenshot('invalid-name',{width:768,height:720});
 },{scene});
-renderTest('desktop title animation uses reference global phase and wraps',async({input,step,render,ui})=>{
- input.view(768,720,1);await step(5);render.stats({width:768,height:720});const first=ui.rect('desktop-bubble-1')!;expect(first!==null).toBe(true);
- await step(60);render.stats({width:768,height:720});const later=ui.rect('desktop-bubble-1')!;expect(first.y-later.y).toBe(30);
+renderTest('desktop title animation uses reference global phase and wraps',async({input,step,render,ui,world})=>{
+ input.view(768,720,1);await step(5);render.stats({width:768,height:720});const b=menuBubble(1,world.resource(Time).step);const first=render.probe({width:768,height:720,points:[[b.x+b.radius,b.y]]}).points[0]!.rgba;expect(first[1]).toBeGreaterThan(12);
+ await step(60);render.stats({width:768,height:720});const later=render.probe({width:768,height:720,points:[[b.x+b.radius,b.y],[b.x+b.radius,b.y-30]]}).points;expect(later[0]!.rgba).toEqual([8,12,27,255]);expect(later[1]!.rgba).toEqual(first);
  input.emit(DesktopIntent,{action:'menu'});await step(1);render.stats({width:768,height:720});const start=ui.interactables().find(b=>b.label==='START GAME')!;expect(start.rect.x).toBe(218);expect(start.rect.y).toBe(328);expect(start.rect.width).toBe(332);expect(start.rect.height).toBe(44);
  render.expectScreenshot('menu',{width:768,height:720});
+},{scene});
+
+// Engine physical key codes observed through ActionState: letters A=1..Z=26,
+// Ctrl L/R=44/45, Meta L/R=48/49 and F5=58. These tests use raw key events,
+// not injected semantic actions, to prove the real input.json path.
+for(const [modifier,label] of [[44,'ControlLeft'],[45,'ControlRight'],[48,'MetaLeft'],[49,'MetaRight']] as const){
+ worldTest(`desktop editor physical ${label} undo save and F5`,async({input,step})=>{
+  await step(5);input.emit(DesktopIntent,{action:'editor'});await step(1);
+  const before=desktopState.get().level.tiles[5]![5];input.emit(DesktopIntent,{action:'paint',x:5,y:5});await step(1);expect(desktopState.get().history.length).toBe(1);
+  input.key(26,true);await step(1);expect(desktopState.get().history.length).toBe(1);input.key(26,false);await step(1);
+  input.key(19,true);await step(1);expect(desktopSaveState.get().custom_level).toBe(null);expect(desktopState.get().selected).toBe(0);input.key(19,false);await step(1);
+  input.key(modifier,true);await step(1);input.key(26,true,modifier<48?2:8);await step(1);expect(desktopState.get().history.length).toBe(0);expect(desktopState.get().level.tiles[5]![5]).toBe(before);
+  input.key(26,false);input.key(modifier,false);await step(1);
+  input.emit(DesktopIntent,{action:'theme'});await step(1);expect(desktopState.get().level.number).toBe(2);
+  input.key(modifier,true);await step(1);input.key(19,true,modifier<48?2:8);await step(1);expect(desktopSaveState.get().custom_level!.number).toBe(2);expect(desktopState.get().selected).toBe(0);
+  input.key(19,false);input.key(modifier,false);await step(1);
+  input.key(58,true);await step(1);expect(desktopGameRequest.get().action).toBe('playtest');expect(desktopState.get().screen).toBe('play');
+ },{scene});
+}
+worldTest('desktop editor P F B preserve pinned reference no-op semantics',async({input,step})=>{
+ await step(5);input.emit(DesktopIntent,{action:'editor'});await step(1);const level=desktopState.get().level;
+ // The source footer advertises these keys, but updateEditor has no such handlers.
+ for(const code of [16,6,2]){input.key(code,true);await step(1);input.key(code,false);await step(1);expect(desktopState.get().tool).toBe(0);expect(desktopState.get().selected).toBe(0);expect(desktopState.get().level).toEqual(level);}
+},{scene});
+worldTest('desktop fullscreen capability notice stays in presentation model',async({input,step})=>{
+ await step(5);input.emit(DesktopIntent,{action:'settings'});await step(1);input.emit(DesktopIntent,{action:'fullscreen'});await step(1);
+ const s=desktopState.get(),p=desktopSaveState.get();expect(p.settings.fullscreen).toBe(true);expect(s.status).toBe('');
+ expect(desktopModel(s,p,0,false).status).toBe('FULLSCREEN REQUIRES ENGINE WINDOW SUPPORT');expect(desktopModel(s,p,0,true).status).toBe('');
+},{scene});
+
+renderTest('desktop reference popup and banner layouts',async({input,step,cheat,render,ui})=>{
+ input.view(768,720,1);await step(5);await cheat(ResetArcade,{round:1,seed:1,ready:true});render.stats({width:768,height:720});
+ const banner=ui.rect('desktop-hud.banner')!;expect(banner.x).toBe(108);expect(banner.y).toBe(240);expect(banner.width).toBe(552);expect(banner.height).toBe(82);expect(ui.rect('desktop-hud.banner-title')!.y).toBe(255);expect(ui.rect('desktop-hud.banner-hint')!.y).toBe(293);render.expectScreenshot('ready',{width:768,height:720});
+ input.emit(DesktopIntent,{action:'pause'});await step(1);render.stats({width:768,height:720});const pause=ui.rect('desktop-shell.pause-panel')!;expect(pause.x).toBe(124);expect(pause.y).toBe(210);expect(pause.width).toBe(520);expect(pause.height).toBe(310);expect(ui.rect('desktop-shell.title')!.y).toBe(252);render.expectScreenshot('pause',{width:768,height:720});
+ await cheat(ResetArcade,{scenario:'boundary-clear-full-campaign'});render.stats({width:768,height:720});expect(ui.rect('desktop-hud.banner')!.y).toBe(84);expect(ui.rect('desktop-hud.banner-title')!.y).toBe(99);expect(ui.rect('desktop-hud.banner-hint')!.y).toBe(137);render.expectScreenshot('clear',{width:768,height:720});
+ await cheat(ResetArcade,{scenario:'boundary-campaign-win'});await step(1);render.stats({width:768,height:720});expect(ui.rect('desktop-shell.result-score')!.y).toBe(312);const stats=ui.rect('desktop-shell.result-stats')!;expect(stats.y).toBe(368);expect(stats.height).toBeLessThanOrEqual(16);render.expectScreenshot('win',{width:768,height:720});
 },{scene});
