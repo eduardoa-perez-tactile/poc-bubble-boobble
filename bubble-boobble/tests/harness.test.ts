@@ -26,10 +26,10 @@ worldTest('harness reset and tap', async ({ world, step, input, tap, cheat }) =>
   await tap([0, 0]);
   await step(2);
   expect(world.resource(Game).score).toBe(1);
-});
+}, { scene: "scenes/main.scene.json" });
 
 renderTest('harness starter golden', async ({ input, cheat, render }) => {
   input.view(768, 720, 8);
   await cheat(ResetHarness, { scenario: 'starter-tap' });
   render.expectScreenshot('starter-tap', { width: 768, height: 720 });
-});
+}, { scene: "scenes/main.scene.json" });

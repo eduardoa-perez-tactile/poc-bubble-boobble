@@ -1,0 +1,24 @@
+{
+  "mode": "movement",
+  "seed": 1,
+  "round": 1,
+  "players": 1,
+  "name": "movement-obstructed-spawn",
+  "spans": [
+    {
+      "ticks": 2,
+      "players": [
+        {
+          "Move": 0,
+          "Jump": false,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    }
+  ],
+  "spawn": {
+    "col": 4,
+    "row": 12
+  }
+}

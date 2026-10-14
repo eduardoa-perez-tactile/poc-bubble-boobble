@@ -1,0 +1,28 @@
+{
+  "$schemaVersion": 1,
+  "actions": {
+    "move": [
+      {
+        "negative": "ArrowLeft",
+        "positive": "ArrowRight"
+      },
+      {
+        "negative": "KeyA",
+        "positive": "KeyD"
+      }
+    ],
+    "jump": [
+      {
+        "key": "ArrowUp"
+      },
+      {
+        "key": "KeyW"
+      }
+    ],
+    "pause": [
+      {
+        "key": "Escape"
+      }
+    ]
+  }
+}

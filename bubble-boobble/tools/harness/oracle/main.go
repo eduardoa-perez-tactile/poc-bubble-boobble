@@ -14,7 +14,10 @@ type Span struct {
 	Paused  bool         `json:"paused"`
 }
 type Scenario struct {
-	Name    string `json:"name"`
+	Spawn *game.Cell `json:"spawn"`
+ Mode string `json:"mode"`
+ Player *game.Player `json:"player"`
+ Name    string `json:"name"`
 	Seed    uint64 `json:"seed"`
 	Round   int    `json:"round"`
 	Players int    `json:"players"`
@@ -43,7 +46,8 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	initial, err := json.Marshal(g.OracleState())
+	if scenario.Mode == "movement" { g.OracleMovementSetup(scenario.Player, scenario.Spawn) }
+ initial, err := json.Marshal(g.OracleState())
 	if err != nil {
 		return err
 	}
@@ -55,7 +59,10 @@ func run() error {
 		}
 		for i := 0; i < span.Ticks; i++ {
 			g.Paused = span.Paused
-			g.StepPlayers(span.Players)
+			if scenario.Mode == "movement" {
+ if len(span.Players) != 1 || span.Players[0].Fire { return fmt.Errorf("movement requires one non-firing input") }
+ g.OracleMovementStep(span.Players[0])
+ } else { g.StepPlayers(span.Players) }
 			index++
 			input := span
 			input.Ticks = 1

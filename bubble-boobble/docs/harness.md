@@ -1,5 +1,10 @@
 # Harness bootstrap and daily use
 
+Current movement commands and coverage are documented in [movement.md](movement.md).
+The desktop default and `harness:reset` now use round 1; quick defaults to movement,
+verify includes movement and retained starter checks, and hot-reload probes movement.
+The bootstrap description below records the original starter setup.
+
 The harness is implemented; the game remains the starter bubble demo. No Go-versus-Tactile gameplay parity is claimed. This bootstrap establishes a pinned oracle, exact comparison, reproducible interactive setup, engine tests/replay, a visual golden, and measured feedback lanes.
 
 ## Requirements

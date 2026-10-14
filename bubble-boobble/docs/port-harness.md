@@ -1,6 +1,9 @@
 # Strict-port harness contract
 
-Status: bootstrap implemented on `codex/port-harness`. See [harness.md](harness.md) for commands and measured evidence. Gameplay remains unimplemented; the strict-port contract below governs subsequent slices.
+Current progress: [round 1 movement](movement.md) implements scoped oracle parity.
+The full strict-port contract below continues to govern subsequent slices.
+
+Bootstrap status (historical): bootstrap implemented on `codex/port-harness`. See [harness.md](harness.md) for commands and measured evidence. Gameplay remains unimplemented; the strict-port contract below governs subsequent slices.
 
 ## Objective and reference
 

@@ -31,3 +31,18 @@ func (g *Game) OracleState() any {
 	}{g.Snapshot(), g.LevelIndex, g.Custom, g.Counters, g.Counters.waterStage,
 		append([]PowerUp{}, g.Counters.pending...), g.spawnedSpecial, g.nextID, g.extraLifeAt, hex.EncodeToString(rng)}
 }
+
+// Controlled movement lane calls the unchanged upstream player routine, excluding
+// enemies/combat/bonuses. It does not claim whole-match parity.
+func (g *Game) OracleMovementSetup(p *Player, spawn *Cell) {
+  g.State = Playing
+  g.Countdown = 0
+  if p != nil { g.Players[0] = *p }
+  if spawn != nil { g.Players[0].X, g.Players[0].Y = g.spawnPosition(*spawn) }
+}
+func (g *Game) OracleMovementStep(in Input) {
+  g.Sounds = g.Sounds[:0]
+  if g.Paused { return }
+  g.Tick++
+  g.updatePlayer(0, in)
+}
