@@ -1,4 +1,4 @@
-import atlas from "../../../assets/pixel-renderer/atlas.json";
+import atlas from "../../../assets/pixel-renderer/atlas-layout.json";
 export function pixelRect(
   image: string,
   flip = false,

@@ -9,6 +9,26 @@ interface Source {
   partial: boolean;
 }
 const sources: Readonly<Record<string, Source>> = pixels;
+// Immutable import-derived metadata, not frame history. A source texel covers at
+// most ceil(scaleX)*ceil(scaleY) logical pixels, each needing at most one run.
+const partialTexels: Readonly<Record<string, number>> = Object.fromEntries(
+  Object.entries(sources).filter(([, s]) => s.partial).map(([name, s]) => [
+    name, s.pixels.reduce((n, alpha, index) => n + (index % 4 === 3 && alpha > 0 && alpha < 255 ? 1 : 0), 0),
+  ]),
+);
+export function orderedCapacity(draws: readonly PixelQuad[]): number {
+  let count = 0;
+  for (const q of draws) {
+    if (!q.image || q.w <= 0 || q.h <= 0 || q.x >= 768 || q.y >= 720 || q.x + q.w <= 0 || q.y + q.h <= 0) continue;
+    count++;
+    const partial = partialTexels[q.image];
+    if (partial) {
+      const source = sources[q.image]!;
+      count += partial * Math.ceil(q.w / source.width) * Math.ceil(q.h / source.height);
+    }
+  }
+  return Math.min(65536, count);
+}
 // Fully rewritten scratch buffers: no presentation history or authoritative state.
 const MAX_VERTICES = 262144;
 const positions = new Float32Array(MAX_VERTICES * 3),

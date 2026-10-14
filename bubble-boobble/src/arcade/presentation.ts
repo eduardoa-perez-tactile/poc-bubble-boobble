@@ -11,6 +11,7 @@ import {
   Shape,
   MeshRenderer,
   MaterialGlobals,
+  MaterialParams,
   Time,
   WorldView,
 } from "@gameengine/runtime";
@@ -19,13 +20,15 @@ import { desktopState } from "../desktop/state.ts";
 import { desktopSaveState } from "../desktop/save.ts";
 import manifest from "../../data/sprites.json";
 import { session } from "./session.ts";
-import { updateOrderedPixels } from "./pixel-renderer/ordered.ts";
+import { orderedArrays, orderedCapacity } from "./pixel-renderer/ordered.ts";
 import type { PixelQuad } from "./pixel-renderer/types.ts";
 import { EnemyState, position } from "./types.ts";
 import type { GameState, Level } from "./types.ts";
 
-const TILE_SLOTS = 32 * 26;
-const TILE_BASE = 3; // board backdrop plus top and bottom ink bars
+// Pixel instances and pooled text have disjoint slots; never grow text to this base.
+const PIXEL_SLOT_BASE = 65536;
+const STATIC_QUAD = 'pixel-renderer/static-quad.gltf';
+const PIXEL_MATERIAL = 'materials/pixel-ordered.mat.json';
 const animations: Readonly<Record<string, readonly string[]>> = manifest;
 export function referenceFrame(name: string, tick: number): string {
   const paths = animations[name];
@@ -241,25 +244,29 @@ export const ArcadePool = defineSystem({
   resources: [read(ArcadeControl)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
   run(ctx, q) {
-    const ui = desktopState.get(),
-      g = session.get().game;
-    const needed =
-      ui.screen === "editor"
-        ? 4
-        : 1 + (g?.Particles.filter((p) => p.Text).length ?? 0);
-    let count = 0;
-    for (const c of q.chunks())
-      for (let i = 0; i < c.length; i++)
-        count = Math.max(count, c.col(ArcadeVisual).slot[i]! + 1);
-    for (let slot = count; slot < needed; slot++)
-      ctx.commands.spawn({
-        ArcadeVisual: { slot },
-        LocalTransform: {},
-        VisualOffset: {},
-        Sprite: { visible: false },
-        Shape: { visible: false },
-        Text2D: { font: "reference/arcade", visible: false },
-      });
+    const ui = desktopState.get(), g = session.get().game;
+    const needed = ui.screen === "editor"
+      ? 4 : 1 + (g?.Particles.filter((p) => p.Text).length ?? 0);
+    const plan = sceneDraws(ctx.step), pixelCount = orderedCapacity(plan.images);
+    let count = 0, pixels = 0;
+    for (const c of q.chunks()) for (let i = 0; i < c.length; i++) {
+      const slot = c.col(ArcadeVisual).slot[i]!;
+      if (slot >= PIXEL_SLOT_BASE) pixels = Math.max(pixels, slot - PIXEL_SLOT_BASE + 1);
+      else count = Math.max(count, slot + 1);
+    }
+    for (let slot = count; slot < needed; slot++) ctx.commands.spawn({
+      ArcadeVisual: { slot }, LocalTransform: {}, VisualOffset: {},
+      Sprite: { visible: false }, Shape: { visible: false },
+      Text2D: { font: "reference/arcade", visible: false },
+    });
+    for (let slot = pixels; slot < pixelCount; slot++) ctx.commands.spawn({
+      ArcadeVisual: { slot: PIXEL_SLOT_BASE + slot },
+      LocalTransform: {}, VisualOffset: {}, MaterialParams: {},
+      MeshRenderer: {
+        mesh: STATIC_QUAD, material: PIXEL_MATERIAL,
+        castShadows: false, receiveShadows: false,
+      },
+    });
   },
 });
 function sceneDraws(tick: number) {
@@ -360,7 +367,7 @@ export const ArcadePresentation = defineSystem({
       write(Text2D),
       write(Shape),
     ),
-    mesh: query(read(ArcadeVisual), write(MeshRenderer)),
+    mesh: query(read(ArcadeVisual), write(MeshRenderer), write(VisualOffset), write(MaterialParams)),
   },
   resources: [read(ArcadeControl), read(Time), write(MaterialGlobals)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
@@ -382,16 +389,40 @@ export const ArcadePresentation = defineSystem({
         (g.Hurry && g.State === 1 && g.LevelTicks < 1980 && g.Tick % 30 < 24));
     const bannerTop = g?.State === 2 ? 84 : 240;
     ctx.set(MaterialGlobals, { v0: [fade, bannerTop, banner ? 1 : 0, 0] });
-    if (plan.images.length) updateOrderedPixels("arcade-pixels", plan.images);
-    for (const c of q.mesh.chunks())
-      for (let i = 0; i < c.length; i++)
-        if (!c.is(MeshRenderer, i, "mesh", "dynamic:arcade-pixels"))
-          c.set(MeshRenderer, i, {
-            mesh: "dynamic:arcade-pixels",
-            material: "materials/pixel-ordered.mat.json",
-            castShadows: false,
-            receiveShadows: false,
-          });
+    // File meshes upload on the cold live viewport path; dynamic meshes in this
+    // installed runtime upload only after an offscreen screenshot. One static
+    // unit quad is instanced, with the same ordered positions and source pixels.
+    const geometry = orderedArrays(plan.images), arrays = geometry.arrays;
+    for (const c of q.mesh.chunks()) {
+      const slots = c.col(ArcadeVisual).slot;
+      const offsets = c.col(VisualOffset);
+      const params = c.col(MaterialParams).params;
+      const colors = c.col(MeshRenderer).color;
+      for (let i = 0; i < c.length; i++) {
+        const quad = slots[i]! - PIXEL_SLOT_BASE, t = i * 3, m = i * 4;
+        if (quad < 0 || quad >= geometry.vertices / 4) {
+          offsets.scale[t] = offsets.scale[t + 1] = offsets.scale[t + 2] = 0;
+          continue;
+        }
+        const p = quad * 12, u = quad * 8, k = quad * 16;
+        const x0 = arrays.positions[p]!, y0 = arrays.positions[p + 1]!;
+        const x1 = arrays.positions[p + 6]!, y1 = arrays.positions[p + 7]!;
+        offsets.position[t] = (x0 + x1) / 2;
+        offsets.position[t + 1] = (y0 + y1) / 2;
+        offsets.position[t + 2] = arrays.positions[p + 2]!;
+        offsets.scale[t] = x1 - x0;
+        offsets.scale[t + 1] = y1 - y0;
+        offsets.scale[t + 2] = 1;
+        params[m] = arrays.uvs[u]!;
+        params[m + 1] = arrays.uvs[u + 5]!;
+        params[m + 2] = arrays.uvs[u + 2]! - arrays.uvs[u]!;
+        params[m + 3] = arrays.uvs[u + 1]! - arrays.uvs[u + 5]!;
+        colors[m] = arrays.colors[k]! / 255;
+        colors[m + 1] = arrays.colors[k + 1]! / 255;
+        colors[m + 2] = arrays.colors[k + 2]! / 255;
+        colors[m + 3] = 1;
+      }
+    }
     for (const c of q.visuals.chunks())
       for (let i = 0; i < c.length; i++) {
         const slot = c.col(ArcadeVisual).slot[i]!;

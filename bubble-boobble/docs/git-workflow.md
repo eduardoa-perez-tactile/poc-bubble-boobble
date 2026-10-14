@@ -33,7 +33,8 @@ Definition of workflow does not publish changes. Before a merge, obtain user aut
 - Per behavior change: focused T0 and cached reference comparison for implemented mechanics.
 - Per completed slice: full implemented parity suite, V8 T0, relevant T1 and `gameengine check`. Add V8/Hermes equivalence when the Hermes host is available; disclose its absence until then.
 - Per milestone: campaign/long-run/cooked/performance checks and updated pipeline coverage.
-- Failures block merging; pending future features do not block a partial playable slice. Missing infrastructure required for that slice does block it.
+- Actual test failures block merging; pending future features do not block a partial playable slice.
+- By explicit user instruction, computer access must not block progress: when a test cannot run because access is unavailable, record the exact deferred test and reason, merge the authorized work, and continue. Deferred tests are not passing tests. Use game-engine APIs for testing; do not request computer-use access. Infrastructure failures unrelated to that access exception must still be reported.
 
 CI must pin/provision a compatible Tactile engine runtime. The current `.gameengine/engine` symlink points into a local macOS app and is not a portable dependency. Do not add a nonfunctional hosted-runner workflow: first establish runtime distribution or a configured self-hosted runner. Until then, record local gate evidence in PRs and identify it as local validation.
 

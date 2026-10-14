@@ -18,7 +18,7 @@ Scoped T1 cases protect actual name-keyboard hit rectangles, title animation and
 
 The main-menu logo/buttons, editor buttons, Help/Credits labels, profile rows/buttons, score-table columns, settings/avatar/statistics layout, name keyboard and HUD/banner text use reference logical coordinates. Fixed 768×720 document roots are centered in the containing reference canvas; a wide main-menu render was inspected, and the renderer owner verified the three arcade resize captures. Title/menu bubbles, the seven-frame dragon walk, title prompt blink and name caret use the shared engine `Time.step` presentation phase. That phase is read by presentation; no animation writes the simulation.
 
-The live release-host menu-overlay measurement (`artifacts/desktop-menu-perf.json`) captured 600 sim steps and 37 presentation frames: presentation p50 0.496 ms, p95 0.685 ms, maximum 4.078 ms; sim-step p95 0.209 ms, no hitch steps; maximum GC pause 0.386 ms; process memory 165 MiB. The subsequent rendered sample used six draw calls and 334 instances. The previous round-25 match remained active behind that overlay, so these are combined game-plus-overlay measurements, not isolated menu costs. The paused host's whole-frame maximum is not a playable-frame-rate verdict.
+The previous dynamic renderer's release-host menu-overlay measurement (`artifacts/desktop-menu-perf.json`) captured 600 sim steps and 37 presentation frames: presentation p50 0.496 ms, p95 0.685 ms, maximum 4.078 ms; sim-step p95 0.209 ms, no hitch steps; maximum GC pause 0.386 ms; process memory 165 MiB. The subsequent rendered sample used six draw calls and 334 instances. The previous round-25 match remained active behind that overlay, so these are combined game-plus-overlay measurements, not isolated menu costs. The paused host's whole-frame maximum is not a playable-frame-rate verdict.
 
 The nearest renderer owns sprites, menu circles, logo/portraits and encoded-RGB dimming. UI documents retain the editable labels/buttons and their reference coordinates. Original Go save-file interchange and a portable notarized desktop distribution remain outside the implemented storage/launcher path. Text rasterization has no automated cross-renderer allowance yet. Fresh Go captures now run through LaunchServices; tile-boundary pixels vary even between repeated pristine Go launches, and are reported explicitly in [rendering.md](rendering.md).
 
@@ -38,3 +38,27 @@ Strictly descending recorded priorities retain older voices at the global cap;
 per-sound caps are disabled so they cannot steal before that policy. The signed
 cursor resets only after mute stops the bank, and fails before integer wrap.
 Pure simulation sound lists remain unchanged.
+
+## Live viewport startup
+
+The black-world regression was reproduced with the engine's live viewport API:
+HUD text rendered while dynamic world geometry did not. Comparing the working
+`round1.scene` isolated the difference between its ordinary sprites and the arcade
+world's dynamic mesh. The arcade renderer now uses a shared static quad with
+instanced atlas rectangles and colors, preserving the original draw plan and
+encoded source-over composition. A cold viewport test verifies actual world
+pixels before any offscreen screenshot can initialize the missing path. See
+[rendering.md](rendering.md) for evidence and sampling limits.
+
+Testing uses game-engine APIs only. Actual OS-native window surface verification
+is deferred under the user's instruction; it does not block merging passing
+engine checks. The prior native control checks did not establish visible world
+rendering and must not be treated as pixel-output proof.
+
+Steady measurements of the replacement use 120 individual live viewport frames
+per case. Two-player round 25 has simulation p95 0.755 ms and presentation p95
+6.706 ms, five draws, 335 visible instances and 216.8 MiB process memory. Title
+has simulation p95 0.569 ms and presentation p95 8.873 ms, five draws, 1,547
+visible instances and 233.6 MiB memory. The retained pool contains 2,574 visual
+entities, including one text slot. These are engine viewport measurements, not
+OS-display frame-rate claims; evidence is `artifacts/viewport-static-steady.json`.

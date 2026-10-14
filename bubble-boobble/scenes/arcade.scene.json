@@ -13,12 +13,6 @@
       "id": "visuals",
       "ArcadeVisual": {},
       "LocalTransform": {},
-      "MeshRenderer": {
-        "mesh": "",
-        "material": "materials/pixel-ordered.mat.json",
-        "castShadows": false,
-        "receiveShadows": false
-      },
       "Shape": { "visible": false },
       "Sprite": { "visible": false },
       "Text2D": { "font": "reference/arcade", "visible": false },

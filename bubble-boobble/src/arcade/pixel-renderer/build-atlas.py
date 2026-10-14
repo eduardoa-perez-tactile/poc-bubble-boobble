@@ -21,5 +21,5 @@ for index in range(4):
     atlas.paste(circle,(x,y));rects[f'derived/circle/{index}']=[x,y,circle.width,circle.height];hashes[f'derived/circle/{index}']=hashlib.sha256(path.read_bytes()).hexdigest()
 out=root/'assets/pixel-renderer';out.mkdir(exist_ok=True)
 atlas.save(out/'atlas.png',optimize=True)
-(out/'atlas.json').write_text(json.dumps({'width':2048,'height':1024,'rects':rects,'sources':hashes},indent=2)+'\n')
+(out/'atlas-layout.json').write_text(json.dumps({'width':2048,'height':1024,'rects':rects,'sources':hashes},indent=2)+'\n')
 print(f'Packed {len(paths)} unchanged frames plus logo and menu circles into {atlas.width}x{atlas.height}')
