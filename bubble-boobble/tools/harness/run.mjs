@@ -229,7 +229,13 @@ async function main() {
       measurements.push({ command: 'audio asset provenance and alias guard', wallMs: audio.wallMs });
       break;
     }
-    case 'record': if (process.argv[3]) engine(['test', '--js', 'v8', '--record-replays', '--filter', process.argv[3]]); else recordReplays(); break;
+    case 'record': {
+      if (process.argv[3]) {
+        const known = replays.find(replay => replay.filter === process.argv[3]);
+        engine(['test', '--js', 'v8', ...(known?.tier ? ['--tier', known.tier, '--gpu-tier', 'desktop'] : []), '--record-replays', '--filter', process.argv[3]]);
+      } else recordReplays();
+      break;
+    }
     case 'replay': {
       if (!process.argv[3]) verifyReplays();
       else {

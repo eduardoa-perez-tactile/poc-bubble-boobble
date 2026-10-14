@@ -5,9 +5,21 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomBytes, createHash } from "node:crypto";
 import { createServer } from "node:http";
+import {buildYMHelper} from "./ym-source/build.mjs";
 const project = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 process.chdir(project);
 if (process.platform !== "darwin" || process.arch !== "arm64") throw new Error("This game-owned adapter currently supports macOS arm64 only");
+const controlledPresentation=process.argv.includes("--transport-probe");
+const appArguments=process.argv.slice(2).filter(arg=>arg!=="--transport-probe");
+let diagnosticSeconds=60;
+if(controlledPresentation){
+ for(let i=0;i<appArguments.length;i++)if(appArguments[i]==="--run-sec"||appArguments[i].startsWith("--run-sec=")){
+  const inline=appArguments[i].startsWith("--run-sec="),raw=inline?appArguments[i].slice(10):appArguments[i+1];
+  const requested=Number(raw);if(!Number.isFinite(requested)||requested<=0)throw new Error("Transport probe --run-sec must be a positive finite duration");
+  diagnosticSeconds=Math.min(diagnosticSeconds,requested);appArguments.splice(i,inline?1:2);i--;
+ }
+ appArguments.push("--run-sec",String(diagnosticSeconds));
+}
 const cache = resolve(".cache/desktop");
 mkdirSync(cache, { recursive: true });
 function run(binary, args2) {
@@ -24,7 +36,7 @@ const server = createServer(async (req, res) => {
     return;
   }
   if (req.method === "GET" && req.url === "/health") {
-    res.end(JSON.stringify({ bundleId: "bubbleboobble.desktop", protocol: 1, token, pid: gamePID, originalRuntimeSha256: original }));
+    res.end(JSON.stringify({ bundleId: "bubbleboobble.desktop", protocol: 1, token, pid: gamePID, originalRuntimeSha256: original, launchId, controlledPresentation }));
     return;
   }
   if (req.headers.authorization !== `Bearer ${token}`) {
@@ -71,8 +83,14 @@ const server = createServer(async (req, res) => {
       res.end('{"error":"game-owned native window not ready"}');
       return;
     }
-    desired = value;
     if (suppliedObservation !== undefined) observation = suppliedObservation;
+    // Only the explicit native transport probe owns this controlled presentation
+    // session. Normal game clients still connect and report observations, while
+    // input-driven GUI validation uses the ordinary launcher without this flag.
+    if(controlledPresentation&&req.headers['x-bubble-desktop-probe']!==launchId){
+      res.end(JSON.stringify({ok:true,revision,controlledPresentation:true}));return;
+    }
+    desired = value;
     revision++;
     save();
     res.end(JSON.stringify({ ok: true, revision }));
@@ -98,8 +116,15 @@ copyFileSync(resolve(installed, "libgameengine_webgpu.dylib"), resolve(macOS, "l
 const entitlements = resolve(cache, "runtime.entitlements");
 writeFileSync(entitlements, '<?xml version="1.0"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>com.apple.security.cs.allow-jit</key><true/><key>com.apple.security.cs.allow-unsigned-executable-memory</key><true/><key>com.apple.security.cs.allow-dyld-environment-variables</key><true/><key>com.apple.security.cs.disable-library-validation</key><true/></dict></plist>');
 run("codesign", ["--force", "--sign", "-", "--options", "0", "--entitlements", entitlements, copy]);
+const helper=resolve(macOS,"BubbleBoobble-YM"),helperProvenance=buildYMHelper(helper);
+run("codesign",["--force","--sign","-",helper]);
+const resources=resolve(appPath,"Contents/Resources"),musicRoot=resolve(resources,"music");mkdirSync(musicRoot,{recursive:true});
+const expectedMusic=JSON.parse(readFileSync("tools/desktop/ym-source/expected-pcm.json","utf8"));
+for(const entry of expectedMusic.tracks){const file=resolve("assets/reference/audio",entry.track);if(digest(file)!==entry.sourceSha256)throw new Error(`Original YM source checksum mismatch: ${entry.track}`);copyFileSync(file,resolve(musicRoot,entry.track));}
+copyFileSync("tools/desktop/ym-source/internal/ym/LICENSE",resolve(resources,"LICENSE-reference-reader.txt"));
+writeFileSync(resolve(resources,"ym-provenance.json"),JSON.stringify(helperProvenance,null,2)+"\n");
 const adapter = resolve(frameworks, "libbubbleboobble-platform.dylib");
-run("clang", ["-dynamiclib", "-fobjc-arc", "-fblocks", "-framework", "Cocoa", "-framework", "AVFoundation", "tools/desktop/native-adapter.m", "-o", adapter]);
+run("clang", ["-dynamiclib", "-fobjc-arc", "-fblocks", "-framework", "Cocoa", "-framework", "AVFoundation", "tools/desktop/native-adapter.m", "tools/desktop/ym-source/native/BBYMTransport.m", "-o", adapter]);
 run("codesign", ["--force", "--sign", "-", adapter]);
 writeFileSync(resolve(appPath,"Contents/Info.plist"),'<?xml version="1.0"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>CFBundleIdentifier</key><string>com.example.bubbleboobble.desktop</string><key>CFBundleExecutable</key><string>BubbleBoobble-runtime</string><key>CFBundleName</key><string>BubbleBoobble</string><key>CFBundlePackageType</key><string>APPL</string><key>CFBundleVersion</key><string>1</string><key>CFBundleShortVersionString</key><string>0.1.0</string><key>LSMinimumSystemVersion</key><string>14.0</string><key>NSHighResolutionCapable</key><true/><key>NSPrincipalClass</key><string>NSApplication</string></dict></plist>');
 run("codesign",["--force","--sign","-","--options","0","--entitlements",entitlements,appPath]);
@@ -112,20 +137,24 @@ const token = randomBytes(32).toString("hex"), launchId=randomBytes(32).toString
 let inputSequence = 0, inputKeys = [], observation = null;
 let revision = 0, desired = { fullscreen: false, track: "", volume: 0.5, paused: false, muted: false };
 function save() {
-  writeFileSync(statePath + ".tmp", JSON.stringify({ revision, desired, inputSequence, inputKeys, updatedAtUnixMs: Date.now() }));
+  writeFileSync(statePath + ".tmp", JSON.stringify({ revision, desired, inputSequence, inputKeys, observation, controlledPresentation, launcherPID:process.pid, updatedAtUnixMs: Date.now() }));
   renameSync(statePath + ".tmp", statePath);
 }
 save();
-const args = ["--mode", "player", "--project", project, "--bundle", bundle, "--js", "v8", "--services", "native", ...process.argv.slice(2)];
+const launchBundle=resolve(session,"game.js");
+const marker=`if(!Object.prototype.hasOwnProperty.call(globalThis,"__bubbleDesktopLaunch"))Object.defineProperty(globalThis,"__bubbleDesktopLaunch",{value:Object.freeze({launchId:${JSON.stringify(launchId)}}),writable:false,configurable:false});\n`;
+writeFileSync(launchBundle,marker+readFileSync(bundle,"utf8"));
+const args = ["--mode", "player", "--project", project, "--bundle", launchBundle, "--js", "v8", "--services", "native", ...appArguments];
 // LaunchServices starts an actual foreground application. Directly spawning a
 // windowed command-line process does not reliably receive macOS activation.
 const stdoutPath=resolve(session,"stdout.log"),stderrPath=resolve(session,"stderr.log");
 writeFileSync(stdoutPath,"");writeFileSync(stderrPath,"");
-const environment={DYLD_INSERT_LIBRARIES:adapter,BUBBLEBOOBLE_PLATFORM_STATE:statePath,BUBBLEBOOBLE_PLATFORM_STATUS:statusPath,BUBBLEBOOBLE_AUDIO_ROOT:resolve("assets/reference/audio"),BUBBLEBOOBLE_LAUNCH_ID:launchId};
+const environment={DYLD_INSERT_LIBRARIES:adapter,BUBBLEBOOBLE_PLATFORM_STATE:statePath,BUBBLEBOOBLE_PLATFORM_STATUS:statusPath,BUBBLEBOOBLE_AUDIO_ROOT:musicRoot,BUBBLEBOOBLE_YM_HELPER:helper,BUBBLEBOOBLE_LAUNCH_ID:launchId};
 const openArgs=["-n","-W","--stdout",stdoutPath,"--stderr",stderrPath,...Object.entries(environment).flatMap(([key,value])=>["--env",`${key}=${value}`]),appPath,"--args",...args];
 child=spawn("/usr/bin/open",openArgs,{stdio:["ignore","inherit","inherit"]});
-let closing=false,ready=false,offsets=[0,0];
+let closing=false,ready=false,offsets=[0,0],lastLiveness=Date.now();
 function pump(){
+ if(!closing&&Date.now()-lastLiveness>=1000){save();lastLiveness=Date.now();}
  for(const [i,path]of[stdoutPath,stderrPath].entries()){
   const length=statSync(path).size-offsets[i];
   if(length>0){const bytes=Buffer.alloc(length),fd=openSync(path,"r");try{readSync(fd,bytes,0,length,offsets[i]);}finally{closeSync(fd);}offsets[i]+=length;(i===0?process.stdout:process.stderr).write(bytes);}
@@ -140,9 +169,10 @@ function pump(){
  }
 }
 const pumpTimer=setInterval(pump,50);
+const diagnosticTimer=controlledPresentation?setTimeout(()=>{closing=true;try{if(gamePID)process.kill(gamePID,"SIGTERM");}catch{}},diagnosticSeconds*1000):undefined;
 const startupTimer=setTimeout(()=>{if(!ready){console.error("Game application did not report its own native window within 20 seconds");closing=true;try{if(gamePID)process.kill(gamePID,"SIGTERM");}catch{}child.kill("SIGTERM");process.exitCode=1;}},20000);
 console.log(`BubbleBoobble game-owned macOS application: ${appPath}; bridge http://127.0.0.1:47681; installed runtime unchanged (${original.slice(0,12)}).`);
-for(const signal of["SIGINT","SIGTERM"])process.on(signal,()=>{closing=true;try{if(gamePID)process.kill(gamePID,signal);}catch{}if(!gamePID)child.kill(signal);});
-function finish(code){pump();clearInterval(pumpTimer);clearTimeout(startupTimer);server.close();if(digest(source)!==original){console.error("Installed runtime changed unexpectedly");process.exitCode=1;}else if(!process.exitCode)process.exitCode=code??0;}
+for(const signal of["SIGINT","SIGTERM"])process.on(signal,()=>{closing=true;try{if(gamePID)process.kill(gamePID,signal);}catch{}/* Before the first identity, keep pumping until it arrives and close only our verified host. */});
+function finish(code){pump();clearInterval(pumpTimer);clearTimeout(startupTimer);if(diagnosticTimer)clearTimeout(diagnosticTimer);server.close();if(digest(source)!==original){console.error("Installed runtime changed unexpectedly");process.exitCode=1;}else if(!process.exitCode)process.exitCode=code??0;}
 child.on("error",error=>{console.error(error);finish(1);});
 child.on("exit",code=>finish(ready?code:1));

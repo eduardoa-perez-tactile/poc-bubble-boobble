@@ -27,6 +27,7 @@
     "harness:pipelines": "node tools/harness/record-pipelines.mjs",
     "harness:pipeline-check": "node tools/harness/record-pipelines.mjs --check",
     "harness:perf-combat": "node tools/harness/perf-combat.mjs",
-    "harness:verify-full": "node tools/harness/run.mjs verify-full"
+    "harness:verify-full": "node tools/harness/run.mjs verify-full",
+    "desktop:transport-probe": "node tools/desktop/transport-probe.mjs"
   }
 }

@@ -1,89 +1,109 @@
-# macOS desktop presentation adapter
+# macOS desktop adapter
 
-This project adapter works around missing desktop fullscreen and music
-pause/resume transport controls in the installed runtime. Original YM files and
-converted WAVs have distinct asset aliases: `reference/audio/bubble-N` is source
-YM data and `reference/audio/music-bubble-N` is playable converted music. Source
-and cooked audio tests verify engine music fallback loads these WAV aliases.
-It changes no engine sources or
-installed binaries. It currently supports **macOS arm64 only**.
+This project-owned application provides desktop fullscreen and stateful music
+pause/resume using the installed engine without changing its sources or installed
+binaries. It currently supports **macOS arm64 only**.
 
 From `bubble-boobble/`:
 
 ```sh
 npm run desktop
+npm run desktop:transport-probe
 npm run desktop:integration
 ```
 
-The launcher requires the project's installed engine link, Node.js and Apple's
-command-line compiler/signing tools. It reserves `127.0.0.1:47681`, copies the
-installed V8 host and WebGPU library into ignored
-`.cache/desktop/BubbleBoobble.app`, builds the
-project Objective-C adapter, and ad-hoc signs the **copied** executable with the
-JIT/library-loading entitlements required by V8 and this adapter. It hashes the
-original host before/after packaging and refuses an unexpected change. The copied
-application is signed and started through public LaunchServices (`open -n -W`)
-with the current game bundle and native platform services. A per-launch identity
-and its own executable path verify the native host PID; cleanup targets that PID
-rather than the separate `open` process. Its stdout/stderr are forwarded from
-private per-launch log files.
+The launcher requires the installed engine link, Node.js, Apple's command-line
+compiler/signing tools, and exact **Go 1.26.9** with its pinned dependencies already
+cached. It uses `.cache/toolchains/go/bin/go` or `HARNESS_GO`. Launch builds set
+`GOTOOLCHAIN=local` and `GOPROXY=off`: no compiler or module download is attempted.
+Fresh-machine setup is explicit (these setup commands may download dependencies):
 
-The game-owned dylib loads only into that copied process. Public AppKit APIs
-control that process's own NSWindow. Fullscreen is **borderless desktop mode**:
-it saves/restores window frame/style and covers the current screen, with the Dock
-and menu bar set to auto-hide. It does not claim a separate macOS fullscreen Space.
-No Accessibility or Apple Events permission is used; no other app is controlled.
+```sh
+npm run harness:setup
+.cache/toolchains/go/bin/go -C tools/desktop/ym-source mod download
+```
 
-The adapter reads desired presentation state and reports observed NSWindow and
-AVAudioPlayer state at 20 Hz. The TypeScript `DesktopPlatformBridge` is an optional
-`defineUI` controller, using public `net.fetch` plus the app lifecycle callback.
-It reads settings and canonical pause state, then sends only changed preferences
-or a two-second heartbeat. Connection transitions emit recorded `DesktopIntent`
-actions `native-audio` with value `1` or `0`, for the game to select native music
-versus its standard engine fallback. The controller is exported from `src/main.ts`. The recorded native availability
-flag makes the engine Music bus silent while native music is connected, then
-restores the standard engine fallback when disconnected. SFX remain independent.
+If `HARNESS_GO` supplies the exact toolchain, use that executable for the same
+`mod download` command. The harness setup alone need not populate the music
+module cache.
 
-Native music uses AVAudioPlayer with the five committed converted WAV tracks.
-Volume/mute map directly to player volume. Pause calls `pause` and resume calls
-`play` on the same player, preserving `currentTime`; changing track starts its new
-WAV at zero. Background app lifecycle requests pause without advancing music.
-Each WAV repeats its exported PCM segment (`numberOfLoops = -1`) without fades.
-The pinned reference decoder (`stsound/ymmusic.go`, `player`) wraps
-`currentFrame` to `loopFrame` without resetting the YM chip. These WAVs were
-exported with `loop=false`, so repeating the first PCM segment does not preserve
-that continuous chip/filter state; the decoder's 4096-frame read buffering may
-also leave a terminal tail in the export. Music waveform equivalence across loop
-boundaries is therefore not established. Sound effects stay on the engine's SFX bus,
-which already owns the saved sound level and mute setting.
+The launcher reserves `127.0.0.1:47681`, copies the installed V8 host/WebGPU library
+to ignored `.cache/desktop/BubbleBoobble.app`, builds the project native adapter
+and Go music helper, and ad-hoc signs the **copies**. The helper is rebuilt from
+current source each launch; its module sums, original YM reader, reference
+revision and five source YM files are verified before packaging. The original
+host hash is checked before/after packaging and shutdown. Public LaunchServices
+(`open -n -W`) starts the application; a per-launch identity and its executable
+path verify its real PID. Cleanup signals that PID, rather than the separate
+`open` process. Private per-launch files forward application stdout/stderr.
 
-The loopback protocol exposes `/health`, authenticated `/state`, `/status`, `/game`, and `/input`. `/game` is a read-only
-projection reported by the game client. `/input` accepts only eight fixed game
-keys plus own-window hide/restore and posts them into this process's own Cocoa queue for bounded integration
-probes; it cannot control another process.
-Each launch generates a random 256-bit bearer token. It refuses browser Origin
-headers, unknown fields, invalid ranges, arbitrary track names, and large bodies.
-Only the five known project audio filenames can reach native file loading. The
-HTTP service binds loopback only and performs no general file or command access.
-State-file updates use atomic rename; native status writes are atomic too. Native
-music pauses if its request-file heartbeat becomes older than five seconds, so a
-dead launcher/client cannot leave orphaned music running indefinitely.
+Only the launcher's copied game bundle receives the immutable
+`__bubbleDesktopLaunch` marker. The bridge returns before installing hooks in
+ordinary source/editor bundles. Matching launch identities are required from
+health and native status, preventing an editor Play session from sending its
+preferences into a simultaneously running native application. Availability
+transitions still enter game state solely through recorded `DesktopIntent`
+inputs. Connecting stops the engine's existing music stream; disconnecting
+restores the unique converted-WAV fallback. Original YM assets use
+`reference/audio/bubble-N`; playable fallback WAVs use
+`reference/audio/music-bubble-N`, avoiding the former same-stem asset collision.
 
-`probe.mjs` aliases the integrated bounded own-game probe. It drives actual
-menu/settings and pause inputs, verifies game-reported screens, native fullscreen
-dimensions and volume changes, and exact paused music position across 700 ms
-before resuming. It checks rejected unauthorized, browser-origin and arbitrary
-track requests and restores initial fullscreen/music preferences. Its evidence is
-written to ignored `artifacts/desktop-platform-integration.json`; logs go beside
-it. The GUI probe requires an unlocked desktop and waits for ordinary foreground
-activation before sending keys; it does not unlock or bypass the OS lock. Clicking
-the game window is the normal user activation path if macOS declines activation. Focus is read from Cocoa at 20 Hz. After a focused-to-unfocused transition during
-play, the client emits a recorded pause intent; an unfocused startup does not
-pause. The probe hides/restores only its own game window and verifies canonical
-pause and music position retention. It does not switch to or control another
-application, verify device listening quality, or claim waveform equivalence.
+Public AppKit APIs control only this process's own NSWindow. Fullscreen is
+**borderless desktop mode**: it saves/restores frame/style, covers the current
+screen, and sets the Dock/menu bar to auto-hide. It does not claim a separate
+macOS fullscreen Space. No Accessibility or Apple Events permission is used.
 
-The launcher is a developer distribution path, not a notarized release package.
-Windows/Linux, macOS x64, native fullscreen Spaces, device audio quality, and a
-redistributable installer have not been verified. Normal engine/editor runs can
-keep their existing fallback when no adapter is present.
+Native music runs the unchanged pinned `ym.Stream(loop=true)` in one helper
+process per selected track. Its synthesizer/chip/filter state continues across
+loops. AVAudioSourceNode consumes raw stereo 48 kHz PCM16 through a bounded
+9,600-frame (200 ms) ring and bounded OS pipe. Backpressure stops further
+synthesis. Initial pause/mute/volume are configured before audio can consume
+frames. Pause freezes the exact source cursor; resume continues with the same
+helper and buffered PCM. Mute pauses consumption and defers track changes until
+unmute, matching the reference. Track changes create a fresh helper/cursor.
+The source callback never waits, allocates, or performs file operations.
+
+Music pause follows canonical play/pause state; background menus and results
+continue music. The launcher refreshes its liveness file independently once per
+second, even when the UI clock stops. Native music stops and its helper exits if
+the launcher dies or its heartbeat is older than five seconds. Sound effects
+remain in the engine's sole original SFX bank, with saved per-cue gain and mute
+bank-stop behavior.
+
+The loopback service exposes `/health` and authenticated `/state`, `/status`,
+`/game`, `/input`. `/game` is a read-only client projection. `/input` accepts eight
+fixed game keys plus own-window hide/restore for bounded probes. Every launch
+uses a random 256-bit bearer token. Browser Origin headers, unknown fields,
+invalid ranges, arbitrary tracks and large bodies are refused. Only five known
+packaged YM paths and the packaged helper can reach native file/process loading;
+there is no general file or command endpoint. State/status writes are atomic.
+
+`desktop:transport-probe` runs the actual packaged application in explicit
+`--transport-probe` mode. Authenticated probe requests own its presentation input;
+normal game clients still connect/report observations but cannot overwrite these
+controlled inputs. Ordinary desktop launches and the GUI probe do not enable this
+mode. Diagnostic runs impose a maximum 60-second application deadline (including
+when the flag is invoked without `--run-sec`). It controls only native
+presentation inputs, crosses the menu track's loop, and compares consumed
+PCM prefixes after acknowledged pauses with fresh pinned helper prefixes. It
+checks 700 ms pause retention, resume, muted deferred track changes, zero-cursor
+configured startup, track reset, bounded queues, zero underruns, launcher-owned
+liveness and normal/crashed-launcher cleanup. It also exercises ordinary source
+and the exact copied launch bundle in UI-pumped no-GPU hosts to verify bridge
+isolation. Evidence is `artifacts/desktop-ym-app-proof.json` and its adjacent log.
+This is transport evidence, not an input-driven GUI claim.
+
+`desktop:integration` (`desktop:probe` alias) drives actual menu/settings and
+pause inputs, checks native fullscreen/volume/position, and hides/restores only
+its own window to verify focus-loss pause. It requires an unlocked desktop and
+ordinary foreground activation. It does not unlock or bypass the OS lock.
+Evidence is `artifacts/desktop-platform-integration.json`; this GUI recheck is
+pending while the session is locked.
+
+The independent source proof compares every PCM byte for all five tracks through
+two loops plus boundary tails against the pinned original reader; see
+`ym-source/README.md`. Position is the source callback's consumed-frame timeline,
+not the DAC position or hardware latency. Device listening quality, native
+fullscreen Spaces, macOS x64, Windows/Linux, notarization and a redistributable
+installer have not been verified. The editor fallback repeats a finite converted
+WAV segment and does not preserve continuous YM state across its loop boundary.

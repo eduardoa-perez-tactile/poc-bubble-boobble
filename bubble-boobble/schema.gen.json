@@ -41,6 +41,14 @@
           "default": -1
         },
         {
+          "name": "sfxPriority",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": 2147483647,
+          "doc": "Strictly descending SFX priorities preserve older voices at the 24-slot cap; mute safely resets after bank unload"
+        },
+        {
           "name": "paused",
           "kind": "bool",
           "scalar": "u8",

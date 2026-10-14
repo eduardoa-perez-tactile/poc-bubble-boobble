@@ -21,3 +21,20 @@ The main-menu logo/buttons, editor buttons, Help/Credits labels, profile rows/bu
 The live release-host menu-overlay measurement (`artifacts/desktop-menu-perf.json`) captured 600 sim steps and 37 presentation frames: presentation p50 0.496 ms, p95 0.685 ms, maximum 4.078 ms; sim-step p95 0.209 ms, no hitch steps; maximum GC pause 0.386 ms; process memory 165 MiB. The subsequent rendered sample used six draw calls and 334 instances. The previous round-25 match remained active behind that overlay, so these are combined game-plus-overlay measurements, not isolated menu costs. The paused host's whole-frame maximum is not a playable-frame-rate verdict.
 
 The nearest renderer owns sprites, menu circles, logo/portraits and encoded-RGB dimming. UI documents retain the editable labels/buttons and their reference coordinates. Original Go save-file interchange and a portable notarized desktop distribution remain outside the implemented storage/launcher path. Text rasterization has no automated cross-renderer allowance yet. Fresh Go captures now run through LaunchServices; tile-boundary pixels vary even between repeated pristine Go launches, and are reported explicitly in [rendering.md](rendering.md).
+
+## Desktop audio transport
+
+The launcher packages the pinned original continuous YM decoder and a bounded
+AVAudioSourceNode transport. Initial controls precede audio output; pause and mute
+retain the source cursor, muted track changes wait for unmute, and background
+menus/results keep playing. Per-launch bundle identity prevents an editor Play
+world from controlling the native app. The ordinary editor uses the distinct
+converted-WAV fallback. See the adapter README for exact PCM loop, pause,
+shutdown and client-isolation evidence and the remaining unlocked-GUI gate.
+
+Seven engine audio tests cover actual fallback loading/handoff, bank-stop mute,
+first-cue reload, per-cue gain, zero-volume gating and 24-voice saturation.
+Strictly descending recorded priorities retain older voices at the global cap;
+per-sound caps are disabled so they cannot steal before that policy. The signed
+cursor resets only after mute stops the bank, and fails before integer wrap.
+Pure simulation sound lists remain unchanged.

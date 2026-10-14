@@ -169,19 +169,34 @@ probe, never a passing hot-reload result.
 | Explicit-scene replay verification | 0.84 s | All three hash streams pass |
 | Live milestone audit | 8.60 s | Cached pure cases, random numerics and all 25 independent rounds pass |
 | Full verify of staged core export | 18.73 s | 75 T0, 10 desktop T1, three explicit-scene replays, typecheck/cook/600-frame smoke pass |
-| Final integrated quick | 3.61 s | Comparator checks plus 11 movement, five complete engine-input and three Go numerical test cases pass |
-| Final integrated verify | 29.65 s | 85 T0, all 14 desktop T1, four replay streams, typecheck/cook/600-frame smoke, audio provenance/alias guard pass |
-| Final cooked T0 | 2.52 s | All 85 tests pass against cooked assets |
-| Final all-tier rendered pipeline checkpoint | 28.27 s | Desktop/mobile/compat each complete all 506 replay steps with 170 actual GPU probes; peak draws 11/9/9, within 14 |
-| Final desktop rendered replay check (within the checkpoint) | 9.34 s | Every required page, Ready, round 24, death, particles and elemental effect observed |
+| Final integrated quick | 3.49 s | Comparator checks plus 11 movement, five complete engine-input and three Go numerical test cases pass |
+| Pre-stateful-audio checkpoint verify | 29.65 s | 85 T0, all 14 desktop T1, four replay streams, typecheck/cook/600-frame smoke and audio guard pass |
+| Final integrated verify | 30.62 s | 92 T0, all 14 desktop T1, four refreshed replay streams, typecheck/cook/600-frame smoke and audio guard pass |
+| Final cooked T0 | 2.67 s | All 92 tests pass against cooked assets |
+| Latest all-tier rendered pipeline recording | 28.27 s | Desktop/mobile/compat each complete all 506 replay steps with 170 actual GPU probes; peak draws 11/9/9, within 14 |
+| Final desktop rendered replay check | 9.51 s | Every required page, Ready, round 24, death, particles and elemental effect observed |
+| Independent exact export of checkpoint `373e266` | 38.93 s | 85 T0, 14 desktop T1, 170-frame rendered route, four replays, check/cook/600-frame smoke and audio guard pass |
 
 Measurements include child CLI startup but exclude npm wrapper startup. The runner
 writes per-stage wall times to ignored `artifacts/<command>-timing.json`. They are
 development-machine measurements, not device/performance guarantees. A fresh cook
 or asset import may take materially longer and must not be skipped to meet a
 fast-lane target. The measured staged core export preceded the pixel/native adapters. Its timing
-is historical; the current verify lane also includes the rendered replay check
+is historical; the checkpoint verify-full lane also includes the rendered replay check
 described below.
+
+The final verify sample is 0.62 seconds above the warm 30-second target. Its
+check stage took 14.59 seconds versus 13.48 seconds in the preceding checkpoint,
+accounting for most of the difference. Every required test, all 600 cooked smoke
+frames and the asset guard remain enabled; this is an observed timing, not a
+claimed target pass. The latest all-tier pipeline recording remains applicable:
+the subsequent audio/schema work changed no material or rendered flow, and the
+final desktop route again verified all 506 recorded steps with 170 GPU probes.
+
+After checkpoint `373e266`, the audio schema added the SFX priority cursor and
+platform marker coverage. All four world replays were intentionally refreshed
+for that schema change and independently verified. Pure Go fixtures and all
+existing rendering goldens remained unchanged.
 
 The installed editor launcher uses the application's supported `--project` flag
 because the packaged `gameengine editor` launcher references a missing development

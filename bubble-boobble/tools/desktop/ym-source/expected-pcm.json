@@ -1,0 +1,232 @@
+{
+  "readerSha256": "299085352bb31ee24e09459c3d9ec727e0ecaeb4112fc3972560bbb1f70b21a4",
+  "referenceRevision": "783cf6aa26ac3c57cdab43f2d7a5b3725a3991cc",
+  "module": {
+    "Path": "github.com/olivierh59500/ym-player",
+    "Version": "v0.0.0-20260913215440-3f73bdca82e5",
+    "Sum": "h1:TNP4PkhH/3bCosR556/63adijcXwmTQhYCqDI49SEko=",
+    "GoModSum": "h1:CcBCg9lC4P1TUdzYcuuzzIMRvDQmksrFlCdOcNgYgxY="
+  },
+  "tracks": [
+    {
+      "track": "bubble-1.ym",
+      "sourceSha256": "1f1fe4681e189164edfe8ab212759410146c51c4c10820dace07752e19c0e469",
+      "loopFrame": 0,
+      "playerRate": 50,
+      "ymFrames": 2305,
+      "firstLoopFrames": 2212800,
+      "repeatFrames": 2212800,
+      "comparedFrames": 4429696,
+      "pcmSha256": "08d165c47d3e8d4540cbd32e6d0a885dbd8cb1690f524919201b9b28ea1723f0",
+      "windows": {
+        "firstLoop": {
+          "startFrame": 0,
+          "frames": 2212800,
+          "sha256": "183cd37adee6fa3a7fae9abdc8f03c35426b00dafbc96419eefd4526b5f8fcf5",
+          "matchesOriginal": true
+        },
+        "firstBoundaryTail": {
+          "startFrame": 2208704,
+          "frames": 8192,
+          "sha256": "6050220c200f435bf0a9b9711590aace4bb67ff6b02682f441b9c9627efae77b",
+          "matchesOriginal": true
+        },
+        "secondLoop": {
+          "startFrame": 2212800,
+          "frames": 2212800,
+          "sha256": "a108a5d3f2f556bdd16aadbef9cf52c271269211ad796b1eaaf980ba2a033946",
+          "matchesOriginal": true
+        },
+        "secondBoundaryTail": {
+          "startFrame": 4421504,
+          "frames": 8192,
+          "sha256": "6156627dca9c36cb3beeae45b590b58f2b41ebfd3f62ae4c6a797a079cdf8d1c",
+          "matchesOriginal": true
+        }
+      },
+      "exporterFiniteFrames": 2215936,
+      "exporterTailFrames": 3136,
+      "exporterTailNonzeroFrames": 1464,
+      "exporterWavMatchesOriginalFinite": true,
+      "firstFiniteVsContinuousMismatchFrame": 2212800,
+      "firstTrimmedLoopRepeatMismatchFrame": 2212800,
+      "firstNaiveWavRepeatMismatchFrame": 2215936
+    },
+    {
+      "track": "bubble-2.ym",
+      "sourceSha256": "ecc7fce6ac386930ec6ac7325adbdd220593afd8cd5333abe561dfa41942390e",
+      "loopFrame": 0,
+      "playerRate": 50,
+      "ymFrames": 511,
+      "firstLoopFrames": 490560,
+      "repeatFrames": 490560,
+      "comparedFrames": 985216,
+      "pcmSha256": "af2833b029b5834f6c706d9c5ddcb7e729756eca1800f2df03dc879baf2a3da3",
+      "windows": {
+        "firstLoop": {
+          "startFrame": 0,
+          "frames": 490560,
+          "sha256": "004e779b338a39a1582071747453c2d25cf6dc9f14ad80c377905aa8419d013d",
+          "matchesOriginal": true
+        },
+        "firstBoundaryTail": {
+          "startFrame": 486464,
+          "frames": 8192,
+          "sha256": "6b1225f6305ede1c8555cd10dc02f9047abeea25e172e221553dbf2d66460043",
+          "matchesOriginal": true
+        },
+        "secondLoop": {
+          "startFrame": 490560,
+          "frames": 490560,
+          "sha256": "9facf6c2f52d6e37a260e12e209173eaf42d4cfe1e23fc22958cebe2c2cca546",
+          "matchesOriginal": true
+        },
+        "secondBoundaryTail": {
+          "startFrame": 977024,
+          "frames": 8192,
+          "sha256": "1418958e78c251aa867f2af5be8f0afa342bbd95fe7a2cea6a09805f077b6ec5",
+          "matchesOriginal": true
+        }
+      },
+      "exporterFiniteFrames": 491520,
+      "exporterTailFrames": 960,
+      "exporterTailNonzeroFrames": 488,
+      "exporterWavMatchesOriginalFinite": true,
+      "firstFiniteVsContinuousMismatchFrame": 490560,
+      "firstTrimmedLoopRepeatMismatchFrame": 490560,
+      "firstNaiveWavRepeatMismatchFrame": 491520
+    },
+    {
+      "track": "bubble-3.ym",
+      "sourceSha256": "e1affffe9a27983b4e3c749fb04eaa8d639eed7ef3072e5174281815fac3f09f",
+      "loopFrame": 0,
+      "playerRate": 50,
+      "ymFrames": 647,
+      "firstLoopFrames": 621120,
+      "repeatFrames": 621120,
+      "comparedFrames": 1246336,
+      "pcmSha256": "3bd1f76084bce587f93b6466076c246f9a411587832818ae15499509d855e421",
+      "windows": {
+        "firstLoop": {
+          "startFrame": 0,
+          "frames": 621120,
+          "sha256": "e3b08daae4b74e112fd4552a5a3e84977eda08ea3f1e6d88aeb6757cb3b2e82e",
+          "matchesOriginal": true
+        },
+        "firstBoundaryTail": {
+          "startFrame": 617024,
+          "frames": 8192,
+          "sha256": "dbe90f2282d221e69c085593f017bfd6a0beb7141e6696b2f7152ffdf2211c4d",
+          "matchesOriginal": true
+        },
+        "secondLoop": {
+          "startFrame": 621120,
+          "frames": 621120,
+          "sha256": "401bdb3aed94af47e962a081b07edf0f76d4bfc4bd0d4e1218aece27d7bc5b5a",
+          "matchesOriginal": true
+        },
+        "secondBoundaryTail": {
+          "startFrame": 1238144,
+          "frames": 8192,
+          "sha256": "4e64a899b6f3fde2aad1cf3d931ed116d1fe2a31b9cb257be52b0e1a302b25ad",
+          "matchesOriginal": true
+        }
+      },
+      "exporterFiniteFrames": 622592,
+      "exporterTailFrames": 1472,
+      "exporterTailNonzeroFrames": 488,
+      "exporterWavMatchesOriginalFinite": true,
+      "firstFiniteVsContinuousMismatchFrame": 621120,
+      "firstTrimmedLoopRepeatMismatchFrame": 621120,
+      "firstNaiveWavRepeatMismatchFrame": 622592
+    },
+    {
+      "track": "bubble-4.ym",
+      "sourceSha256": "5e995a899b83cb193d71985eed877438adc458f66dd1495952defdf8fb890815",
+      "loopFrame": 0,
+      "playerRate": 50,
+      "ymFrames": 575,
+      "firstLoopFrames": 552000,
+      "repeatFrames": 552000,
+      "comparedFrames": 1108096,
+      "pcmSha256": "fc4fc567598624ec242e66b25f51b44336fb4b616a51b2f1f580e19aa28a6e81",
+      "windows": {
+        "firstLoop": {
+          "startFrame": 0,
+          "frames": 552000,
+          "sha256": "30c1484e0b4e8da9c74e93b7eb8d7e4c757544846990850e72f1b730a988e3d3",
+          "matchesOriginal": true
+        },
+        "firstBoundaryTail": {
+          "startFrame": 547904,
+          "frames": 8192,
+          "sha256": "d1865792bd8cd2e6f1cda8b823c63dc14fe767bd575af22a0b0f49f05e2528d4",
+          "matchesOriginal": true
+        },
+        "secondLoop": {
+          "startFrame": 552000,
+          "frames": 552000,
+          "sha256": "e605552f4c6507327237e2d7bd9506f388095fa922e5084f7d73c0a5f13ee5ad",
+          "matchesOriginal": true
+        },
+        "secondBoundaryTail": {
+          "startFrame": 1099904,
+          "frames": 8192,
+          "sha256": "aaca23b1ed5486ebc1947c44ca09a264b8f73d18f3e77f99febd9baa84dc1161",
+          "matchesOriginal": true
+        }
+      },
+      "exporterFiniteFrames": 552960,
+      "exporterTailFrames": 960,
+      "exporterTailNonzeroFrames": 488,
+      "exporterWavMatchesOriginalFinite": true,
+      "firstFiniteVsContinuousMismatchFrame": 552000,
+      "firstTrimmedLoopRepeatMismatchFrame": 552000,
+      "firstNaiveWavRepeatMismatchFrame": 552960
+    },
+    {
+      "track": "bubble-5.ym",
+      "sourceSha256": "241c9268131e78dccd33a7cab8978e1a756dd3ea0300948c2da18ba222fd7c74",
+      "loopFrame": 0,
+      "playerRate": 50,
+      "ymFrames": 289,
+      "firstLoopFrames": 277440,
+      "repeatFrames": 277440,
+      "comparedFrames": 558976,
+      "pcmSha256": "8b83cabe72550b0f74eb3b3d3fc6d178d9a7fa7695f5b38056cfb99c952e6e71",
+      "windows": {
+        "firstLoop": {
+          "startFrame": 0,
+          "frames": 277440,
+          "sha256": "36c7bf2d0caae6511a7cd62336991d81e95d2bb0f6f0a4f77557e5c7c0800546",
+          "matchesOriginal": true
+        },
+        "firstBoundaryTail": {
+          "startFrame": 273344,
+          "frames": 8192,
+          "sha256": "cc281ecab680d787aa35509e9e6cb93457f0e24b3f6947e880ea47d20f7ab4a3",
+          "matchesOriginal": true
+        },
+        "secondLoop": {
+          "startFrame": 277440,
+          "frames": 277440,
+          "sha256": "aa31f1daea02ee3c208eb943651a0218f4e17e4c020f5dda52d149ce69b2282f",
+          "matchesOriginal": true
+        },
+        "secondBoundaryTail": {
+          "startFrame": 550784,
+          "frames": 8192,
+          "sha256": "1ee6307ee9e4e0d51955816d762a2771b3c27475375eca8b6ede33a8d7da7477",
+          "matchesOriginal": true
+        }
+      },
+      "exporterFiniteFrames": 278528,
+      "exporterTailFrames": 1088,
+      "exporterTailNonzeroFrames": 488,
+      "exporterWavMatchesOriginalFinite": true,
+      "firstFiniteVsContinuousMismatchFrame": 277440,
+      "firstTrimmedLoopRepeatMismatchFrame": 277440,
+      "firstNaiveWavRepeatMismatchFrame": 278528
+    }
+  ]
+}

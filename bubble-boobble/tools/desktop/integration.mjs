@@ -36,11 +36,11 @@ try{
  await select(4);await key('confirm');await screen('menu');
  }await transition('confirm','play');await until(native,v=>v.track==='bubble-1'&&v.playing,'game-selected theme');
  await key('pause');await screen('pause');
- proof.paused=await until(native,v=>!v.playing,'paused music');await delay(700);proof.stillPaused=await native();
+ proof.paused=await until(native,v=>!v.playing&&v.pauseAcknowledged,'paused music');await delay(700);proof.stillPaused=await native();
  await key('confirm');await screen('play');
  proof.resumed=await until(native,v=>v.playing&&v.position>proof.paused.position,'resumed music position');proof.final=await game();
  await key('background');await until(native,v=>!v.focused,'own window focus lost');await screen('pause');
- proof.focusPaused=await until(native,v=>!v.playing,'focus-loss music pause');await delay(700);proof.focusStillPaused=await native();
+ proof.focusPaused=await until(native,v=>!v.playing&&v.pauseAcknowledged,'focus-loss music pause');await delay(700);proof.focusStillPaused=await native();
  await key('foreground');await until(native,v=>v.focused,'own window focus restored');await key('confirm');await screen('play');
  proof.focusResumed=await until(native,v=>v.playing&&v.position>proof.focusPaused.position,'focus resume');
  proof.musicDecodeWarning=log.includes('not a decodable file');

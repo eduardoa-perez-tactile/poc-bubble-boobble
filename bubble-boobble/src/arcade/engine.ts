@@ -1,4 +1,4 @@
-import { ActionState, WorldView, defineSystem, query, read, write, PlaySound } from '@gameengine/runtime';
+import { ActionState, WorldView, defineSystem, query, read, write } from '@gameengine/runtime';
 import { ArcadeControl, ArcadeInput } from '../schema.gen.ts';
 import campaign from '../../data/levels.json';
 import { session } from './session.ts';
@@ -53,6 +53,5 @@ export const ArcadeStep=defineSystem({
     session.set({...current,game});
     setDesktopRunScore(game.Score,game.Level.number);
     if(game.State!==oldState&&(game.State===3||game.State===4))finishDesktopRun(game.State===4,game.Score,game.Level.number);
-    for(const sound of game.Sounds)if(sound!=='opening')ctx.events.emit(PlaySound,{sound:`reference/audio/${sound}`,maxVoices:24});
   },
 });
