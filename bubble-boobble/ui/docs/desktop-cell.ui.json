@@ -1,0 +1,64 @@
+{
+  "$schemaVersion": 1,
+  "guid": "aa8a346c-6408-478e-8dc6-864c18a3d65d",
+  "name": "desktop-cell",
+  "title": "Desktop cell",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop cell",
+      "style": {
+        "dir": "row",
+        "pad": 0,
+        "align": "center",
+        "bg": "#142636",
+        "radius": 12,
+        "w": 16,
+        "h": 16
+      },
+      "children": [
+        "dc_image",
+        "dc_label"
+      ]
+    },
+    "dc_image": {
+      "type": "icon",
+      "name": "Icon",
+      "image": "ui/sprites/star",
+      "style": {
+        "size": 32,
+        "w": 16,
+        "h": 16
+      },
+      "property": "image"
+    },
+    "dc_label": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "label",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0.5
+        ],
+        "fontSize": 10,
+        "color": "#ffff55"
+      }
+    }
+  },
+  "behaviour": "button",
+  "properties": {
+    "image": {
+      "type": "image",
+      "default": "ui/sprites/star"
+    },
+    "label": {
+      "type": "text",
+      "default": ""
+    }
+  }
+}

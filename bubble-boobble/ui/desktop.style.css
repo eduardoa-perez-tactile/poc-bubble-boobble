@@ -1,0 +1,16 @@
+.desktop-screen { width: 100%; height: 100%; align-items: center; justify-content: center; }
+.desktop-shell, .desktop-editor, .desktop-menu, .desktop-hud { width: 768px; height: 720px; }
+.desktop-shell .ud-desktop-shell__ds_body { white-space: pre-wrap; line-height: 2; max-width: 700px; }
+
+.desktop-shell, .desktop-editor, .desktop-menu, .desktop-hud { font-family: "reference/arcade"; }
+.desktop-shell .ud-desktop-shell__ds_keys { flex-wrap: wrap; }
+
+.desktop-hud-screen { pointer-events: none; }
+.desktop-help .ud-desktop-button__root, .desktop-credits .ud-desktop-button__root, .desktop-scores .ud-desktop-button__root { width: 240px; }
+.desktop-account { font-family: "reference/arcade"; }
+.desktop-menu-bubbles, .desktop-menu-dragons { width: 768px; height: 720px; pointer-events: none; }
+.desktop-menu-bubble { position: absolute; border-width: 1px; border-color: #234155; border-radius: 999px; }
+.desktop-menu-green { position: absolute; left: 80px; top: 550px; width: 96px; height: 96px; }
+.desktop-menu-blue { position: absolute; left: 592px; top: 550px; width: 96px; height: 96px; }
+.desktop-settings-dragon { width: 96px; height: 96px; }
+.desktop-account .ud-desktop-profile-row__dpr_image { transform: scaleX(-1); }

@@ -1,0 +1,114 @@
+{
+  "$schemaVersion": 1,
+  "guid": "fbd26b84-37d2-4025-9f40-0f6f78feec48",
+  "name": "desktop-heading",
+  "title": "Desktop heading",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop heading",
+      "style": {
+        "dir": "row",
+        "pad": 0,
+        "align": "center",
+        "radius": 0,
+        "w": 768,
+        "h": 132
+      },
+      "children": [
+        "dhead_dash",
+        "dhead_brand",
+        "dhead_title",
+        "dhead_subtitle"
+      ]
+    },
+    "dhead_dash": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          30
+        ],
+        "w": 36,
+        "h": 4,
+        "bg": "#70f089"
+      }
+    },
+    "dhead_brand": {
+      "type": "label",
+      "name": "Label",
+      "text": "BUBBLE BOBBLE",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          76,
+          26
+        ],
+        "fontSize": 11,
+        "color": "#70f089"
+      }
+    },
+    "dhead_title": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          65
+        ],
+        "fontSize": 28,
+        "color": "#ebf5ff"
+      },
+      "property": "title"
+    },
+    "dhead_subtitle": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          110
+        ],
+        "fontSize": 11,
+        "color": "#829fb1"
+      },
+      "property": "subtitle"
+    }
+  },
+  "properties": {
+    "title": {
+      "type": "text",
+      "default": ""
+    },
+    "subtitle": {
+      "type": "text",
+      "default": ""
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "$schemaVersion": 1,
+  "guid": "8c63804a-2bce-4253-a586-98e3c550cb42",
+  "name": "desktop-key-row",
+  "title": "Desktop key row",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop key row",
+      "style": {
+        "dir": "row",
+        "pad": 0,
+        "align": "center",
+        "radius": 0,
+        "w": 560,
+        "h": 38,
+        "gap": 8
+      },
+      "children": [
+        "dkr_keys"
+      ]
+    },
+    "dkr_keys": {
+      "type": "repeat",
+      "doc": "desktop-key-button",
+      "property": "keys"
+    }
+  },
+  "properties": {
+    "keys": {
+      "type": "list",
+      "of": "desktop-key-button",
+      "default": []
+    }
+  }
+}

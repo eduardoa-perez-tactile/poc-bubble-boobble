@@ -1,0 +1,1039 @@
+{
+  "$schemaVersion": 1,
+  "guid": "35450276-5165-4af3-9f8d-67ac6e8aa54f",
+  "name": "desktop-shell",
+  "title": "Desktop shell",
+  "kind": "view",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop shell",
+      "style": {
+        "w": 768,
+        "h": 720,
+        "pad": 0,
+        "bg": "#080c1b",
+        "gap": 12,
+        "align": "center",
+        "justify": "center",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0.5
+        ],
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "children": [
+        "ds_logo",
+        "ds_title",
+        "ds_subtitle",
+        "ds_body",
+        "ds_keys",
+        "ds_grid",
+        "ds_actions",
+        "ds_status",
+        "ds_help",
+        "ds_credits",
+        "ds_brand",
+        "ds_dash"
+      ]
+    },
+    "ds_logo": {
+      "type": "icon",
+      "name": "Icon",
+      "image": "reference/logo",
+      "style": {
+        "size": 32,
+        "w": 350,
+        "h": 252,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          209,
+          26
+        ]
+      },
+      "show": "logo"
+    },
+    "ds_title": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "title",
+      "style": {
+        "fontSize": 28,
+        "color": "#ebf5ff",
+        "textAlign": "center",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          65
+        ]
+      }
+    },
+    "ds_subtitle": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "subtitle",
+      "style": {
+        "fontSize": 11,
+        "color": "#829fb1",
+        "textAlign": "center",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          110
+        ]
+      }
+    },
+    "ds_body": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "body",
+      "style": {
+        "fontSize": 12,
+        "color": "#eeeeee",
+        "textAlign": "center",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          158
+        ]
+      }
+    },
+    "ds_grid": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "ds_rows"
+      ],
+      "style": {
+        "pad": 0,
+        "dir": "column",
+        "gap": 0
+      }
+    },
+    "ds_rows": {
+      "type": "repeat",
+      "doc": "desktop-grid-row",
+      "property": "rows"
+    },
+    "ds_actions": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "ds_buttons"
+      ],
+      "style": {
+        "pad": 0,
+        "dir": "column",
+        "gap": 12,
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          180
+        ]
+      }
+    },
+    "ds_buttons": {
+      "type": "repeat",
+      "doc": "desktop-button",
+      "property": "buttons"
+    },
+    "ds_status": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "status",
+      "style": {
+        "fontSize": 10,
+        "color": "#ffff55",
+        "textAlign": "center",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          1
+        ],
+        "offset": [
+          0,
+          -20
+        ]
+      }
+    },
+    "ds_keys": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "ds_key_items"
+      ],
+      "style": {
+        "pad": 0,
+        "dir": "row",
+        "w": 560,
+        "gap": 8,
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          252
+        ]
+      }
+    },
+    "ds_key_items": {
+      "type": "repeat",
+      "doc": "desktop-key-button",
+      "property": "keys"
+    },
+    "ds_help": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "ds_help_0_0",
+        "ds_help_0_1",
+        "ds_help_1_0",
+        "ds_help_1_1",
+        "ds_help_2_0",
+        "ds_help_2_1",
+        "ds_help_3_0",
+        "ds_help_3_1",
+        "ds_help_4_0",
+        "ds_help_4_1",
+        "ds_help_5_0",
+        "ds_help_5_1",
+        "ds_help_6_0",
+        "ds_help_6_1",
+        "ds_help_7_0",
+        "ds_help_7_1"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 768,
+        "h": 720,
+        "hide": true
+      }
+    },
+    "ds_credits": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "ds_credits_0",
+        "ds_credits_1",
+        "ds_credits_2",
+        "ds_credits_3",
+        "ds_credits_4",
+        "ds_credits_5",
+        "ds_credits_6",
+        "ds_credits_7",
+        "ds_credits_8",
+        "ds_credits_9"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 768,
+        "h": 720,
+        "hide": true
+      }
+    },
+    "ds_help_0_0": {
+      "type": "label",
+      "name": "Label",
+      "text": "MOVE",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          158
+        ],
+        "fontSize": 13,
+        "color": "#70f089"
+      }
+    },
+    "ds_help_0_1": {
+      "type": "label",
+      "name": "Label",
+      "text": "LEFT / RIGHT OR A / D",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          181
+        ],
+        "fontSize": 11,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_help_1_0": {
+      "type": "label",
+      "name": "Label",
+      "text": "JUMP",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          212
+        ],
+        "fontSize": 13,
+        "color": "#70f089"
+      }
+    },
+    "ds_help_1_1": {
+      "type": "label",
+      "name": "Label",
+      "text": "UP OR W - HOLD TO BOUNCE ON BUBBLES",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          235
+        ],
+        "fontSize": 11,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_help_2_0": {
+      "type": "label",
+      "name": "Label",
+      "text": "BLOW BUBBLES",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          266
+        ],
+        "fontSize": 13,
+        "color": "#70f089"
+      }
+    },
+    "ds_help_2_1": {
+      "type": "label",
+      "name": "Label",
+      "text": "SPACE OR CTRL - TOUCH A BUBBLE TO POP IT",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          289
+        ],
+        "fontSize": 11,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_help_3_0": {
+      "type": "label",
+      "name": "Label",
+      "text": "TAKE A BREAK",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          320
+        ],
+        "fontSize": 13,
+        "color": "#70f089"
+      }
+    },
+    "ds_help_3_1": {
+      "type": "label",
+      "name": "Label",
+      "text": "ESC TO PAUSE / F11 FULLSCREEN / M MUTE",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          343
+        ],
+        "fontSize": 11,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_help_4_0": {
+      "type": "label",
+      "name": "Label",
+      "text": "GAMEPAD",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          374
+        ],
+        "fontSize": 13,
+        "color": "#70f089"
+      }
+    },
+    "ds_help_4_1": {
+      "type": "label",
+      "name": "Label",
+      "text": "STICK OR D-PAD / A JUMP / X FIRE / START PAUSE",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          397
+        ],
+        "fontSize": 11,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_help_5_0": {
+      "type": "label",
+      "name": "Label",
+      "text": "BONUSES",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          428
+        ],
+        "fontSize": 13,
+        "color": "#70f089"
+      }
+    },
+    "ds_help_5_1": {
+      "type": "label",
+      "name": "Label",
+      "text": "CANDIES, SHOES, RINGS, PARASOLS, CLOCK, DYNAMITE",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          451
+        ],
+        "fontSize": 11,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_help_6_0": {
+      "type": "label",
+      "name": "Label",
+      "text": "ELEMENTS",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          482
+        ],
+        "fontSize": 13,
+        "color": "#70f089"
+      }
+    },
+    "ds_help_6_1": {
+      "type": "label",
+      "name": "Label",
+      "text": "WATER FLOWS, LIGHTNING STRIKES, FIRE SPREADS",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          505
+        ],
+        "fontSize": 11,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_help_7_0": {
+      "type": "label",
+      "name": "Label",
+      "text": "SURVIVE",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          536
+        ],
+        "fontSize": 13,
+        "color": "#70f089"
+      }
+    },
+    "ds_help_7_1": {
+      "type": "label",
+      "name": "Label",
+      "text": "3 LIVES / ENEMIES GET ANGRY AFTER 30 SECONDS",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          52,
+          559
+        ],
+        "fontSize": 11,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_credits_0": {
+      "type": "label",
+      "name": "Label",
+      "text": "ORIGINAL GAME AND CHARACTERS",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          176
+        ],
+        "fontSize": 13,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_credits_1": {
+      "type": "label",
+      "name": "Label",
+      "text": "TAITO",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          212
+        ],
+        "fontSize": 13,
+        "color": "#70f089"
+      }
+    },
+    "ds_credits_2": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          248
+        ],
+        "fontSize": 13,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_credits_3": {
+      "type": "label",
+      "name": "Label",
+      "text": "GAME ADAPTATION AND LEVEL DESIGN",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          284
+        ],
+        "fontSize": 13,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_credits_4": {
+      "type": "label",
+      "name": "Label",
+      "text": "MALAKH SOFTWARE - 2026",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          320
+        ],
+        "fontSize": 13,
+        "color": "#70f089"
+      }
+    },
+    "ds_credits_5": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          356
+        ],
+        "fontSize": 13,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_credits_6": {
+      "type": "label",
+      "name": "Label",
+      "text": "GO EDITION POWERED BY EBITENGINE",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          392
+        ],
+        "fontSize": 13,
+        "color": "#70f089"
+      }
+    },
+    "ds_credits_7": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          428
+        ],
+        "fontSize": 13,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_credits_8": {
+      "type": "label",
+      "name": "Label",
+      "text": "SOFTWARE LICENSE: MIT",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          464
+        ],
+        "fontSize": 13,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_credits_9": {
+      "type": "label",
+      "name": "Label",
+      "text": "ARTWORK AND AUDIO BELONG TO THEIR OWNERS",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          500
+        ],
+        "fontSize": 13,
+        "color": "#ebf5ff"
+      }
+    },
+    "ds_brand": {
+      "type": "label",
+      "name": "Label",
+      "text": "BUBBLE BOBBLE",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          76,
+          26
+        ],
+        "fontSize": 11,
+        "color": "#70f089"
+      }
+    },
+    "ds_dash": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          30
+        ],
+        "w": 36,
+        "h": 4,
+        "bg": "#70f089"
+      }
+    }
+  },
+  "view": {
+    "behaviour": "screen",
+    "safe": true
+  },
+  "properties": {
+    "title": {
+      "type": "text",
+      "default": "BUBBLE BOBBLE"
+    },
+    "subtitle": {
+      "type": "text",
+      "default": ""
+    },
+    "body": {
+      "type": "text",
+      "default": ""
+    },
+    "status": {
+      "type": "text",
+      "default": ""
+    },
+    "buttons": {
+      "type": "list",
+      "of": "desktop-button",
+      "default": []
+    },
+    "rows": {
+      "type": "list",
+      "of": "desktop-grid-row",
+      "default": []
+    },
+    "logo": {
+      "type": "yesno",
+      "default": false
+    },
+    "keys": {
+      "type": "list",
+      "of": "desktop-key-button",
+      "default": []
+    },
+    "page": {
+      "type": "enum",
+      "values": [
+        "title",
+        "menu",
+        "profiles",
+        "new-profile",
+        "settings",
+        "scores",
+        "help",
+        "credits",
+        "play",
+        "pause",
+        "result",
+        "editor"
+      ],
+      "default": "title",
+      "poses": {
+        "title": {
+          "set": {
+            "ds_actions": {
+              "offset": [
+                0,
+                438
+              ]
+            },
+            "ds_title": {
+              "offset": [
+                0,
+                360
+              ],
+              "fontSize": 16,
+              "color": "#70f089"
+            },
+            "ds_subtitle": {
+              "offset": [
+                0,
+                360
+              ],
+              "fontSize": 16,
+              "color": "#ebf5ff"
+            },
+            "ds_brand": {
+              "hide": true
+            },
+            "ds_dash": {
+              "hide": true
+            }
+          }
+        },
+        "profiles": {
+          "set": {
+            "ds_actions": {
+              "offset": [
+                0,
+                132
+              ]
+            }
+          }
+        },
+        "new-profile": {
+          "set": {
+            "ds_actions": {
+              "offset": [
+                0,
+                520
+              ]
+            },
+            "ds_body": {
+              "offset": [
+                0,
+                178
+              ],
+              "fontSize": 22,
+              "color": "#70f089"
+            }
+          }
+        },
+        "settings": {
+          "set": {
+            "ds_actions": {
+              "offset": [
+                0,
+                180
+              ]
+            },
+            "ds_body": {
+              "offset": [
+                0,
+                592
+              ]
+            }
+          }
+        },
+        "scores": {
+          "set": {
+            "ds_actions": {
+              "offset": [
+                0,
+                624
+              ]
+            }
+          }
+        },
+        "help": {
+          "set": {
+            "ds_actions": {
+              "offset": [
+                0,
+                624
+              ]
+            },
+            "ds_help": {
+              "hide": false
+            },
+            "ds_body": {
+              "hide": true
+            }
+          }
+        },
+        "credits": {
+          "set": {
+            "ds_actions": {
+              "offset": [
+                0,
+                624
+              ]
+            },
+            "ds_credits": {
+              "hide": false
+            },
+            "ds_body": {
+              "hide": true
+            }
+          }
+        },
+        "pause": {
+          "set": {
+            "ds_actions": {
+              "offset": [
+                0,
+                320
+              ]
+            },
+            "ds_title": {
+              "offset": [
+                0,
+                252
+              ],
+              "fontSize": 32,
+              "color": "#70f089"
+            },
+            "root": {
+              "bg": "#000000c3"
+            },
+            "ds_brand": {
+              "hide": true
+            },
+            "ds_dash": {
+              "hide": true
+            }
+          }
+        },
+        "result": {
+          "set": {
+            "ds_actions": {
+              "offset": [
+                0,
+                450
+              ]
+            },
+            "ds_title": {
+              "offset": [
+                0,
+                168
+              ],
+              "fontSize": 44,
+              "color": "#70f089"
+            },
+            "ds_subtitle": {
+              "offset": [
+                0,
+                252
+              ],
+              "fontSize": 13,
+              "color": "#ebf5ff"
+            },
+            "ds_body": {
+              "offset": [
+                0,
+                312
+              ],
+              "fontSize": 26,
+              "color": "#ffdc6a"
+            },
+            "root": {
+              "bg": "#000000dc"
+            },
+            "ds_brand": {
+              "hide": true
+            },
+            "ds_dash": {
+              "hide": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

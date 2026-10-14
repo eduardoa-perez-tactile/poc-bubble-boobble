@@ -1,4 +1,4 @@
-import { component, f32, f64, i32, bool, event, resource, u32 } from '@gameengine/schema';
+import { component, f32, f64, i32, bool, string, event, resource, u32 } from '@gameengine/schema';
 
 export const Game = resource('Game', { score: u32({ doc: 'Bubbles popped' }), spawned: u32() }, { sim: true });
 
@@ -20,3 +20,13 @@ export const PortMatch = resource('PortMatch', {
 export const PortInput = resource('PortInput', { move: i32(), jump: bool() }, { sim: true });
 export const MovementInput = event('MovementInput', { move: i32(), jump: bool(), paused: bool() }, { sim: true });
 export const PortVisual = component('PortVisual', {}, { sim: true });
+
+export const DesktopIntent = event('DesktopIntent', { action: string(), value: string(), index: i32(), x: i32(), y: i32() }, { sim: true });
+export const ArcadeVisual = component('ArcadeVisual', { slot: u32() }, { sim: true });
+export const ArcadeControl = resource('ArcadeControl', { active: bool(), skip: bool(), requestSequence: u32() }, { sim: true });
+export const ArcadeInput = event('ArcadeInput', { player: u32(), move: i32(), jump: bool(), fire: bool(), paused: bool() }, { sim: true });
+
+export const ArcadeAudio = resource('ArcadeAudio', { track: string(), muted: bool(), music: i32({default:-1}), sound: i32({default:-1}), paused: bool(), exitSequence: u32() }, { sim:true });
+export const EditorPointer = resource('EditorPointer', { drawing: bool(), erasing: bool(), col: i32({default:-1}), row: i32({default:-1}) }, { sim:true });
+
+export const ArcadePlatformState = resource('ArcadePlatformState', { exitSequence:u32() }, { sim:false });

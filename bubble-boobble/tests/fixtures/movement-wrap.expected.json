@@ -6,8 +6,8 @@
     "revision": "783cf6aa26ac3c57cdab43f2d7a5b3725a3991cc",
     "levelsSha256": "3509e88a991a8e0778bf1d3e7a5640c0eec5cc011d6074dac485da5a786f3e54",
     "scenarioSha256": "0c74ea16a3761d801c382c2f96b58e014f2d79efd8d9e977a0f95c4ba5d59ac1",
-    "adapterSha256": "3549adc7685668d735927693e8e51a9be23af62628422129fcd57cf482c79308",
-    "driverSha256": "79be693db6d473789519eb807fa63e28848eaf8afb363d1a00e5b10094c3ef3a"
+    "adapterSha256": "2e5cc2cee56a005d6f40839d9762ba1fa28b07cf9eefb3ec9c7ba066a697b643",
+    "driverSha256": "c49699e7f1bba214e0ed24ee35fa4c2f5e16a3bd53fec2f0fad72d76cfff4ee1"
   },
   "frames": [
     {"frame":0,"input":null,"state":{"Snapshot":{"Round":1,"State":1,"Paused":false,"Hurry":false,"Tick":0,"LevelTicks":0,"Countdown":0,"Freeze":0,"Score":0,"Players":[{"Lives":3,"JumpBuffer":0,"Coyote":0,"LastJump":false,"X":384,"Y":623,"VX":0,"VY":12,"Ground":false,"Dir":1,"Invincible":0,"Dead":0,"Shoot":0,"Cooldown":0,"WalkFrame":0,"Power":{"Pink":false,"Blue":false,"Yellow":false,"Shoes":false,"Crystal":false,"Amethyst":false,"Ruby":false,"WalkPoints":0}}],"Enemies":[{"X":384,"Y":196,"VX":0,"VY":0,"Ground":false,"CarriedBy":0,"CarryTicks":0,"ID":1,"Kind":"zenchan","State":0,"Dir":1,"Vertical":1,"Angry":false,"Age":0,"Cooldown":180,"Shoot":0,"DeadTicks":0,"Phase":4.943080121034687},{"X":384,"Y":148,"VX":0,"VY":0,"Ground":false,"CarriedBy":0,"CarryTicks":0,"ID":2,"Kind":"zenchan","State":0,"Dir":-1,"Vertical":1,"Angry":false,"Age":0,"Cooldown":180,"Shoot":0,"DeadTicks":0,"Phase":2.8861555625013584},{"X":384,"Y":100,"VX":0,"VY":0,"Ground":false,"CarriedBy":0,"CarryTicks":0,"ID":3,"Kind":"zenchan","State":0,"Dir":1,"Vertical":1,"Angry":false,"Age":0,"Cooldown":180,"Shoot":0,"DeadTicks":0,"Phase":2.7146231461392194}],"Bubbles":null,"Projectiles":null,"Items":null,"Effects":null,"Particles":null,"Sounds":null},"LevelIndex":0,"Custom":false,"Counters":{"Blown":0,"Popped":0,"Jumps":0,"Water":0,"Thunder":0,"Fire":0,"Pink":0,"Blue":0,"Yellow":0,"Walked":0},"WaterStage":0,"Pending":[],"SpawnedSpecial":0,"NextID":3,"ExtraLifeAt":30000,"RNG":"7063673ac507fbeaaff60a37a6038576c0a7163c"}},

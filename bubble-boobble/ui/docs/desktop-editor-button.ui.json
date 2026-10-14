@@ -1,0 +1,85 @@
+{
+  "$schemaVersion": 1,
+  "guid": "01daa5e5-c10e-48f5-ae5f-3a9efe98d690",
+  "name": "desktop-editor-button",
+  "title": "Desktop editor button",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop editor button",
+      "style": {
+        "dir": "row",
+        "pad": 0,
+        "align": "center",
+        "bg": "#131d31",
+        "radius": 0,
+        "w": 190,
+        "h": 30,
+        "justify": "center"
+      },
+      "children": [
+        "deb_label",
+        "d_editor_button_marker"
+      ]
+    },
+    "deb_label": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "label",
+      "style": {
+        "fontSize": 14,
+        "color": "#ebf5ff"
+      }
+    },
+    "d_editor_button_marker": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          -5,
+          0
+        ],
+        "w": 2,
+        "h": "100%",
+        "bg": "#70f089"
+      },
+      "show": "selected"
+    }
+  },
+  "behaviour": "button",
+  "properties": {
+    "label": {
+      "type": "text",
+      "default": ""
+    },
+    "selected": {
+      "type": "yesno",
+      "default": false,
+      "poses": {
+        "yes": {
+          "set": {
+            "root": {
+              "bg": "#70f089"
+            },
+            "deb_label": {
+              "color": "#080c1b"
+            }
+          }
+        }
+      }
+    }
+  },
+  "transition": {
+    "type": "instant"
+  }
+}

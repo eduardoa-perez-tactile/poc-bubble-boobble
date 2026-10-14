@@ -4,6 +4,144 @@
   "enums": [],
   "types": [
     {
+      "name": "ArcadeAudio",
+      "kind": "resource",
+      "sim": true,
+      "fields": [
+        {
+          "name": "track",
+          "kind": "string",
+          "scalar": "u32",
+          "lanes": 1
+        },
+        {
+          "name": "muted",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "music",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "sound",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "paused",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "exitSequence",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "ArcadeControl",
+      "kind": "resource",
+      "sim": true,
+      "fields": [
+        {
+          "name": "active",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "skip",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "requestSequence",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "ArcadeInput",
+      "kind": "event",
+      "sim": true,
+      "fields": [
+        {
+          "name": "player",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1
+        },
+        {
+          "name": "move",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "jump",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "fire",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "paused",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "ArcadePlatformState",
+      "kind": "resource",
+      "sim": false,
+      "fields": [
+        {
+          "name": "exitSequence",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "ArcadeVisual",
+      "kind": "component",
+      "sim": true,
+      "fields": [
+        {
+          "name": "slot",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
       "name": "Bubble",
       "kind": "component",
       "sim": true,
@@ -20,6 +158,78 @@
           "scalar": "f32",
           "lanes": 1,
           "doc": "Units per step"
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "DesktopIntent",
+      "kind": "event",
+      "sim": true,
+      "fields": [
+        {
+          "name": "action",
+          "kind": "string",
+          "scalar": "u32",
+          "lanes": 1
+        },
+        {
+          "name": "value",
+          "kind": "string",
+          "scalar": "u32",
+          "lanes": 1
+        },
+        {
+          "name": "index",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "x",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "y",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "EditorPointer",
+      "kind": "resource",
+      "sim": true,
+      "fields": [
+        {
+          "name": "drawing",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "erasing",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "col",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "row",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
         }
       ],
       "package": "BubbleBoobble"

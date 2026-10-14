@@ -1,0 +1,6 @@
+{
+  "name": "math-go-rng-42",
+  "mode": "rng",
+  "seed": 42,
+  "rngCount": 200
+}

@@ -13,10 +13,12 @@
     "harness:record": "node tools/harness/run.mjs record",
     "harness:replay": "node tools/harness/run.mjs replay",
     "harness:reset": "node tools/harness/run.mjs reset",
-    "harness:hot-reload": "node tools/harness/movement-hot-reload.mjs",
+    "harness:hot-reload": "node tools/harness/arcade-hot-reload.mjs",
+    "harness:movement-hot-reload": "node tools/harness/movement-hot-reload.mjs",
     "harness:editor": "node tools/harness/run.mjs editor",
     "harness:failure-probe": "node tools/harness/run.mjs failure-probe",
     "harness:coverage": "node tools/harness/run.mjs coverage",
-    "harness:starter-hot-reload": "node tools/harness/hot-reload.mjs"
+    "harness:starter-hot-reload": "node tools/harness/hot-reload.mjs",
+    "harness:milestone": "node tools/harness/run.mjs milestone"
   }
 }

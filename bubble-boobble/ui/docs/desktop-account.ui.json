@@ -1,0 +1,785 @@
+{
+  "$schemaVersion": 1,
+  "guid": "178b41e9-d69c-4a28-b857-f4e4a31bc12e",
+  "name": "desktop-account",
+  "title": "Desktop account",
+  "kind": "view",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop account",
+      "style": {
+        "w": 768,
+        "h": 720,
+        "pad": 0,
+        "bg": "#080c1b",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0.5
+        ],
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "children": [
+        "da_heading",
+        "da_profiles",
+        "da_scores",
+        "da_new_profile",
+        "da_settings",
+        "da_status_panel",
+        "da_status"
+      ]
+    },
+    "da_heading": {
+      "type": "use",
+      "doc": "desktop-heading",
+      "key": "heading",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "props": {
+        "title": {
+          "property": "title"
+        },
+        "subtitle": {
+          "property": "subtitle"
+        }
+      }
+    },
+    "da_profiles": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "da_profiles_list",
+        "da_new",
+        "da_profile_back",
+        "da_autosave"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 768,
+        "h": 720,
+        "hide": true
+      }
+    },
+    "da_scores": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "da_scores_player",
+        "da_scores_score",
+        "da_scores_round",
+        "da_scores_w_l",
+        "da_score_list",
+        "da_score_back"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 768,
+        "h": 720,
+        "hide": true
+      }
+    },
+    "da_new_profile": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "da_name_box",
+        "da_name",
+        "da_keyboard",
+        "da_space",
+        "da_delete",
+        "da_create",
+        "da_cancel"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 768,
+        "h": 720,
+        "hide": true
+      }
+    },
+    "da_settings": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "da_setting_list",
+        "da_settings_avatar",
+        "da_stats_name",
+        "da_stats"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 768,
+        "h": 720,
+        "hide": true
+      }
+    },
+    "da_profiles_list": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "da_profile_rows"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          114,
+          132
+        ],
+        "dir": "column",
+        "gap": 10
+      }
+    },
+    "da_profile_rows": {
+      "type": "repeat",
+      "doc": "desktop-profile-row",
+      "property": "profiles"
+    },
+    "da_new": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "new-profile",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          164,
+          532
+        ],
+        "w": 440,
+        "h": 38
+      },
+      "props": {
+        "label": "NEW PROFILE",
+        "selected": {
+          "property": "newSelected"
+        }
+      }
+    },
+    "da_profile_back": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "menu",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          264,
+          594
+        ],
+        "w": 240,
+        "h": 38
+      },
+      "props": {
+        "label": "BACK",
+        "selected": {
+          "property": "backSelected"
+        }
+      }
+    },
+    "da_autosave": {
+      "type": "label",
+      "name": "Label",
+      "text": "PROGRESS AND HIGH SCORES ARE SAVED AUTOMATICALLY",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          680
+        ],
+        "fontSize": 10,
+        "color": "#829fb1"
+      }
+    },
+    "da_scores_player": {
+      "type": "label",
+      "name": "Label",
+      "text": "PLAYER",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          104,
+          166
+        ],
+        "fontSize": 12,
+        "color": "#829fb1"
+      }
+    },
+    "da_scores_score": {
+      "type": "label",
+      "name": "Label",
+      "text": "SCORE",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          354,
+          166
+        ],
+        "fontSize": 12,
+        "color": "#829fb1"
+      }
+    },
+    "da_scores_round": {
+      "type": "label",
+      "name": "Label",
+      "text": "ROUND",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          500,
+          166
+        ],
+        "fontSize": 12,
+        "color": "#829fb1"
+      }
+    },
+    "da_scores_w_l": {
+      "type": "label",
+      "name": "Label",
+      "text": "W / L",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          604,
+          166
+        ],
+        "fontSize": 12,
+        "color": "#829fb1"
+      }
+    },
+    "da_score_list": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "da_score_rows"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          80,
+          194
+        ],
+        "dir": "column",
+        "gap": 7
+      }
+    },
+    "da_score_rows": {
+      "type": "repeat",
+      "doc": "desktop-score-row",
+      "property": "scores"
+    },
+    "da_score_back": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "menu",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          264,
+          624
+        ],
+        "w": 240,
+        "h": 38
+      },
+      "props": {
+        "label": "BACK",
+        "selected": {
+          "property": "backSelected"
+        }
+      }
+    },
+    "da_name_box": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          104,
+          154
+        ],
+        "w": 552,
+        "h": 70,
+        "bg": "#131d31"
+      }
+    },
+    "da_name": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          178
+        ],
+        "fontSize": 22,
+        "color": "#70f089"
+      },
+      "property": "name"
+    },
+    "da_keyboard": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "da_key_rows"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          104,
+          252
+        ],
+        "dir": "column",
+        "gap": 10
+      }
+    },
+    "da_key_rows": {
+      "type": "repeat",
+      "doc": "desktop-key-row",
+      "property": "keyRows"
+    },
+    "da_space": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "space",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          440,
+          396
+        ],
+        "w": 104,
+        "h": 38
+      },
+      "props": {
+        "label": "SPACE",
+        "selected": {
+          "property": "spaceSelected"
+        }
+      }
+    },
+    "da_delete": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "delete-char",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          552,
+          396
+        ],
+        "w": 104,
+        "h": 38
+      },
+      "props": {
+        "label": "DEL",
+        "selected": {
+          "property": "deleteSelected"
+        }
+      }
+    },
+    "da_create": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "create-profile",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          164,
+          520
+        ],
+        "w": 440,
+        "h": 38
+      },
+      "props": {
+        "label": "CREATE PROFILE",
+        "selected": {
+          "property": "createSelected"
+        }
+      }
+    },
+    "da_cancel": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "profiles",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          164,
+          570
+        ],
+        "w": 440,
+        "h": 38
+      },
+      "props": {
+        "label": "CANCEL",
+        "selected": {
+          "property": "cancelSelected"
+        }
+      }
+    },
+    "da_setting_list": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "da_setting_rows"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          164,
+          180
+        ],
+        "dir": "column",
+        "gap": 12
+      }
+    },
+    "da_setting_rows": {
+      "type": "repeat",
+      "doc": "desktop-button",
+      "property": "settings"
+    },
+    "da_settings_avatar": {
+      "type": "codeArea",
+      "name": "Code area",
+      "key": "settingsAvatar",
+      "style": {
+        "w": 96,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          336,
+          476
+        ],
+        "h": 96
+      }
+    },
+    "da_stats_name": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          592
+        ],
+        "fontSize": 12,
+        "color": "#70f089"
+      },
+      "property": "statsName"
+    },
+    "da_stats": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          622
+        ],
+        "fontSize": 10,
+        "color": "#829fb1"
+      },
+      "property": "stats"
+    },
+    "da_status_panel": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          680
+        ],
+        "w": 768,
+        "h": 40,
+        "bg": "#131d31"
+      },
+      "show": "showStatus"
+    },
+    "da_status": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          700
+        ],
+        "fontSize": 12,
+        "color": "#ffdc6a"
+      },
+      "property": "status"
+    }
+  },
+  "view": {
+    "behaviour": "screen"
+  },
+  "properties": {
+    "page": {
+      "type": "enum",
+      "values": [
+        "profiles",
+        "scores",
+        "new-profile",
+        "settings"
+      ],
+      "default": "profiles",
+      "poses": {
+        "profiles": {
+          "set": {
+            "da_profiles": {
+              "hide": false
+            }
+          }
+        },
+        "scores": {
+          "set": {
+            "da_scores": {
+              "hide": false
+            }
+          }
+        },
+        "new-profile": {
+          "set": {
+            "da_new_profile": {
+              "hide": false
+            }
+          }
+        },
+        "settings": {
+          "set": {
+            "da_settings": {
+              "hide": false
+            }
+          }
+        }
+      }
+    },
+    "title": {
+      "type": "text",
+      "default": ""
+    },
+    "subtitle": {
+      "type": "text",
+      "default": ""
+    },
+    "name": {
+      "type": "text",
+      "default": ""
+    },
+    "status": {
+      "type": "text",
+      "default": ""
+    },
+    "statsName": {
+      "type": "text",
+      "default": ""
+    },
+    "stats": {
+      "type": "text",
+      "default": ""
+    },
+    "avatarName": {
+      "type": "text",
+      "default": ""
+    },
+    "backSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "newSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "spaceSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "deleteSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "createSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "cancelSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "showStatus": {
+      "type": "yesno",
+      "default": false
+    },
+    "profiles": {
+      "type": "list",
+      "of": "desktop-profile-row",
+      "default": []
+    },
+    "scores": {
+      "type": "list",
+      "of": "desktop-score-row",
+      "default": []
+    },
+    "keyRows": {
+      "type": "list",
+      "of": "desktop-key-row",
+      "default": []
+    },
+    "settings": {
+      "type": "list",
+      "of": "desktop-button",
+      "default": []
+    }
+  }
+}

@@ -1,0 +1,54 @@
+import { ActionState, WorldView, defineSystem, query, read, write, PlaySound } from '@gameengine/runtime';
+import { ArcadeControl, ArcadeInput } from '../schema.gen.ts';
+import campaign from '../../data/levels.json';
+import { session } from './session.ts';
+import { copyGame, createGame, stepGame } from './game.ts';
+import type { Input, Level } from './types.ts';
+import { desktopGameRequest, desktopSaveState, desktopState, finishDesktopRun, showDesktopPause, setDesktopRunScore } from '../desktop/index.ts';
+export const ArcadeStep=defineSystem({
+  name:'ArcadeStep',after:['DesktopSystem'],query:query(read(ActionState)),
+  resources:[write(ArcadeControl),write(WorldView)],events:[ArcadeInput],
+  run(ctx,q){
+    if(!ctx.get(ArcadeControl).active)return;
+    const control=ctx.get(ArcadeControl), request=desktopGameRequest.get();
+    let current=session.get();
+    if(request.sequence!==control.requestSequence){
+      ctx.setField(ArcadeControl,'requestSequence',request.sequence);
+      if(request.action==='start'||request.action==='playtest'){
+        const custom=request.action==='playtest'&&request.customLevel;
+        const game=createGame(custom?[custom]:(campaign as Level[]),1,request.players);
+        game.Custom=!!custom;current={active:true,mode:custom?'custom':'campaign',game};session.set(current);
+      } else if(request.action==='quit'||request.action==='exit'){current={...current,active:false};session.set(current);}
+      else if(current.game&&(request.action==='pause'||request.action==='resume')){
+        const game=copyGame(current.game);game.Paused=request.action==='pause';current={...current,game};session.set(current);
+      }
+    }
+    if(control.skip){ctx.setField(ArcadeControl,'skip',false);return;}
+    if(!current.active||!current.game)return;
+    const inputs:Input[]=Array.from({length:current.game.Players.length},()=>({Move:0,Jump:false,Fire:false}));
+    let pause=false;
+    for(const c of q.chunks())for(let i=0;i<c.length;i++){
+      const a=c.col(ActionState);
+      if(c.is(ActionState,i,'name','move'))inputs[0]!.Move=a.value[i]!;
+      if(c.is(ActionState,i,'name','jump'))inputs[0]!.Jump=a.pressed[i]!==0;
+      if(c.is(ActionState,i,'name','fire'))inputs[0]!.Fire=a.pressed[i]!==0;
+      if(c.is(ActionState,i,'name','pause'))pause=!!a.justPressed[i];
+      if(c.is(ActionState,i,'name','move2')&&inputs[1])inputs[1].Move=a.value[i]!;
+      if(c.is(ActionState,i,'name','jump2')&&inputs[1])inputs[1].Jump=a.pressed[i]!==0;
+      if(c.is(ActionState,i,'name','fire2')&&inputs[1])inputs[1].Fire=a.pressed[i]!==0;
+    }
+    if(!pause && ctx.events.count(ArcadeInput)===0 && current.game.Sounds.length===0 && (current.game.Paused||current.game.State===3||current.game.State===4))return;
+    const game=copyGame(current.game);
+    if(pause&&desktopState.get().screen==='play'){game.Paused=!game.Paused;showDesktopPause(game.Paused);}
+    for(const e of ctx.events.read(ArcadeInput)){
+      if(inputs[e.player])inputs[e.player]={Move:e.move,Jump:e.jump,Fire:e.fire};
+      game.Paused=e.paused;
+    }
+    const oldState=game.State;
+    stepGame(game,inputs);
+    session.set({...current,game});
+    setDesktopRunScore(game.Score,game.Level.number);
+    if(game.State!==oldState&&(game.State===3||game.State===4))finishDesktopRun(game.State===4,game.Score,game.Level.number);
+    for(const sound of game.Sounds)if(sound!=='opening')ctx.events.emit(PlaySound,{sound:`reference/audio/${sound}`,maxVoices:24});
+  },
+});

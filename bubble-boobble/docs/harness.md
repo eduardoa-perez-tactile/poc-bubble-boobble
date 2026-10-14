@@ -1,25 +1,12 @@
-# Harness bootstrap and daily use
+# Desktop port harness
 
-Current movement commands and coverage are documented in [movement.md](movement.md).
-The desktop default and `harness:reset` now use round 1; quick defaults to movement,
-verify includes movement and retained starter checks, and hot-reload probes movement.
-The bootstrap description below records the original starter setup.
+Run commands from `bubble-boobble/`, one directory below the Git root. Node.js 22+
+and the installed Tactile CLI/release V8 host are required; no npm install is needed. The
+playable default is the arcade scene; the original starter and movement scenes
+remain independent regression targets. [movement.md](movement.md) documents the
+first slice; [numerics.md](numerics.md) explains exact Go arithmetic and RNG.
 
-The harness is implemented; the game remains the starter bubble demo. No Go-versus-Tactile gameplay parity is claimed. This bootstrap establishes a pinned oracle, exact comparison, reproducible interactive setup, engine tests/replay, a visual golden, and measured feedback lanes.
-
-## Requirements
-
-Run the following from `bubble-boobble/` (the project directory, one level below the Git root).
-
-- Node.js 22+ and npm; the harness uses standard-library modules and needs no npm dependency install.
-- Installed Tactile Game Engine with the CLI on PATH and a release V8 host. Run `gameengine doctor --json` to diagnose it. Open this project with the installed editor to establish its local `.gameengine/engine` link. `gameengine skills update --auto` refreshes project guidance; engine caches and generated guidance copies are ignored.
-- Go is needed only to generate/audit reference fixtures. `npm run harness:setup` provisions checksum-verified Go 1.26.9 in ignored `.cache/toolchains/` on macOS arm64. Other platforms can supply `HARNESS_GO` pointing to Go 1.26.9. No system Go installation or PATH change is made.
-- Network/Git are needed only for initial reference fetch and Go provisioning. Cached fixture tests, engine tests/replay and editor reset do not use network access.
-- The desktop golden currently targets Metal. Another backend requires separately reviewed goldens; do not automatically update them in verify.
-
-The packaged app's CLI `gameengine editor` currently expects a missing development-launcher file. `harness:editor` uses the installed application's supported `--project` flag, or `HARNESS_EDITOR` when supplied, and verifies that this project's edit engine is running. It reuses an already-open project. It does not close another editor project or accept UI permission prompts.
-
-## Daily loop
+## Fast daily loop
 
 ```sh
 npm run harness:editor
@@ -27,51 +14,97 @@ npm run harness:reset
 npm run harness:quick
 ```
 
-The editor is preferred for reset when this project is open; otherwise reset targets an existing headless session (`gameengine run --headless --paused`). Reset runs the recorded dev-only `harness.reset` cheat. The `starter-tap` scenario clears all bubbles and score, places one stationary blue bubble at the origin, and suppresses random starter spawns. Tap it to pop it. Reset again to reproduce that same gameplay setup. The world clock, entity allocation IDs, and unused random stream are not rewound; they are deliberately excluded from this controlled starter scenario, not claimed as whole-world identity.
+Reset starts the arcade game in round 1, seed 42, one player, with its ready
+countdown skipped. It invokes the recorded dev-only `arcade.reset` cheat in the
+open editor, or an existing headless session. A headless session can be started
+with `gameengine run --headless --paused`. The editor and host keep their own
+world clocks and allocation IDs; those are outside reference canonical state.
 
-Quick runs five Node comparator tests and the selected V8 T0 harness test. A different engine test filter can be supplied:
+Quick validates every cached fixture's provenance and the imported campaign
+checksum, runs five deliberate comparator tests, then three V8 T0 groups:
+
+- Movement traces and the physical keyboard hold/release/jump path.
+- All five complete canonical engine-input traces: smoke and rounds 1/10/24/25.
+- Go trigonometry, fused arithmetic and PCG distribution/state cases.
+
+A supplied filter replaces the three default groups:
 
 ```sh
-npm run harness:quick -- '*harness*'
+npm run harness:quick -- '*arcade engine input*'
 ```
 
-The command fails when a filter matches no tests. Go fixtures are cached, and no cook runs in this lane.
+An empty test selection fails. Quick uses committed oracle output, requires no
+Go/network access, and performs no cook or rendering-golden check.
 
-## Before a feature handoff
+## Handoff and milestone gates
 
 ```sh
 npm run harness:verify
+npm run harness:milestone
 ```
 
-Verify checks fixture provenance and the comparator, all V8 T0 tests, the desktop T1 starter golden, the committed starter replay, and `gameengine check` (typecheck, validation, desktop cook and cooked smoke). It fails on actual check failures; release-readiness warnings are printed. The missing `pipelines.json` warning remains: record campaign/render-flow coverage before release.
+Verify runs provenance/comparator checks, all V8 T0 tests, all desktop T1 tests,
+three engine replays with their explicit recorded scenes, then `gameengine check`
+(typecheck, validation, desktop cook and cooked smoke). It never changes expected
+fixtures, goldens or replay files. Any failed or unavailable required stage blocks
+a passing result. Warnings from engine check remain visible.
 
-Reference fixtures and Tactile replay hashes are independent checks. The reference fixture covers ready, movement/shooting, pause, and resume inside upstream Go. Tactile tests cover only the existing starter and reset plumbing. Campaign mechanics remain pending until the port implements them.
+Milestone is a separate CPU-only Go audit outside the fast lane. It verifies the
+pinned checkout, Go version, levels and instrumentation; rebuilds the oracle; runs
+all cached pure-simulation comparisons; compares random numerical samples; and
+compares 1,261 frames for each of 25 independently initialized rounds. All 31,525
+canonical snapshots currently agree exactly. Rounds alternate one/two players and
+receive fixed movement, jump and fire inputs. These cases do not prove natural
+progression from round 1 through the final round or every mechanic boundary.
 
-## Reference oracle and regeneration
+Engine-input parity compares every exported field and sound-event sequence after
+each semantic input tick. The pure lane exercises the same simulation without the
+engine event/document adapter. Neither establishes pixel similarity to Go, physical
+keyboard coverage for every binding, audio-device playback, or OS persistence.
+Those need their own presentation/input/service checks. Tactile goldens protect
+approved Tactile rendering and do not independently establish Go visual parity.
+
+## Oracle provenance and regeneration
 
 ```sh
 npm run harness:setup
-npm run harness:fixtures
-npm run harness:reference-check
+npm run harness:fixtures -- arcade-round-24-combat
+npm run harness:reference-check -- arcade-round-24-combat
+node tools/harness/arcade-parity.mjs arcade-round-24-combat
 ```
 
-The lock file pins upstream Git revision, level checksum, and Go archive/version. Generation fetches an ignored checkout in `.cache/reference/`, adds the committed adapter/driver, and makes exactly one anchored instrumentation change: the existing RNG construction calls an equivalent helper retaining its PCG source so its binary state can be exported. No gameplay rule is replaced. One game is run per oracle process; the package-level source handle exists only in this headless tool.
+`tools/harness/reference.lock.json` pins the upstream revision, campaign checksum,
+and Go 1.26.9 archive/checksum. Setup provisions an ignored macOS arm64 toolchain;
+other hosts may set `HARNESS_GO` to the exact pinned Go version. Regular tests read
+committed JSON and never provision Go. Network/Git are needed only to fetch the
+initial checkout and toolchain. Numerical parity currently targets Darwin arm64.
 
-The adapter includes authoritative snapshots, public/private bonus counters, pending bonuses, next logical ID, special-spawn count, extra-life threshold and RNG state. Go null collections are preserved exactly in this wire format. The driver runs only `internal/game` plus standard-library imports; window/audio dependencies are not loaded.
+Generation adds the committed adapter/driver to an ignored reference checkout.
+The one anchored upstream edit preserves the existing PCG construction while
+retaining its source handle for state export. The adapter exposes private counters,
+queues and IDs; movement mode invokes the unchanged upstream player routine.
+Math/RNG/FMA modes expose standard-library operations. None replace game rules.
+The oracle imports only `internal/game` and standard-library packages, without
+window/audio initialization.
 
-Generation runs the oracle twice independently and requires byte-identical output, then runs upstream `internal/game` tests. `reference-check` also requires exact agreement with the committed fixture without rewriting it. `fixtures` deliberately writes the expected file; inspect its diff before committing. Headers contain hashes of level content, scenario, adapter and driver. Normal quick/verify checks those against committed inputs and never regenerate expected values.
+Generation runs each scenario twice independently, requires byte-identical output,
+and runs upstream simulation tests. Fixture headers hash the scenario, levels,
+adapter and driver. `reference-check` compares regenerated output without writing
+it. Deliberately regenerate every affected fixture after changing an overlay/input,
+then review the diffs; never change expectations to conceal a port failure.
 
-The initial scenario lives at `tests/scenarios/reference-round1-smoke.json`, with 88 input frames plus initial state. Generate a named scenario with `npm run harness:fixtures -- <name>`. Round selection currently constructs the campaign suffix beginning at that round; it is a standalone scenario, not proof of progression from round 1. Later campaign parity scenarios must start with the full campaign and drive or explicitly set up the intended transition.
+A round scenario starts with a campaign suffix; its initial `LevelIndex` is zero.
+It is independent round initialization, not a simulated transition from round 1.
+The smoke fixture contains 88 inputs plus initial state. Four combat fixtures each
+contain 360 inputs plus initial state, covering capture/death, floating drift,
+Pulpul steering, the round-24 ceiling, and a scored defeat in the observed traces.
 
-Compare an actual exported trace against a fixture:
+Comparison preserves collection order and uses exact finite float64/discrete
+values without blanket tolerances. First divergence includes scenario, frame,
+field, expected/actual values, input and surrounding states. Diagnostics go under
+ignored `artifacts/`; pure trace exports go under `artifacts/arcade/`.
 
-```sh
-node tools/harness/run.mjs compare tests/fixtures/reference-round1-smoke.expected.json artifacts/actual.json
-```
-
-Comparison preserves actor/collection order, uses exact discrete and float comparisons, exits nonzero on divergence, and reports the first frame, simulation tick, field, input and adjacent states. `artifacts/first-divergence.json` holds details. Until a port runner exists, this is comparison infrastructure rather than a gameplay-parity command. Use the header and frame format of the fixture when implementing that runner.
-
-## Reproduction and harness probes
+## Engine replays and editor probes
 
 ```sh
 npm run harness:record
@@ -80,30 +113,66 @@ npm run harness:failure-probe
 npm run harness:hot-reload
 ```
 
-Record re-records the named starter T0 replay; review it before committing. Replay verifies every engine hash. The failure probe temporarily creates a failing engine assertion, verifies exit status/diagnostic, and removes its test file in `finally`. Comparator tests separately corrupt a reference trace and verify that the real comparison CLI fails; their expected diagnostics live in `artifacts/selftest/`.
+Record explicitly re-records three named tests: starter reset/tap, movement physical
+keyboard, and arcade engine-input smoke. Replay verifies their hash streams. The
+installed replay CLI omits the recorded scene, so the harness bundles once and
+invokes the installed V8 host with explicit `--scene` for each replay:
 
-Hot-reload is an opt-in probe for an open editor Play session. It temporarily changes the controlled starter circle's color, waits for the editor's reload confirmation, proves the current world survived, then resets to prove the changed code executes. It restores the source and resets to the original color. It rejects a paused Play session and fails when reload exceeds two seconds. It never changes gameplay rules or expected reference output. Do not edit `src/harness.cheats.ts` concurrently with this probe.
+| Replay | Recorded scene |
+| --- | --- |
+| `harness_reset_and_tap` | `scenes/main.scene.json` |
+| `movement_physical_keyboard_hold_release_and_jump` | `scenes/round1.scene.json` |
+| `arcade_engine_input_full_go_parity_reference_round1_smoke` | `scenes/arcade.scene.json` |
 
-For behavior-preserving refactors, use the engine hash-trace baseline workflow in [port-harness.md](port-harness.md). Do not regenerate a replay/golden to conceal an unexplained failure.
+A custom replay needs its scene when the name is unknown:
 
-## Measured bootstrap evidence
+```sh
+npm run harness:replay -- tests/replays/example.greplay scenes/arcade.scene.json
+```
 
-2026-10-14, macOS arm64, Apple M2 Max, release V8 host, installed Tactile app 0.1.11:
+The three replays were intentionally re-recorded after adding campaign systems,
+input actions and schema state, which change whole-world hashes. Their assertions
+and exact oracle expectations still pass. Replay hashes establish engine
+determinism; they are independent of the Go comparator's behavioral evidence.
 
-| Check | Observed wall time | Result |
+The deliberate failure probe creates a temporary failing assertion and confirms
+nonzero exit/useful diagnostics before removing it. Comparator selftests also
+corrupt actual traces and check first-divergence diagnostics.
+
+Hot reload probes the running arcade scene by temporarily changing the reset code,
+confirming that the live world survives, executing the changed reset, and restoring
+the code and original reset behavior. The movement and starter probes remain
+available as `harness:movement-hot-reload` and `harness:starter-hot-reload`.
+The arcade probe measured 273 ms for both change and restore. Do not
+edit their target files concurrently. A stopped or absent editor is an unavailable
+probe, never a passing hot-reload result.
+
+## Environment and measured evidence
+
+2026-10-14, macOS arm64, release V8 host, installed Tactile app runtime:
+
+| Lane | Measured end-to-end time | Result |
 | --- | --- | --- |
-| Warm quick command (excluding npm wrapper startup) | 0.59 s | Five comparator tests and focused T0 passed |
-| Initial reference generation | 6.51 s | Two runs identical; upstream sim tests passed |
-| Warm reference audit | 0.36–1.29 s | Two runs match committed fixture |
-| Editor reset | 0.81 s | Controlled state reproduced |
-| Editor save-to-reload confirmation | 0.27 s each way | World preserved, new/restored code executed |
-| Warm full verify | 3.12–3.35 s | Comparator, all three T0 tests, T1 golden, replay, typecheck/cook/600-frame smoke passed |
-| Engine replay verification | 0.32 s | Hash stream verified |
+| Warm default quick | 3.18 s | Comparator + movement + five engine-input cases + numerical tests pass |
+| Re-record three engine tests | 2.52 s | All assertions pass; fresh replays saved |
+| Explicit-scene replay verification | 0.84 s | All three hash streams pass |
+| Live milestone audit | 8.60 s | Cached pure cases, random numerics and all 25 independent rounds pass |
+| Full verify of staged core export | 18.73 s | 75 T0, 10 desktop T1, three explicit-scene replays, typecheck/cook/600-frame smoke pass |
 
-The runner writes end-to-end timing reports to ignored `artifacts/`. Timings include child command startup but exclude starting npm itself; they are development-machine measurements. The hot-reload time is save to confirmation, with execution independently proved afterward.
+Measurements include child CLI startup but exclude npm wrapper startup. The runner
+writes per-stage wall times to ignored `artifacts/<command>-timing.json`. They are
+development-machine measurements, not device/performance guarantees. A fresh cook
+or asset import may take materially longer and must not be skipped to meet a
+fast-lane target. The staged core export excludes the experimental pixel/native adapters. Full verify must
+be rerun after their integration.
 
-All three T0 tests also passed against freshly cooked content. Both deliberate failure probes returned nonzero with the expected diagnostics. The T1 golden was visually inspected before committing it. Go provisioning was tested using the pinned archive and checksum. The starter/contracts recovery point is `main` commit `8fe0169`; this harness is the first feature slice.
+The installed editor launcher uses the application's supported `--project` flag
+because the packaged `gameengine editor` launcher references a missing development
+file. `harness:editor` reuses an open project and verifies its edit engine. Set
+`HARNESS_EDITOR` to override the application executable.
 
-A paused 600-step starter capture measured sim-step p95 0.024 ms, max 1.89 ms, no >4 ms GC pauses, and approximately 60 MB process memory. Its rendered controlled frame had two draw calls. These are plumbing baselines for one circle, not estimates for the future game's load or GPU/thermal performance. Establish game budgets with representative port scenarios.
-
-Hermes is not installed, so cross-runtime equivalence remains unavailable and is not part of the verified V8 desktop bootstrap. CI is not configured: the installed runtime needs a portable distribution or a configured self-hosted runner first. Go port-parity coverage is pending; release pipelines are pending. These limitations are surfaced by `harness:coverage` and the contracts, not silently counted as passes.
+Hermes is unavailable, so cross-runtime equivalence is unsupported. The desktop
+Metal golden does not validate other rendering backends. CI still needs a portable
+engine runtime or configured self-hosted runner; the local engine symlink is not a
+portable dependency. Missing release pipeline/flow recordings remain visible engine
+warnings until representative render flows are recorded. None count as passes.

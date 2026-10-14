@@ -1,0 +1,374 @@
+{
+  "$schemaVersion": 1,
+  "guid": "3b6497eb-f353-41ca-bfa0-9a648111945e",
+  "name": "desktop-hud",
+  "title": "Desktop hud",
+  "kind": "view",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop hud",
+      "style": {
+        "w": 768,
+        "h": 720,
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0.5
+        ],
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "children": [
+        "dh_top",
+        "dh_bottom",
+        "dh_banner",
+        "dh_freeze"
+      ]
+    },
+    "dh_top": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "dh_name",
+        "dh_score",
+        "dh_round",
+        "dh_high_title",
+        "dh_high"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 768,
+        "h": 48
+      }
+    },
+    "dh_bottom": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "dh_lives",
+        "dh_enemies",
+        "dh_footer"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          672
+        ],
+        "w": 768,
+        "h": 48
+      }
+    },
+    "dh_banner": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "dh_banner_title",
+        "dh_banner_hint"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          108,
+          240
+        ],
+        "w": 552,
+        "h": 82,
+        "bg": "#080c1be6"
+      },
+      "show": "showBanner"
+    },
+    "dh_name": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          7
+        ],
+        "fontSize": 10,
+        "color": "#70f089"
+      },
+      "property": "name"
+    },
+    "dh_score": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          22
+        ],
+        "fontSize": 20,
+        "color": "#ebf5ff"
+      },
+      "property": "score"
+    },
+    "dh_round": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          18
+        ],
+        "fontSize": 18,
+        "color": "#ffdc6a"
+      },
+      "property": "round"
+    },
+    "dh_high_title": {
+      "type": "label",
+      "name": "Label",
+      "text": "HIGH SCORE",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          590,
+          7
+        ],
+        "fontSize": 10,
+        "color": "#ff6cb1"
+      }
+    },
+    "dh_high": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          590,
+          22
+        ],
+        "fontSize": 20,
+        "color": "#ebf5ff"
+      },
+      "property": "high"
+    },
+    "dh_lives": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          54,
+          15
+        ],
+        "fontSize": 14,
+        "color": "#ebf5ff"
+      },
+      "property": "lives"
+    },
+    "dh_enemies": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          140,
+          18
+        ],
+        "fontSize": 11,
+        "color": "#829fb1"
+      },
+      "property": "enemies"
+    },
+    "dh_footer": {
+      "type": "label",
+      "name": "Label",
+      "text": "ESC PAUSE  M SOUND",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          530,
+          18
+        ],
+        "fontSize": 11,
+        "color": "#829fb1"
+      }
+    },
+    "dh_banner_title": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          15
+        ],
+        "fontSize": 24,
+        "color": "#ffdc6a"
+      },
+      "property": "banner"
+    },
+    "dh_banner_hint": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          53
+        ],
+        "fontSize": 12,
+        "color": "#ebf5ff"
+      },
+      "property": "hint"
+    },
+    "dh_freeze": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          86
+        ],
+        "fontSize": 14,
+        "color": "#ffdc6a"
+      },
+      "property": "freeze"
+    }
+  },
+  "view": {
+    "behaviour": "screen"
+  },
+  "properties": {
+    "name": {
+      "type": "text",
+      "default": ""
+    },
+    "score": {
+      "type": "text",
+      "default": ""
+    },
+    "round": {
+      "type": "text",
+      "default": ""
+    },
+    "high": {
+      "type": "text",
+      "default": ""
+    },
+    "lives": {
+      "type": "text",
+      "default": ""
+    },
+    "enemies": {
+      "type": "text",
+      "default": ""
+    },
+    "banner": {
+      "type": "text",
+      "default": ""
+    },
+    "hint": {
+      "type": "text",
+      "default": ""
+    },
+    "showBanner": {
+      "type": "yesno",
+      "default": false
+    },
+    "clear": {
+      "type": "yesno",
+      "default": false,
+      "poses": {
+        "yes": {
+          "set": {
+            "dh_banner": {
+              "offset": [
+                108,
+                84
+              ]
+            }
+          }
+        }
+      }
+    },
+    "freeze": {
+      "type": "text",
+      "default": ""
+    }
+  }
+}

@@ -1,0 +1,681 @@
+{
+  "$schemaVersion": 1,
+  "guid": "22f96aa0-0053-4bf4-9167-fea1d274ca0d",
+  "name": "desktop-editor",
+  "title": "Desktop editor",
+  "kind": "view",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop editor",
+      "style": {
+        "w": 768,
+        "h": 720,
+        "pad": 0,
+        "gap": 10,
+        "align": "center",
+        "justify": "center",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0.5
+        ],
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "children": [
+        "de_title",
+        "de_subtitle",
+        "de_toolbar",
+        "de_center",
+        "de_actions",
+        "de_status",
+        "de_footer",
+        "de_template_prev",
+        "de_template",
+        "de_template_next",
+        "de_new",
+        "de_undo",
+        "de_save_level",
+        "de_load_level",
+        "de_test_level",
+        "de_menu",
+        "de_element",
+        "de_theme",
+        "de_hint",
+        "de_brand",
+        "de_dash",
+        "de_count",
+        "de_footer_hint"
+      ]
+    },
+    "de_title": {
+      "type": "label",
+      "name": "Label",
+      "text": "LEVEL EDITOR",
+      "style": {
+        "fontSize": 28,
+        "color": "#ebf5ff",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          65
+        ]
+      }
+    },
+    "de_subtitle": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "subtitle",
+      "style": {
+        "fontSize": 12,
+        "color": "#eeeeee",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          65
+        ]
+      }
+    },
+    "de_toolbar": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "dir": "row",
+        "gap": 8,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          91
+        ]
+      }
+    },
+    "de_center": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "de_grid",
+        "de_tools"
+      ],
+      "style": {
+        "pad": 0,
+        "dir": "row",
+        "gap": 18,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          146
+        ]
+      }
+    },
+    "de_grid": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "dir": "column",
+        "gap": 0,
+        "w": 512,
+        "h": 416
+      }
+    },
+    "de_tools": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "de_tool_items"
+      ],
+      "style": {
+        "pad": 0,
+        "dir": "column",
+        "gap": 5
+      }
+    },
+    "de_actions": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "dir": "row",
+        "gap": 8,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          594
+        ]
+      }
+    },
+    "de_status": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "status",
+      "style": {
+        "fontSize": 10,
+        "color": "#ffff55",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          1
+        ],
+        "offset": [
+          0,
+          -8
+        ]
+      }
+    },
+    "de_tool_items": {
+      "type": "repeat",
+      "doc": "desktop-editor-button",
+      "property": "tools"
+    },
+    "de_footer": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "dir": "row",
+        "gap": 16,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          642
+        ]
+      }
+    },
+    "de_template_prev": {
+      "type": "use",
+      "doc": "desktop-small-button",
+      "key": "template-prev",
+      "props": {
+        "label": "<",
+        "selected": {
+          "property": "sel0"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          91
+        ],
+        "w": 40,
+        "h": 30
+      }
+    },
+    "de_template": {
+      "type": "use",
+      "doc": "desktop-small-button",
+      "key": "template",
+      "props": {
+        "label": {
+          "property": "copyLabel"
+        },
+        "selected": {
+          "property": "sel1"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          76,
+          91
+        ],
+        "w": 248,
+        "h": 30
+      }
+    },
+    "de_template_next": {
+      "type": "use",
+      "doc": "desktop-small-button",
+      "key": "template-next",
+      "props": {
+        "label": ">",
+        "selected": {
+          "property": "sel2"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          336,
+          91
+        ],
+        "w": 40,
+        "h": 30
+      }
+    },
+    "de_new": {
+      "type": "use",
+      "doc": "desktop-small-button",
+      "key": "new",
+      "props": {
+        "label": "NEW",
+        "selected": {
+          "property": "sel3"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          388,
+          91
+        ],
+        "w": 68,
+        "h": 30
+      }
+    },
+    "de_undo": {
+      "type": "use",
+      "doc": "desktop-small-button",
+      "key": "undo",
+      "props": {
+        "label": "UNDO",
+        "selected": {
+          "property": "sel4"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          468,
+          91
+        ],
+        "w": 68,
+        "h": 30
+      }
+    },
+    "de_save_level": {
+      "type": "use",
+      "doc": "desktop-small-button",
+      "key": "save-level",
+      "props": {
+        "label": "SAVE",
+        "selected": {
+          "property": "sel16"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          594
+        ],
+        "w": 116,
+        "h": 30
+      }
+    },
+    "de_load_level": {
+      "type": "use",
+      "doc": "desktop-small-button",
+      "key": "load-level",
+      "props": {
+        "label": "LOAD",
+        "selected": {
+          "property": "sel17"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          156,
+          594
+        ],
+        "w": 116,
+        "h": 30
+      }
+    },
+    "de_test_level": {
+      "type": "use",
+      "doc": "desktop-small-button",
+      "key": "test-level",
+      "props": {
+        "label": "PLAY TEST",
+        "selected": {
+          "property": "sel18"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          288,
+          594
+        ],
+        "w": 148,
+        "h": 30
+      }
+    },
+    "de_menu": {
+      "type": "use",
+      "doc": "desktop-small-button",
+      "key": "menu",
+      "props": {
+        "label": "BACK",
+        "selected": {
+          "property": "sel19"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          452,
+          594
+        ],
+        "w": 84,
+        "h": 30
+      }
+    },
+    "de_element": {
+      "type": "use",
+      "doc": "desktop-small-button",
+      "key": "element",
+      "props": {
+        "label": {
+          "property": "elementLabel"
+        },
+        "selected": {
+          "property": "sel20"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          642
+        ],
+        "w": 304,
+        "h": 30
+      }
+    },
+    "de_theme": {
+      "type": "use",
+      "doc": "desktop-small-button",
+      "key": "theme",
+      "props": {
+        "label": {
+          "property": "themeLabel"
+        },
+        "selected": {
+          "property": "sel21"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          344,
+          642
+        ],
+        "w": 192,
+        "h": 30
+      }
+    },
+    "de_hint": {
+      "type": "label",
+      "name": "Label",
+      "text": "LEFT: DRAW   RIGHT: ERASE   CTRL-Z: UNDO",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          572
+        ],
+        "fontSize": 10,
+        "color": "#829fb1"
+      }
+    },
+    "de_brand": {
+      "type": "label",
+      "name": "Label",
+      "text": "BUBBLE BOBBLE",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          76,
+          26
+        ],
+        "fontSize": 11,
+        "color": "#70f089"
+      }
+    },
+    "de_dash": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          30
+        ],
+        "w": 36,
+        "h": 4,
+        "bg": "#70f089"
+      }
+    },
+    "de_count": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "enemyCount",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          554,
+          550
+        ],
+        "fontSize": 10,
+        "color": "#70f089"
+      }
+    },
+    "de_footer_hint": {
+      "type": "label",
+      "name": "Label",
+      "text": "F5 PLAY TEST / ESC RETURN / P PLAYER / F FOOD / B BONUS",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          693
+        ],
+        "fontSize": 10,
+        "color": "#829fb1"
+      }
+    }
+  },
+  "view": {
+    "behaviour": "screen"
+  },
+  "properties": {
+    "subtitle": {
+      "type": "text",
+      "default": ""
+    },
+    "status": {
+      "type": "text",
+      "default": ""
+    },
+    "rows": {
+      "type": "list",
+      "of": "desktop-grid-row",
+      "default": []
+    },
+    "toolbar": {
+      "type": "list",
+      "of": "desktop-small-button",
+      "default": []
+    },
+    "tools": {
+      "type": "list",
+      "of": "desktop-editor-button",
+      "default": []
+    },
+    "buttons": {
+      "type": "list",
+      "of": "desktop-small-button",
+      "default": []
+    },
+    "footer": {
+      "type": "list",
+      "of": "desktop-editor-button",
+      "default": []
+    },
+    "copyLabel": {
+      "type": "text",
+      "default": ""
+    },
+    "elementLabel": {
+      "type": "text",
+      "default": ""
+    },
+    "themeLabel": {
+      "type": "text",
+      "default": ""
+    },
+    "sel0": {
+      "type": "yesno",
+      "default": false
+    },
+    "sel1": {
+      "type": "yesno",
+      "default": false
+    },
+    "sel2": {
+      "type": "yesno",
+      "default": false
+    },
+    "sel3": {
+      "type": "yesno",
+      "default": false
+    },
+    "sel4": {
+      "type": "yesno",
+      "default": false
+    },
+    "sel16": {
+      "type": "yesno",
+      "default": false
+    },
+    "sel17": {
+      "type": "yesno",
+      "default": false
+    },
+    "sel18": {
+      "type": "yesno",
+      "default": false
+    },
+    "sel19": {
+      "type": "yesno",
+      "default": false
+    },
+    "sel20": {
+      "type": "yesno",
+      "default": false
+    },
+    "sel21": {
+      "type": "yesno",
+      "default": false
+    },
+    "enemyCount": {
+      "type": "text",
+      "default": ""
+    }
+  }
+}

@@ -1,0 +1,7 @@
+guid = "dd8115d4-c0a8-4b59-94bf-ff0961704151"
+importer = "audio"
+[settings]
+normalize = false
+codec = "opus"
+stream_after = 0
+bitrate = 128000

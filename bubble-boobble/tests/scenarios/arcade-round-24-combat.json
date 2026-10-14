@@ -1,0 +1,74 @@
+{
+  "name": "arcade-round-24-combat",
+  "seed": 42,
+  "round": 24,
+  "players": 1,
+  "spans": [
+    {
+      "ticks": 60,
+      "players": [
+        {
+          "Move": 0,
+          "Jump": false,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    },
+    {
+      "ticks": 60,
+      "players": [
+        {
+          "Move": -1,
+          "Jump": false,
+          "Fire": true
+        }
+      ],
+      "paused": false
+    },
+    {
+      "ticks": 60,
+      "players": [
+        {
+          "Move": 1,
+          "Jump": true,
+          "Fire": true
+        }
+      ],
+      "paused": false
+    },
+    {
+      "ticks": 60,
+      "players": [
+        {
+          "Move": -1,
+          "Jump": true,
+          "Fire": true
+        }
+      ],
+      "paused": false
+    },
+    {
+      "ticks": 60,
+      "players": [
+        {
+          "Move": 1,
+          "Jump": false,
+          "Fire": true
+        }
+      ],
+      "paused": false
+    },
+    {
+      "ticks": 60,
+      "players": [
+        {
+          "Move": -1,
+          "Jump": true,
+          "Fire": true
+        }
+      ],
+      "paused": false
+    }
+  ]
+}
