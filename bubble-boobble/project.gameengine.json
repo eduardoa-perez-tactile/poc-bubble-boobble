@@ -63,5 +63,12 @@
   "platforms": [
     "desktop"
   ],
-  "startScene": "scenes/round1.scene.json"
+  "startScene": "scenes/arcade.scene.json",
+  "audio": {
+    "banks": [
+      "reference/audio/sfx.bank"
+    ],
+    "maxVoices": 24,
+    "normalize": false
+  }
 }

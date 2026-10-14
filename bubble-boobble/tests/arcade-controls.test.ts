@@ -1,0 +1,42 @@
+import {worldTest,expect} from '@gameengine/test';
+import {ArcadeControl,DesktopIntent} from '../src/schema.gen.ts';
+import {ResetArcade} from '../src/arcade/arcade.cheats.ts';
+import {session} from '../src/arcade/session.ts';
+import {desktopState} from '../src/desktop/state.ts';
+const scene='scenes/arcade.scene.json';
+worldTest('arcade physical fire movement jump and pause bindings',async({input,step,cheat})=>{
+ input.view(768,720,1);await step(2);
+ input.emit(DesktopIntent,{action:'navigate',value:'play'});await step(1);
+ await cheat(ResetArcade,{ready:false});
+ input.key(37,true);await step(1); // Physical Space.
+ expect(session.get().game!.Players[0]!.Shoot).toBe(12);
+ expect(session.get().game!.Bubbles.length).toBe(1);
+ input.key(37,false);input.key(51,true);await step(3);
+ expect(session.get().game!.Players[0]!.X).toBe(105);
+ input.key(51,false);input.key(52,true);await step(1);
+ expect(session.get().game!.Players[0]!.VY).toBe(-11);
+ input.key(52,false);input.action('pause',1);await step(1);
+ expect(session.get().game!.Paused).toBe(true);
+ const tick=session.get().game!.Tick;
+ input.action('pause',0);await step(5);
+ expect(session.get().game!.Tick).toBe(tick);
+ input.emit(DesktopIntent,{action:'resume'});await step(1);
+ expect(session.get().game!.Paused).toBe(false);
+ expect(session.get().game!.Tick).toBe(tick+1);
+},{scene});
+worldTest('arcade editor real pointer painting erasing and stroke undo',async({input,step})=>{
+ input.view(768,720,1);await step(2);
+ input.emit(DesktopIntent,{action:'editor'});await step(1);
+ const before=desktopState.get().level.tiles[5]![5]!;
+ input.pointer('down',112,234);await step(1);
+ input.pointer('move',128,234);await step(1);
+ input.pointer('up',128,234);await step(1);
+ expect(desktopState.get().level.tiles[5]![5]).toBe(1);
+ expect(desktopState.get().level.tiles[5]![6]).toBe(1);
+ expect(desktopState.get().history.length).toBe(1);
+ input.emit(DesktopIntent,{action:'undo'});await step(1);
+ expect(desktopState.get().level.tiles[5]![5]).toBe(before);
+ input.pointer('down',112,234,0,2);await step(1);
+ input.pointer('up',112,234,0,2);await step(1);
+ expect(desktopState.get().level.tiles[5]![5]).toBe(0);
+},{scene});

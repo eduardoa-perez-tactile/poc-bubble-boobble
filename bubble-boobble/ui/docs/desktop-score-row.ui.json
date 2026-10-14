@@ -1,0 +1,123 @@
+{
+  "$schemaVersion": 1,
+  "guid": "59fdc18a-b823-439e-8609-a2d37a4814e4",
+  "name": "desktop-score-row",
+  "title": "Desktop score row",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop score row",
+      "style": {
+        "dir": "row",
+        "pad": 0,
+        "align": "center",
+        "bg": "#131d31",
+        "radius": 0,
+        "w": 608,
+        "h": 38
+      },
+      "children": [
+        "dsr_name",
+        "dsr_score",
+        "dsr_round",
+        "dsr_record"
+      ]
+    },
+    "dsr_name": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          8
+        ],
+        "fontSize": 12,
+        "color": "#ebf5ff"
+      },
+      "property": "name"
+    },
+    "dsr_score": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          274,
+          8
+        ],
+        "fontSize": 12,
+        "color": "#ffdc6a"
+      },
+      "property": "score"
+    },
+    "dsr_round": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          432,
+          8
+        ],
+        "fontSize": 12,
+        "color": "#70f089"
+      },
+      "property": "round"
+    },
+    "dsr_record": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          524,
+          8
+        ],
+        "fontSize": 12,
+        "color": "#ebf5ff"
+      },
+      "property": "record"
+    }
+  },
+  "properties": {
+    "name": {
+      "type": "text",
+      "default": ""
+    },
+    "score": {
+      "type": "text",
+      "default": ""
+    },
+    "round": {
+      "type": "text",
+      "default": ""
+    },
+    "record": {
+      "type": "text",
+      "default": ""
+    }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "$schemaVersion": 1,
+  "guid": "3776e5a1-240c-485f-8565-94c97b94bad9",
+  "name": "desktop-button",
+  "title": "Desktop button",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop button",
+      "style": {
+        "dir": "row",
+        "pad": 0,
+        "align": "center",
+        "bg": "#131d31",
+        "radius": 0,
+        "w": 440,
+        "h": 38,
+        "justify": "center"
+      },
+      "children": [
+        "db_label",
+        "d_button_marker"
+      ]
+    },
+    "db_label": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "label",
+      "style": {
+        "fontSize": 14,
+        "color": "#ebf5ff",
+        "textAlign": "center"
+      }
+    },
+    "d_button_marker": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          -5,
+          0
+        ],
+        "w": 2,
+        "h": "100%",
+        "bg": "#70f089"
+      },
+      "show": "selected"
+    }
+  },
+  "behaviour": "button",
+  "properties": {
+    "label": {
+      "type": "text",
+      "default": "BACK"
+    },
+    "selected": {
+      "type": "yesno",
+      "default": false,
+      "poses": {
+        "yes": {
+          "set": {
+            "root": {
+              "bg": "#70f089"
+            },
+            "db_label": {
+              "color": "#080c1b"
+            }
+          }
+        }
+      }
+    }
+  },
+  "transition": {
+    "type": "instant"
+  }
+}

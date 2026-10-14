@@ -1,0 +1,520 @@
+{
+  "$schemaVersion": 1,
+  "guid": "cbf6b7a5-55e8-496f-83dd-95181ee9a675",
+  "name": "desktop-menu",
+  "title": "Desktop menu",
+  "kind": "view",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop menu",
+      "style": {
+        "w": 768,
+        "h": 720,
+        "pad": 0,
+        "bg": "#080c1b",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0.5
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "clip": true
+      },
+      "children": [
+        "dm_bubbles",
+        "dm_logo",
+        "dm_profile",
+        "dm_hint",
+        "dm_start",
+        "dm_profiles",
+        "dm_scores",
+        "dm_editor",
+        "dm_settings",
+        "dm_help",
+        "dm_credits",
+        "dm_quit",
+        "dm_dragons",
+        "dm_tagline",
+        "dm_prompt_holder",
+        "dm_status_panel",
+        "dm_status"
+      ]
+    },
+    "dm_logo": {
+      "type": "icon",
+      "name": "Icon",
+      "image": "reference/logo",
+      "style": {
+        "size": 32,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          209,
+          26
+        ],
+        "w": 350,
+        "h": 252
+      }
+    },
+    "dm_profile": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "subtitle",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          294
+        ],
+        "fontSize": 12,
+        "color": "#70f089"
+      }
+    },
+    "dm_hint": {
+      "type": "label",
+      "name": "Label",
+      "text": "ARROWS TO SELECT   ENTER TO CONFIRM",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          678
+        ],
+        "fontSize": 10,
+        "color": "#829fb1"
+      }
+    },
+    "dm_start": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "start",
+      "props": {
+        "label": "START GAME",
+        "selected": {
+          "property": "startSelected"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          218,
+          328
+        ],
+        "w": 332,
+        "h": 44
+      }
+    },
+    "dm_profiles": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "profiles",
+      "props": {
+        "label": "PROFILES",
+        "selected": {
+          "property": "profilesSelected"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          104,
+          392
+        ],
+        "w": 270,
+        "h": 38
+      }
+    },
+    "dm_scores": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "scores",
+      "props": {
+        "label": "HIGH SCORES",
+        "selected": {
+          "property": "scoresSelected"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          394,
+          392
+        ],
+        "w": 270,
+        "h": 38
+      }
+    },
+    "dm_editor": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "editor",
+      "props": {
+        "label": "LEVEL EDITOR",
+        "selected": {
+          "property": "editorSelected"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          104,
+          444
+        ],
+        "w": 270,
+        "h": 38
+      }
+    },
+    "dm_settings": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "settings",
+      "props": {
+        "label": "SETTINGS",
+        "selected": {
+          "property": "settingsSelected"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          394,
+          444
+        ],
+        "w": 270,
+        "h": 38
+      }
+    },
+    "dm_help": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "help",
+      "props": {
+        "label": "HOW TO PLAY",
+        "selected": {
+          "property": "helpSelected"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          104,
+          496
+        ],
+        "w": 270,
+        "h": 38
+      }
+    },
+    "dm_credits": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "credits",
+      "props": {
+        "label": "CREDITS",
+        "selected": {
+          "property": "creditsSelected"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          394,
+          496
+        ],
+        "w": 270,
+        "h": 38
+      }
+    },
+    "dm_quit": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "quit",
+      "props": {
+        "label": "QUIT",
+        "selected": {
+          "property": "quitSelected"
+        }
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          264,
+          570
+        ],
+        "w": 240,
+        "h": 38
+      }
+    },
+    "dm_bubbles": {
+      "type": "codeArea",
+      "name": "Code area",
+      "key": "bubbles",
+      "style": {
+        "w": 768,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "h": 720
+      }
+    },
+    "dm_dragons": {
+      "type": "codeArea",
+      "name": "Code area",
+      "key": "dragons",
+      "style": {
+        "w": 768,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "h": 720
+      }
+    },
+    "dm_tagline": {
+      "type": "label",
+      "name": "Label",
+      "text": "25 ROUNDS. ONE BUBBLY ADVENTURE.",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          360
+        ],
+        "fontSize": 16,
+        "color": "#ebf5ff"
+      },
+      "show": "titleMode"
+    },
+    "dm_prompt_holder": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "dm_prompt"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          438
+        ],
+        "w": 768,
+        "h": 30
+      },
+      "show": "titleMode"
+    },
+    "dm_prompt": {
+      "type": "label",
+      "name": "Label",
+      "text": "PRESS ENTER TO START",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "fontSize": 20,
+        "color": "#ffdc6a"
+      },
+      "show": "promptVisible"
+    },
+    "dm_status_panel": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          680
+        ],
+        "w": 768,
+        "h": 40,
+        "bg": "#131d31"
+      },
+      "show": "showStatus"
+    },
+    "dm_status": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "status",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          700
+        ],
+        "fontSize": 12,
+        "color": "#ffdc6a"
+      }
+    }
+  },
+  "view": {
+    "behaviour": "screen"
+  },
+  "properties": {
+    "subtitle": {
+      "type": "text",
+      "default": ""
+    },
+    "startSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "profilesSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "scoresSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "editorSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "settingsSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "helpSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "creditsSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "quitSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "titleMode": {
+      "type": "yesno",
+      "default": false,
+      "poses": {
+        "yes": {
+          "set": {
+            "dm_start": {
+              "hide": true
+            },
+            "dm_profiles": {
+              "hide": true
+            },
+            "dm_scores": {
+              "hide": true
+            },
+            "dm_editor": {
+              "hide": true
+            },
+            "dm_settings": {
+              "hide": true
+            },
+            "dm_help": {
+              "hide": true
+            },
+            "dm_credits": {
+              "hide": true
+            },
+            "dm_quit": {
+              "hide": true
+            }
+          }
+        }
+      }
+    },
+    "promptVisible": {
+      "type": "yesno",
+      "default": true
+    },
+    "status": {
+      "type": "text",
+      "default": ""
+    },
+    "showStatus": {
+      "type": "yesno",
+      "default": false
+    }
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "$schemaVersion": 1,
+  "guid": "bf661b92-fc31-4c7b-9ca3-a6af85039902",
+  "name": "desktop-profile-row",
+  "title": "Desktop profile row",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop profile row",
+      "style": {
+        "dir": "row",
+        "pad": 0,
+        "align": "center",
+        "radius": 0,
+        "w": 490,
+        "h": 36
+      },
+      "children": [
+        "dpr_avatar",
+        "dpr_button"
+      ]
+    },
+    "dpr_avatar": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "dpr_image"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 36,
+        "h": 36,
+        "flip": "x"
+      }
+    },
+    "dpr_image": {
+      "type": "icon",
+      "name": "Icon",
+      "image": "ui/sprites/star",
+      "style": {
+        "size": 32,
+        "w": 36,
+        "h": 36
+      },
+      "property": "avatar"
+    },
+    "dpr_button": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "pick",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          50,
+          0
+        ],
+        "w": 440,
+        "h": 36
+      },
+      "props": {
+        "label": {
+          "property": "label"
+        },
+        "selected": {
+          "property": "selected"
+        }
+      }
+    }
+  },
+  "properties": {
+    "label": {
+      "type": "text",
+      "default": ""
+    },
+    "avatar": {
+      "type": "image",
+      "default": "ui/sprites/star"
+    },
+    "selected": {
+      "type": "yesno",
+      "default": false
+    }
+  }
+}

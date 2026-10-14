@@ -1,0 +1,85 @@
+{
+  "$schemaVersion": 1,
+  "guid": "d8004cde-9b61-40d1-9ace-c6cb58246457",
+  "name": "desktop-small-button",
+  "title": "Desktop small button",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop small button",
+      "style": {
+        "dir": "row",
+        "pad": 0,
+        "align": "center",
+        "bg": "#131d31",
+        "radius": 0,
+        "w": 96,
+        "h": 30,
+        "justify": "center"
+      },
+      "children": [
+        "dsb_label",
+        "d_small_button_marker"
+      ]
+    },
+    "dsb_label": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "label",
+      "style": {
+        "fontSize": 14,
+        "color": "#ebf5ff"
+      }
+    },
+    "d_small_button_marker": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          -5,
+          0
+        ],
+        "w": 2,
+        "h": "100%",
+        "bg": "#70f089"
+      },
+      "show": "selected"
+    }
+  },
+  "behaviour": "button",
+  "properties": {
+    "label": {
+      "type": "text",
+      "default": ""
+    },
+    "selected": {
+      "type": "yesno",
+      "default": false,
+      "poses": {
+        "yes": {
+          "set": {
+            "root": {
+              "bg": "#70f089"
+            },
+            "dsb_label": {
+              "color": "#080c1b"
+            }
+          }
+        }
+      }
+    }
+  },
+  "transition": {
+    "type": "instant"
+  }
+}

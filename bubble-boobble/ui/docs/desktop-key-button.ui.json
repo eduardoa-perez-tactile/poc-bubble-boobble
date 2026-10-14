@@ -1,0 +1,85 @@
+{
+  "$schemaVersion": 1,
+  "guid": "1478080e-f4e2-4277-9773-dcff66207026",
+  "name": "desktop-key-button",
+  "title": "Desktop key button",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop key button",
+      "style": {
+        "dir": "row",
+        "pad": 0,
+        "align": "center",
+        "bg": "#131d31",
+        "radius": 0,
+        "w": 48,
+        "h": 38,
+        "justify": "center"
+      },
+      "children": [
+        "dkb_label",
+        "d_key_button_marker"
+      ]
+    },
+    "dkb_label": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "label",
+      "style": {
+        "fontSize": 14,
+        "color": "#ebf5ff"
+      }
+    },
+    "d_key_button_marker": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          -5,
+          0
+        ],
+        "w": 2,
+        "h": "100%",
+        "bg": "#70f089"
+      },
+      "show": "selected"
+    }
+  },
+  "behaviour": "button",
+  "properties": {
+    "label": {
+      "type": "text",
+      "default": ""
+    },
+    "selected": {
+      "type": "yesno",
+      "default": false,
+      "poses": {
+        "yes": {
+          "set": {
+            "root": {
+              "bg": "#70f089"
+            },
+            "dkb_label": {
+              "color": "#080c1b"
+            }
+          }
+        }
+      }
+    }
+  },
+  "transition": {
+    "type": "instant"
+  }
+}

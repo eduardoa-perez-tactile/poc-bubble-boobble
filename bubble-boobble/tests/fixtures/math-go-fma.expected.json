@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "scenario": "math-go-fma",
+  "reference": {
+    "repository": "https://github.com/olivierh59500/go-bubblebobble.git",
+    "revision": "783cf6aa26ac3c57cdab43f2d7a5b3725a3991cc",
+    "levelsSha256": "3509e88a991a8e0778bf1d3e7a5640c0eec5cc011d6074dac485da5a786f3e54",
+    "scenarioSha256": "8d375befb9600d8eddf73d6763389baff8702ec2c10b623cd836e885987faf14",
+    "adapterSha256": "2e5cc2cee56a005d6f40839d9762ba1fa28b07cf9eefb3ec9c7ba066a697b643",
+    "driverSha256": "c49699e7f1bba214e0ed24ee35fa4c2f5e16a3bd53fec2f0fad72d76cfff4ee1"
+  },
+  "frames": [
+    {"frame":0,"input":null,"state":{"A":1.0000000000000002,"B":1.0000000000000002,"C":-1.0000000000000004,"Result":4.930380657631324e-32}},
+    {"frame":1,"input":null,"state":{"A":1.7976931348623157e+308,"B":2,"C":-1.7976931348623157e+308,"Result":1.7976931348623157e+308}},
+    {"frame":2,"input":null,"state":{"A":5e-324,"B":0.5,"C":5e-324,"Result":1e-323}},
+    {"frame":3,"input":null,"state":{"A":2.2250738585072014e-308,"B":0.5,"C":-5e-324,"Result":1.1125369292536e-308}},
+    {"frame":4,"input":null,"state":{"A":1e-200,"B":1e-200,"C":0,"Result":0}},
+    {"frame":5,"input":null,"state":{"A":1e+100,"B":1e+100,"C":-1e+200,"Result":6.207266000700947e+183}},
+    {"frame":6,"input":null,"state":{"A":1,"B":1,"C":-1,"Result":0}}
+  ]
+}

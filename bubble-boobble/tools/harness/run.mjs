@@ -10,11 +10,12 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 process.chdir(root);
 const lock = JSON.parse(readFileSync('tools/harness/reference.lock.json', 'utf8'));
 const scenarioName = process.argv[3] ?? 'reference-round1-smoke';
+const measurements = [];
 const hash = data => createHash('sha256').update(data).digest('hex');
 const read = path => readFileSync(path, 'utf8');
 function run(command, args, options = {}) {
   const start = performance.now();
-  const result = spawnSync(command, args, { cwd: root, encoding: 'utf8', stdio: 'pipe', ...options });
+  const result = spawnSync(command, args, { cwd: root, encoding: 'utf8', stdio: 'pipe', maxBuffer: 64 * 1024 * 1024, ...options });
   if (result.error) throw result.error;
   if (result.status !== 0) throw new Error(`${command} ${args.join(' ')} failed (${result.status})\n${result.stdout ?? ''}${result.stderr ?? ''}`);
   return { stdout: result.stdout, stderr: result.stderr, wallMs: performance.now() - start };
@@ -26,6 +27,7 @@ function engine(args) {
   if (args[0] === 'test' && !Object.values(output.results ?? {}).some(results => Array.isArray(results) && results.length > 0)) throw new Error('Test filter matched no tests');
   for (const check of output.checks ?? []) if (check.warning) console.log(`Warning: ${check.detail}`);
   console.log(`gameengine ${args.join(' ')}: ${(result.wallMs / 1000).toFixed(3)} s`);
+  measurements.push({ command: `gameengine ${args.join(' ')}`, wallMs: result.wallMs });
   return { ...result, output };
 }
 function goBinary() {
@@ -107,6 +109,11 @@ function fixtures(checkOnly) {
   console.log(run(context.go, ['test', './internal/game'], { cwd: context.checkout, env: context.env }).stdout.trim());
 }
 function selftest() {
+  const inputs = JSON.parse(read('data/harness-scenarios.json'));
+  const names = readdirSync('tests/scenarios').filter(name => name.startsWith('boundary-') && name.endsWith('.json')).map(name => name.slice(0,-5)).sort();
+  if (JSON.stringify(Object.keys(inputs).sort()) !== JSON.stringify(names)) throw new Error('Controlled input aggregate names differ from canonical scenarios');
+  for (const name of names) if (JSON.stringify(inputs[name]) !== JSON.stringify(JSON.parse(read(`tests/scenarios/${name}.json`)))) throw new Error(`Controlled input aggregate is stale: ${name}`);
+
   for (const file of readdirSync('tests/fixtures').filter(name => name.endsWith('.expected.json'))) {
     const fixture = JSON.parse(read(`tests/fixtures/${file}`));
     if (fixture.reference.revision !== lock.revision || fixture.reference.repository !== lock.repository || fixture.reference.levelsSha256 !== lock.levelsSha256 || fixture.reference.scenarioSha256 !== hash(read(`tests/scenarios/${fixture.scenario}.json`)) || fixture.reference.adapterSha256 !== hash(read('tools/harness/oracle/adapter.go')) || fixture.reference.driverSha256 !== hash(read('tools/harness/oracle/main.go'))) throw new Error(`Fixture provenance is stale: ${file}`);
@@ -148,26 +155,36 @@ async function openEditor() {
   }
   throw new Error('Editor did not open this project. If another project is open, select this folder in the app.');
 }
-// The installed replay CLI omits --scene. Keep the starter replay on its recorded scene
-// without mutating the project's default scene or rebuilding the bundled engine.
-function starterReplay() {
+// The installed replay CLI drops the test's recorded scene. Supply it to the host.
+const replays = [
+  { path: 'tests/replays/harness_reset_and_tap.greplay', scene: 'scenes/main.scene.json', filter: 'harness reset and tap' },
+  { path: 'tests/replays/movement_physical_keyboard_hold_release_and_jump.greplay', scene: 'scenes/round1.scene.json', filter: 'movement physical keyboard hold release and jump' },
+  { path: 'tests/replays/arcade_engine_input_full_go_parity_reference_round1_smoke.greplay', scene: 'scenes/arcade.scene.json', filter: 'arcade engine input full Go parity reference-round1-smoke' },
+];
+function verifyReplays(selected = replays) {
   const bundle = engine(['bundle']).output.path;
   const doctor = JSON.parse(run('gameengine', ['doctor', '--json']).stdout);
   const host = doctor.checks.find(check => check.name === 'gameengine-host (V8)' && check.ok)?.detail;
   if (!host) throw new Error('V8 host unavailable');
-  const result = run(host, ['--mode','headless','--project',root,'--bundle',bundle,'--js','v8','--scene','scenes/main.scene.json','--verify',resolve('tests/replays/harness_reset_and_tap.greplay')]);
-  if (JSON.parse(result.stdout).ok !== true) throw new Error(result.stdout);
-  console.log(`Starter replay, explicit recorded scene: ${(result.wallMs / 1000).toFixed(3)} s`);
+  for (const replay of selected) {
+    const result = run(host, ['--mode','headless','--project',root,'--bundle',bundle,'--js','v8','--scene',replay.scene,'--verify',resolve(replay.path)]);
+    if (JSON.parse(result.stdout).ok !== true) throw new Error(result.stdout);
+    measurements.push({ command: `replay ${replay.path} scene=${replay.scene}`, wallMs: result.wallMs });
+    console.log(`Replay ${replay.path}, scene ${replay.scene}: ${(result.wallMs / 1000).toFixed(3)} s`);
+  }
+}
+function recordReplays() {
+  for (const replay of replays) engine(['test', '--js', 'v8', '--record-replays', '--filter', replay.filter]);
 }
 function reset() {
   const probe = spawnSync('gameengine', ['editor', 'state', '--json'], { encoding: 'utf8' });
   if (probe.status === 0 && JSON.parse(probe.stdout).ok) {
     const state = JSON.parse(probe.stdout).value;
     if (!state.playing) engine(['editor', 'play']);
-    engine(['editor', 'call', 'cheat.run', '--role', 'game', '--params', JSON.stringify({ id: 'port.movement', args: { ready: false } })]);
+    engine(['editor', 'call', 'cheat.run', '--role', 'game', '--params', JSON.stringify({ id: 'arcade.reset', args: { round: 1, seed: 42, players: 1, ready: false, quiet: false } })]);
     engine(['editor', 'call', 'engine.step', '--role', 'game', '--params', '{"n":1}']);
   } else {
-    engine(['cheat', 'run', 'port.movement']); engine(['step', '1']);
+    engine(['cheat', 'run', 'arcade.reset', 'round=1', 'seed=42', 'players=1', 'ready=false', 'quiet=false']); engine(['step', '1']);
   }
 }
 async function main() {
@@ -183,17 +200,42 @@ async function main() {
     case 'compare':
       if (!process.argv[3] || !process.argv[4]) throw new Error('compare EXPECTED.json ACTUAL.json');
       process.exitCode = compareFiles(process.argv[3], process.argv[4]) ? 0 : 1; break;
-    case 'quick': selftest(); engine(['test', '--js', 'v8', '--filter', process.argv[3] ?? '*movement*']); break;
-    case 'verify': selftest(); engine(['test', '--js', 'v8']); engine(['test', '--js', 'v8', '--tier', 't1', '--gpu-tier', 'desktop']); starterReplay(); engine(['replay', 'verify', 'tests/replays/movement_physical_keyboard_hold_release_and_jump.greplay']); engine(['check']); break;
-    case 'record': engine(['test', '--js', 'v8', '--record-replays', '--filter', '*harness*']); break;
-    case 'replay': if (!process.argv[3]) starterReplay(); else engine(['replay', 'verify', process.argv[3]]); break;
+    case 'quick':
+      selftest();
+      if (process.argv[3]) engine(['test', '--js', 'v8', '--filter', process.argv[3]]);
+      else for (const filter of ['*movement*', '*arcade engine input*', '*arcade Go*']) engine(['test', '--js', 'v8', '--filter', filter]);
+      break;
+    case 'verify': selftest(); engine(['test', '--js', 'v8']); engine(['test', '--js', 'v8', '--tier', 't1', '--gpu-tier', 'desktop']); verifyReplays(); engine(['check']); break;
+    case 'record': if (process.argv[3]) engine(['test', '--js', 'v8', '--record-replays', '--filter', process.argv[3]]); else recordReplays(); break;
+    case 'replay': {
+      if (!process.argv[3]) verifyReplays();
+      else {
+        const known = replays.find(replay => replay.path === process.argv[3]);
+        const scene = process.argv[4] ?? known?.scene;
+        if (!scene) throw new Error('Unknown replay: provide its recorded scene as the next argument');
+        verifyReplays([{ path: process.argv[3], scene }]);
+      }
+      break;
+    }
+    case 'milestone': {
+      selftest();
+      const oracle = reference(); // Verify Go/revision/content/overlay and rebuild.
+      console.log(oracle.version);
+      console.log(run(oracle.go, ['test', './internal/game'], { cwd: oracle.checkout, env: oracle.env }).stdout.trim());
+      for (const script of ['arcade-parity.mjs', 'numerics-study.mjs', 'arcade-study.mjs']) {
+        const result = run(process.execPath, [`tools/harness/${script}`]);
+        console.log(result.stdout.trim());
+        measurements.push({ command: script, wallMs: result.wallMs });
+      }
+      break;
+    }
     case 'reset': reset(); break;
-    case 'coverage': console.log('BOOTSTRAP COVERAGE: comparator, Go oracle fixture, starter reset/replay infrastructure (run verify to check).\nIMPLEMENTED: round-one controlled movement traces (player fields, walked/jumps and jump events), keyboard path, desktop containment.\nPENDING: combat, enemies, bonuses, campaign progression, menus/audio/persistence; full-match/RNG and automated Go visual parity.\nCROSS-RUNTIME: Hermes host requires separate provisioning.\nEDITOR: run harness:hot-reload in an open, running editor to verify this environment.'); break;
+    case 'coverage': console.log('IMPLEMENTED: cached exact full-state engine-input traces for rounds 1/10/24/25 and ready/fire/pause smoke; original movement boundaries and keyboard path; Go PCG/FMA/trig.\nMILESTONE: live independent initialization of all 25 rounds, 31,525 snapshots, plus random numerical studies. Run harness:milestone.\nLIMITS: fixed traces do not prove every bonus/enemy boundary or natural completion of all 25 rounds; semantic inputs do not prove every physical binding; Tactile goldens do not prove Go visual parity.\nCROSS-RUNTIME: Hermes host requires separate provisioning.\nEDITOR: run harness:hot-reload in an open running editor to verify this environment.'); break;
     default: throw new Error(`Unknown harness command: ${command}`);
   }
   const wallMs = performance.now() - start;
   mkdirSync('artifacts', { recursive: true });
-  writeFileSync(`artifacts/${command}-timing.json`, JSON.stringify({ command, wallMs }, null, 2) + '\n');
-  console.log(`Harness ${command}: ${(wallMs / 1000).toFixed(3)} s end-to-end. Movement parity is scoped; full-match coverage remains pending.`);
+  writeFileSync(`artifacts/${command}-timing.json`, JSON.stringify({ command, wallMs, measurements }, null, 2) + '\n');
+  console.log(`Harness ${command}: ${(wallMs / 1000).toFixed(3)} s end-to-end. Exact parity claims are limited to the recorded scenarios; see docs/harness.md.`);
 }
 main().catch(error => { console.error(error.message); process.exitCode = 1; });

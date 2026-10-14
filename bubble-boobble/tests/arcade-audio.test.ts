@@ -1,0 +1,20 @@
+import {worldTest,expect} from '@gameengine/test';
+import {PlaySound,PlayMusic} from '@gameengine/runtime';
+import {DesktopIntent} from '../src/schema.gen.ts';
+import {ResetArcade} from '../src/arcade/arcade.cheats.ts';
+import {session} from '../src/arcade/session.ts';
+worldTest('arcade audio bank original shoot trigger and music request',async({step,cheat,input,audio,world})=>{
+ await step(10);
+ await cheat(ResetArcade,{ready:false});
+ expect(world.events(PlayMusic).some(e=>e.track==='reference/audio/bubble-1')).toBe(true);
+ input.action('fire',1);await step(1);
+ expect(session.get().game!.Sounds).toEqual(['shoot']);
+ expect(world.events(PlaySound).some(e=>e.sound==='reference/audio/shoot')).toBe(true);
+ const s=audio.status();
+ expect(s.banks['reference/audio/sfx.bank']?.ready).toBe(true);
+ expect(s.sounds).toBeGreaterThanOrEqual(10);
+ expect(s.buses.SFX).toBe(0.75);
+ expect(s.buses.Music).toBe(0.5);
+ input.emit(DesktopIntent,{action:'sound',index:-1});await step(1);
+ expect(audio.status().buses.SFX).toBe(0.5);
+},{scene:'scenes/arcade.scene.json'});

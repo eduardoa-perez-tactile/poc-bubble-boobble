@@ -23,6 +23,110 @@
       {
         "key": "Escape"
       }
+    ],
+    "fire": [
+      {
+        "key": "Space"
+      },
+      {
+        "key": "ControlLeft"
+      },
+      {
+        "key": "ControlRight"
+      },
+      {
+        "button": 2
+      }
+    ],
+    "menuY": [
+      {
+        "negative": "ArrowUp",
+        "positive": "ArrowDown"
+      },
+      {
+        "negative": "KeyW",
+        "positive": "KeyS"
+      }
+    ],
+    "menuX": [
+      {
+        "negative": "ArrowLeft",
+        "positive": "ArrowRight"
+      },
+      {
+        "negative": "KeyA",
+        "positive": "KeyD"
+      }
+    ],
+    "confirm": [
+      {
+        "key": "Enter"
+      },
+      {
+        "key": "Space"
+      }
+    ],
+    "back": [
+      {
+        "key": "Escape"
+      }
+    ],
+    "undo": [
+      {
+        "key": "KeyZ",
+        "mods": [
+          "Ctrl"
+        ]
+      }
+    ],
+    "save": [
+      {
+        "key": "KeyS",
+        "mods": [
+          "Ctrl"
+        ]
+      }
+    ],
+    "playtest": [
+      {
+        "key": "F5"
+      }
+    ],
+    "mute": [
+      {
+        "key": "KeyM"
+      }
+    ],
+    "fullscreen": [
+      {
+        "key": "F11"
+      }
+    ],
+    "move2": [
+      {
+        "negative": "KeyJ",
+        "positive": "KeyL"
+      }
+    ],
+    "jump2": [
+      {
+        "key": "KeyI"
+      }
+    ],
+    "fire2": [
+      {
+        "key": "KeyK"
+      }
+    ],
+    "delete": [
+      {
+        "key": "Backspace"
+      }
+    ],
+    "profileConfirm": [
+      {
+        "key": "Enter"
+      }
     ]
   }
 }

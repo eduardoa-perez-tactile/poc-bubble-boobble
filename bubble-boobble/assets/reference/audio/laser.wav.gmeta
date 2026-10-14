@@ -1,0 +1,6 @@
+guid = "af1dc71f-1606-4ef2-8812-13a1baedefd1"
+importer = "audio"
+[settings]
+mono = true
+normalize = false
+codec = "pcm"

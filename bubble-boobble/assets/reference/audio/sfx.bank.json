@@ -1,0 +1,14 @@
+{
+  "sounds": [
+    "reference/audio/shoot",
+    "reference/audio/jump",
+    "reference/audio/pop",
+    "reference/audio/death",
+    "reference/audio/food",
+    "reference/audio/item",
+    "reference/audio/fire",
+    "reference/audio/water",
+    "reference/audio/explosion",
+    "reference/audio/laser"
+  ]
+}

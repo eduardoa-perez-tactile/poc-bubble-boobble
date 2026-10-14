@@ -1,5 +1,5 @@
 // @generated — do not edit. Regenerate with `pnpm gen` (tools/bindgen).
-import { typeToken, registerSchema, type EntityId } from '@gameengine/runtime';
+import { typeToken, rowRead as $r, registerSchema, type EntityId } from '@gameengine/runtime';
 
 export type { EntityId };
 
@@ -9,6 +9,144 @@ export const schemaIr = {
   "package": "BubbleBoobble",
   "enums": [],
   "types": [
+    {
+      "name": "ArcadeAudio",
+      "kind": "resource",
+      "sim": true,
+      "fields": [
+        {
+          "name": "track",
+          "kind": "string",
+          "scalar": "u32",
+          "lanes": 1
+        },
+        {
+          "name": "muted",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "music",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "sound",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "paused",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "exitSequence",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "ArcadeControl",
+      "kind": "resource",
+      "sim": true,
+      "fields": [
+        {
+          "name": "active",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "skip",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "requestSequence",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "ArcadeInput",
+      "kind": "event",
+      "sim": true,
+      "fields": [
+        {
+          "name": "player",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1
+        },
+        {
+          "name": "move",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "jump",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "fire",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "paused",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "ArcadePlatformState",
+      "kind": "resource",
+      "sim": false,
+      "fields": [
+        {
+          "name": "exitSequence",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "ArcadeVisual",
+      "kind": "component",
+      "sim": true,
+      "fields": [
+        {
+          "name": "slot",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
     {
       "name": "Bubble",
       "kind": "component",
@@ -26,6 +164,78 @@ export const schemaIr = {
           "scalar": "f32",
           "lanes": 1,
           "doc": "Units per step"
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "DesktopIntent",
+      "kind": "event",
+      "sim": true,
+      "fields": [
+        {
+          "name": "action",
+          "kind": "string",
+          "scalar": "u32",
+          "lanes": 1
+        },
+        {
+          "name": "value",
+          "kind": "string",
+          "scalar": "u32",
+          "lanes": 1
+        },
+        {
+          "name": "index",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "x",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "y",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "EditorPointer",
+      "kind": "resource",
+      "sim": true,
+      "fields": [
+        {
+          "name": "drawing",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "erasing",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "col",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "row",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
         }
       ],
       "package": "BubbleBoobble"
@@ -290,6 +500,73 @@ export const schemaIr = {
 } as const;
 registerSchema(schemaIr);
 
+export interface ArcadeAudioViews {
+  track: Uint32Array;
+  muted: Uint8Array;
+  music: Int32Array;
+  sound: Int32Array;
+  paused: Uint8Array;
+  exitSequence: Uint32Array;
+}
+export interface ArcadeAudioValue {
+  track: string;
+  muted: boolean;
+  music: number;
+  sound: number;
+  paused: boolean;
+  exitSequence: number;
+}
+/** ArcadeAudio (resource, sim) */
+export const ArcadeAudio = typeToken<ArcadeAudioViews, ArcadeAudioValue>('ArcadeAudio', 'resource', { sig: 'track:string:1,muted:bool:1,music:i32:1,sound:i32:1,paused:bool:1,exitSequence:u32:1', read: (v: ArcadeAudioViews, i: number, o: Record<string, unknown>) => { o.track = $r.str(v.track[i]!); o.muted = v.muted[i] !== 0; o.music = v.music[i]; o.sound = v.sound[i]; o.paused = v.paused[i] !== 0; o.exitSequence = v.exitSequence[i]; return o; } });
+
+export interface ArcadeControlViews {
+  active: Uint8Array;
+  skip: Uint8Array;
+  requestSequence: Uint32Array;
+}
+export interface ArcadeControlValue {
+  active: boolean;
+  skip: boolean;
+  requestSequence: number;
+}
+/** ArcadeControl (resource, sim) */
+export const ArcadeControl = typeToken<ArcadeControlViews, ArcadeControlValue>('ArcadeControl', 'resource', { sig: 'active:bool:1,skip:bool:1,requestSequence:u32:1', read: (v: ArcadeControlViews, i: number, o: Record<string, unknown>) => { o.active = v.active[i] !== 0; o.skip = v.skip[i] !== 0; o.requestSequence = v.requestSequence[i]; return o; } });
+
+export interface ArcadeInputViews {
+  player: Uint32Array;
+  move: Int32Array;
+  jump: Uint8Array;
+  fire: Uint8Array;
+  paused: Uint8Array;
+}
+export interface ArcadeInputValue {
+  player: number;
+  move: number;
+  jump: boolean;
+  fire: boolean;
+  paused: boolean;
+}
+/** ArcadeInput (event, sim) */
+export const ArcadeInput = typeToken<ArcadeInputViews, ArcadeInputValue>('ArcadeInput', 'event', { sig: 'player:u32:1,move:i32:1,jump:bool:1,fire:bool:1,paused:bool:1', read: (v: ArcadeInputViews, i: number, o: Record<string, unknown>) => { o.player = v.player[i]; o.move = v.move[i]; o.jump = v.jump[i] !== 0; o.fire = v.fire[i] !== 0; o.paused = v.paused[i] !== 0; return o; } });
+
+export interface ArcadePlatformStateViews {
+  exitSequence: Uint32Array;
+}
+export interface ArcadePlatformStateValue {
+  exitSequence: number;
+}
+/** ArcadePlatformState (resource, presentation-only) */
+export const ArcadePlatformState = typeToken<ArcadePlatformStateViews, ArcadePlatformStateValue>('ArcadePlatformState', 'resource', { sig: 'exitSequence:u32:1', read: (v: ArcadePlatformStateViews, i: number, o: Record<string, unknown>) => { o.exitSequence = v.exitSequence[i]; return o; } });
+
+export interface ArcadeVisualViews {
+  slot: Uint32Array;
+}
+export interface ArcadeVisualValue {
+  slot: number;
+}
+/** ArcadeVisual (component, sim) */
+export const ArcadeVisual = typeToken<ArcadeVisualViews, ArcadeVisualValue>('ArcadeVisual', 'component', { sig: 'slot:u32:1', read: (v: ArcadeVisualViews, i: number, o: Record<string, unknown>) => { o.slot = v.slot[i]; return o; } });
+
 export interface BubbleViews {
   radius: Float32Array;
   /** Units per step */
@@ -302,6 +579,38 @@ export interface BubbleValue {
 }
 /** Bubble (component, sim) */
 export const Bubble = typeToken<BubbleViews, BubbleValue>('Bubble', 'component', { sig: 'radius:f32:1,speed:f32:1', read: (v: BubbleViews, i: number, o: Record<string, unknown>) => { o.radius = v.radius[i]; o.speed = v.speed[i]; return o; } });
+
+export interface DesktopIntentViews {
+  action: Uint32Array;
+  value: Uint32Array;
+  index: Int32Array;
+  x: Int32Array;
+  y: Int32Array;
+}
+export interface DesktopIntentValue {
+  action: string;
+  value: string;
+  index: number;
+  x: number;
+  y: number;
+}
+/** DesktopIntent (event, sim) */
+export const DesktopIntent = typeToken<DesktopIntentViews, DesktopIntentValue>('DesktopIntent', 'event', { sig: 'action:string:1,value:string:1,index:i32:1,x:i32:1,y:i32:1', read: (v: DesktopIntentViews, i: number, o: Record<string, unknown>) => { o.action = $r.str(v.action[i]!); o.value = $r.str(v.value[i]!); o.index = v.index[i]; o.x = v.x[i]; o.y = v.y[i]; return o; } });
+
+export interface EditorPointerViews {
+  drawing: Uint8Array;
+  erasing: Uint8Array;
+  col: Int32Array;
+  row: Int32Array;
+}
+export interface EditorPointerValue {
+  drawing: boolean;
+  erasing: boolean;
+  col: number;
+  row: number;
+}
+/** EditorPointer (resource, sim) */
+export const EditorPointer = typeToken<EditorPointerViews, EditorPointerValue>('EditorPointer', 'resource', { sig: 'drawing:bool:1,erasing:bool:1,col:i32:1,row:i32:1', read: (v: EditorPointerViews, i: number, o: Record<string, unknown>) => { o.drawing = v.drawing[i] !== 0; o.erasing = v.erasing[i] !== 0; o.col = v.col[i]; o.row = v.row[i]; return o; } });
 
 export interface GameViews {
   /** Bubbles popped */

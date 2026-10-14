@@ -1,0 +1,7 @@
+guid = "588b3760-da39-4d9d-ae55-e2dc5b7a7ac4"
+importer = "texture"
+[settings]
+atlas = "port"
+filter = "nearest"
+compression = "none"
+trim = false

@@ -1,0 +1,37 @@
+{
+  "$schemaVersion": 1,
+  "guid": "cc210314-505a-4d4b-ada2-6b962d539731",
+  "name": "desktop-grid-row",
+  "title": "Desktop grid row",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Desktop grid row",
+      "style": {
+        "dir": "row",
+        "pad": 0,
+        "align": "center",
+        "bg": "#1e2a44ff",
+        "radius": 12,
+        "gap": 0
+      },
+      "children": [
+        "dgr_cells"
+      ]
+    },
+    "dgr_cells": {
+      "type": "repeat",
+      "doc": "desktop-cell",
+      "property": "cells"
+    }
+  },
+  "properties": {
+    "cells": {
+      "type": "list",
+      "of": "desktop-cell",
+      "default": []
+    }
+  }
+}

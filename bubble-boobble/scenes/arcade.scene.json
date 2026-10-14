@@ -1,0 +1,22 @@
+{
+  "$schemaVersion": 2,
+  "id": "arcade",
+  "entities": [
+    {
+      "name": "Camera",
+      "id": "camera",
+      "Camera": { "clearColor": "#080c1bff", "orthoSize": 360 },
+      "LocalTransform": { "position": [384, 360, 0] }
+    },
+    {
+      "name": "Runtime Visuals",
+      "id": "visuals",
+      "ArcadeVisual": {},
+      "LocalTransform": {},
+      "Shape": { "visible": false },
+      "Sprite": { "visible": false },
+      "Text2D": { "font": "reference/arcade", "visible": false },
+      "VisualOffset": {}
+    }
+  ]
+}
