@@ -5,6 +5,7 @@ import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomBytes, createHash } from "node:crypto";
 import { createServer } from "node:http";
+import {guardRequest} from "./bridge-http.mjs";
 import {buildYMHelper} from "./ym-source/build.mjs";
 const project = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 process.chdir(project);
@@ -27,7 +28,7 @@ function run(binary, args2) {
   if (r.status !== 0) throw new Error(r.stderr || r.stdout || String(r.error));
   return r.stdout;
 }
-const server = createServer(async (req, res) => {
+const server = createServer(guardRequest(async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Cache-Control", "no-store");
   if (req.headers.origin) {
@@ -98,7 +99,7 @@ const server = createServer(async (req, res) => {
     res.writeHead(400);
     res.end(JSON.stringify({ error: e.message }));
   }
-});
+}));
 let child, gamePID=null;
 await new Promise((resolve2, reject) => {
   server.once("error", reject);

@@ -6,6 +6,8 @@ import {ArcadeAudio,ArcadeControl,DesktopIntent} from '../schema.gen';
 import {desktopSaveState} from '../desktop/save';
 import {session} from '../arcade/session';
 import {desktopState} from '../desktop/state';
+import {NativeAudioReadiness} from './readiness';
+import type {NativeAudioStatus} from './readiness';
 export interface DesktopLaunchIdentity {readonly launchId:string}
 export function desktopLaunchIdentity():DesktopLaunchIdentity|undefined {
  const descriptor=Object.getOwnPropertyDescriptor(globalThis,'__bubbleDesktopLaunch');
@@ -29,14 +31,18 @@ const bridge=defineUI({name:'DesktopPlatformBridge',root(){
  const launch=desktopLaunchIdentity();if(!launch)return null;
  const clock=useResource(Time),control=useResource(ArcadeControl),audio=useResource(ArcadeAudio);
  const save=useDoc(desktopSaveState),game=useDoc(session),ui=useDoc(desktopState);
- let token='',sent='',observed='',busy=false,nextRetry=0,alive=true;
+ let token='',sent='',observed='',busy=false,nextRetry=0,alive=true,generation=0;
  let pollBusy=false,nextPoll=0,wasFocused:boolean|undefined;
+ const readiness=new NativeAudioReadiness();
  function availability(value:boolean,error=''){
   if(!alive)return;
   if(audio()?.native!==value)emit(DesktopIntent,{action:'native-audio',value:value?'1':'0'});
   status.available=value;status.error=error;
  }
- onCleanup(()=>{alive=false;status.available=false;});
+ function disconnect(error:unknown){
+  generation++;token='';sent='';readiness.reset();wasFocused=undefined;availability(false,String(error));
+ }
+ onCleanup(()=>{alive=false;generation++;status.available=false;});
  createEffect(()=>{
   const t=clock(),c=control(),a=audio(),s=save(),g=game();
   if(!t||!c?.active||!a||!alive)return;
@@ -45,35 +51,50 @@ const bridge=defineUI({name:'DesktopPlatformBridge',root(){
   const observationKey=`${u.screen}/${u.selected}/${g.active}/${g.game?.Paused??false}`;
   if(busy||(desired===sent&&observationKey===observed&&t.elapsed<nextRetry)||(!token&&t.elapsed<nextRetry))return;
   busy=true;nextRetry=t.elapsed+2;
+  const requestGeneration=generation;
   void(async()=>{
    try{
     if(!token){
      const response=await net.fetch(endpoint+'/health',{timeoutMs:300});
      const health=response.json<{bundleId?:string;protocol?:number;token?:string;launchId?:string}>();
      if(!response.ok||health.bundleId!=='bubbleboobble.desktop'||health.protocol!==1||health.launchId!==launch.launchId||typeof health.token!=='string'||!/^[0-9a-f]{64}$/.test(health.token))throw new Error('macOS game launcher unavailable');
+     if(!alive||generation!==requestGeneration)return;
      token=health.token;
     }
     const response=await net.fetch(endpoint+'/state',{method:'POST',headers:{authorization:`Bearer ${token}`,'content-type':'application/json'},body:JSON.stringify({...JSON.parse(desired),observation:{screen:u.screen,selected:u.selected,gameActive:g.active,gamePaused:!!g.game?.Paused,gameTick:g.game?.Tick??0}}),timeoutMs:500});
-    const applied=response.json<{ok?:boolean}>();
+    const applied=response.json<{ok?:boolean;revision?:number}>();
+    if(!alive||generation!==requestGeneration)return;
     if(!response.ok||applied.ok!==true)throw new Error(`Desktop adapter HTTP ${response.status}`);
-    sent=desired;observed=observationKey;availability(true);
-   }catch(error){token='';sent='';wasFocused=undefined;availability(false,String(error));}
+    readiness.acknowledge(applied.revision);
+    sent=desired;observed=observationKey;
+   }catch(error){if(alive&&generation===requestGeneration)disconnect(error);}
    finally{busy=false;}
   })();
  });
  createEffect(()=>{
   const t=clock();
-  if(!t||!token||!status.available||pollBusy||t.elapsed<nextPoll)return;
-  nextPoll=t.elapsed+0.05;pollBusy=true;
+  if(!t)return;
+  // Subscribe to elapsed before testing non-reactive connection state. Otherwise
+  // the initial empty token leaves this effect without a clock dependency.
+  const elapsed=t.elapsed;
+  if(!token||pollBusy||elapsed<nextPoll)return;
+  nextPoll=elapsed+0.05;pollBusy=true;
+  const requestToken=token,requestGeneration=generation;
   void(async()=>{try{
-   const response=await net.fetch(endpoint+'/status',{headers:{authorization:`Bearer ${token}`},timeoutMs:300});
-   const native=response.json<{focused?:boolean;launchId?:string}>();
-   if(alive&&response.ok&&native.launchId===launch.launchId&&typeof native.focused==='boolean'){
+   const response=await net.fetch(endpoint+'/status',{headers:{authorization:`Bearer ${requestToken}`},timeoutMs:300});
+   const native=response.json<NativeAudioStatus&{focused?:boolean;launchId?:string}>();
+   if(!alive||generation!==requestGeneration)return;
+   if(!response.ok||native.launchId!==launch.launchId)throw new Error('Native adapter status unavailable');
+   if(!readiness.observe(native))return;
+   availability(readiness.available,readiness.error);
+   // Window focus remains authoritative when only the audio helper has failed.
+   if(!native.windowReady||!native.adapterActive){wasFocused=undefined;return;}
+   if(typeof native.focused==='boolean'){
     const current=session.get();
     if(shouldPauseAfterFocusLoss(wasFocused,native.focused,{screen:desktopState.get().screen,active:current.active&&!!current.game,paused:!!current.game?.Paused,enabled:!!control()?.active}))emit(DesktopIntent,{action:'pause'});
     wasFocused=native.focused;
    }
-  }catch{}finally{pollBusy=false;}})();
+  }catch(error){if(alive&&generation===requestGeneration)disconnect(error);}finally{pollBusy=false;}})();
  });
  return null;
 }});

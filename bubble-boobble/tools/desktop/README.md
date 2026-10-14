@@ -107,3 +107,13 @@ not the DAC position or hardware latency. Device listening quality, native
 fullscreen Spaces, macOS x64, Windows/Linux, notarization and a redistributable
 installer have not been verified. The editor fallback repeats a finite converted
 WAV segment and does not preserve continuous YM state across its loop boundary.
+
+### Bridge failure recovery
+
+A successful state-request acknowledgement does not certify native audio. The
+client waits for authenticated status at an applied revision, restores converted
+WAV playback when the transport reports failure, and continues polling for
+recovery. Repeated acknowledgements cannot hide a persistent backend error.
+The focused engine regression exercises failure, recovery and a later source EOF
+against the actual fallback mixer. Both verification lanes also run a Node HTTP
+regression proving that an interrupted request body leaves the bridge responsive.

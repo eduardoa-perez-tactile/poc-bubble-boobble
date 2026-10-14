@@ -211,6 +211,9 @@ async function main() {
     case 'verify':
     case 'verify-full': {
       selftest();
+      const bridgeHTTP = run(process.execPath, ['--test', 'tools/desktop/bridge-http.test.mjs']);
+      console.log(bridgeHTTP.stdout.trim());
+      measurements.push({ command: 'desktop bridge aborted-body regression', wallMs: bridgeHTTP.wallMs });
       engine(['test', '--js', 'v8']);
       // An explicit wildcard still selects every T1 test. It bypasses the
       // installed CLI's unrendered structural-replay lane, which stalls while
