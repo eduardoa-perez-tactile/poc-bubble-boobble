@@ -10,12 +10,15 @@ import {setTimeout as delay} from 'node:timers/promises';
 import {build} from '../../.gameengine/engine/node_modules/esbuild/lib/main.js';
 import {guardRequest} from './bridge-http.mjs';
 const launchId='a'.repeat(64),token='b'.repeat(64);
-let error='helper startup failed',revision=0,acks=0,polls=0,host,client,log='',address;
+let error='helper startup failed',revision=0,acks=0,polls=0,healthRequests=0,host,client,log='',address;
 const server=createServer(guardRequest(async(req,res)=>{
  res.setHeader('content-type','application/json');
- if(req.url==='/health'){res.end(JSON.stringify({bundleId:'bubbleboobble.desktop',protocol:1,launchId,token}));return;}
+ if(req.url==='/health'){
+  await delay(120);
+  if(++healthRequests===1){res.writeHead(503);res.end('{}');return;}
+  res.end(JSON.stringify({bundleId:'bubbleboobble.desktop',protocol:1,launchId,token}));return;}
  assert.equal(req.headers.authorization,`Bearer ${token}`);
- if(req.url==='/state'){for await(const chunk of req){}acks++;res.end(JSON.stringify({ok:true,revision:++revision}));return;}
+ if(req.url==='/state'){for await(const chunk of req){}await delay(120);acks++;res.end(JSON.stringify({ok:true,revision:++revision}));return;}
  if(req.url==='/status'){polls++;res.end(JSON.stringify({launchId,revision,error,windowReady:true,adapterActive:true,focused:false}));return;}
  res.writeHead(404);res.end('{}');
 }));
@@ -40,7 +43,7 @@ try{
    if(expected!==undefined)assert.equal(!!audio.native,expected,`step ${i}, ACKs ${acks}, polls ${polls}`);
   }
  }
- await pump(300,false);assert.ok(acks>=3,`Expected repeated ACKs, got ${acks}`);assert.ok(polls>0,`No native status polls: ACKs ${acks}`);
+ await pump(420,false);assert.ok(acks>=3,`Expected repeated ACKs, got ${acks}`);assert.ok(polls>0,`No native status polls: ACKs ${acks}`);
  error='';
  for(let i=0;i<100&&!observed.at(-1);i++)await pump(1);
  assert.equal(observed.at(-1),true,'Healthy backend did not recover');await pump(30,true);
@@ -51,7 +54,7 @@ try{
  error='';
  for(let i=0;i<100&&!observed.at(-1);i++)await pump(1);
  assert.equal(observed.at(-1),true,'Second recovery was not observed');
- console.log(JSON.stringify({pass:true,scope:'actual immutable-launch controller in UI-pumped no-GPU host, mock authenticated native backend',acks,polls,steps:observed.length}));
+ console.log(JSON.stringify({pass:true,scope:'actual immutable-launch controller in UI-pumped no-GPU host, mock authenticated native backend',healthRequests,acks,polls,steps:observed.length}));
 }finally{
  client?.close();
  if(host&&host.exitCode===null){host.kill('SIGTERM');await once(host,'exit');}

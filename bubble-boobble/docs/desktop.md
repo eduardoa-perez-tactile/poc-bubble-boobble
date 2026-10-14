@@ -30,7 +30,7 @@ retain the source cursor, muted track changes wait for unmute, and background
 menus/results keep playing. Per-launch bundle identity prevents an editor Play
 world from controlling the native app. The ordinary editor uses the distinct
 converted-WAV fallback. See the adapter README for exact PCM loop, pause,
-shutdown and client-isolation evidence and the remaining unlocked-GUI gate.
+shutdown, client-isolation evidence and the passing ordinary native GUI gate.
 
 Seven engine audio tests cover actual fallback loading/handoff, bank-stop mute,
 first-cue reload, per-cue gain, zero-volume gating and 24-voice saturation.

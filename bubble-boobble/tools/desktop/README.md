@@ -97,8 +97,14 @@ This is transport evidence, not an input-driven GUI claim.
 pause inputs, checks native fullscreen/volume/position, and hides/restores only
 its own window to verify focus-loss pause. It requires an unlocked desktop and
 ordinary foreground activation. It does not unlock or bypass the OS lock.
-Evidence is `artifacts/desktop-platform-integration.json`; this GUI recheck is
-pending while the session is locked.
+Evidence is `artifacts/desktop-platform-integration.json`; the ordinary GUI gate
+passed on 2026-10-14, including 700 ms pause retention, focus-loss pause/resume,
+fullscreen and music-gain changes, persisted preference restoration and verified
+launcher/host/helper/endpoint shutdown. Inputs wait for actual focus and observed
+setting changes, and startup baselines wait for saved preferences to load.
+The optional `--restore-fullscreen=true|false` flag restores an explicitly known
+original preference through Settings inputs; ordinary runs restore their loaded
+baseline.
 
 The independent source proof compares every PCM byte for all five tracks through
 two loops plus boundary tails against the pinned original reader; see
@@ -117,3 +123,9 @@ recovery. Repeated acknowledgements cannot hide a persistent backend error.
 The focused engine regression exercises failure, recovery and a later source EOF
 against the actual fallback mixer. Both verification lanes also run a Node HTTP
 regression proving that an interrupted request body leaves the bridge responsive.
+
+The POST and status effects read the clock before non-reactive busy/token guards,
+so async requests cannot unsubscribe retry polling. Run
+`node tools/desktop/bridge-failure-probe.mjs` to exercise the actual controller
+with delayed responses and an initial failed request in a UI-pumped no-GPU host.
+This controller regression complements the ordinary native GUI gate.

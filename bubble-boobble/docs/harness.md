@@ -270,7 +270,17 @@ it is not evidence of a stale custom shader. This dropped subset remains a
 scoped engine limitation, not a successful game-side compatibility fix.
 
 
-The final native window/focus/fullscreen/music interaction gate remains pending
-because macOS is locked. Headless rendering, decoded audio voices and output-only
-PCM evidence do not establish that GUI interaction gate. No OS-lock bypass or
-native GUI success is claimed.
+The final ordinary native window/focus/fullscreen/music interaction gate passed
+on 2026-10-14. Actual menu inputs toggled fullscreen and music gain; gameplay
+pause held position 0.58 s for 700 ms and resumed to 1.03 s. Own-window focus loss
+paused at 1.13 s for 700 ms and resumed to 1.58 s. Saved settings before and after
+were fullscreen=true, music=50 and sound=75. The launcher, host and helper exited
+and the endpoint closed. Evidence is `artifacts/desktop-platform-integration.json`.
+No OS-lock or computer-use permission bypass was used.
+
+That run exposed and fixed the POST effect losing its clock dependency while an
+async request was busy. The controller regression now delays health/state by
+120 ms and begins with HTTP 503: the old guard fails, while the fixed guard passes
+720 steps, five acknowledgements and 183 status polls. Earlier failed runs are
+preserved separately; startup baselines wait for saved settings and test inputs
+wait for focus and observed changes.

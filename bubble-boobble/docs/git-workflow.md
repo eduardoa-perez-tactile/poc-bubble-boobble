@@ -1,6 +1,6 @@
 # Git workflow for fast port iteration
 
-Status: active. The harness (#1), movement (#2), and campaign/desktop core (#3) are merged on `main`. Game-owned desktop workarounds are developed on `codex/port-desktop-workarounds`. See [harness.md](harness.md) for validation.
+Status: active. The harness (#1), movement (#2), and campaign/desktop core (#3) are merged on `main`. Game-owned desktop workarounds are covered by PR #4 (`codex/port-desktop-workarounds`). See [harness.md](harness.md) for validation.
 
 Repository: https://github.com/eduardoa-perez-tactile/poc-bubble-boobble
 Git root: `bubblebooble/`; engine project: `bubblebooble/bubble-boobble/`.

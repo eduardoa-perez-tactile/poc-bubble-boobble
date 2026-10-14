@@ -46,11 +46,12 @@ const bridge=defineUI({name:'DesktopPlatformBridge',root(){
  createEffect(()=>{
   const t=clock(),c=control(),a=audio(),s=save(),g=game();
   if(!t||!c?.active||!a||!alive)return;
+  const elapsed=t.elapsed;
   const u=ui();
   const desired=JSON.stringify({fullscreen:s.settings.fullscreen,track:music[a.track]??'bubble-2',volume:s.settings.music/100,paused:nativeMusicPaused(u.screen,g.active,!!g.game?.Paused),muted:a.muted});
   const observationKey=`${u.screen}/${u.selected}/${g.active}/${g.game?.Paused??false}`;
-  if(busy||(desired===sent&&observationKey===observed&&t.elapsed<nextRetry)||(!token&&t.elapsed<nextRetry))return;
-  busy=true;nextRetry=t.elapsed+2;
+  if(busy||(desired===sent&&observationKey===observed&&elapsed<nextRetry)||(!token&&elapsed<nextRetry))return;
+  busy=true;nextRetry=elapsed+2;
   const requestGeneration=generation;
   void(async()=>{
    try{
