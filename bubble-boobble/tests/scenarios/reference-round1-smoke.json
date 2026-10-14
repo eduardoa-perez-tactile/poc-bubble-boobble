@@ -1,0 +1,12 @@
+{
+  "name": "reference-round1-smoke",
+  "seed": 42,
+  "round": 1,
+  "players": 1,
+  "spans": [
+    { "ticks": 60, "players": [{ "Move": 0, "Jump": false, "Fire": false }], "paused": false },
+    { "ticks": 20, "players": [{ "Move": 1, "Jump": true, "Fire": true }], "paused": false },
+    { "ticks": 3, "players": [{ "Move": -1, "Jump": false, "Fire": true }], "paused": true },
+    { "ticks": 5, "players": [{ "Move": -1, "Jump": false, "Fire": true }], "paused": false }
+  ]
+}

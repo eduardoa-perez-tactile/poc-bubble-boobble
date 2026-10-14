@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/olivierh59500/go-bubblebobble.git",
+  "revision": "783cf6aa26ac3c57cdab43f2d7a5b3725a3991cc",
+  "go": {
+    "version": "go1.26.9",
+    "archive": "go1.26.9.darwin-arm64.tar.gz",
+    "sha256": "f9bb7c0a02506c5d9bf0d1eb1f7ee6c7684f844ae49558308a0427b830e022cc"
+  },
+  "levelsSha256": "3509e88a991a8e0778bf1d3e7a5640c0eec5cc011d6074dac485da5a786f3e54"
+}

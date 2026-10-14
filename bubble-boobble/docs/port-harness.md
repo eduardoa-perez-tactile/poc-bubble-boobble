@@ -1,6 +1,6 @@
 # Strict-port harness contract
 
-Status: defined, not implemented. Gameplay implementation starts only after the harness bootstrap gate below passes.
+Status: bootstrap implemented on `codex/port-harness`. See [harness.md](harness.md) for commands and measured evidence. Gameplay remains unimplemented; the strict-port contract below governs subsequent slices.
 
 ## Objective and reference
 
@@ -115,7 +115,7 @@ Before port gameplay:
 
 No Go-versus-port parity is claimed until a matching implemented mechanic is compared. No gameplay is added solely to satisfy this bootstrap.
 
-## Observed environment, 2026-10-14
+## Initial environment, 2026-10-14 (before bootstrap)
 
 Starter V8 T0 tests: 2 passed. Release host reported approximately 12 ms and 29 ms for their test bodies; these exclude full CLI startup and are not feedback-lane timings. Previous engine check passed including a 600-frame cooked smoke; pipeline recording is absent.
 

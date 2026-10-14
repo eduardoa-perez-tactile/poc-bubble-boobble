@@ -3,7 +3,7 @@
  * code (fixed step, seeded random), so a recorded replay reproduces a session exactly.
  */
 import { defineSystem, query, read, write, Tap, LocalTransform, WorldView } from '@gameengine/runtime';
-import { Bubble, Game } from './schema.gen.ts';
+import { Bubble, Game, HarnessControl } from './schema.gen.ts';
 
 const VIEW_SIZE = 8;
 const EDGE = 9;
@@ -20,6 +20,7 @@ export const SetupView = defineSystem({
 
 export const SpawnBubbles = defineSystem({
   name: 'SpawnBubbles',
+  runIf: { resource: HarnessControl, field: 'active', value: 0 },
   after: ['SetupView'],
   resources: [write(Game)],
   run(ctx) {
