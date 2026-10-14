@@ -1,0 +1,4 @@
+{
+  "android": { "artifact": "80MB", "cooked": "20MB" },
+  "ios": { "artifact": "120MB", "cooked": "20MB" }
+}
