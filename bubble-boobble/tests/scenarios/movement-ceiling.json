@@ -1,0 +1,27 @@
+{
+  "mode": "movement",
+  "seed": 1,
+  "round": 1,
+  "players": 1,
+  "name": "movement-ceiling",
+  "spans": [
+    {
+      "ticks": 30,
+      "players": [
+        {
+          "Move": 1,
+          "Jump": true,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    }
+  ],
+  "player": {
+    "Lives": 3,
+    "Dir": 1,
+    "X": 96,
+    "Y": 25,
+    "VY": -11
+  }
+}

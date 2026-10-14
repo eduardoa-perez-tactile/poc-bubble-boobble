@@ -1,5 +1,5 @@
 import { spawnSync, spawn } from 'node:child_process';
-import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync, unlinkSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, copyFileSync, unlinkSync, readdirSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
@@ -107,8 +107,11 @@ function fixtures(checkOnly) {
   console.log(run(context.go, ['test', './internal/game'], { cwd: context.checkout, env: context.env }).stdout.trim());
 }
 function selftest() {
-  const fixture = JSON.parse(read('tests/fixtures/reference-round1-smoke.expected.json'));
-  if (fixture.reference.revision !== lock.revision || fixture.reference.repository !== lock.repository || fixture.reference.levelsSha256 !== lock.levelsSha256 || fixture.reference.scenarioSha256 !== hash(read('tests/scenarios/reference-round1-smoke.json')) || fixture.reference.adapterSha256 !== hash(read('tools/harness/oracle/adapter.go')) || fixture.reference.driverSha256 !== hash(read('tools/harness/oracle/main.go'))) throw new Error('Fixture provenance is stale');
+  for (const file of readdirSync('tests/fixtures').filter(name => name.endsWith('.expected.json'))) {
+    const fixture = JSON.parse(read(`tests/fixtures/${file}`));
+    if (fixture.reference.revision !== lock.revision || fixture.reference.repository !== lock.repository || fixture.reference.levelsSha256 !== lock.levelsSha256 || fixture.reference.scenarioSha256 !== hash(read(`tests/scenarios/${fixture.scenario}.json`)) || fixture.reference.adapterSha256 !== hash(read('tools/harness/oracle/adapter.go')) || fixture.reference.driverSha256 !== hash(read('tools/harness/oracle/main.go'))) throw new Error(`Fixture provenance is stale: ${file}`);
+  }
+  if (hash(readFileSync('data/levels.json')) !== lock.levelsSha256) throw new Error('Imported campaign checksum differs from reference');
   const result = run(process.execPath, ['--test', 'tools/harness/compare.test.mjs']);
   console.log(result.stdout.trim());
 }
@@ -145,15 +148,26 @@ async function openEditor() {
   }
   throw new Error('Editor did not open this project. If another project is open, select this folder in the app.');
 }
+// The installed replay CLI omits --scene. Keep the starter replay on its recorded scene
+// without mutating the project's default scene or rebuilding the bundled engine.
+function starterReplay() {
+  const bundle = engine(['bundle']).output.path;
+  const doctor = JSON.parse(run('gameengine', ['doctor', '--json']).stdout);
+  const host = doctor.checks.find(check => check.name === 'gameengine-host (V8)' && check.ok)?.detail;
+  if (!host) throw new Error('V8 host unavailable');
+  const result = run(host, ['--mode','headless','--project',root,'--bundle',bundle,'--js','v8','--scene','scenes/main.scene.json','--verify',resolve('tests/replays/harness_reset_and_tap.greplay')]);
+  if (JSON.parse(result.stdout).ok !== true) throw new Error(result.stdout);
+  console.log(`Starter replay, explicit recorded scene: ${(result.wallMs / 1000).toFixed(3)} s`);
+}
 function reset() {
   const probe = spawnSync('gameengine', ['editor', 'state', '--json'], { encoding: 'utf8' });
   if (probe.status === 0 && JSON.parse(probe.stdout).ok) {
     const state = JSON.parse(probe.stdout).value;
     if (!state.playing) engine(['editor', 'play']);
-    engine(['editor', 'call', 'cheat.run', '--role', 'game', '--params', JSON.stringify({ id: 'harness.reset', args: { scenario: 'starter-tap' } })]);
+    engine(['editor', 'call', 'cheat.run', '--role', 'game', '--params', JSON.stringify({ id: 'port.movement', args: { ready: false } })]);
     engine(['editor', 'call', 'engine.step', '--role', 'game', '--params', '{"n":1}']);
   } else {
-    engine(['cheat', 'run', 'harness.reset', 'scenario=starter-tap']); engine(['step', '1']);
+    engine(['cheat', 'run', 'port.movement']); engine(['step', '1']);
   }
 }
 async function main() {
@@ -169,17 +183,17 @@ async function main() {
     case 'compare':
       if (!process.argv[3] || !process.argv[4]) throw new Error('compare EXPECTED.json ACTUAL.json');
       process.exitCode = compareFiles(process.argv[3], process.argv[4]) ? 0 : 1; break;
-    case 'quick': selftest(); engine(['test', '--js', 'v8', '--filter', process.argv[3] ?? '*harness*']); break;
-    case 'verify': selftest(); engine(['test', '--js', 'v8']); engine(['test', '--js', 'v8', '--tier', 't1', '--gpu-tier', 'desktop', '--filter', '*harness*']); engine(['replay', 'verify', 'tests/replays/harness_reset_and_tap.greplay']); engine(['check']); break;
+    case 'quick': selftest(); engine(['test', '--js', 'v8', '--filter', process.argv[3] ?? '*movement*']); break;
+    case 'verify': selftest(); engine(['test', '--js', 'v8']); engine(['test', '--js', 'v8', '--tier', 't1', '--gpu-tier', 'desktop']); starterReplay(); engine(['replay', 'verify', 'tests/replays/movement_physical_keyboard_hold_release_and_jump.greplay']); engine(['check']); break;
     case 'record': engine(['test', '--js', 'v8', '--record-replays', '--filter', '*harness*']); break;
-    case 'replay': engine(['replay', 'verify', process.argv[3] ?? 'tests/replays/harness_reset_and_tap.greplay']); break;
+    case 'replay': if (!process.argv[3]) starterReplay(); else engine(['replay', 'verify', process.argv[3]]); break;
     case 'reset': reset(); break;
-    case 'coverage': console.log('BOOTSTRAP COVERAGE: comparator, Go oracle fixture, starter reset/replay infrastructure (run verify to check).\nPENDING: all Go-versus-Tactile gameplay parity (port not started).\nCROSS-RUNTIME: Hermes host requires separate provisioning.\nEDITOR: run harness:hot-reload in an open, running editor to verify this environment.'); break;
+    case 'coverage': console.log('BOOTSTRAP COVERAGE: comparator, Go oracle fixture, starter reset/replay infrastructure (run verify to check).\nIMPLEMENTED: round-one controlled movement traces (player fields, walked/jumps and jump events), keyboard path, desktop containment.\nPENDING: combat, enemies, bonuses, campaign progression, menus/audio/persistence; full-match/RNG and automated Go visual parity.\nCROSS-RUNTIME: Hermes host requires separate provisioning.\nEDITOR: run harness:hot-reload in an open, running editor to verify this environment.'); break;
     default: throw new Error(`Unknown harness command: ${command}`);
   }
   const wallMs = performance.now() - start;
   mkdirSync('artifacts', { recursive: true });
   writeFileSync(`artifacts/${command}-timing.json`, JSON.stringify({ command, wallMs }, null, 2) + '\n');
-  console.log(`Harness ${command}: ${(wallMs / 1000).toFixed(3)} s end-to-end. Port gameplay coverage remains pending.`);
+  console.log(`Harness ${command}: ${(wallMs / 1000).toFixed(3)} s end-to-end. Movement parity is scoped; full-match coverage remains pending.`);
 }
 main().catch(error => { console.error(error.message); process.exitCode = 1; });

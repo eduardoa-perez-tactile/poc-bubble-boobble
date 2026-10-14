@@ -11,10 +11,10 @@ worldTest('tapping a bubble pops it', async ({ world, step, input, tap }) => {
   await tap([x!, y!]);
   await step(2);
   expect(world.resource(Game).score).toBe(1);
-});
+}, { scene: "scenes/main.scene.json" });
 
 worldTest('bubbles that reach the top go away', async ({ world, step }) => {
   await step(900);
   expect(world.resource(Game).spawned).toBe(30);
   expect(world.entities(Bubble).length).toBeLessThan(15);
-});
+}, { scene: "scenes/main.scene.json" });

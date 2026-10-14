@@ -1,0 +1,39 @@
+{
+  "mode": "movement",
+  "seed": 1,
+  "round": 1,
+  "players": 1,
+  "name": "movement-coyote-expired",
+  "spans": [
+    {
+      "ticks": 1,
+      "players": [
+        {
+          "Move": 0,
+          "Jump": true,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    },
+    {
+      "ticks": 30,
+      "players": [
+        {
+          "Move": 0,
+          "Jump": false,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    }
+  ],
+  "player": {
+    "Lives": 3,
+    "Dir": 1,
+    "X": 300,
+    "Y": 200,
+    "VY": 0,
+    "Coyote": 1
+  }
+}

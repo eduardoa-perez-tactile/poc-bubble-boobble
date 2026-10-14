@@ -1,0 +1,27 @@
+{
+  "mode": "movement",
+  "seed": 1,
+  "round": 1,
+  "players": 1,
+  "name": "movement-wrap",
+  "spans": [
+    {
+      "ticks": 20,
+      "players": [
+        {
+          "Move": 0,
+          "Jump": false,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    }
+  ],
+  "player": {
+    "Lives": 3,
+    "Dir": 1,
+    "X": 384,
+    "Y": 623,
+    "VY": 12
+  }
+}

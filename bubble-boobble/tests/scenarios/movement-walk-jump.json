@@ -1,0 +1,108 @@
+{
+  "mode": "movement",
+  "seed": 1,
+  "round": 1,
+  "players": 1,
+  "name": "movement-walk-jump",
+  "spans": [
+    {
+      "ticks": 2,
+      "players": [
+        {
+          "Move": 0,
+          "Jump": false,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    },
+    {
+      "ticks": 36,
+      "players": [
+        {
+          "Move": 1,
+          "Jump": false,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    },
+    {
+      "ticks": 25,
+      "players": [
+        {
+          "Move": 1,
+          "Jump": true,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    },
+    {
+      "ticks": 25,
+      "players": [
+        {
+          "Move": -1,
+          "Jump": false,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    },
+    {
+      "ticks": 5,
+      "players": [
+        {
+          "Move": 1,
+          "Jump": true,
+          "Fire": false
+        }
+      ],
+      "paused": true
+    },
+    {
+      "ticks": 20,
+      "players": [
+        {
+          "Move": 0,
+          "Jump": true,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    },
+    {
+      "ticks": 30,
+      "players": [
+        {
+          "Move": 0,
+          "Jump": false,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    },
+    {
+      "ticks": 220,
+      "players": [
+        {
+          "Move": -1,
+          "Jump": false,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    },
+    {
+      "ticks": 250,
+      "players": [
+        {
+          "Move": 1,
+          "Jump": false,
+          "Fire": false
+        }
+      ],
+      "paused": false
+    }
+  ]
+}

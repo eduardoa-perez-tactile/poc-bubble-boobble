@@ -1,20 +1,67 @@
 {
   "$schemaVersion": 1,
   "name": "BubbleBoobble",
-  "bundleId": { "ios": "com.example.bubbleboobble", "android": "com.example.bubbleboobble" },
+  "bundleId": {
+    "ios": "com.example.bubbleboobble",
+    "android": "com.example.bubbleboobble"
+  },
   "version": "0.1.0",
-  "sim": { "dt": 0.016666667, "maxStepsPerFrame": 5, "physicsThreads": 1, "hashInDev": true, "seed": 1 },
-  "js": { "entry": "src/main.ts", "target": "es2020" },
+  "sim": {
+    "dt": 0.016666667,
+    "maxStepsPerFrame": 5,
+    "physicsThreads": 1,
+    "hashInDev": true,
+    "seed": 1
+  },
+  "js": {
+    "entry": "src/main.ts",
+    "target": "es2020"
+  },
   "render": {
     "defaultTier": "auto",
-    "tiers": { "mobile": { "msaa": 1, "hdr": false }, "compat": { "msaa": 1, "hdr": false } },
-    "clearColor": [0.1, 0.13, 0.22, 1],
-    "sortingLayers": ["Default"],
+    "tiers": {
+      "mobile": {
+        "msaa": 1,
+        "hdr": false
+      },
+      "compat": {
+        "msaa": 1,
+        "hdr": false
+      }
+    },
+    "clearColor": [
+      0.1,
+      0.13,
+      0.22,
+      1
+    ],
+    "sortingLayers": [
+      "Default"
+    ],
     "pixelsPerUnit": 100
   },
-  "ui": { "referenceResolution": [1080, 1920], "orientation": "portrait" },
-  "bundles": [{ "name": "base", "include": ["**"], "delivery": "in-app" }],
-  "targets": ["ios", "android"],
-  "platforms": ["desktop"],
-  "startScene": "scenes/main.scene.json"
+  "ui": {
+    "referenceResolution": [
+      768,
+      720
+    ],
+    "orientation": "landscape"
+  },
+  "bundles": [
+    {
+      "name": "base",
+      "include": [
+        "**"
+      ],
+      "delivery": "in-app"
+    }
+  ],
+  "targets": [
+    "ios",
+    "android"
+  ],
+  "platforms": [
+    "desktop"
+  ],
+  "startScene": "scenes/round1.scene.json"
 }

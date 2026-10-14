@@ -59,6 +59,223 @@
         }
       ],
       "package": "BubbleBoobble"
+    },
+    {
+      "name": "MovementInput",
+      "kind": "event",
+      "sim": true,
+      "fields": [
+        {
+          "name": "move",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "jump",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "paused",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "PortInput",
+      "kind": "resource",
+      "sim": true,
+      "fields": [
+        {
+          "name": "move",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "jump",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "PortMatch",
+      "kind": "resource",
+      "sim": true,
+      "fields": [
+        {
+          "name": "active",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "tick",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1
+        },
+        {
+          "name": "countdown",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": 60
+        },
+        {
+          "name": "ready",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1,
+          "default": true
+        },
+        {
+          "name": "paused",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "walked",
+          "kind": "f64",
+          "scalar": "f64",
+          "lanes": 1
+        },
+        {
+          "name": "jumps",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1
+        },
+        {
+          "name": "jumpSound",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "skip",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "PortPlayer",
+      "kind": "resource",
+      "sim": true,
+      "fields": [
+        {
+          "name": "x",
+          "kind": "f64",
+          "scalar": "f64",
+          "lanes": 1
+        },
+        {
+          "name": "y",
+          "kind": "f64",
+          "scalar": "f64",
+          "lanes": 1
+        },
+        {
+          "name": "vx",
+          "kind": "f64",
+          "scalar": "f64",
+          "lanes": 1
+        },
+        {
+          "name": "vy",
+          "kind": "f64",
+          "scalar": "f64",
+          "lanes": 1
+        },
+        {
+          "name": "ground",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "lives",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": 3
+        },
+        {
+          "name": "dir",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": 1
+        },
+        {
+          "name": "jumpBuffer",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "coyote",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "lastJump",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "invincible",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "dead",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "shoot",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "cooldown",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "walkFrame",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        }
+      ],
+      "package": "BubbleBoobble"
+    },
+    {
+      "name": "PortVisual",
+      "kind": "component",
+      "sim": true,
+      "fields": [],
+      "package": "BubbleBoobble"
     }
   ],
   "commands": [],

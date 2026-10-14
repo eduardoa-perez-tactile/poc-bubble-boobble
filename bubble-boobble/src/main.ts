@@ -3,7 +3,7 @@
  * code (fixed step, seeded random), so a recorded replay reproduces a session exactly.
  */
 import { defineSystem, query, read, write, Tap, LocalTransform, WorldView } from '@gameengine/runtime';
-import { Bubble, Game, HarnessControl } from './schema.gen.ts';
+import { Bubble, Game, HarnessControl, PortMatch } from './schema.gen.ts';
 
 const VIEW_SIZE = 8;
 const EDGE = 9;
@@ -12,7 +12,8 @@ const COLORS = Object.freeze(['#ff6b8a', '#6bc5ff', '#ffd36b'] as const);
 
 export const SetupView = defineSystem({
   name: 'SetupView',
-  resources: [write(WorldView)],
+  resources: [write(WorldView), read(PortMatch)],
+  runIf: { resource: PortMatch, field: 'active', value: false },
   run(ctx) {
     if (ctx.get(WorldView).orthoSize !== VIEW_SIZE) ctx.set(WorldView, { orthoSize: VIEW_SIZE, designAspect: 9 / 16, fit: 'Contain', center: [0, 0] });
   },
@@ -20,7 +21,7 @@ export const SetupView = defineSystem({
 
 export const SpawnBubbles = defineSystem({
   name: 'SpawnBubbles',
-  runIf: { resource: HarnessControl, field: 'active', value: 0 },
+  runIf: [{ resource: HarnessControl, field: 'active', value: 0 }, { resource: PortMatch, field: 'active', value: false }],
   after: ['SetupView'],
   resources: [write(Game)],
   run(ctx) {
@@ -63,3 +64,5 @@ export const RiseAndPop = defineSystem({
     if (popped > 0) ctx.set(Game, { score: ctx.get(Game).score + popped });
   },
 });
+
+export { PortBoot, PortControls, PortMovement, PortPresentation } from './port.ts';
