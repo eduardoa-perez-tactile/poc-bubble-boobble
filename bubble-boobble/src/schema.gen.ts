@@ -50,6 +50,21 @@ export const schemaIr = {
         }
       ],
       "package": "BubbleBoobble"
+    },
+    {
+      "name": "HarnessControl",
+      "kind": "resource",
+      "sim": true,
+      "fields": [
+        {
+          "name": "active",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1,
+          "doc": "Controlled starter scenario; suppresses random spawns"
+        }
+      ],
+      "package": "BubbleBoobble"
     }
   ],
   "commands": [],
@@ -83,3 +98,14 @@ export interface GameValue {
 }
 /** Game (resource, sim) */
 export const Game = typeToken<GameViews, GameValue>('Game', 'resource', { sig: 'score:u32:1,spawned:u32:1', read: (v: GameViews, i: number, o: Record<string, unknown>) => { o.score = v.score[i]; o.spawned = v.spawned[i]; return o; } });
+
+export interface HarnessControlViews {
+  /** Controlled starter scenario; suppresses random spawns */
+  active: Uint32Array;
+}
+export interface HarnessControlValue {
+  /** Controlled starter scenario; suppresses random spawns */
+  active: number;
+}
+/** HarnessControl (resource, sim) */
+export const HarnessControl = typeToken<HarnessControlViews, HarnessControlValue>('HarnessControl', 'resource', { sig: 'active:u32:1', read: (v: HarnessControlViews, i: number, o: Record<string, unknown>) => { o.active = v.active[i]; return o; } });

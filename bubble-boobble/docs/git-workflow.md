@@ -1,6 +1,6 @@
 # Git workflow for fast port iteration
 
-Status: defined. No commits, branches, pushes or pull requests were created while defining this workflow.
+Status: active. Starter/contracts bootstrap commit `8fe0169` is published on `main`; the harness is developed on `codex/port-harness`. See [harness.md](harness.md) for validation.
 
 Repository: https://github.com/eduardoa-perez-tactile/poc-bubble-boobble
 Git root: `bubblebooble/`; engine project: `bubblebooble/bubble-boobble/`.
@@ -8,7 +8,7 @@ Keep this layout. Run Git at the repository root and engine commands in the proj
 
 ## Bootstrap
 
-The local `main` has no commits and the remote repository is empty. Review the starter and tracked-file policy before staging. Create the initial `main` commit containing the starter and these contracts, with passing starter T0/check evidence. It establishes the recovery point; it is not a completed port. Then publish `main` to origin as the integration branch.
+The repository began empty. Initial `main` commit `8fe0169` contains the starter and contracts, with passing starter T0/check evidence. It establishes the recovery point; it is not a completed port. `main` is published to origin as the integration branch.
 
 Next branch: `codex/port-harness`. Implement and verify the harness bootstrap gate before starting `codex/port-movement`.
 

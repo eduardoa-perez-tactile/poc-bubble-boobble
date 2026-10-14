@@ -22,82 +22,82 @@
     "jsxImportSource": "@gameengine/ui",
     "paths": {
       "@gameengine/runtime": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/runtime/src/index.ts"
+        "./.gameengine/engine/packages/runtime/src/index.ts"
       ],
       "@gameengine/runtime/*": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/runtime/src/*"
+        "./.gameengine/engine/packages/runtime/src/*"
       ],
       "@gameengine/test": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/test/src/index.ts"
+        "./.gameengine/engine/packages/test/src/index.ts"
       ],
       "@gameengine/test/*": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/test/src/*"
+        "./.gameengine/engine/packages/test/src/*"
       ],
       "@gameengine/schema": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/schema/src/index.ts"
+        "./.gameengine/engine/packages/schema/src/index.ts"
       ],
       "@gameengine/schema/*": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/schema/src/*"
+        "./.gameengine/engine/packages/schema/src/*"
       ],
       "@gameengine/ui": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/ui/src/index.ts"
+        "./.gameengine/engine/packages/ui/src/index.ts"
       ],
       "@gameengine/ui/*": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/ui/src/*"
+        "./.gameengine/engine/packages/ui/src/*"
       ],
       "@gameengine/materials": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/materials/src/index.ts"
+        "./.gameengine/engine/packages/materials/src/index.ts"
       ],
       "@gameengine/materials/*": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/materials/src/*"
+        "./.gameengine/engine/packages/materials/src/*"
       ],
       "@gameengine/vfx": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/vfx/src/index.ts"
+        "./.gameengine/engine/packages/vfx/src/index.ts"
       ],
       "@gameengine/vfx/*": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/vfx/src/*"
+        "./.gameengine/engine/packages/vfx/src/*"
       ],
       "@gameengine/story": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/story/src/index.ts"
+        "./.gameengine/engine/packages/story/src/index.ts"
       ],
       "@gameengine/story/*": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/story/src/*"
+        "./.gameengine/engine/packages/story/src/*"
       ],
       "@gameengine/meta": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/meta/src/index.ts"
+        "./.gameengine/engine/packages/meta/src/index.ts"
       ],
       "@gameengine/meta/*": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/meta/src/*"
+        "./.gameengine/engine/packages/meta/src/*"
       ],
       "@gameengine/stream": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/stream/src/index.ts"
+        "./.gameengine/engine/packages/stream/src/index.ts"
       ],
       "@gameengine/stream/*": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/stream/src/*"
+        "./.gameengine/engine/packages/stream/src/*"
       ],
       "@gameengine/tools": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/tools/src/index.ts"
+        "./.gameengine/engine/packages/tools/src/index.ts"
       ],
       "@gameengine/tools/*": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/tools/src/*"
+        "./.gameengine/engine/packages/tools/src/*"
       ],
       "@gameengine/applovin-max": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/applovin-max/src/index.ts"
+        "./.gameengine/engine/packages/applovin-max/src/index.ts"
       ],
       "@gameengine/applovin-max/*": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/applovin-max/src/*"
+        "./.gameengine/engine/packages/applovin-max/src/*"
       ],
       "@gameengine/appsflyer": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/appsflyer/src/index.ts"
+        "./.gameengine/engine/packages/appsflyer/src/index.ts"
       ],
       "@gameengine/appsflyer/*": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/appsflyer/src/*"
+        "./.gameengine/engine/packages/appsflyer/src/*"
       ],
       "@gameengine/pulse": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/pulse/src/index.ts"
+        "./.gameengine/engine/packages/pulse/src/index.ts"
       ],
       "@gameengine/pulse/*": [
-        "../../../../../../Applications/Tactile Game Engine.app/Contents/Resources/engine/packages/pulse/src/*"
+        "./.gameengine/engine/packages/pulse/src/*"
       ]
     }
   },

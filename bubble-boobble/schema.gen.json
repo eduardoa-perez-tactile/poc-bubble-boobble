@@ -44,6 +44,21 @@
         }
       ],
       "package": "BubbleBoobble"
+    },
+    {
+      "name": "HarnessControl",
+      "kind": "resource",
+      "sim": true,
+      "fields": [
+        {
+          "name": "active",
+          "kind": "u32",
+          "scalar": "u32",
+          "lanes": 1,
+          "doc": "Controlled starter scenario; suppresses random spawns"
+        }
+      ],
+      "package": "BubbleBoobble"
     }
   ],
   "commands": [],

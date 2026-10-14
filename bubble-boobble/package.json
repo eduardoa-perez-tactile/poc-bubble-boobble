@@ -2,5 +2,20 @@
   "name": "bubbleboobble",
   "version": "0.1.0",
   "private": true,
-  "type": "module"
+  "type": "module",
+  "scripts": {
+    "harness:setup": "node tools/harness/run.mjs setup",
+    "harness:fixtures": "node tools/harness/run.mjs fixtures",
+    "harness:reference-check": "node tools/harness/run.mjs reference-check",
+    "harness:selftest": "node tools/harness/run.mjs selftest",
+    "harness:quick": "node tools/harness/run.mjs quick",
+    "harness:verify": "node tools/harness/run.mjs verify",
+    "harness:record": "node tools/harness/run.mjs record",
+    "harness:replay": "node tools/harness/run.mjs replay",
+    "harness:reset": "node tools/harness/run.mjs reset",
+    "harness:hot-reload": "node tools/harness/hot-reload.mjs",
+    "harness:editor": "node tools/harness/run.mjs editor",
+    "harness:failure-probe": "node tools/harness/run.mjs failure-probe",
+    "harness:coverage": "node tools/harness/run.mjs coverage"
+  }
 }
