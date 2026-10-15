@@ -6,7 +6,7 @@ import { updateBubbles, updateEffects } from './bubbles';
 import { updateItems, checkPowerSpawns, spawnFood } from './items';
 import { body, alive, EnemyState, State, Tile, ActorSize, intersects, type GameState, type Input, type Level, type PartySlot } from './types';
 
-import { partyColors, defaultPartySlots, partyPrepareTicks, partyBreakTicks } from './party-config';
+import { partyColors, defaultPartySlots, partyPrepareTicks, partyBreakTicks, partySurvivorCount } from './party-config';
 export { partyColors, partySpawnColumns, defaultPartySlots } from './party-config';
 const idle: Input = Object.freeze({Move:0,Jump:false,Fire:false});
 const entrances = [{col:4,row:10},{col:26,row:10},{col:4,row:20},{col:26,row:20}];
@@ -135,6 +135,9 @@ function enrageLastEnemy(g:GameState) {
 export function stepParty(g:GameState,inputs:Input[]) {
   const p=g.Party!;
   g.Tick++;
+  // Every occupied slot counts, including AI teammates and the final dragon.
+  // Check before phase handling so a wiped team cannot enter another wave.
+  if(partySurvivorCount(g)===0){g.State=State.GameOver;return;}
   const ins=inputs.slice();
   for(let i=0;i<6;i++) {
     if(p.Slots[i]==='empty')continue;
@@ -154,7 +157,6 @@ export function stepParty(g:GameState,inputs:Input[]) {
     return;
   }
   rescues(g);
-  if(!g.Players.some(alive)){g.State=State.GameOver;return;}
   g.LevelTicks++;
   spawnTelegraphs(g);
   enrageLastEnemy(g);
@@ -166,7 +168,7 @@ export function stepParty(g:GameState,inputs:Input[]) {
   if(p.Phase==='boss')stepBoss(g);
   if(g.State===State.Won)return;
   for(let i=0;i<6;i++)checkPlayerHit(g,i);
-  if(!g.Players.some(alive)){g.State=State.GameOver;return;}
+  if(partySurvivorCount(g)===0){g.State=State.GameOver;return;}
   if(p.Phase==='combat'&&p.ToSpawn===0&&p.Telegraphs.length===0&&remainingEnemies(g)===0)rest(g);
   g.Particles=g.Particles.filter(v=>{v.Y-=.6;return --v.Life>0;});
 }

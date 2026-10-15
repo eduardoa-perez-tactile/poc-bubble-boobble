@@ -8,6 +8,7 @@ import { session } from './session';
 import { desktopGameRequest, desktopAction } from '../desktop/state';
 import { EnemyState, State } from './types';
 import { checkPowerSpawns } from './items';
+import { hurtPlayer } from './player';
 export const PartyReset=defineCheat({id:'party.reset',group:'Party',title:'Inspect wave survival',params:{countdown:{type:'int',min:1,max:180,default:1},wave:{type:'int',min:1,max:10,default:1},humans:{type:'int',min:1,max:6,default:1}},resources:[write(ArcadeControl)],run(ctx,{wave,humans,countdown}){
   const g=createPartyGame(campaign,42,Array.from({length:6},(_,i)=>i<humans?'human':'ai'));
   g.Party!.Wave=wave;preparePartyWave(g);g.Party!.Timer=countdown;
@@ -19,3 +20,4 @@ export const PartyRescue=defineCheat({id:'party.rescue-setup',group:'Party',titl
 export const PartyVictory=defineCheat({id:'party.finish-boss',group:'Party',title:'Inspect boss victory result',run(){const current=session.get();if(!current.game?.Party?.Boss)return;const g=copyGame(current.game);g.Party!.Boss!.HP=0;g.State=State.Playing;session.set({...current,game:g});}});
 export const PartyPower=defineCheat({id:'party.powerup',group:'Party',title:'Inspect a randomized powerup',run(){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Pending.push('pink_candy');checkPowerSpawns(g);session.set({...current,game:g});}});
 export const PartyLastEnemy=defineCheat({id:'party.last-enemy',group:'Party',title:'Inspect the last angry enemy',run(){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);for(let i=1;i<g.Enemies.length;i++){g.Enemies[i]!.State=EnemyState.Defeated;g.Enemies[i]!.DeadTicks=0;}session.set({...current,game:g});}});
+export const PartyHit=defineCheat({id:'party.hit-dragon',group:'Party',title:'Inspect a dragon elimination',params:{slot:{type:'int',min:0,max:5,default:0}},run(_ctx,{slot}){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Players[slot]!.Invincible=0;hurtPlayer(g,slot);session.set({...current,game:g});}});

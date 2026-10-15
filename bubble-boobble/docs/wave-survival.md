@@ -69,6 +69,11 @@ host exposes no recorded disconnect event, so automatic takeover is deferred.
   **DEF** (protection), or **PTS** (ring bonuses). Food and classic mode are unchanged.
 - A defeated dragon becomes a stationary rescue bubble. An active dragon within
   52 pixels on both axes rescues it. A full team knockout ends the run.
+- Any surviving human or AI dragon keeps the run going, including after player
+  one falls. Defeat occurs only when every occupied dragon slot has fallen;
+  empty slots do not count. This is checked in every wave phase. The final
+  survivor gets a **LAST DRAGON STANDING** notice. Existing rescues and
+  between-wave recovery remain available.
 - Rests clear hazards and recover downed dragons. Players can shoot, move and
   jump; practice bubbles move, pop and expire normally through the entrance.
   Rest bubbles clear when the next formation appears. Survivors keep
@@ -95,7 +100,7 @@ sufficient for replay. The legacy solo/two-player modes remain available.
 
 ## Formation and power-up feedback validation — October 15, 2026
 
-- 215 V8 logic tests, 35 desktop render tests, and all 21 saved replays pass.
+- 219 V8 logic tests, 36 desktop render tests, and all 22 saved replays pass.
 - The 31-enemy wave also passes the mobile-tier, phone-low memory test, with
   preparation and combat below the 14-draw-call ceiling.
 - The randomized power-up and its benefit label pass the same mobile-tier,
@@ -106,6 +111,10 @@ sufficient for replay. The legacy solo/two-player modes remain available.
 - A pacing replay covers the five-second break, preparation shooting against
   protected enemies, and the red final enemy. Logic tests verify the exact
   300-step break, elemental protection and the angry movement-speed increase.
+- Every dragon slot is tested as the last survivor. A recorded engine scenario
+  verifies that the final AI keeps playing after all humans fall, and only its
+  elimination opens the defeat screen. HUD/defeat captures also pass phone-low
+  memory checks and the 14-draw-call ceiling.
 - Typechecking and asset/scene validation pass. No new build or cook was made.
 - Hermes remains unavailable; these checks do not establish device GPU timing.
 
