@@ -16,6 +16,9 @@ import {match} from './arcade-assert';
 for(const [fixture,scenario] of [[smoke,setup],[round1,setup1],[round10,setup10],[round24,setup24],[round25,setup25]] as const) {
  worldTest(`arcade pure simulation full Go parity ${fixture.scenario}`,()=>{
   const g=createGame((levels as Level[]).slice(scenario.round-1),scenario.seed,scenario.players);
+  // Original fixtures deliberately exercise the source-speed profile. Separate
+  // playtest regressions assert the production default of 20% slower movement.
+  g.NormalEnemySpeedScale=1;
   for(const f of fixture.frames){
    if(f.input){g.Paused=f.input.paused;stepGame(g,f.input.players);}
    match(f.state,canonicalState(g),`${fixture.scenario}.frame[${f.frame}]`);

@@ -9,7 +9,7 @@ import {
   intersects,
   powers,
 } from "./types";
-import { moveActor, spawnPosition } from "./physics";
+import { movePlayer, spawnPosition } from "./physics";
 import { addScore } from "./game";
 import { shootBubble } from "./bubbles";
 export function respawn(g: GameState, index: number) {
@@ -59,7 +59,7 @@ export function updatePlayer(g: GameState, index: number, input: Input) {
     p.WalkFrame++;
   }
   const oldX = p.X;
-  moveActor(g, p, i.Move * speed, true);
+  movePlayer(g, p, i.Move * speed);
   const distance = Math.abs(p.X - oldX);
   g.Counters.Walked += distance;
   if (p.Power.Crystal) {

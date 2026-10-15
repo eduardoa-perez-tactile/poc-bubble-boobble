@@ -23,7 +23,9 @@ export function updateEnemies(g: GameState) {
       e.Shoot--;
       continue;
     }
-    let speed = e.Angry ? 3.5 : 2.5;
+    const referenceSpeed = e.Angry ? 3.5 : 2.5;
+    const movementScale = e.Angry ? 1 : (g.NormalEnemySpeedScale ?? 0.8);
+    let speed = referenceSpeed * movementScale;
     switch (e.Kind) {
       case "monsta":
         moveFlying(g, e, e.Dir * speed, e.Vertical * speed);
@@ -33,8 +35,8 @@ export function updateEnemies(g: GameState) {
         moveFlying(
           g,
           e,
-          e.Dir * goFMA(Math.abs(goSin(e.Phase)), speed, 1.4),
-          e.Vertical * goFMA(Math.abs(goCos(2 * e.Phase)), speed, 0.7),
+          e.Dir * (goFMA(Math.abs(goSin(e.Phase)), referenceSpeed, 1.4) * movementScale),
+          e.Vertical * (goFMA(Math.abs(goCos(2 * e.Phase)), referenceSpeed, 0.7) * movementScale),
         );
         break;
       default:

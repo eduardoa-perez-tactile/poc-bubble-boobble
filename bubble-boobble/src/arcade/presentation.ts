@@ -19,6 +19,7 @@ import { ArcadeControl, ArcadeVisual } from "../schema.gen.ts";
 import { desktopState } from "../desktop/state.ts";
 import { desktopSaveState } from "../desktop/save.ts";
 import manifest from "../../data/sprites.json";
+import atlas from "../../assets/pixel-renderer/atlas-layout.json";
 import { session } from "./session.ts";
 import { orderedArrays, orderedCapacity } from "./pixel-renderer/ordered.ts";
 import type { PixelQuad } from "./pixel-renderer/types.ts";
@@ -30,6 +31,7 @@ const PIXEL_SLOT_BASE = 65536;
 const STATIC_QUAD = 'pixel-renderer/static-quad.gltf';
 const PIXEL_MATERIAL = 'materials/pixel-ordered.mat.json';
 const animations: Readonly<Record<string, readonly string[]>> = manifest;
+const atlasRects: Readonly<Record<string, readonly number[]>> = atlas.rects;
 export function referenceFrame(name: string, tick: number): string {
   const paths = animations[name];
   const path = paths?.[Math.floor(Math.max(0, tick) / 10) % paths.length];
@@ -66,6 +68,21 @@ const image = (
   text: "",
   size: 0,
 });
+// Deliberate improvement over Go's square stretch: keep item art's original
+// aspect within its existing visual box. Simulation/collision boxes do not move.
+export function fittedItemImage(name: string, tick: number, x: number, y: number, size: number): Draw {
+  const draw = image(name, tick, x, y, size);
+  const rect = atlasRects[draw.image];
+  if (!rect) return draw;
+  const width = rect[2]!, height = rect[3]!;
+  if (width <= 0 || height <= 0) return draw;
+  const scale = size / Math.max(width, height);
+  draw.w = width * scale;
+  draw.h = height * scale;
+  draw.x += (size - draw.w) / 2;
+  draw.y += (size - draw.h) / 2;
+  return draw;
+}
 const label = (text: string, x: number, y: number, size: number): Draw => ({
   image: "",
   x,
@@ -81,7 +98,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
   const out: Draw[] = [];
   for (const i of g.Items) {
     if (i.Age > 600 && i.Age % 12 < 6) continue;
-    out.push(image(i.Power || `food/${i.Food}`, 0, i.X, i.Y + 48, 32));
+    out.push(fittedItemImage(i.Power || `food/${i.Food}`, 0, i.X, i.Y + 48, 32));
   }
   for (const e of g.Enemies) {
     if (
@@ -197,7 +214,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
       [p.Power.Ruby, "ruby_ring"],
     ] as const)
       if (active) {
-        out.push({ ...image(name, 0, x, 681, 24), footer: true });
+        out.push({ ...fittedItemImage(name, 0, x, 681, 24), footer: true });
         x += 26;
       }
   return out;
@@ -212,7 +229,9 @@ function editorDrawPlan(level: Level, avatar: string, tick = 0): Draw[] {
     const [px, py] = position(cell, 44),
       x = 24 + (px * 2) / 3,
       y = 146 + (py * 2) / 3;
-    out.push(image(name, tick, x, y, 30));
+    out.push(marker === "F" || marker === "B"
+      ? fittedItemImage(name, tick, x, y, 30)
+      : image(name, tick, x, y, 30));
     if (marker) out.push(label(marker, x, y - 9, 9));
   };
   for (const e of level.enemies) spawn(e, e.kind + "/walk");

@@ -27,6 +27,7 @@ export function createGame(
   if (!levels.length) throw new Error("no levels supplied");
   for (const level of levels) validateLevel(level);
   const g: GameState = {
+    NormalEnemySpeedScale: 0.8,
     Campaign: levels,
     Level: levels[0]!,
     LevelIndex: 0,
@@ -267,6 +268,7 @@ export function canonicalState(source: GameState) {
 export function copyGame(g: GameState): GameState {
   return {
     ...g,
+    NormalEnemySpeedScale: g.NormalEnemySpeedScale ?? 0.8,
     Players: g.Players.map((p) => ({ ...p, Power: { ...p.Power } })),
     Enemies: g.Enemies.map((e) => ({ ...e })),
     Bubbles: g.Bubbles.map((b) => ({ ...b })),

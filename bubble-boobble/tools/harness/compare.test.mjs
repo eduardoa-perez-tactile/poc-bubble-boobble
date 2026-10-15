@@ -49,3 +49,52 @@ test('fixture covers ready, movement, shooting and pause without ticking while p
   assert.equal(fixture.frames[83].state.Snapshot.Tick, 80);
   assert.equal(fixture.frames[88].state.Snapshot.Tick, 85);
 });
+
+// Campaign audit exceptions are narrower than ordinary approximate comparison.
+import { inspectCeilingBoundary, compareStudyPrefix } from './arcade-study.mjs';
+function ceilingState() {
+  return { Snapshot: { Players: [{ X: 100, Y: 24, VY: 0, Ground: false }], Score: 0 }, RNG: 'unchanged' };
+}
+test('campaign boundary permits only original Y24/VY0 versus rising above24 and does not mutate actual', () => {
+  const expected = ceilingState(), actual = structuredClone(expected);
+  actual.Snapshot.Players[0].Y = 15.5; actual.Snapshot.Players[0].VY = -8.5;
+  const before = structuredClone(actual), boundary = inspectCeilingBoundary(expected, actual);
+  assert.equal(boundary.residual, null);
+  assert.deepEqual(boundary.players, [{ player: 0, expected: { Y: 24, VY: 0 }, actual: { Y: 15.5, VY: -8.5 } }]);
+  assert.deepEqual(actual, before);
+});
+test('campaign boundary rejects wrong reference clamp, stationary/falling motion and nonfinite coordinates', () => {
+  for (const patch of [{Y:24,VY:-1},{Y:20,VY:0},{Y:20,VY:1},{Y:-Infinity,VY:-1},{Y:20,VY:NaN}]) {
+    const expected = ceilingState(), actual = structuredClone(expected);
+    Object.assign(actual.Snapshot.Players[0],patch);
+    assert.equal(inspectCeilingBoundary(expected,actual),null);
+  }
+  for (const patch of [{Y:23},{VY:1}]) {
+    const expected = ceilingState(), actual = structuredClone(expected);
+    Object.assign(expected.Snapshot.Players[0],patch);
+    Object.assign(actual.Snapshot.Players[0],{Y:15,VY:-2});
+    assert.equal(inspectCeilingBoundary(expected,actual),null);
+  }
+});
+test('campaign boundary rejects collateral canonical changes including another player', () => {
+  for (const change of [s => s.Snapshot.Score++, s => s.RNG='changed', s => s.Snapshot.Players[0].Ground=true, s => s.Snapshot.Players[0].X++]) {
+    const expected = ceilingState(), actual = structuredClone(expected);
+    Object.assign(actual.Snapshot.Players[0],{Y:15,VY:-2}); change(actual);
+    assert.ok(inspectCeilingBoundary(expected,actual).residual);
+    assert.ok(compareStudyPrefix([{frame:1,state:expected}],()=>actual).failure);
+  }
+  const expected=ceilingState(); expected.Snapshot.Players.push({X:200,Y:100,VY:1,Ground:false});
+  const actual=structuredClone(expected); Object.assign(actual.Snapshot.Players[0],{Y:15,VY:-2}); actual.Snapshot.Players[1].Y++;
+  assert.match(inspectCeilingBoundary(expected,actual).residual.path,/Players\[1\].Y/);
+});
+test('campaign prefix stops at first verified boundary without simulating or claiming later frames', () => {
+  assert.throws(() => compareStudyPrefix([],()=>null), /initial state/);
+  const expected=ceilingState(), actual=structuredClone(expected);
+  Object.assign(actual.Snapshot.Players[0],{Y:15,VY:-2});
+  const frames=[0,1,2].map(frame=>({frame,state:expected})); let calls=0;
+  const result=compareStudyPrefix(frames,f=>{calls++; if(f.frame===2)throw new Error('suffix must not execute'); return f.frame===0?expected:actual;});
+  assert.equal(calls,2); assert.equal(result.matchedFrames,1); assert.equal(result.boundary.frame,1); assert.equal(result.failure,null);
+  const bad=structuredClone(expected);bad.Snapshot.Score++;
+  const rejected=compareStudyPrefix(frames,()=>bad);
+  assert.equal(rejected.matchedFrames,0);assert.equal(rejected.boundary,null);assert.equal(rejected.failure.frame,0);
+});
