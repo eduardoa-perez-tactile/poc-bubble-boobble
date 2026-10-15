@@ -133,6 +133,8 @@ export interface Counters {
   Walked: number;
 }
 export interface GameState {
+  // Authoritative locomotion tuning; angry enemies retain their original speed.
+  NormalEnemySpeedScale: number;
   Campaign: Level[];
   Level: Level;
   LevelIndex: number;

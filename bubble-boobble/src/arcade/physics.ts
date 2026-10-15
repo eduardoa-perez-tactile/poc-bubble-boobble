@@ -53,7 +53,7 @@ export function spawnPosition(g: GameState, c: Cell): [number, number] {
     }
   return [bx, by];
 }
-export function moveActor(g: GameState, b: Body, dx: number, gravity: boolean) {
+function advanceActor(g: GameState, b: Body, dx: number, gravity: boolean, firstLandingRow = 0) {
   const inside = blocked(g, b.X + 2, b.Y + 2, ActorSize - 4),
     steps = Math.max(1, Math.ceil(Math.abs(dx)));
   for (let i = 0; i < steps; i++) {
@@ -71,7 +71,7 @@ export function moveActor(g: GameState, b: Body, dx: number, gravity: boolean) {
   b.Ground = false;
   if (b.VY >= 0) {
     for (
-      let row = Math.ceil(oldFeet / Tile);
+      let row = Math.max(firstLandingRow, Math.ceil(oldFeet / Tile));
       row <= Math.floor((newY + ActorSize) / Tile);
       row++
     ) {
@@ -91,14 +91,40 @@ export function moveActor(g: GameState, b: Body, dx: number, gravity: boolean) {
     }
   }
   b.Y = newY;
+}
+// Enemy bounds retain the pinned reference behavior. Players have a separate
+// boundary rule so their requested traversal does not change enemy movement.
+export function moveActor(g: GameState, b: Body, dx: number, gravity: boolean) {
+  advanceActor(g, b, dx, gravity);
   if (b.Y < Tile) {
     b.Y = Tile;
     b.VY = Math.max(0, b.VY);
   }
+  wrapBottom(b);
+}
+function wrapBottom(b: Body) {
   if (b.Y > Height) {
     b.Y = Tile;
     b.VY = 2;
   }
+}
+function matchingVerticalOpening(g: GameState, b: Body): boolean {
+  // The full body must fit both openings; touching an adjacent wall is not an
+  // exit. Horizontal bounds have already been applied by advanceActor.
+  const first = Math.floor(b.X / Tile),
+    last = Math.floor((b.X + ActorSize - 0.01) / Tile);
+  for (let col = first; col <= last; col++)
+    if (solid(g, col, 0) || solid(g, col, Rows - 1)) return false;
+  return true;
+}
+export function movePlayer(g: GameState, b: Body, dx: number) {
+  // Row zero is the board border, not a playable roof above the screen.
+  advanceActor(g, b, dx, true, 1);
+  // Deliberate player rule beyond the pinned Go clamp: rising platforms stay
+  // one-way, and a full exit through paired gaps re-enters below, still rising.
+  if (b.VY < 0 && b.Y + ActorSize < 0 && matchingVerticalOpening(g, b))
+    b.Y += Height + ActorSize;
+  wrapBottom(b);
 }
 export function moveFlying(g: GameState, e: Enemy, dx: number, dy: number) {
   const steps = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy))));

@@ -46,7 +46,7 @@ npm run harness:milestone
 
 Verify runs provenance/comparator checks, the aborted-HTTP-body regression, a
 fresh-host cold live-viewport regression, all V8 T0 tests, all desktop T1 tests
-(including the complete 17-shot presentation route and its draw budget), four
+(including the complete 17-shot presentation route and its draw budget), five
 engine replays with their explicit recorded scenes, then `gameengine check`
 (typecheck, validation, desktop cook and cooked smoke), followed by the original/
 derived audio provenance and nonempty cooked-alias uniqueness guard across all
@@ -56,15 +56,34 @@ a passing result. Warnings from engine check remain visible. `verify-full` adds
 an independently rendered 170-frame structural replay. Run it at checkpoints;
 also regenerate all-tier pipelines whenever materials or rendered flows change.
 The regular verify lane retains every regression test and cooked smoke check,
-while avoiding that second render of the same 506-step route after every edit.
+while avoiding that second render of the same full presentation route after every edit.
 
 Milestone is a separate CPU-only Go audit outside the fast lane. It verifies the
 pinned checkout, Go version, levels and instrumentation; rebuilds the oracle; runs
 all cached pure-simulation comparisons; compares random numerical samples; and
-compares 1,261 frames for each of 25 independently initialized rounds. All 31,525
-canonical snapshots currently agree exactly. Rounds alternate one/two players and
-receive fixed movement, jump and fire inputs. These cases do not prove natural
+compares up to 1,261 frames for each of 25 independently initialized rounds using
+the explicit source-speed profile. The pre-playtest implementation matched all
+31,525 snapshots. After the requested top-boundary change, 15 rounds still match
+their full traces; ten reach the intentional upward-ceiling difference. Those
+rounds check their exact prefix and first boundary difference, then stop rather
+than claiming that subsequent diverging gameplay matches Go. Rounds alternate
+one/two players and receive fixed movement, jump and fire inputs. These cases do not prove natural
 progression from round 1 through the final round or every mechanic boundary.
+
+The October 15 enemy tuning, player traversal and item-proportion corrections intentionally
+extend the pinned reference; see [playtest-feedback.md](playtest-feedback.md).
+Historical movement-only fixtures exercise the retained `src/movement.ts`
+prototype used by `round1.scene`, including its original ceiling. They do not
+claim that the playable arcade scene still clamps upward jumps. The pure runner
+projects that prototype's fields into canonical state; full arcade cases continue
+to run `stepGame` with an explicit source-speed scale of 1 and compare every
+exported canonical field against their unchanged Go fixtures. Production games
+default to 0.8 for normal enemy movement; separate tests cover that tuning.
+The scale is authoritative session state (and part of engine replay hashes),
+but is not an upstream field in the Go canonical projection. Source-speed
+comparisons do not claim that the new playable difficulty matches original Go.
+The fifth engine replay records the real round-three upward wrap through the
+cheat/event/fixed-step path and checks the world hash independently on playback.
 
 Engine-input parity compares every exported field and sound-event sequence after
 each semantic input tick. The pure lane exercises the same simulation without the

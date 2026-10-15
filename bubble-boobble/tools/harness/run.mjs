@@ -162,6 +162,7 @@ const replays = [
   { path: 'tests/replays/harness_reset_and_tap.greplay', scene: 'scenes/main.scene.json', filter: 'harness reset and tap' },
   { path: 'tests/replays/movement_physical_keyboard_hold_release_and_jump.greplay', scene: 'scenes/round1.scene.json', filter: 'movement physical keyboard hold release and jump' },
   { path: 'tests/replays/arcade_engine_input_full_go_parity_reference_round1_smoke.greplay', scene: 'scenes/arcade.scene.json', filter: 'arcade engine input full Go parity reference-round1-smoke' },
+  { path: 'tests/replays/player_traversal_engine_input_wraps_round_three_and_preserves_upward_re_entry.greplay', scene: 'scenes/arcade.scene.json', filter: 'player traversal engine input wraps round three and preserves upward re-entry' },
   { path: 'tests/replays/desktop_complete_presentation_flows.greplay', scene: 'scenes/arcade.scene.json', filter: 'desktop complete presentation flows', tier: 't1' },
 ];
 function verifyReplays(selected = replays) {
