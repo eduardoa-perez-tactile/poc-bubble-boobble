@@ -1,0 +1,268 @@
+{
+  "$schemaVersion": 1,
+  "guid": "2504e8f2-8ef9-489f-8f76-27534eecd83a",
+  "name": "game-mode-card",
+  "title": "Game mode card",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Game mode card",
+      "style": {
+        "dir": "row",
+        "pad": 0,
+        "align": "center",
+        "radius": 12,
+        "w": 272,
+        "h": 380
+      },
+      "children": [
+        "mc_left",
+        "mc_right",
+        "mc_top",
+        "mc_bottom",
+        "mc_footer",
+        "mc_label",
+        "mc_description",
+        "mc_players",
+        "mc_badge"
+      ]
+    },
+    "mc_left": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 4,
+        "h": 380,
+        "bg": "#f2eee1"
+      }
+    },
+    "mc_right": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          268,
+          0
+        ],
+        "w": 4,
+        "h": 380,
+        "bg": "#f2eee1"
+      }
+    },
+    "mc_top": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 272,
+        "h": 4,
+        "bg": "#f2eee1"
+      }
+    },
+    "mc_bottom": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          376
+        ],
+        "w": 272,
+        "h": 4,
+        "bg": "#f2eee1"
+      }
+    },
+    "mc_footer": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          4,
+          252
+        ],
+        "w": 264,
+        "h": 124,
+        "bg": "#f2eee1"
+      }
+    },
+    "mc_label": {
+      "type": "label",
+      "name": "Label",
+      "text": "{label}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          272
+        ],
+        "fontSize": 19,
+        "color": "#080c1b"
+      }
+    },
+    "mc_description": {
+      "type": "label",
+      "name": "Label",
+      "text": "{description}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          312
+        ],
+        "fontSize": 9,
+        "color": "#243448"
+      }
+    },
+    "mc_players": {
+      "type": "label",
+      "name": "Label",
+      "text": "{players}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          348
+        ],
+        "fontSize": 11,
+        "color": "#243448"
+      }
+    },
+    "mc_badge": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "mc_selected"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          8,
+          8
+        ],
+        "w": 112,
+        "h": 24,
+        "bg": "#28e1e8"
+      },
+      "show": "selected"
+    },
+    "mc_selected": {
+      "type": "label",
+      "name": "Label",
+      "text": "SELECTED",
+      "style": {
+        "fontSize": 10,
+        "color": "#080c1b",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          7
+        ]
+      }
+    }
+  },
+  "behaviour": "button",
+  "transition": {
+    "type": "instant"
+  },
+  "properties": {
+    "label": {
+      "type": "text",
+      "default": "CLASSIC"
+    },
+    "description": {
+      "type": "text",
+      "default": "25 ROUNDS / ARCADE CAMPAIGN"
+    },
+    "players": {
+      "type": "text",
+      "default": "1-2 DRAGONS"
+    },
+    "selected": {
+      "type": "yesno",
+      "default": false,
+      "poses": {
+        "yes": {
+          "set": {
+            "mc_left": {
+              "bg": "#28e1e8"
+            },
+            "mc_right": {
+              "bg": "#28e1e8"
+            },
+            "mc_top": {
+              "bg": "#28e1e8"
+            },
+            "mc_bottom": {
+              "bg": "#28e1e8"
+            }
+          }
+        }
+      }
+    }
+  }
+}

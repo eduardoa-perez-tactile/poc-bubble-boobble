@@ -1,0 +1,89 @@
+{
+  "game": "Bubble Bobble (1986 arcade)",
+  "character": "Super Drunk",
+  "copyright": "Taito",
+  "source": "https://github.com/MiquelVillarroya/Bubble-Bobble-Replica/blob/89c6a5dc442eabcbbd94a8de8e407bfbe344a1d6/resources/Art/Sprites/Enemies/superDrunkSprite.png",
+  "sha256": "3fed3c13f995af89ace6fac01a1a2be74a4a5250dd49f022b4e720f1655f1487",
+  "cells": {
+    "move": [
+      [
+        0,
+        0,
+        64,
+        64
+      ],
+      [
+        64,
+        0,
+        64,
+        64
+      ],
+      [
+        128,
+        0,
+        64,
+        64
+      ],
+      [
+        192,
+        0,
+        64,
+        64
+      ]
+    ],
+    "attack": [
+      [
+        128,
+        0,
+        64,
+        64
+      ],
+      [
+        192,
+        0,
+        64,
+        64
+      ]
+    ],
+    "captured": [
+      [
+        0,
+        64,
+        64,
+        64
+      ],
+      [
+        64,
+        64,
+        64,
+        64
+      ],
+      [
+        128,
+        64,
+        64,
+        64
+      ],
+      [
+        192,
+        64,
+        64,
+        64
+      ]
+    ],
+    "bottle": [
+      [
+        0,
+        128,
+        16,
+        16
+      ],
+      [
+        16,
+        128,
+        16,
+        16
+      ]
+    ]
+  }
+}

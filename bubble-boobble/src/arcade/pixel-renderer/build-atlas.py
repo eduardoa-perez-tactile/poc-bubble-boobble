@@ -2,6 +2,7 @@
 from pathlib import Path
 from PIL import Image
 import json,hashlib
+import runpy
 root=Path(__file__).resolve().parents[3]
 manifest=json.loads((root/'data/sprites.json').read_text())
 paths=sorted({p.removeprefix('sprites/') for frames in manifest.values() for p in frames}|{'tiles/%02d.png'%i for i in range(1,26)})
@@ -19,6 +20,11 @@ for index,(name,color) in enumerate([('black',(0,0,0,255)),('ink',(8,12,27,255))
 for index in range(4):
     path=root/f'assets/pixel-renderer/circle-{index}.png';circle=Image.open(path).convert('RGBA');x=512+index*64;y=640
     atlas.paste(circle,(x,y));rects[f'derived/circle/{index}']=[x,y,circle.width,circle.height];hashes[f'derived/circle/{index}']=hashlib.sha256(path.read_bytes()).hexdigest()
+# Original arcade boss frames occupy spare cells; existing frame rectangles stay identical.
+hashes['arcade-boss/super-drunk.png']=hashlib.sha256((root/'tools/port/sources/super-drunk.png').read_bytes()).hexdigest()
+for index,(name,image) in enumerate(runpy.run_path(str(root/'src/arcade/pixel-renderer/boss-frames.py'))['FRAMES'].items()):
+    x=800+index*68;y=640
+    atlas.paste(image,(x,y));rects[name]=[x,y,image.width,image.height]
 out=root/'assets/pixel-renderer';out.mkdir(exist_ok=True)
 atlas.save(out/'atlas.png',optimize=True)
 (out/'atlas-layout.json').write_text(json.dumps({'width':2048,'height':1024,'rects':rects,'sources':hashes},indent=2)+'\n')

@@ -6,7 +6,7 @@ export type { EntityId };
 /** Project schema IR, registered with the engine when the bundle boots. */
 export const schemaIr = {
   "version": 1,
-  "package": "BubbleBoobble",
+  "package": "Bubble Madness",
   "enums": [],
   "types": [
     {
@@ -67,7 +67,7 @@ export const schemaIr = {
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "ArcadeControl",
@@ -93,7 +93,7 @@ export const schemaIr = {
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "ArcadeInput",
@@ -131,7 +131,7 @@ export const schemaIr = {
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "ArcadePlatformState",
@@ -145,7 +145,7 @@ export const schemaIr = {
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "ArcadeVisual",
@@ -159,7 +159,7 @@ export const schemaIr = {
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "Bubble",
@@ -180,7 +180,7 @@ export const schemaIr = {
           "doc": "Units per step"
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "DesktopIntent",
@@ -218,7 +218,7 @@ export const schemaIr = {
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "EditorPointer",
@@ -252,7 +252,7 @@ export const schemaIr = {
           "default": -1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "Game",
@@ -273,7 +273,7 @@ export const schemaIr = {
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "HarnessControl",
@@ -288,7 +288,7 @@ export const schemaIr = {
           "doc": "Controlled starter scenario; suppresses random spawns"
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "MovementInput",
@@ -314,7 +314,7 @@ export const schemaIr = {
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "PortInput",
@@ -334,7 +334,7 @@ export const schemaIr = {
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "PortMatch",
@@ -398,7 +398,7 @@ export const schemaIr = {
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "PortPlayer",
@@ -498,14 +498,14 @@ export const schemaIr = {
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "PortVisual",
       "kind": "component",
       "sim": true,
       "fields": [],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     }
   ],
   "commands": [],

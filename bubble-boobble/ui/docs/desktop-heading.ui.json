@@ -60,7 +60,8 @@
         ],
         "fontSize": 11,
         "color": "#70f089"
-      }
+      },
+      "property": "brand"
     },
     "dhead_title": {
       "type": "label",
@@ -109,6 +110,10 @@
     "subtitle": {
       "type": "text",
       "default": ""
+    },
+    "brand": {
+      "type": "text",
+      "default": "BUBBLE MADNESS"
     }
   }
 }

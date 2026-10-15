@@ -1,0 +1,451 @@
+{
+  "$schemaVersion": 1,
+  "guid": "2ca34167-48d6-4062-af2f-52a7e749b8b9",
+  "name": "party-dragon-card",
+  "title": "Party dragon card",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Party dragon card",
+      "style": {
+        "dir": "column",
+        "pad": 0,
+        "align": "center",
+        "radius": 12,
+        "w": 216,
+        "h": 214
+      },
+      "children": [
+        "pc_header",
+        "pc_left",
+        "pc_right",
+        "pc_bottom",
+        "pc_footer",
+        "pc_focus",
+        "pc_selected_left",
+        "pc_selected_right",
+        "pc_selected_bottom",
+        "pc_selected_top"
+      ]
+    },
+    "pc_header": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "pc_title"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 216,
+        "h": 30,
+        "bg": "#70f089"
+      }
+    },
+    "pc_title": {
+      "type": "label",
+      "name": "Label",
+      "text": "{label}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          9
+        ],
+        "fontSize": 12,
+        "color": "#080c1b"
+      }
+    },
+    "pc_left": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          30
+        ],
+        "w": 3,
+        "h": 184,
+        "bg": "#70f089"
+      }
+    },
+    "pc_right": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          213,
+          30
+        ],
+        "w": 3,
+        "h": 184,
+        "bg": "#70f089"
+      }
+    },
+    "pc_bottom": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          211
+        ],
+        "w": 216,
+        "h": 3,
+        "bg": "#70f089"
+      }
+    },
+    "pc_footer": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "pc_mode",
+        "pc_hint"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          3,
+          164
+        ],
+        "w": 210,
+        "h": 47,
+        "bg": "#131d31"
+      }
+    },
+    "pc_mode": {
+      "type": "label",
+      "name": "Label",
+      "text": "{modeLabel}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          8
+        ],
+        "fontSize": 12,
+        "color": "#ebf5ff"
+      }
+    },
+    "pc_hint": {
+      "type": "label",
+      "name": "Label",
+      "text": "HUMAN / AI / EMPTY",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          29
+        ],
+        "fontSize": 8,
+        "color": "#829fb1"
+      }
+    },
+    "pc_focus": {
+      "type": "label",
+      "name": "Label",
+      "text": ">",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          9,
+          9
+        ],
+        "fontSize": 12,
+        "color": "#080c1b"
+      },
+      "show": "selected"
+    },
+    "pc_selected_left": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          30
+        ],
+        "w": 3,
+        "h": 184,
+        "bg": "#ffffff"
+      },
+      "show": "selected"
+    },
+    "pc_selected_right": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          213,
+          30
+        ],
+        "w": 3,
+        "h": 184,
+        "bg": "#ffffff"
+      },
+      "show": "selected"
+    },
+    "pc_selected_bottom": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          211
+        ],
+        "w": 216,
+        "h": 3,
+        "bg": "#ffffff"
+      },
+      "show": "selected"
+    },
+    "pc_selected_top": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 216,
+        "h": 3,
+        "bg": "#ffffff"
+      },
+      "show": "selected"
+    }
+  },
+  "behaviour": "button",
+  "transition": {
+    "type": "instant"
+  },
+  "properties": {
+    "label": {
+      "type": "text",
+      "default": "1UP GREEN"
+    },
+    "modeLabel": {
+      "type": "text",
+      "default": "HUMAN / PAD 1"
+    },
+    "selected": {
+      "type": "yesno",
+      "default": false,
+      "poses": {
+        "yes": {
+          "set": {
+            "pc_left": {
+              "bg": "#ffffff"
+            },
+            "pc_right": {
+              "bg": "#ffffff"
+            },
+            "pc_bottom": {
+              "bg": "#ffffff"
+            },
+            "pc_footer": {
+              "bg": "#29384c"
+            }
+          }
+        }
+      }
+    },
+    "color": {
+      "type": "enum",
+      "values": [
+        "green",
+        "blue",
+        "red",
+        "yellow",
+        "purple",
+        "orange"
+      ],
+      "default": "green",
+      "poses": {
+        "green": {
+          "set": {
+            "pc_header": {
+              "bg": "#70f089"
+            },
+            "pc_left": {
+              "bg": "#70f089"
+            },
+            "pc_right": {
+              "bg": "#70f089"
+            },
+            "pc_bottom": {
+              "bg": "#70f089"
+            }
+          }
+        },
+        "blue": {
+          "set": {
+            "pc_header": {
+              "bg": "#00aaff"
+            },
+            "pc_left": {
+              "bg": "#00aaff"
+            },
+            "pc_right": {
+              "bg": "#00aaff"
+            },
+            "pc_bottom": {
+              "bg": "#00aaff"
+            }
+          }
+        },
+        "red": {
+          "set": {
+            "pc_header": {
+              "bg": "#ff5555"
+            },
+            "pc_left": {
+              "bg": "#ff5555"
+            },
+            "pc_right": {
+              "bg": "#ff5555"
+            },
+            "pc_bottom": {
+              "bg": "#ff5555"
+            }
+          }
+        },
+        "yellow": {
+          "set": {
+            "pc_header": {
+              "bg": "#ffdc00"
+            },
+            "pc_left": {
+              "bg": "#ffdc00"
+            },
+            "pc_right": {
+              "bg": "#ffdc00"
+            },
+            "pc_bottom": {
+              "bg": "#ffdc00"
+            }
+          }
+        },
+        "purple": {
+          "set": {
+            "pc_header": {
+              "bg": "#b45aff"
+            },
+            "pc_left": {
+              "bg": "#b45aff"
+            },
+            "pc_right": {
+              "bg": "#b45aff"
+            },
+            "pc_bottom": {
+              "bg": "#b45aff"
+            }
+          }
+        },
+        "orange": {
+          "set": {
+            "pc_header": {
+              "bg": "#ff8700"
+            },
+            "pc_left": {
+              "bg": "#ff8700"
+            },
+            "pc_right": {
+              "bg": "#ff8700"
+            },
+            "pc_bottom": {
+              "bg": "#ff8700"
+            }
+          }
+        }
+      }
+    }
+  },
+  "states": {
+    "pressed": {
+      "set": {
+        "root": {
+          "opacity": 0.8
+        }
+      }
+    }
+  }
+}

@@ -111,7 +111,7 @@ export function updateProjectiles(g: GameState) {
     for (let i = 0; i < steps; i++) {
       p.X += p.VX / steps;
       p.Y += p.VY / steps;
-      if (blocked(g, p.X, p.Y, 16) || p.Y > Height) {
+      if ((p.Bottle ? p.X<2*Tile || p.X>720 || p.Y<Tile : blocked(g, p.X, p.Y, 16)) || p.Y > Height) {
         p.Removed = true;
         break;
       }

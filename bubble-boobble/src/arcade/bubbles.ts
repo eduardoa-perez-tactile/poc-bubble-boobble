@@ -1,3 +1,4 @@
+import { hitBossWithThunder } from './boss';
 import { startPlayerJump } from './physics';
 import {
   ActorSize,
@@ -56,6 +57,7 @@ export function shootBubble(g: GameState, player: number) {
     Dir: p.Dir,
     Speed: speed,
     MaxDistance: reach,
+    ...(g.Party?.Boss && p.Power.Thunder ? {Element:'thunder',ThunderShot:true} : {}),
   });
   g.Counters.Blown++;
   if (p.Power.Ruby) addScore(g, 100, p.X, p.Y);
@@ -66,13 +68,14 @@ export function updateBubbles(g: GameState, inputs: Input[]) {
     const b = g.Bubbles[i]!;
     if (b.Removed) continue;
     b.Age++;
-    if (b.Element !== "") moveSpecialBubble(g, b);
+    if (b.Element !== "" && !b.ThunderShot) moveSpecialBubble(g, b);
     else if (!b.Floating) {
       for (let step = 0; step < Math.trunc(b.Speed); step++) {
         b.X += b.Dir;
         b.Distance++;
         for (const e of g.Enemies)
           if (
+            b.Element === '' && g.Party?.Phase !== 'prepare' &&
             e.State === EnemyState.Active &&
             intersects(b.X, b.Y, 40, 40, e.X + 3, e.Y + 3, 38, 38)
           ) {
@@ -114,7 +117,7 @@ export function updateBubbles(g: GameState, inputs: Input[]) {
         b.Removed = true;
         continue;
       }
-    } else if (b.Age > 600) {
+    } else if (b.Age > (g.Party ? 180 : 600)) {
       b.Removed = true;
       continue;
     }
@@ -221,7 +224,7 @@ export function releaseElement(g: GameState, b: Bubble, player: number) {
     case "thunder":
       g.Counters.Thunder++;
       e.Life = 90;
-      g.Sounds.push("laser");
+      if(!g.Party||!g.Sounds.includes("laser"))g.Sounds.push("laser");
       break;
     case "fire":
       g.Counters.Fire++;
@@ -239,6 +242,10 @@ export function updateEffects(g: GameState) {
       case "thunder":
         for (let step = 0; step < 12; step++) {
           e.X += e.Dir;
+          if(g.Party?.Phase==='boss') {
+            for(const shot of g.Projectiles)if(shot.Bottle&&!shot.Removed&&intersects(e.X,e.Y,40,24,shot.X,shot.Y,16,20))shot.Removed=true;
+            if(hitBossWithThunder(g,e.X,e.Y,40,24)){e.Life=0;break;}
+          }
           hitWithElement(g, e, 40, 24);
         }
         if (e.X < 2 * Tile || e.X > Width - 2 * Tile) e.Life = 0;
@@ -288,7 +295,7 @@ export function updateEffects(g: GameState) {
         break;
     }
   }
-  g.Effects = g.Effects.filter((e) => e.Life > 0).concat(spawned);
+  g.Effects = g.Party?.Boss?.Mode==='captured' ? [] : g.Effects.filter((e) => e.Life > 0).concat(spawned);
 }
 export function hitWithElement(
   g: GameState,
@@ -296,6 +303,7 @@ export function hitWithElement(
   w: number,
   h: number,
 ) {
+  if (g.Party?.Phase === 'prepare') return;
   if (effect.Element === "fire" && !effect.Ground) return;
   for (const e of g.Enemies)
     if (
@@ -312,7 +320,7 @@ export function hitWithElement(
 export function carryOnWater(g: GameState, effect: Effect) {
   if (effect.Spread) return;
   for (const e of g.Enemies)
-    if (e.State === EnemyState.Carried && e.CarriedBy === effect.ID) {
+    if (g.Party?.Phase !== 'prepare' && e.State === EnemyState.Carried && e.CarriedBy === effect.ID) {
       e.X = effect.X;
       e.Y = effect.Y - 12;
       e.CarryTicks++;

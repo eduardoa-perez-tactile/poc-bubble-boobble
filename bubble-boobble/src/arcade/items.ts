@@ -7,13 +7,15 @@ import {
   TPS,
   Tile,
   Width,
+  Rows,
   alive,
   body,
   intersects,
   position,
 } from "./types";
 import { productionPlayerBalance } from './balance';
-import { solid } from "./physics";
+import { blocked, solid } from "./physics";
+import { intN } from './rng';
 import { addScore, defeat, loadLevel } from "./game";
 export function foodScore(level: number) {
   return level <= 10
@@ -36,7 +38,24 @@ export function spawnFood(g: GameState, x: number, y: number) {
     Food: g.Level.number,
   });
 }
+function partyPowerLocation(g: GameState): [number, number] | undefined {
+  const locations: [number, number][] = [];
+  for (let row = 2; row < Rows; row++) {
+    for (let col = 2; col < 29; col++) {
+      const x = col * Tile, y = row * Tile - 32;
+      if (blocked(g, x, y, 32) || !solid(g, col, row) || !solid(g, Math.floor((x + 31) / Tile), row)) continue;
+      if (g.Players.some(p => alive(p) && intersects(p.X, p.Y, ActorSize, ActorSize, x, y, 32, 32))) continue;
+      if (g.Enemies.some(e => e.State !== EnemyState.Defeated && intersects(e.X, e.Y, ActorSize, ActorSize, x, y, 32, 32))) continue;
+      locations.push([x, y]);
+    }
+  }
+  // Consume the recorded game's RNG only when a drop can actually appear.
+  return locations.length ? locations[intN(g, locations.length)] : undefined;
+}
 export function checkPowerSpawns(g: GameState) {
+  // The boss supplies thunder pickups. Ordinary thunder rewards would repeatedly
+  // spawn clocks and leave the moving fight frozen under six-player fire.
+  if(g.Party?.Boss)return;
   const c = g.Counters;
   const rules: [keyof typeof c, number, string][] = [
     ["Blown", 35, "pink_candy"],
@@ -72,14 +91,21 @@ export function checkPowerSpawns(g: GameState) {
     g.WaterStage = 0;
   }
   if (g.Pending.length === 0 || g.Items.some((i) => i.Power !== "")) return;
-  const [x, y] = position(g.Level.power_spawn, 32);
+  const location = g.Party ? partyPowerLocation(g) : position(g.Level.power_spawn, 32);
+  if (!location) return;
+  const [x, y] = location;
   g.Items.push({ ...item(x, y), Power: g.Pending.shift()! });
 }
 export function updateItems(g: GameState) {
   const kept: Item[] = [];
   for (const it of g.Items) {
     it.Age++;
-    if (it.Age > 12 * TPS) continue;
+    if (it.Age > 12 * TPS && it.Power !== 'thunder_potion') continue;
+    // Keep offensive pickups available until their targets can fight back.
+    if (g.Party && (g.Party.Phase === 'prepare' || g.Party.Phase === 'rest') && (it.Power === 'dynamite' || it.Power === 'clock')) {
+      kept.push(it);
+      continue;
+    }
     if (it.Power === "" && !it.Stationary) {
       const oldFeet = it.Y + 32;
       it.VY = Math.min(6, it.VY + 0.3);
@@ -107,6 +133,7 @@ export function updateItems(g: GameState) {
         !intersects(p.X, p.Y, ActorSize, ActorSize, it.X, it.Y, 32, 32)
       )
         continue;
+      if(it.Power==='thunder_potion'&&p.Power.Thunder)continue;
       if (it.Power !== "") {
         if (applyPower(g, it.Power, player)) return true;
       } else {
@@ -126,6 +153,9 @@ export function applyPower(g: GameState, power: string, player: number) {
   let points = 100,
     warp = 0;
   switch (power) {
+    case 'thunder_potion':
+      p.Thunder=true;
+      break;
     case "pink_candy":
       p.Pink = true;
       g.Counters.Pink++;
@@ -179,6 +209,11 @@ export function applyPower(g: GameState, power: string, player: number) {
   }
   addScore(g, points, g.Players[player]!.X, g.Players[player]!.Y);
   g.Sounds.push("item");
+  if (warp > 0 && g.Party) {
+    // Campaign skips become a team recovery reward in survival.
+    for (const p of g.Players) if (!p.Downed && p.Lives > 0) p.Invincible = Math.max(p.Invincible,180);
+    return false;
+  }
   if (warp > 0) {
     loadLevel(g, g.LevelIndex + warp);
     return true;

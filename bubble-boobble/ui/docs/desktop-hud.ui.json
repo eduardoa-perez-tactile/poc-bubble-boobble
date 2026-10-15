@@ -83,7 +83,8 @@
       "name": "Element",
       "children": [
         "dh_banner_title",
-        "dh_banner_hint"
+        "dh_banner_hint",
+        "dh_party_detail"
       ],
       "style": {
         "pad": 0,
@@ -175,7 +176,8 @@
         ],
         "fontSize": 10,
         "color": "#ff6cb1"
-      }
+      },
+      "property": "highTitle"
     },
     "dh_high": {
       "type": "label",
@@ -310,6 +312,27 @@
         "color": "#ffdc6a"
       },
       "property": "freeze"
+    },
+    "dh_party_detail": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "property": "detail",
+      "show": "party",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          51
+        ],
+        "fontSize": 8,
+        "color": "#a8c5df"
+      },
+      "point": "party-detail"
     }
   },
   "view": {
@@ -456,6 +479,56 @@
           }
         }
       }
+    },
+    "party": {
+      "type": "yesno",
+      "default": false,
+      "poses": {
+        "yes": {
+          "set": {
+            "dh_lives": {
+              "hide": true
+            },
+            "dh_enemies": {
+              "hide": true
+            },
+            "dh_footer": {
+              "hide": true
+            },
+            "dh_banner": {
+              "offset": [
+                108,
+                54
+              ],
+              "w": 552,
+              "h": 68,
+              "bg": "#121e34"
+            },
+            "dh_banner_title": {
+              "offset": [
+                0,
+                6
+              ],
+              "fontSize": 22
+            },
+            "dh_banner_hint": {
+              "offset": [
+                0,
+                34
+              ],
+              "fontSize": 11
+            }
+          }
+        }
+      }
+    },
+    "highTitle": {
+      "type": "text",
+      "default": "HIGH SCORE"
+    },
+    "detail": {
+      "type": "text",
+      "default": ""
     }
   },
   "transition": {

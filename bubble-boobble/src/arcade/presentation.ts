@@ -1,3 +1,6 @@
+import campaignPreviews from '../../data/levels.json';
+import { partyCardRect } from '../desktop/layout';
+import { partyColors, partyPrepareTicks } from './party-config';
 // Presentation follows pinned internal/app/render.go. It never changes match state.
 import {
   defineSystem,
@@ -16,6 +19,7 @@ import {
   WorldView,
 } from "@gameengine/runtime";
 import { ArcadeControl, ArcadeVisual } from "../schema.gen.ts";
+import { dragonSkins, isDragonSkin } from "../desktop/skins.ts";
 import { desktopState } from "../desktop/state.ts";
 import { desktopSaveState } from "../desktop/save.ts";
 import manifest from "../../data/sprites.json";
@@ -33,8 +37,14 @@ const PIXEL_MATERIAL = 'materials/pixel-ordered.mat.json';
 const animations: Readonly<Record<string, readonly string[]>> = manifest;
 const atlasRects: Readonly<Record<string, readonly number[]>> = atlas.rects;
 export function referenceFrame(name: string, tick: number): string {
-  const bubbleSkin = name === 'blue/bubble' ? 'blue' : name === 'red/bubble' ? 'red' : name === 'yellow/bubble' ? 'yellow' : '';
-  const skin = name.startsWith('red/') ? 'red' : name.startsWith('yellow/') ? 'yellow' : '';
+  if(name.startsWith('boss/')){
+    const pose=name.slice(5),frames=pose==='move'||pose==='captured'?4:2;
+    return `derived/boss/${pose}-${Math.floor(Math.max(0,tick)/10)%frames}`;
+  }
+  if (name === 'green/bubble') name = 'bubble';
+  const prefix = name.split('/')[0]!;
+  const bubbleSkin = isDragonSkin(prefix) && name === `${prefix}/bubble` ? prefix : '';
+  const skin = ['red', 'yellow', 'purple', 'orange'].includes(prefix) ? prefix : '';
   const paths = animations[bubbleSkin ? 'bubble' : skin ? 'green/' + name.slice(skin.length + 1) : name];
   const path = paths?.[Math.floor(Math.max(0, tick) / 10) % paths.length];
   const frame = path
@@ -53,7 +63,17 @@ interface Draw {
   text: string;
   size: number;
   footer?: boolean;
+  color?: readonly [number, number, number];
 }
+const dragonIndicatorColors: Readonly<Record<string, readonly [number, number, number]>> = {
+  green: [0,255,0], blue: [0,170,255], red: [255,0,0],
+  yellow: [255,220,0], purple: [180,90,255], orange: [255,135,0],
+};
+const powerupTags: Readonly<Record<string, string>> = {
+  thunder_potion:'THR', pink_candy: 'RNG', blue_candy: 'SPD', yellow_candy: 'RAP', shoes: 'RUN',
+  clock: 'TIM', dynamite: 'BOM', orange_parasol: 'DEF', red_parasol: 'DEF',
+  purple_parasol: 'DEF', crystal_ring: 'PTS', amethyst_ring: 'PTS', ruby_ring: 'PTS',
+};
 const image = (
   name: string,
   tick: number,
@@ -87,7 +107,7 @@ export function fittedItemImage(name: string, tick: number, x: number, y: number
   draw.y += (size - draw.h) / 2;
   return draw;
 }
-const label = (text: string, x: number, y: number, size: number): Draw => ({
+const label = (text: string, x: number, y: number, size: number, color?: readonly [number, number, number]): Draw => ({
   image: "",
   x,
   y,
@@ -96,14 +116,39 @@ const label = (text: string, x: number, y: number, size: number): Draw => ({
   flip: false,
   text,
   size,
+  color,
 });
 export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
   const out: Draw[] = [];
-  for (const i of g.Items) {
-    if (i.Age > 600 && i.Age % 12 < 6) continue;
-    out.push(fittedItemImage(i.Power || `food/${i.Food}`, 0, i.X, i.Y + 48, 32));
+  const skinAt = (index: number) => g.Party
+    ? (isDragonSkin(g.Players[index]?.Skin) ? g.Players[index]!.Skin! : dragonSkins[index % dragonSkins.length]!)
+    : index === 1 ? 'blue' : avatar;
+  const entranceY = (target: number, index: number) => {
+    if (g.Party?.Phase !== 'prepare') return target;
+    const t = Math.max(0, Math.min(1, (partyPrepareTicks - g.Party.Timer - index % 6 * 5) / 60));
+    return -48 + (target + 48) * (1 - (1 - t) * (1 - t));
+  };
+  if (g.Party) {
+    for (const spawn of g.Party.Telegraphs ?? []) {
+      out.push(image('bubble-warning', spawn.Ticks, spawn.X, spawn.Y + 48, 44));
+      out.push(label('!', spawn.X + 16, spawn.Y + 38, 16));
+    }
+    const boss = g.Party.Boss;
+    if (boss) {
+      const captured=boss.Mode==='captured', y=entranceY(boss.Y+48,0);
+      if(captured || !boss.Invulnerable || boss.Tick%4<2)
+        out.push(image(captured?'boss/captured':boss.Mode==='windup'?'boss/attack':'boss/move',g.Party.Phase==='prepare'?g.Tick:boss.Tick,boss.X,y,96,96,boss.Dir));
+      if(boss.Mode==='windup')out.push(label('!',boss.X+42,Math.max(68,boss.Y+32),20,[255,220,45]));
+    }
   }
-  for (const e of g.Enemies) {
+  for (const i of g.Items) {
+    if (i.Power!=='thunder_potion' && i.Age > 600 && i.Age % 12 < 6) continue;
+    out.push(fittedItemImage((i.Power==='thunder_potion'?'thunder-bubble':i.Power) || `food/${i.Food}`, 0, i.X, i.Y + 48, 32));
+    if (g.Party && i.Power)
+      out.push(label(powerupTags[i.Power] ?? 'PWR', Math.max(8, Math.min(728, i.X + 1)), Math.max(66, i.Y + 34), 10, [100,255,130]));
+  }
+  for (let index = 0; index < g.Enemies.length; index++) {
+    const e = g.Enemies[index]!;
     if (
       e.State === EnemyState.Trapped ||
       (e.State === EnemyState.Defeated && e.DeadTicks === 0)
@@ -114,10 +159,10 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
       state = e.Angry ? "shoot-angry" : "shoot";
     if (e.State === EnemyState.Defeated || e.State === EnemyState.Carried)
       state = "dead";
-    out.push(image(e.Kind + "/" + state, e.Age, e.X, e.Y + 48, 48, 48, e.Dir));
+    out.push(image(e.Kind + "/" + state, g.Party?.Phase === 'prepare' ? g.Tick + index * 3 : e.Age, e.X, entranceY(e.Y + 48, index), 48, 48, e.Dir));
   }
   for (const b of g.Bubbles) {
-    const bubbleSkin = b.Shooter === 1 ? 'blue' : avatar;
+    const bubbleSkin = skinAt(b.Shooter ?? 0);
     let name = bubbleSkin === 'green' ? 'bubble' : `${bubbleSkin}/bubble`,
       tick = Math.min(b.Age, 30);
     if (b.Element) {
@@ -146,7 +191,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
   for (const p of g.Projectiles)
     out.push(
       image(
-        p.Laser ? "laser" : "boulder",
+        p.Bottle ? "boss/bottle" : p.Laser ? "laser" : "boulder",
         p.Age,
         p.X,
         p.Y + 48,
@@ -168,8 +213,14 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
     );
   for (let index = 0; index < g.Players.length; index++) {
     const p = g.Players[index]!;
+    if (g.Party && p.Downed) {
+      out.push(image(`${skinAt(index)}/bubble`, 30, p.X - 6, p.Y + 42, 60));
+      out.push(image(`${skinAt(index)}/dead`, 0, p.X + 6, p.Y + 54, 36, 36, p.Dir));
+      out.push(label(`${index + 1} HELP`, Math.max(8, Math.min(680, p.X - 8)), Math.max(66, Math.min(650, p.Y + 36)), 10, dragonIndicatorColors[skinAt(index)]));
+      continue;
+    }
     if (p.Lives === 0 && p.Dead === 0) continue;
-    if (p.Invincible !== 0 && p.Invincible % 12 >= 6) continue;
+    if (p.Invincible !== 0 && p.Invincible % 12 >= 6 && (!g.Party || g.Party.Phase==='combat' || g.Party.Phase==='boss')) continue;
     let state = "walk",
       tick = p.WalkFrame;
     if (!p.Ground) {
@@ -186,7 +237,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
     }
     out.push(
       image(
-        (index === 1 ? "blue" : avatar) + "/" + state,
+        skinAt(index) + "/" + state,
         tick,
         p.X,
         p.Y + 48,
@@ -195,6 +246,8 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
         p.Dir,
       ),
     );
+    if (g.Party)
+      out.push(label(`${index + 1}${g.Companions?.[index] ? ' AI' : ''}`, Math.max(8, Math.min(712, p.X + 8)), Math.max(66, Math.min(650, p.Y + 40)), 10, dragonIndicatorColors[skinAt(index)]));
   }
   for (const p of g.Particles)
     out.push(
@@ -202,6 +255,15 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
         ? label(p.Text, p.X, p.Y + 48, 12)
         : image("pop", 0, p.X, p.Y + 48, 44),
     );
+  if (g.Party) {
+    for (let index = 0; index < 6; index++) {
+      const p = g.Party.Slots[index] === 'empty' ? undefined : g.Players[index], x = 12 + index * 126;
+      if (p) out.push({ ...image(`${skinAt(index)}/walk`, 0, x, 680, 28), footer: true });
+      out.push({ ...label(p ? `${index + 1}${g.Companions?.[index] ? ' AI' : ''}` : `${index + 1} --`, x + 34, 684, 11, dragonIndicatorColors[skinAt(index)]), footer: true });
+      if (p) out.push({ ...label(p.Downed ? 'HELP' : 'READY', x + 34, 702, 8, dragonIndicatorColors[skinAt(index)]), footer: true });
+    }
+    return out;
+  }
   out.push({ ...image(avatar + "/walk", 0, 20, 680, 28), footer: true });
   if (g.Players.length === 2)
     out.push({ ...image("blue/walk", 0, 126, 680, 28), footer: true });
@@ -267,10 +329,7 @@ export const ArcadePool = defineSystem({
   resources: [read(ArcadeControl)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
   run(ctx, q) {
-    const ui = desktopState.get(), g = session.get().game;
-    const needed = ui.screen === "editor"
-      ? 4 : 1 + (g?.Particles.filter((p) => p.Text).length ?? 0);
-    const plan = sceneDraws(ctx.step), pixelCount = orderedCapacity(plan.images);
+    const plan = sceneDraws(ctx.step), needed = plan.texts.length + 1, pixelCount = orderedCapacity(plan.images);
     let count = 0, pixels = 0;
     for (const c of q.chunks()) for (let i = 0; i < c.length; i++) {
       const slot = c.col(ArcadeVisual).slot[i]!;
@@ -344,6 +403,28 @@ function sceneDraws(tick: number) {
       solid("ink", 0, 672, 768, 48);
       actors.filter((d) => d.footer).forEach(push);
     }
+  } else if(ui.screen==='modes') {
+    for(let mode=0;mode<2;mode++) {
+      const x=mode===0?100:396,y=168,level=campaignPreviews[0]!;
+      solid('black',x+4,y+4,264,248);
+      for(let row=0;row<26;row++)for(let col=0;col<32;col++)if(level.tiles[row]![col])images.push({image:`reference/tiles/${mode===0?'01':'03'}`,x:x+24+col*7,y:y+34+row*7,w:7,h:7});
+      if(mode===0){
+        push(image('green/walk',0,x+40,y+184,40));push(image('blue/walk',0,x+192,y+184,40,40,1));
+        push(image('zenchan/walk',0,x+116,y+62,36));
+        push(image('bubble',30,x+98,y+122,32));push(image('bubble',30,x+154,y+100,24));
+      }else{
+        push(image('mighta/angry',0,x+92,y+58,88));
+        for(let i=0;i<6;i++)push(image(`${partyColors[i]}/walk`,0,x+28+i*36,y+188,32,32,i<3?1:-1));
+        push(image('fire-bubble',0,x+34,y+88,32));push(image('thunder-bubble',0,x+206,y+100,32));
+      }
+    }
+  } else if (ui.screen === 'party') {
+    for(let index=0;index<6;index++) {
+      const r=partyCardRect(index);
+      solid('panel',r.x+3,r.y+30,r.width-6,134);
+      const pose=ui.selected===index&&tick%180<35?tick%180:0;
+      push(image(`${partyColors[index]}/walk`,pose,r.x+56,r.y+42,104,104,1));
+    }
   } else if (ui.screen === "title" || ui.screen === "menu") {
     // Source rings are isolated on ink, never overlap, and precede the logo.
     for (let index = 0; index < 18; index++) {
@@ -359,9 +440,10 @@ function sceneDraws(tick: number) {
         h: size,
       });
     }
-    images.push({ image: "reference/logo", x: 209, y: 26, w: 350, h: 252 });
-    push(image("green/walk", tick, 80, 550, 96, 96, 1));
-    push(image("blue/walk", tick, 592, 550, 96, 96, -1));
+    // The current title logo is a UI icon; original atlas texels remain reference evidence.
+    for (let index = 0; index < partyColors.length; index++) {
+      push(image(`${partyColors[index]}/walk`, tick, 88 + index * 104, 600, 72, 72, index < 3 ? 1 : -1));
+    }
   } else if (ui.screen === "profiles")
     for (let index = 0; index < save.profiles.length; index++)
       push(
@@ -406,6 +488,7 @@ export const ArcadePresentation = defineSystem({
           : 0;
     const banner =
       !!g &&
+      !g.Party &&
       (ui.screen === "play" || ui.screen === "pause" || ui.screen === "result") &&
       (g.State === 0 ||
         g.State === 2 ||
@@ -480,9 +563,7 @@ export const ArcadePresentation = defineSystem({
           font: "reference/arcade",
           size: d.size,
           color: (() => {
-            let r = 255,
-              g = 220,
-              b = 106;
+            let [r, g, b] = d.color ?? [255, 220, 106];
             if (
               banner &&
               d.x >= 108 &&
