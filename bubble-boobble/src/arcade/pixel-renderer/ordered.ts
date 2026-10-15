@@ -1,6 +1,7 @@
 import { meshes } from "@gameengine/runtime";
 import pixels from "../../../assets/pixel-renderer/pixels.json";
 import { pixelRect } from "./index.ts";
+import {framePalette,paletteColor,sourceFrame} from './palettes.ts';
 import type { PixelQuad } from "./types.ts";
 interface Source {
   width: number;
@@ -21,9 +22,9 @@ export function orderedCapacity(draws: readonly PixelQuad[]): number {
   for (const q of draws) {
     if (!q.image || q.w <= 0 || q.h <= 0 || q.x >= 768 || q.y >= 720 || q.x + q.w <= 0 || q.y + q.h <= 0) continue;
     count++;
-    const partial = partialTexels[q.image];
+    const key = sourceFrame(q.image), partial = partialTexels[key];
     if (partial) {
-      const source = sources[q.image]!;
+      const source = sources[key]!;
       count += partial * Math.ceil(q.w / source.width) * Math.ceil(q.h / source.height);
     }
   }
@@ -45,15 +46,16 @@ function sample(q: PixelQuad, x: number, y: number): number {
   if (q.image === "solid/black") return black;
   if (q.image === "solid/ink") return ink;
   if (q.image === "solid/panel") return panel;
-  const s = sources[q.image];
+  const s = sources[sourceFrame(q.image)];
   if (!s) return 0;
   let sx = Math.floor(((x - q.x) * s.width) / q.w);
   if (q.flip) sx = s.width - 1 - sx;
   const sy = Math.floor(((y - q.y) * s.height) / q.h),
     at = (sy * s.width + sx) * 4,
     p = s.pixels;
-  return (
-    (p[at]! | (p[at + 1]! << 8) | (p[at + 2]! << 16) | (p[at + 3]! << 24)) >>> 0
+  return paletteColor(
+    (p[at]! | (p[at + 1]! << 8) | (p[at + 2]! << 16) | (p[at + 3]! << 24)) >>> 0,
+    framePalette(q.image),
   );
 }
 // Ebiten uploads premultiplied 8-bit texels. Each draw stores its rounded result
@@ -167,7 +169,7 @@ export function orderedArrays(
     const rect = pixelRect(q.image, q.flip),
       z = index * 0.001;
     quad(q.x, q.y, q.w, q.h, z, rect);
-    if (!sources[q.image]?.partial) continue;
+    if (!sources[sourceFrame(q.image)]?.partial) continue;
     const x0 = Math.max(0, Math.ceil(q.x - 0.5)),
       x1 = Math.min(768, Math.ceil(q.x + q.w - 0.5)),
       y0 = Math.max(0, Math.ceil(q.y - 0.5)),

@@ -3,6 +3,7 @@ import {DesktopIntent} from '../src/schema.gen';
 import {ResetArcade} from '../src/arcade/arcade.cheats';
 import {session} from '../src/arcade/session';
 import {desktopState} from '../src/desktop/state';
+import {desktopSaveState} from '../src/desktop/save';
 
 // One recorded route covers the distinct sprite/material/UI flows for warm-up.
 renderTest('desktop complete presentation flows',async({input,step,cheat,render,app})=>{
@@ -37,5 +38,14 @@ renderTest('desktop complete presentation flows',async({input,step,cheat,render,
  await cheat(ResetArcade,{scenario:'boundary-campaign-win'});await step(1);
  expect(session.get().game!.State).toBe(4);expect(desktopState.get().screen).toBe('result');shot('win');await step(3);
  app.background();await step(1);expect(desktopState.get().screen).toBe('result');app.foreground();
+ // Append palette flows after the original route so its17captures retain phase.
+ input.emit(DesktopIntent,{action:'settings'});await step(1);
+ for(const skin of ['red','yellow']){
+  for(let presses=0;desktopSaveState.get().profiles[desktopSaveState.get().active]!.avatar!==skin&&presses<4;presses++){
+   input.emit(DesktopIntent,{action:'avatar'});await step(1);
+  }
+  expect(desktopSaveState.get().profiles[desktopSaveState.get().active]!.avatar).toBe(skin);
+  shot(`skin-${skin}-settings`);await step(6);
+ }
  expect(peak).toBeLessThanOrEqual(14);
 },{scene:'scenes/arcade.scene.json'});
