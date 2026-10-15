@@ -1,0 +1,124 @@
+import { worldTest, renderTest, expect } from '@gameengine/test';
+import campaign from '../data/levels.json';
+import { createPartyGame, partyWaveBudget } from '../src/arcade/party';
+import { copyGame, stepGame } from '../src/arcade/game';
+import { hurtPlayer } from '../src/arcade/player';
+import { applyPower } from '../src/arcade/items';
+import { EnemyState, State, type PartySlot } from '../src/arcade/types';
+import { DesktopIntent } from '../src/schema.gen';
+import { session } from '../src/arcade/session';
+import { desktopState } from '../src/desktop/state';
+import { PartyReset, PartyClear, PartyVictory } from '../src/arcade/party.cheats';
+const idle={Move:0,Jump:false,Fire:false};
+const humans:PartySlot[]=Array.from({length:6},()=> 'human');
+function game(){return createPartyGame(campaign,42,humans);}
+function start(g:ReturnType<typeof game>){for(let i=0;i<180;i++)stepGame(g,[idle]);}
+worldTest('party waves six spawn areas and safe preparation',()=>{
+ const g=game();expect(g.Players.map(p=>p.X)).toEqual([72,192,312,432,552,672]);
+ expect(g.Players.map(p=>p.Skin)).toEqual(['green','blue','red','yellow','purple','orange']);
+ for(let i=0;i<179;i++)stepGame(g,[{Move:1,Jump:true,Fire:true}]);
+ expect(g.Party!.Phase).toBe('prepare');expect(g.Enemies.length).toBe(0);expect(g.Bubbles.length).toBe(0);
+ stepGame(g,idle);expect(g.Party!.Phase).toBe('combat');expect(g.Party!.ToSpawn).toBe(partyWaveBudget(1,6));
+ expect(partyWaveBudget(2,6)).toBeGreaterThan(partyWaveBudget(1,6));
+});
+worldTest('party waves entrance warning precedes bounded enemy spawns',()=>{
+ const g=game();start(g);stepGame(g,idle);expect(g.Party!.Telegraphs.length).toBe(1);expect(g.Enemies.length).toBe(0);
+ for(let i=0;i<59;i++)stepGame(g,idle);
+ expect(g.Enemies.length).toBe(1);expect(g.Enemies[0]!.X).toBeGreaterThan(0);
+ for(let i=0;i<2400;i++){for(const p of g.Players)p.Invincible=2;stepGame(g,idle);expect(g.Enemies.filter(e=>e.State!==EnemyState.Defeated).length+g.Party!.Telegraphs.length).toBeLessThanOrEqual(10);}
+});
+worldTest('party waves safe ten second rest preserves upgrades and recovers downed teammates',()=>{
+ const g=game();start(g);g.Players[0]!.Power.Shoes=true;g.Players[1]!.Invincible=0;hurtPlayer(g,1);
+ g.Players[1]!.X=650;g.Players[1]!.Y=100;
+ g.Party!.ToSpawn=0;g.Party!.Telegraphs=[];g.Enemies=[];
+ stepGame(g,idle);expect(g.Party!.Phase).toBe('rest');expect(g.Players[1]!.Downed).toBe(false);
+ expect(g.Projectiles.length).toBe(0);const wave=g.Party!.Wave;
+ for(let i=0;i<599;i++)stepGame(g,[{Move:0,Jump:false,Fire:true}]);
+ expect(g.Party!.Wave).toBe(wave);expect(g.Bubbles.length).toBe(0);
+ stepGame(g,idle);expect(g.Party!.Wave).toBe(wave+1);expect(g.Party!.Phase).toBe('combat');expect(g.Players[0]!.Power.Shoes).toBe(true);
+});
+worldTest('party waves contact rescue team wipe pause and campaign item isolation',()=>{
+ const g=game();start(g);const p=g.Players[1]!;p.Invincible=0;hurtPlayer(g,1);p.X=g.Players[0]!.X+40;p.Y=g.Players[0]!.Y;
+ stepGame(g,idle);expect(g.Players[1]!.Downed).toBe(false);expect(g.Players[1]!.Invincible).toBeGreaterThan(0);
+ const wave=g.Party!.Wave;applyPower(g,'purple_parasol',0);expect(g.Party!.Wave).toBe(wave);expect(g.State).toBe(State.Playing);
+ g.Sounds=[];g.Paused=true;const frozen=JSON.stringify(g);stepGame(g,idle);expect(JSON.stringify(g)).toBe(frozen);g.Paused=false;
+ for(let i=0;i<6;i++){g.Players[i]!.Invincible=0;hurtPlayer(g,i);}stepGame(g,idle);expect(g.State).toBe(State.GameOver);
+});
+worldTest('party waves snapshot isolation includes boss slots telegraphs and bots',()=>{
+ const g=game();start(g);stepGame(g,idle);const a=copyGame(g),b=copyGame(g);a.Party!.Slots[0]='ai';a.Party!.Telegraphs[0]!.Ticks=1;
+ expect(g.Party!.Slots[0]).toBe('human');expect(g.Party!.Telegraphs[0]!.Ticks).toBeGreaterThan(1);
+ for(let i=0;i<30;i++){stepGame(g,idle);stepGame(b,idle);}expect(JSON.stringify(g)).toBe(JSON.stringify(b));
+});
+worldTest('party waves boss windup vulnerability damage and victory',()=>{
+ const g=game();g.Party!.Wave=10;g.Party!.Timer=1;stepGame(g,idle);expect(g.Party!.Phase).toBe('boss');const boss=g.Party!.Boss!;
+ boss.Tick=88;stepGame(g,idle);expect(boss.Invulnerable).toBe(1);stepGame(g,idle);expect(boss.Invulnerable).toBe(0);expect(g.Projectiles.length).toBeGreaterThan(0);
+ boss.HP=1;boss.Tick=100;g.Projectiles=[];g.Enemies=[];g.Party!.Telegraphs=[];
+ Object.assign(g.Players[0]!,{X:260,Y:196,Dir:1,Ground:true,Cooldown:0,Invincible:100});
+ stepGame(g,[{Move:0,Jump:false,Fire:true}]);for(let tick=0;tick<30&&g.State!==State.Won;tick++)stepGame(g,idle);
+ expect(g.State).toBe(State.Won);
+});
+worldTest('party waves lobby starts restarts and leaves through engine intents',async({input,step})=>{
+ await step(3);input.emit(DesktopIntent,{action:'party'});await step(1);expect(desktopState.get().screen).toBe('party');
+ input.emit(DesktopIntent,{action:'start-party'});await step(1);expect(session.get().game!.Players.length).toBe(6);expect(session.get().game!.Party!.Slots.filter(s=>s==='ai').length).toBe(5);
+ input.emit(DesktopIntent,{action:'pause'});await step(1);const tick=session.get().game!.Tick;await step(10);expect(session.get().game!.Tick).toBe(tick);
+ input.emit(DesktopIntent,{action:'restart'});await step(1);expect(session.get().game!.Party!.Wave).toBe(1);expect(session.get().game!.Paused).toBe(false);
+ input.emit(DesktopIntent,{action:'leave'});await step(1);expect(session.get().active).toBe(false);expect(desktopState.get().screen).toBe('menu');
+},{scene:'scenes/arcade.scene.json'});
+worldTest('party recorded wave clear rest boss and results',async({cheat,step})=>{
+ await cheat(PartyReset,{wave:1,humans:6});await step(2);expect(session.get().game!.Party!.Phase).toBe('combat');
+ await cheat(PartyClear,{});await step(1);expect(session.get().game!.Party!.Phase).toBe('rest');
+ await step(600);expect(session.get().game!.Party!.Wave).toBe(2);
+ await cheat(PartyReset,{wave:10,humans:6});await step(2);expect(session.get().game!.Party!.Phase).toBe('boss');
+ await cheat(PartyVictory,{});await step(1);expect(desktopState.get().screen).toBe('result');expect(desktopState.get().won).toBe(true);
+},{scene:'scenes/arcade.scene.json'});
+renderTest('party wave lobby buttons fit desktop extremes and launch actual game',async({input,step,render,ui})=>{
+ await step(3);input.emit(DesktopIntent,{action:'party'});await step(1);
+ for(const [w,h] of [[768,720],[1680,720],[640,960]]){input.view(w!,h!,1);await step(1);render.stats({width:w!,height:h!});const buttons=ui.interactables();expect(buttons.length).toBe(8);for(const b of buttons){expect(b.rect.x>=0&&b.rect.y>=0&&b.rect.x+b.rect.width<=w!&&b.rect.y+b.rect.height<=h!).toBe(true);}}
+ input.view(768,720,1);await step(1);render.stats({width:768,height:720});render.expectScreenshot('lobby',{width:768,height:720});
+ const start=ui.interactables().find(b=>b.label==='START SURVIVAL')!;await ui.press(start.id!);await step(2);expect(session.get().game!.Party!.Wave).toBe(1);
+},{scene:'scenes/arcade.scene.json'});
+renderTest('party actual six dragon arena and rest HUD',async({cheat,step,input,render})=>{
+ input.view(768,720,1);await step(3);await cheat(PartyReset,{wave:1,humans:6});await step(12);expect(render.probe({width:768,height:720,points:[[1,49]]}).points[0]!.rgba.slice(0,3)).toEqual([244,106,252]);await render.expectScreenshot('six_dragons',{width:768,height:720});
+ await cheat(PartyClear,{});await step(2);await render.expectScreenshot('rest',{width:768,height:720});
+ await cheat(PartyReset,{wave:10,humans:6});await step(108);await render.expectScreenshot('boss',{width:768,height:720});
+},{scene:'scenes/arcade.scene.json'});
+
+declare const __gameengine_host:(op:string,arg:string)=>string;
+worldTest('party six actual controllers move separate humans and operate menus',async({cheat,step,input})=>{
+ await cheat(PartyReset,{wave:1,humans:6});await step(3);
+ const xs=session.get().game!.Players.map(p=>p.X);
+ __gameengine_host('test.input',JSON.stringify(Array.from({length:6},(_,pad)=>({type:'gamepadAxis',pad,axis:0,value:pad%2?-1:1}))));
+ await step(5);
+ const after=session.get().game!.Players.map(p=>p.X);
+ for(let i=0;i<6;i++)expect((after[i]!-xs[i]!)*(i%2?-1:1)).toBeGreaterThan(0);
+ __gameengine_host('test.input',JSON.stringify([{type:'gamepadButton',pad:5,button:6,down:true}]));await step(1);expect(desktopState.get().screen).toBe('pause');
+ const tick=session.get().game!.Tick;await step(4);expect(session.get().game!.Tick).toBe(tick);
+ __gameengine_host('test.input',JSON.stringify([{type:'gamepadButton',pad:5,button:0,down:true}]));await step(1);expect(desktopState.get().screen).toBe('play');
+ input.emit(DesktopIntent,{action:'leave'});await step(1);input.emit(DesktopIntent,{action:'party'});await step(1);
+ // Start on a previously bot-controlled pad joins that exact slot without starting the run.
+ __gameengine_host('test.input',JSON.stringify([{type:'gamepadButton',pad:5,button:6,down:false},{type:'gamepadButton',pad:5,button:6,down:true}]));await step(1);
+ expect(desktopState.get().partySlots[5]).toBe('human');expect(desktopState.get().screen).toBe('party');
+},{scene:'scenes/arcade.scene.json'});
+
+worldTest('party team setup switches humans bots and empty slots without restarting waves',async({input,step})=>{
+ await step(3);input.emit(DesktopIntent,{action:'start-party'});await step(2);await step(185);
+ const wave=session.get().game!.Party!.Wave;
+ input.emit(DesktopIntent,{action:'pause'});await step(1);input.emit(DesktopIntent,{action:'party'});await step(1);
+ expect(desktopState.get().partyEditing).toBe(true);
+ input.emit(DesktopIntent,{action:'party-slot:1'});await step(1); // AI -> empty
+ input.emit(DesktopIntent,{action:'party-slot:2'});await step(1);input.emit(DesktopIntent,{action:'party-slot:2'});await step(1); // AI -> empty -> human
+ input.emit(DesktopIntent,{action:'start-party'});await step(2);
+ const g=session.get().game!;
+ expect(g.Party!.Wave).toBe(wave);expect(g.Paused).toBe(false);expect(g.Party!.Slots[1]).toBe('empty');expect(g.Players[1]!.Lives).toBe(0);expect(g.Companions![1]).toBe(null);
+ expect(g.Party!.Slots[2]).toBe('human');expect(g.Companions![2]).toBe(null);
+},{scene:'scenes/arcade.scene.json'});
+
+worldTest('party five bots naturally clear a complete wave before the rest',()=>{
+ const g=createPartyGame(campaign,42);
+ for(let tick=0;tick<9000&&g.Party!.Phase!=='rest';tick++){
+   for(const p of g.Players)p.Invincible=2;
+   stepGame(g,idle);
+ }
+ expect(g.Party!.Phase).toBe('rest');expect(g.Party!.ToSpawn).toBe(0);expect(g.Party!.Telegraphs.length).toBe(0);expect(g.Enemies.length).toBe(0);
+ expect(g.Counters.Popped).toBeGreaterThan(0);
+});

@@ -62,6 +62,8 @@ export interface Powers {
   WalkPoints: number;
 }
 export interface Player extends Body {
+  Skin?: string;
+  Downed?: boolean;
   Lives: number;
   JumpBuffer: number;
   Coyote: number;
@@ -139,8 +141,24 @@ export interface Counters {
   Yellow: number;
   Walked: number;
 }
+export type PartySlot = 'human' | 'ai' | 'empty';
+export interface PartyBoss { X:number; Y:number; HP:number; MaxHP:number; Tick:number; Invulnerable:number }
+export interface PartyState {
+  Wave:number;
+  BossWave:number;
+  Phase:'prepare'|'combat'|'rest'|'boss';
+  Timer:number;
+  Slots:PartySlot[];
+  ToSpawn:number;
+  SpawnTick:number;
+  Spawned:number;
+  Telegraphs:{X:number;Y:number;Ticks:number}[];
+  Boss?:PartyBoss;
+}
 export interface GameState {
+  Party?: PartyState;
   Companion?: CompanionState;
+  Companions?: (CompanionState | null)[];
   PlayerBalance: PlayerBalance;
   // Authoritative locomotion tuning; angry enemies retain their original speed.
   NormalEnemySpeedScale: number;
@@ -189,7 +207,7 @@ export const powers = (): Powers => ({
   Ruby: false,
   WalkPoints: 0,
 });
-export const alive = (p: Player) => p.Lives > 0 && p.Dead === 0;
+export const alive = (p: Player) => p.Lives > 0 && p.Dead === 0 && !p.Downed;
 export const direction = (n: number) => (n < 0 ? -1 : 1);
 export const intersects = (
   x: number,

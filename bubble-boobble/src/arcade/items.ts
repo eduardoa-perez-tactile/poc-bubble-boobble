@@ -179,6 +179,11 @@ export function applyPower(g: GameState, power: string, player: number) {
   }
   addScore(g, points, g.Players[player]!.X, g.Players[player]!.Y);
   g.Sounds.push("item");
+  if (warp > 0 && g.Party) {
+    // Campaign skips become a team recovery reward in survival.
+    for (const p of g.Players) if (!p.Downed && p.Lives > 0) p.Invincible = Math.max(p.Invincible,180);
+    return false;
+  }
   if (warp > 0) {
     loadLevel(g, g.LevelIndex + warp);
     return true;

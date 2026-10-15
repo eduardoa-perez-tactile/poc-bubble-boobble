@@ -1,3 +1,4 @@
+import { stepParty, copyParty } from './party';
 import { companionInput } from './companion';
 import {
   type Enemy,
@@ -25,7 +26,7 @@ export function createGame(
   seed: number,
   count = 1,
 ): GameState {
-  if (count < 1 || count > 2) throw new Error("expected one or two players");
+  if (!Number.isInteger(count) || count < 1 || count > 6) throw new Error("expected one to six players");
   if (!levels.length) throw new Error("no levels supplied");
   for (const level of levels) validateLevel(level);
   const g: GameState = {
@@ -144,6 +145,7 @@ export function stepGame(g: GameState, inputs: Input[] | Input) {
   const ins = Array.isArray(inputs) ? inputs.slice() : [inputs];
   g.Sounds = [];
   if (g.Paused || g.State === State.GameOver || g.State === State.Won) return;
+  if (g.Party) { stepParty(g, ins); return; }
   g.Tick++;
   if (g.State === State.Ready) {
     g.Countdown--;
@@ -213,6 +215,7 @@ export function addScore(g: GameState, points: number, x: number, y: number, sho
   g.Score += points;
   if (points >= 100 || showSmallPoints && points > 0)
     g.Particles.push({ ...body(x, y), Text: String(points), Life: 45 });
+  if (g.Party) return;
   while (g.Score >= g.ExtraLifeAt) {
     for (let i = 0; i < g.Players.length; i++) {
       const p = g.Players[i]!;
@@ -275,9 +278,11 @@ export function canonicalState(source: GameState) {
   };
 }
 export function copyGame(g: GameState): GameState {
-  return {
+  const copied:GameState = {
     ...g,
-    ...(g.Companion ? { Companion: { ...g.Companion, Goal: g.Companion.Goal ? { ...g.Companion.Goal } : null } } : {}),
+    ...(g.Party ? { Party: copyParty(g) } : {}),
+    ...(g.Companions ? { Companions: g.Companions.map(ai => ai ? {...ai, Goal: ai.Goal ? {...ai.Goal} : null} : null) } : {}),
+    ...(g.Companion && !g.Companions ? { Companion: { ...g.Companion, Goal: g.Companion.Goal ? { ...g.Companion.Goal } : null } } : {}),
     NormalEnemySpeedScale: g.NormalEnemySpeedScale ?? 0.8,
     PlayerBalance: { ...productionPlayerBalance, ...g.PlayerBalance },
     Players: g.Players.map((p) => ({ ...p, Power: { ...p.Power } })),
@@ -291,6 +296,8 @@ export function copyGame(g: GameState): GameState {
     Counters: { ...g.Counters },
     Pending: g.Pending.slice(),
   };
+  if(copied.Companions && g.Companion)copied.Companion=copied.Companions[1]??undefined;
+  return copied;
 }
 export function movementStep(g: GameState, input: Input) {
   g.Sounds = [];

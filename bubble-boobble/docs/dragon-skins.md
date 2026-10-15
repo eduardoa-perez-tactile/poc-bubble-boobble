@@ -1,16 +1,20 @@
 # Dragon skins
 
-Settings → DRAGON cycles **green → blue → red → yellow**. Clicking or confirming
+Settings → DRAGON cycles **green → blue → red → yellow → purple → orange**. Clicking or confirming
 advances; keyboard Left reverses and Right advances. The preview and label update
 immediately. The choice belongs to the active profile and survives saving/reload;
 existing version-1 green/blue profiles keep their settings and statistics.
 
 The selected dragon appears in the profile list, settings preview, level editor,
 gameplay and life icon. Player one keeps the selected skin in solo and co-op;
-player two retains the existing blue dragon. Skins are cosmetic and do not alter
+player two retains the existing blue dragon. Party mode assigns each dragon its own skin; the six player numbers and AI markers
+identify teammates above their actors and in the footer. Downed dragons appear
+inside matching rescue bubbles. Prepare/rest phases mark the six starting areas.
+
+Skins are cosmetic and do not alter
 collision dimensions, movement, combat or scoring.
 
-Red and yellow reuse all 19 original green walk/jump/shoot/death frames through
+Red, yellow, purple and orange reuse all 19 original green walk/jump/shoot/death frames through
 virtual frame aliases. Exact palette swaps preserve transparency, black outlines,
 white eyes, pink details, original frame bounds and animation timing. Red uses a
 red body and the original yellow spines; yellow uses a warm yellow body and orange
@@ -35,6 +39,10 @@ rejection, real settings input, every animation frame, solo/co-op selection and
 palette rendering at gameplay/preview/icon sizes. The full presentation replay
 also visits red and yellow settings previews; its pipeline check requires both
 the selected labels and actual body-color pixels on every recorded GPU tier.
+
+Purple uses `[180,90,255]`; orange uses `[255,135,0]` with pale orange spines.
+Both reuse the original geometry and have matching two-shade bubble palettes.
+The six-color engine GPU probe checks rendered body pixels and matching shots.
 
 ## Matching shot colors
 

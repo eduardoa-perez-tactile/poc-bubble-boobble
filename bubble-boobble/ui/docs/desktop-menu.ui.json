@@ -41,7 +41,8 @@
         "dm_tagline",
         "dm_prompt_holder",
         "dm_status_panel",
-        "dm_status"
+        "dm_status",
+        "dm_party"
       ]
     },
     "dm_logo": {
@@ -428,6 +429,30 @@
         "fontSize": 12,
         "color": "#ffdc6a"
       }
+    },
+    "dm_party": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "party",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          218,
+          622
+        ],
+        "w": 332,
+        "h": 38
+      },
+      "props": {
+        "label": "WAVE SURVIVAL",
+        "selected": {
+          "property": "partySelected"
+        }
+      }
     }
   },
   "view": {
@@ -499,6 +524,9 @@
             },
             "dm_quit": {
               "hide": true
+            },
+            "dm_party": {
+              "hide": true
             }
           }
         }
@@ -513,6 +541,10 @@
       "default": ""
     },
     "showStatus": {
+      "type": "yesno",
+      "default": false
+    },
+    "partySelected": {
       "type": "yesno",
       "default": false
     }

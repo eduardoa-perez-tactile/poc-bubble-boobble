@@ -1,19 +1,11 @@
 {
   "red": {"id": 1, "sourceAnimation": "green", "targetAnimation": "red", "swaps": [{"from": [0, 255, 0], "to": [255, 0, 0]}]},
-  "yellow": {"id": 2, "sourceAnimation": "green", "targetAnimation": "yellow", "swaps": [
-    {"from": [0, 255, 0], "to": [255, 220, 0]},
-    {"from": [255, 255, 0], "to": [255, 119, 0]}
-  ]},
-  "bubbleBlue": {"id": 3, "sourceAnimation": "bubble", "targetAnimation": "blue/bubble", "swaps": [
-    {"from": [0, 255, 0], "to": [0, 170, 255]},
-    {"from": [0, 187, 0], "to": [0, 125, 187]}
-  ]},
-  "bubbleRed": {"id": 4, "sourceAnimation": "bubble", "targetAnimation": "red/bubble", "swaps": [
-    {"from": [0, 255, 0], "to": [255, 0, 0]},
-    {"from": [0, 187, 0], "to": [187, 0, 0]}
-  ]},
-  "bubbleYellow": {"id": 5, "sourceAnimation": "bubble", "targetAnimation": "yellow/bubble", "swaps": [
-    {"from": [0, 255, 0], "to": [255, 220, 0]},
-    {"from": [0, 187, 0], "to": [187, 161, 0]}
-  ]}
+  "yellow": {"id": 2, "sourceAnimation": "green", "targetAnimation": "yellow", "swaps": [{"from": [0, 255, 0], "to": [255, 220, 0]}, {"from": [255, 255, 0], "to": [255, 119, 0]}]},
+  "bubbleBlue": {"id": 3, "sourceAnimation": "bubble", "targetAnimation": "blue/bubble", "swaps": [{"from": [0, 255, 0], "to": [0, 170, 255]}, {"from": [0, 187, 0], "to": [0, 125, 187]}]},
+  "bubbleRed": {"id": 4, "sourceAnimation": "bubble", "targetAnimation": "red/bubble", "swaps": [{"from": [0, 255, 0], "to": [255, 0, 0]}, {"from": [0, 187, 0], "to": [187, 0, 0]}]},
+  "bubbleYellow": {"id": 5, "sourceAnimation": "bubble", "targetAnimation": "yellow/bubble", "swaps": [{"from": [0, 255, 0], "to": [255, 220, 0]}, {"from": [0, 187, 0], "to": [187, 161, 0]}]},
+  "purple": {"id": 6, "sourceAnimation": "green", "targetAnimation": "purple", "swaps": [{"from": [0, 255, 0], "to": [180, 90, 255]}]},
+  "orange": {"id": 7, "sourceAnimation": "green", "targetAnimation": "orange", "swaps": [{"from": [0, 255, 0], "to": [255, 135, 0]}, {"from": [255, 255, 0], "to": [255, 220, 110]}]},
+  "bubblePurple": {"id": 8, "sourceAnimation": "bubble", "targetAnimation": "purple/bubble", "swaps": [{"from": [0, 255, 0], "to": [180, 90, 255]}, {"from": [0, 187, 0], "to": [132, 66, 187]}]},
+  "bubbleOrange": {"id": 9, "sourceAnimation": "bubble", "targetAnimation": "orange/bubble", "swaps": [{"from": [0, 255, 0], "to": [255, 135, 0]}, {"from": [0, 187, 0], "to": [187, 99, 0]}]}
 }

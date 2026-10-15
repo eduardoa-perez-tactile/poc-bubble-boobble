@@ -1,3 +1,7 @@
+import { partyPads, reducePartyPadInput, readPartyAction, applyPartyAction } from './party-input';
+import { createPartyGame } from './party';
+import { respawn } from './player';
+import { resetPartyPads } from './party-input';
 import { enableCompanion } from './companion';
 import { ActionState, WorldView, defineSystem, query, read, write } from '@gameengine/runtime';
 import { ArcadeControl, ArcadeInput } from '../schema.gen.ts';
@@ -16,11 +20,23 @@ export const ArcadeStep=defineSystem({
     let handledPauseRequest=false;
     if(request.sequence!==control.requestSequence){
       ctx.setField(ArcadeControl,'requestSequence',request.sequence);
-      if(request.action==='start'||request.action==='playtest'){
+      if(request.action==='start'||request.action==='party'||request.action==='playtest'){
         const custom=request.action==='playtest'&&request.customLevel;
-        const game=createGame(custom?[custom]:(campaign as Level[]),1,request.players);
-        if(request.mode==='ai')enableCompanion(game);
-        game.Custom=!!custom;current={active:true,mode:custom?'custom':'campaign',game};session.set(current);
+        const game=request.action==='party'?createPartyGame(campaign as Level[],1,request.partySlots):createGame(custom?[custom]:(campaign as Level[]),1,request.players);
+        if(!game.Party&&request.mode==='ai')enableCompanion(game);
+        game.Custom=!!custom;current={active:true,mode:request.action==='party'?'party':custom?'custom':'campaign',game};session.set(current);
+      } else if(request.action==='party-controls'&&current.game?.Party){
+        const game=copyGame(current.game),slots=request.partySlots!;
+        for(let i=0;i<6;i++){
+          const previous=game.Party!.Slots[i];
+          if(slots[i]==='empty'){game.Players[i]!.Lives=0;game.Players[i]!.Downed=false;}
+          else if(previous==='empty'){game.Players[i]!.Lives=1;respawn(game,i);}
+          game.Companions![i]=null;
+          if(slots[i]==='ai')enableCompanion(game,i);
+        }
+        game.Party!.Slots=slots.slice();game.Paused=false;
+        if(game.Companion)game.Companion=game.Companions![1]??undefined;
+        resetPartyPads();current={...current,game};session.set(current);
       } else if(request.action==='quit'||request.action==='exit'){current={...current,active:false};session.set(current);}
       else if(current.game&&(request.action==='pause'||request.action==='resume')){
         handledPauseRequest=true;
@@ -29,10 +45,16 @@ export const ArcadeStep=defineSystem({
     }
     if(control.skip){ctx.setField(ArcadeControl,'skip',false);return;}
     if(!current.active||!current.game)return;
-    const inputs:Input[]=Array.from({length:current.game.Players.length},()=>({Move:0,Jump:false,Fire:false}));
+    const inputs:Input[]=current.game.Party?reducePartyPadInput(partyPads.get().pads,[]).inputs:Array.from({length:current.game.Players.length},()=>({Move:0,Jump:false,Fire:false}));
     let pause=false;
     for(const c of q.chunks())for(let i=0;i<c.length;i++){
       const a=c.col(ActionState);
+      if(current.game.Party){
+        const action=readPartyAction(c.get(ActionState,i).name,a.value[i]!,a.pressed[i]!==0,a.justPressed[i]!==0);
+        if(action)applyPartyAction(inputs,action);
+        if(c.is(ActionState,i,'name','pause'))pause=!!a.justPressed[i];
+        continue;
+      }
       if(c.is(ActionState,i,'name','move'))inputs[0]!.Move=a.value[i]!;
       if(c.is(ActionState,i,'name','jump'))inputs[0]!.Jump=a.pressed[i]!==0;
       if(c.is(ActionState,i,'name','fire'))inputs[0]!.Fire=a.pressed[i]!==0;
@@ -53,7 +75,7 @@ export const ArcadeStep=defineSystem({
     const oldState=game.State;
     stepGame(game,inputs);
     session.set({...current,game});
-    setDesktopRunScore(game.Score,game.Level.number);
-    if(game.State!==oldState&&(game.State===3||game.State===4))finishDesktopRun(game.State===4,game.Score,game.Level.number);
+    setDesktopRunScore(game.Score,game.Party?.Wave??game.Level.number);
+    if(game.State!==oldState&&(game.State===3||game.State===4))finishDesktopRun(game.State===4,game.Score,game.Party?.Wave??game.Level.number);
   },
 });

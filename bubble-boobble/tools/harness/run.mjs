@@ -159,6 +159,8 @@ async function openEditor() {
 }
 // The installed replay CLI drops the test's recorded scene. Supply it to the host.
 const replays = [
+  {path:'tests/replays/party_recorded_wave_clear_rest_boss_and_results.greplay',scene:'scenes/arcade.scene.json',filter:'party recorded wave clear rest boss and results'},
+  {path:'tests/replays/party_six_actual_controllers_move_separate_humans_and_operate_menus.greplay',scene:'scenes/arcade.scene.json',filter:'party six actual controllers move separate humans and operate menus'},
   { path: 'tests/replays/harness_reset_and_tap.greplay', scene: 'scenes/main.scene.json', filter: 'harness reset and tap' },
   { path: 'tests/replays/movement_physical_keyboard_hold_release_and_jump.greplay', scene: 'scenes/round1.scene.json', filter: 'movement physical keyboard hold release and jump' },
   { path: 'tests/replays/arcade_engine_input_full_go_parity_reference_round1_smoke.greplay', scene: 'scenes/arcade.scene.json', filter: 'arcade engine input full Go parity reference-round1-smoke' },

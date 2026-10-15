@@ -1,3 +1,6 @@
+import { updatePartyPads } from '../arcade/party-input';
+import { defaultPartySlots } from '../arcade/party-config';
+import type { PartySlot } from '../arcade/types';
 import { defineDoc, defineSystem, query, read, ActionState, TextInput, PointerHover, PointerDown, KeyEvent } from '@gameengine/runtime';
 import type { DocHandle, DocValue } from '@gameengine/runtime';
 import { DesktopIntent, ArcadeControl } from '../schema.gen.ts';
@@ -9,15 +12,15 @@ import { desktopButtonRect } from './layout.ts';
 import { getDesktopButtons } from './model.ts';
 const campaign=campaignData as Level[];
 export type PlayMode='solo'|'ai'|'human';
-export type DesktopScreen='title'|'menu'|'profiles'|'new-profile'|'settings'|'scores'|'help'|'credits'|'editor'|'play'|'pause'|'result';
-export interface DesktopState {screen:DesktopScreen;confirmKeys:number;playMode:PlayMode;name:string;status:string;statusStartedStep:number;selected:number;custom:boolean;recorded:boolean;won:boolean;score:number;round:number;tool:number;template:number;painting:boolean;deleteHeldAt:number;level:Level;history:Level[]}
-export const initialDesktopState:DesktopState={screen:'title',confirmKeys:0,playMode:'solo',name:'',status:'',statusStartedStep:-1,selected:0,custom:false,recorded:false,won:false,score:0,round:1,tool:0,template:0,painting:false,deleteHeldAt:-1,level:cloneLevel(campaign[0]!),history:[]};
+export type DesktopScreen='title'|'menu'|'profiles'|'new-profile'|'settings'|'scores'|'help'|'credits'|'editor'|'play'|'pause'|'result'|'party';
+export interface DesktopState {partySlots:PartySlot[];partyRun:boolean;partyEditing:boolean;screen:DesktopScreen;confirmKeys:number;playMode:PlayMode;name:string;status:string;statusStartedStep:number;selected:number;custom:boolean;recorded:boolean;won:boolean;score:number;round:number;tool:number;template:number;painting:boolean;deleteHeldAt:number;level:Level;history:Level[]}
+export const initialDesktopState:DesktopState={partySlots:defaultPartySlots.slice(),partyRun:false,partyEditing:false,screen:'title',confirmKeys:0,playMode:'solo',name:'',status:'',statusStartedStep:-1,selected:0,custom:false,recorded:false,won:false,score:0,round:1,tool:0,template:0,painting:false,deleteHeldAt:-1,level:cloneLevel(campaign[0]!),history:[]};
 export const desktopState=defineDoc('desktop-ui',initialDesktopState as unknown as DocValue) as unknown as DocHandle<DesktopState>;
-export interface DesktopGameRequest {sequence:number;action:string;mode:PlayMode;players:number;level:number;customLevel:Level|null}
+export interface DesktopGameRequest {sequence:number;action:string;mode:PlayMode;players:number;level:number;customLevel:Level|null;partySlots?:PartySlot[]}
 export const desktopGameRequest=defineDoc('desktop-game-request',{sequence:0,action:'',mode:'solo',players:1,level:1,customLevel:null} as DocValue) as unknown as DocHandle<DesktopGameRequest>;
-const request=(action:string,custom=false)=>desktopGameRequest.set({sequence:desktopGameRequest.get().sequence+1,action,mode:desktopState.get().playMode??'solo',players:desktopState.get().playMode==='ai'||desktopState.get().playMode==='human'?2:1,level:1,customLevel:custom?cloneLevel(desktopState.get().level):null});
+const request=(action:string,custom=false)=>desktopGameRequest.set({sequence:desktopGameRequest.get().sequence+1,action,mode:desktopState.get().playMode??'solo',partySlots:desktopState.get().partySlots?.slice(),players:desktopState.get().playMode==='ai'||desktopState.get().playMode==='human'?2:1,level:1,customLevel:custom?cloneLevel(desktopState.get().level):null});
 export function showDesktopPause(paused=true){const s=desktopState.get();desktopState.set({...s,screen:paused?'pause':'play',selected:0});}
-export function finishDesktopRun(won:boolean,score:number,round:number){const s=desktopState.get();if(!s.recorded&&!s.custom&&desktopSaveState.loaded())desktopSaveState.dispatch('record',{won,score,round},0);desktopState.set({...s,screen:'result',recorded:true,won,score,round,selected:0});}
+export function finishDesktopRun(won:boolean,score:number,round:number){const s=desktopState.get();if(!s.recorded&&!s.custom&&!s.partyRun&&desktopSaveState.loaded())desktopSaveState.dispatch('record',{won,score,round},0);desktopState.set({...s,screen:'result',recorded:true,won,score,round,selected:0});}
 export function setDesktopRunScore(score:number,round:number){const s=desktopState.get();if(s.score!==score||s.round!==round)desktopState.set({...s,score,round});}
 export function desktopAction(action:string,value='',index=0,x=0,y=0,now=0){
  let s=desktopState.get();const patch=(p:Partial<DesktopState>)=>{s={...s,...p,...(p.status!==undefined?{statusStartedStep:-1}:{})};desktopState.set(s);};
@@ -26,6 +29,11 @@ export function desktopAction(action:string,value='',index=0,x=0,y=0,now=0){
  if(action==='navigate'){navigate(value as DesktopScreen);return;}
  if(action==='select'){patch({selected:index});return;}
  if(action==='play-mode'){const modes:PlayMode[]=['solo','ai','human'];patch({playMode:modes[(modes.indexOf(s.playMode??'solo')+(index===-1?2:1))%3]!});return;}
+ if(action==='party'){patch({screen:'party',partyEditing:s.screen==='pause'&&s.partyRun,selected:6,status:''});return;}
+ if(action==='menu'&&s.screen==='party'&&s.partyEditing){patch({screen:'pause',partyEditing:false,selected:0,status:''});return;}
+ if(action.startsWith('party-slot:')){const slot=Number(action.slice(11));if(!Number.isInteger(slot)||slot<0||slot>=6)return;const slots=(s.partySlots??defaultPartySlots).slice();const options:PartySlot[]=['human','ai','empty'];slots[slot]=options[(options.indexOf(slots[slot]!)+1)%3]!;patch({partySlots:slots});return;}
+ if(action==='party-join'){if(index<0||index>=6)return;const slots=(s.partySlots??defaultPartySlots).slice();slots[index]='human';patch({partySlots:slots});return;}
+ if(action==='start-party'){if(!(s.partySlots??defaultPartySlots).includes('human')){patch({status:'SELECT AT LEAST ONE HUMAN'});return;}request(s.partyEditing?'party-controls':'party');patch({screen:'play',partyEditing:false,partyRun:true,custom:false,recorded:false,score:0,round:1,selected:0});return;}
  if(action==='name'){patch({name:value.slice(0,16)});return;}
  if(action==='space')action='char: ';
  if(action.startsWith('char:')){patch({name:(s.name+action.slice(5)).slice(0,16)});return;}
@@ -39,12 +47,13 @@ export function desktopAction(action:string,value='',index=0,x=0,y=0,now=0){
  if(action==='pause'){request('pause');showDesktopPause();return;}
  if(action==='resume'){request('resume');navigate('play');return;}
  if(action==='start'||action==='restart'||action==='test-level'){
+  if(action==='restart'&&s.partyRun){desktopAction('start-party');return;}
   const custom=action==='test-level'||action==='restart'&&s.custom;
   if(custom){const error=validateLevel(s.level);if(error){patch({status:error});return;}}
   if(action==='restart'&&!s.recorded&&!s.custom&&desktopSaveState.loaded())desktopSaveState.dispatch('record',{won:false,score:s.score,round:s.round},now);
-  request(custom?'playtest':'start',custom);patch({screen:'play',custom,recorded:false,score:0,round:1,selected:0});return;
+  request(custom?'playtest':'start',custom);patch({screen:'play',partyRun:false,custom,recorded:false,score:0,round:1,selected:0});return;
  }
- if(action==='leave'){if(!s.recorded&&!s.custom&&desktopSaveState.loaded())desktopSaveState.dispatch('record',{won:false,score:s.score,round:s.round},now);request('quit');navigate(s.custom?'editor':'menu');return;}
+ if(action==='leave'){if(!s.recorded&&!s.custom&&!s.partyRun&&desktopSaveState.loaded())desktopSaveState.dispatch('record',{won:false,score:s.score,round:s.round},now);request('quit');navigate(s.custom?'editor':'menu');return;}
  if(action==='quit'){request('exit');return;}
  if(action==='template-prev'||action==='template-next'){patch({template:(s.template+(action==='template-prev'?24:1))%25});return;}
  if(action==='template'){remember();patch({level:cloneLevel(campaign[s.template]!),status:'ROUND COPIED'});return;}
@@ -60,6 +69,10 @@ export function desktopAction(action:string,value='',index=0,x=0,y=0,now=0){
 }
 export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(ArcadeControl)],query:query(read(ActionState)),events:[DesktopIntent,TextInput,PointerHover,PointerDown,KeyEvent],run(ctx,q){
  if(!ctx.get(ArcadeControl).active)return;
+ const pads=updatePartyPads(ctx.input);
+ const padScreen=desktopState.get().screen;
+ if(padScreen==='party')for(const slot of pads.joinedSlots)desktopAction('party-join','',slot);
+ else if(pads.pause&&desktopState.get().partyRun&&(padScreen==='play'||padScreen==='pause'))desktopAction(padScreen==='pause'?'resume':'pause');
  const status=desktopState.get();if(status.status){if(status.statusStartedStep<0)desktopState.set({...status,statusStartedStep:ctx.step});else if(ctx.step-status.statusStartedStep>=300)desktopState.set({...status,status:'',statusStartedStep:-1});}
  if(desktopState.get().screen==='title'&&ctx.events.count(PointerDown))desktopAction('menu');
  for(const pointer of ctx.events.read(PointerHover)){const s=desktopState.get(),p=desktopSaveState.get(),buttons=getDesktopButtons(s,p);for(let i=0;i<buttons.length;i++){const r=desktopButtonRect(s,p,i);if(r&&pointer.world[0]>=r.x&&pointer.world[0]<r.x+r.width&&720-pointer.world[1]>=r.y&&720-pointer.world[1]<r.y+r.height&&s.selected!==i){desktopAction('select','',i);break;}}}
@@ -67,7 +80,14 @@ export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(Ar
  for(const c of q.chunks())for(let i=0;i<c.length;i++)if(c.is(ActionState,i,'name','fullscreen')&&c.col(ActionState).justPressed[i])desktopAction('fullscreen','',0,0,0,ctx.time);
  // ActionState reflects the final held state, so a down/up pair within one step can lose justPressed.
  // Keep a recorded-key latch in document state, both for short taps and native repeat suppression.
- let confirm=false,profileConfirm=false;
+ let confirm=pads.menuConfirm,profileConfirm=pads.menuConfirm;
+ const menuState=desktopState.get();
+ if(menuState.screen!=='play'){
+   const buttons=getDesktopButtons(menuState,desktopSaveState.get());
+   if(pads.menuYEdge&&buttons.length)desktopAction('select','',(menuState.selected+pads.menuYEdge+buttons.length)%buttons.length);
+   if(pads.menuXEdge&&(menuState.screen==='settings'||menuState.screen==='party')){const b=buttons[desktopState.get().selected];if(b)desktopAction(b.key,'',pads.menuXEdge);}
+   if(pads.menuBack)desktopAction(menuState.screen==='pause'?'resume':menuState.screen==='new-profile'?'profiles':'menu');
+ }
  let s=desktopState.get(),held=s.confirmKeys??0;
  for(const e of ctx.events.read(KeyEvent)){
   const bit=e.code===38?1:e.code===37?2:0;if(!bit)continue;

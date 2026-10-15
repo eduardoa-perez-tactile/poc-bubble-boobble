@@ -175,7 +175,8 @@
         ],
         "fontSize": 10,
         "color": "#ff6cb1"
-      }
+      },
+      "property": "highTitle"
     },
     "dh_high": {
       "type": "label",
@@ -456,6 +457,29 @@
           }
         }
       }
+    },
+    "party": {
+      "type": "yesno",
+      "default": false,
+      "poses": {
+        "yes": {
+          "set": {
+            "dh_lives": {
+              "hide": true
+            },
+            "dh_enemies": {
+              "hide": true
+            },
+            "dh_footer": {
+              "hide": true
+            }
+          }
+        }
+      }
+    },
+    "highTitle": {
+      "type": "text",
+      "default": "HIGH SCORE"
     }
   },
   "transition": {

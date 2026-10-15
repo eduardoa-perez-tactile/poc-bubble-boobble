@@ -1,0 +1,18 @@
+import { defineCheat } from '@gameengine/runtime/cheats';
+import { write } from '@gameengine/runtime';
+import { ArcadeControl } from '../schema.gen';
+import campaign from '../../data/levels.json';
+import { createPartyGame } from './party';
+import { copyGame } from './game';
+import { session } from './session';
+import { desktopGameRequest, desktopAction } from '../desktop/state';
+import { EnemyState, State } from './types';
+export const PartyReset=defineCheat({id:'party.reset',group:'Party',title:'Inspect wave survival',params:{wave:{type:'int',min:1,max:10,default:1},humans:{type:'int',min:1,max:6,default:1}},resources:[write(ArcadeControl)],run(ctx,{wave,humans}){
+  const g=createPartyGame(campaign,42,Array.from({length:6},(_,i)=>i<humans?'human':'ai'));
+  g.Party!.Wave=wave;g.Party!.Timer=1;
+  desktopAction('party');desktopAction('start-party');
+  session.set({active:true,mode:'party',game:g});ctx.setField(ArcadeControl,'skip',true);ctx.setField(ArcadeControl,'requestSequence',desktopGameRequest.get().sequence);
+}});
+export const PartyClear=defineCheat({id:'party.clear-wave',group:'Party',title:'Finish current enemy wave',run(){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Party!.ToSpawn=0;g.Party!.Telegraphs=[];for(const e of g.Enemies){e.State=EnemyState.Defeated;e.DeadTicks=0;}session.set({...current,game:g});}});
+export const PartyRescue=defineCheat({id:'party.rescue-setup',group:'Party',title:'Inspect teammate rescue',run(){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Players[1]!.Downed=true;g.Players[1]!.Lives=0;g.Players[1]!.Dead=0;g.Players[1]!.X=g.Players[0]!.X+110;g.Players[1]!.Y=g.Players[0]!.Y;session.set({...current,game:g});}});
+export const PartyVictory=defineCheat({id:'party.finish-boss',group:'Party',title:'Inspect boss victory result',run(){const current=session.get();if(!current.game?.Party?.Boss)return;const g=copyGame(current.game);g.Party!.Boss!.HP=0;g.State=State.Playing;session.set({...current,game:g});}});

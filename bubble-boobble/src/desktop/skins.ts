@@ -1,5 +1,5 @@
 // Stable saved names and settings order shared by profiles and presentation.
-export const dragonSkins = ['green', 'blue', 'red', 'yellow'] as const;
+export const dragonSkins = ['green', 'blue', 'red', 'yellow', 'purple', 'orange'] as const;
 export type DragonSkin = typeof dragonSkins[number];
 export function isDragonSkin(value: unknown): value is DragonSkin {
   return typeof value === 'string' && dragonSkins.some(skin => skin === value);

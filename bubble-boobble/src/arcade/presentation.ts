@@ -1,3 +1,4 @@
+import { partySpawnColumns } from './party-config';
 // Presentation follows pinned internal/app/render.go. It never changes match state.
 import {
   defineSystem,
@@ -16,6 +17,7 @@ import {
   WorldView,
 } from "@gameengine/runtime";
 import { ArcadeControl, ArcadeVisual } from "../schema.gen.ts";
+import { dragonSkins, isDragonSkin } from "../desktop/skins.ts";
 import { desktopState } from "../desktop/state.ts";
 import { desktopSaveState } from "../desktop/save.ts";
 import manifest from "../../data/sprites.json";
@@ -33,8 +35,10 @@ const PIXEL_MATERIAL = 'materials/pixel-ordered.mat.json';
 const animations: Readonly<Record<string, readonly string[]>> = manifest;
 const atlasRects: Readonly<Record<string, readonly number[]>> = atlas.rects;
 export function referenceFrame(name: string, tick: number): string {
-  const bubbleSkin = name === 'blue/bubble' ? 'blue' : name === 'red/bubble' ? 'red' : name === 'yellow/bubble' ? 'yellow' : '';
-  const skin = name.startsWith('red/') ? 'red' : name.startsWith('yellow/') ? 'yellow' : '';
+  if (name === 'green/bubble') name = 'bubble';
+  const prefix = name.split('/')[0]!;
+  const bubbleSkin = isDragonSkin(prefix) && name === `${prefix}/bubble` ? prefix : '';
+  const skin = ['red', 'yellow', 'purple', 'orange'].includes(prefix) ? prefix : '';
   const paths = animations[bubbleSkin ? 'bubble' : skin ? 'green/' + name.slice(skin.length + 1) : name];
   const path = paths?.[Math.floor(Math.max(0, tick) / 10) % paths.length];
   const frame = path
@@ -99,6 +103,28 @@ const label = (text: string, x: number, y: number, size: number): Draw => ({
 });
 export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
   const out: Draw[] = [];
+  const skinAt = (index: number) => g.Party
+    ? (isDragonSkin(g.Players[index]?.Skin) ? g.Players[index]!.Skin! : dragonSkins[index % dragonSkins.length]!)
+    : index === 1 ? 'blue' : avatar;
+  if (g.Party) {
+    if (g.Party.Phase === 'prepare' || g.Party.Phase === 'rest')
+      for (let index = 0; index < g.Players.length; index++) {
+        if (g.Party.Slots[index] === 'empty') continue;
+        const [x, y] = position({col: partySpawnColumns[index]!, row: 25}, 44);
+        out.push(image(`${skinAt(index)}/bubble`, 30, x, y + 80, 44, 12));
+        out.push(label(String(index + 1), x + 16, y + 90, 10));
+      }
+    for (const spawn of g.Party.Telegraphs ?? []) {
+      out.push(image('bubble-warning', spawn.Ticks, spawn.X, spawn.Y + 48, 44));
+      out.push(label('!', spawn.X + 16, spawn.Y + 38, 16));
+    }
+    const boss = g.Party.Boss;
+    if (boss && boss.HP > 0) {
+      if (!boss.Invulnerable || boss.Tick % 12 < 6)
+        out.push(image('mighta/angry', boss.Tick, boss.X, boss.Y + 48, 96));
+      out.push(label(`BOSS ${boss.HP}/${boss.MaxHP}`, Math.max(24, Math.min(560, boss.X - 24)), Math.max(68, boss.Y + 34), 12));
+    }
+  }
   for (const i of g.Items) {
     if (i.Age > 600 && i.Age % 12 < 6) continue;
     out.push(fittedItemImage(i.Power || `food/${i.Food}`, 0, i.X, i.Y + 48, 32));
@@ -117,7 +143,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
     out.push(image(e.Kind + "/" + state, e.Age, e.X, e.Y + 48, 48, 48, e.Dir));
   }
   for (const b of g.Bubbles) {
-    const bubbleSkin = b.Shooter === 1 ? 'blue' : avatar;
+    const bubbleSkin = skinAt(b.Shooter ?? 0);
     let name = bubbleSkin === 'green' ? 'bubble' : `${bubbleSkin}/bubble`,
       tick = Math.min(b.Age, 30);
     if (b.Element) {
@@ -168,8 +194,14 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
     );
   for (let index = 0; index < g.Players.length; index++) {
     const p = g.Players[index]!;
+    if (g.Party && p.Downed) {
+      out.push(image(`${skinAt(index)}/bubble`, 30, p.X - 6, p.Y + 42, 60));
+      out.push(image(`${skinAt(index)}/dead`, 0, p.X + 6, p.Y + 54, 36, 36, p.Dir));
+      out.push(label(`${index + 1} HELP`, Math.max(8, Math.min(680, p.X - 8)), Math.max(66, Math.min(650, p.Y + 36)), 10));
+      continue;
+    }
     if (p.Lives === 0 && p.Dead === 0) continue;
-    if (p.Invincible !== 0 && p.Invincible % 12 >= 6) continue;
+    if (p.Invincible !== 0 && p.Invincible % 12 >= 6 && (!g.Party || g.Party.Phase==='combat' || g.Party.Phase==='boss')) continue;
     let state = "walk",
       tick = p.WalkFrame;
     if (!p.Ground) {
@@ -186,7 +218,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
     }
     out.push(
       image(
-        (index === 1 ? "blue" : avatar) + "/" + state,
+        skinAt(index) + "/" + state,
         tick,
         p.X,
         p.Y + 48,
@@ -195,6 +227,8 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
         p.Dir,
       ),
     );
+    if (g.Party)
+      out.push(label(`${index + 1}${g.Companions?.[index] ? ' AI' : ''}`, Math.max(8, Math.min(712, p.X + 8)), Math.max(66, Math.min(650, p.Y + 40)), 10));
   }
   for (const p of g.Particles)
     out.push(
@@ -202,6 +236,15 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
         ? label(p.Text, p.X, p.Y + 48, 12)
         : image("pop", 0, p.X, p.Y + 48, 44),
     );
+  if (g.Party) {
+    for (let index = 0; index < 6; index++) {
+      const p = g.Party.Slots[index] === 'empty' ? undefined : g.Players[index], x = 12 + index * 126;
+      if (p) out.push({ ...image(`${skinAt(index)}/walk`, 0, x, 680, 28), footer: true });
+      out.push({ ...label(p ? `${index + 1}${g.Companions?.[index] ? ' AI' : ''}` : `${index + 1} --`, x + 34, 684, 11), footer: true });
+      if (p) out.push({ ...label(p.Downed ? 'HELP' : 'READY', x + 34, 702, 8), footer: true });
+    }
+    return out;
+  }
   out.push({ ...image(avatar + "/walk", 0, 20, 680, 28), footer: true });
   if (g.Players.length === 2)
     out.push({ ...image("blue/walk", 0, 126, 680, 28), footer: true });
@@ -267,10 +310,7 @@ export const ArcadePool = defineSystem({
   resources: [read(ArcadeControl)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
   run(ctx, q) {
-    const ui = desktopState.get(), g = session.get().game;
-    const needed = ui.screen === "editor"
-      ? 4 : 1 + (g?.Particles.filter((p) => p.Text).length ?? 0);
-    const plan = sceneDraws(ctx.step), pixelCount = orderedCapacity(plan.images);
+    const plan = sceneDraws(ctx.step), needed = plan.texts.length + 1, pixelCount = orderedCapacity(plan.images);
     let count = 0, pixels = 0;
     for (const c of q.chunks()) for (let i = 0; i < c.length; i++) {
       const slot = c.col(ArcadeVisual).slot[i]!;

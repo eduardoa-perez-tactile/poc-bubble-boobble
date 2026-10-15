@@ -1,3 +1,4 @@
+import { partySpawnColumns } from './party-config';
 import {
   ActorSize,
   EnemyState,
@@ -14,14 +15,16 @@ import { addScore } from "./game";
 import { productionPlayerBalance } from './balance';
 import { shootBubble } from "./bubbles";
 export function respawn(g: GameState, index: number) {
-  const c = { ...g.Level.player };
-  if (index === 1) c.col = 28 - c.col;
+  const c = g.Party ? {col:partySpawnColumns[index]!,row:25} : { ...g.Level.player };
+  if (!g.Party && index === 1) c.col = 28 - c.col;
   const [x, y] = spawnPosition(g, c),
     lives = g.Players[index]!.Lives;
   g.Players[index]! = {
     ...body(x, y),
+    ...(g.Players[index]!.Skin ? {Skin:g.Players[index]!.Skin} : {}),
+    ...(g.Party ? {Downed:false} : {}),
     Lives: lives,
-    Dir: 1 - index * 2,
+    Dir: index % 2 === 0 ? 1 : -1,
     Invincible: 210,
     JumpBuffer: 0,
     Coyote: 0,
@@ -79,6 +82,7 @@ export function updatePlayer(g: GameState, index: number, input: Input) {
 export function hurtPlayer(g: GameState, index: number) {
   const p = g.Players[index]!;
   if (!alive(p) || p.Invincible > 0) return;
+  if (g.Party) { p.Lives=0;p.Downed=true;p.Dead=0;p.Power=powers();g.Sounds.push('death');return; }
   p.Lives--;
   p.Dead = 90;
   p.Power = powers();

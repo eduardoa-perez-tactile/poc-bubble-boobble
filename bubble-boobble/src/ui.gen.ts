@@ -165,12 +165,14 @@ declare module '@gameengine/ui' {
      *   - `clear`: yesno, default false
      *   - `freeze`: text, default ""
      *   - `shade`: enum normal | pause | result, default "normal"
+     *   - `party`: yesno, default false
+     *   - `highTitle`: text, default "HIGH SCORE"
      * Events: none
      * Code areas: none
      * Refs: `banner`, `banner-title`, `banner-hint`
      */
     'desktop-hud': {
-      props: { name: string | { loc: string } | LocText; score: string | { loc: string } | LocText; round: string | { loc: string } | LocText; high: string | { loc: string } | LocText; lives: string | { loc: string } | LocText; enemies: string | { loc: string } | LocText; banner: string | { loc: string } | LocText; hint: string | { loc: string } | LocText; showBanner: boolean; clear: boolean; freeze: string | { loc: string } | LocText; shade: 'normal' | 'pause' | 'result' };
+      props: { name: string | { loc: string } | LocText; score: string | { loc: string } | LocText; round: string | { loc: string } | LocText; high: string | { loc: string } | LocText; lives: string | { loc: string } | LocText; enemies: string | { loc: string } | LocText; banner: string | { loc: string } | LocText; hint: string | { loc: string } | LocText; showBanner: boolean; clear: boolean; freeze: string | { loc: string } | LocText; shade: 'normal' | 'pause' | 'result'; party: boolean; highTitle: string | { loc: string } | LocText };
       areas: never;
       refs: 'banner' | 'banner-title' | 'banner-hint';
     };
@@ -220,14 +222,15 @@ declare module '@gameengine/ui' {
      *   - `promptVisible`: yesno, default true
      *   - `status`: text, default ""
      *   - `showStatus`: yesno, default false
-     * Events: `start`, `profiles`, `scores`, `editor`, `settings`, `help`, `credits`, `quit`
+     *   - `partySelected`: yesno, default false
+     * Events: `start`, `profiles`, `scores`, `editor`, `settings`, `help`, `credits`, `quit`, `party`
      * Code areas: `bubbles`, `dragons`
-     * Refs: `start`, `profiles`, `scores`, `editor`, `settings`, `help`, `credits`, `quit`
+     * Refs: `start`, `profiles`, `scores`, `editor`, `settings`, `help`, `credits`, `quit`, `party`
      */
     'desktop-menu': {
-      props: { subtitle: string | { loc: string } | LocText; startSelected: boolean; profilesSelected: boolean; scoresSelected: boolean; editorSelected: boolean; settingsSelected: boolean; helpSelected: boolean; creditsSelected: boolean; quitSelected: boolean; titleMode: boolean; promptVisible: boolean; status: string | { loc: string } | LocText; showStatus: boolean };
+      props: { subtitle: string | { loc: string } | LocText; startSelected: boolean; profilesSelected: boolean; scoresSelected: boolean; editorSelected: boolean; settingsSelected: boolean; helpSelected: boolean; creditsSelected: boolean; quitSelected: boolean; titleMode: boolean; promptVisible: boolean; status: string | { loc: string } | LocText; showStatus: boolean; partySelected: boolean };
       areas: 'bubbles' | 'dragons';
-      refs: 'start' | 'profiles' | 'scores' | 'editor' | 'settings' | 'help' | 'credits' | 'quit';
+      refs: 'start' | 'profiles' | 'scores' | 'editor' | 'settings' | 'help' | 'credits' | 'quit' | 'party';
     };
     /**
      * Desktop profile row: a widget (ui/docs/desktop-profile-row.ui.json)
@@ -299,6 +302,21 @@ declare module '@gameengine/ui' {
      */
     'desktop-small-button': {
       props: { label: string | { loc: string } | LocText; selected: boolean };
+      areas: never;
+      refs: never;
+    };
+    /**
+     * Wave survival team: a view, screen (ui/docs/party-lobby.ui.json)
+     *
+     * Properties:
+     *   - `buttons`: list of desktop-button
+     *   - `status`: text, default ""
+     * Events: `press (<item>)`
+     * Code areas: none
+     * Refs: none
+     */
+    'party-lobby': {
+      props: { buttons: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; status: string | { loc: string } | LocText };
       areas: never;
       refs: never;
     };
