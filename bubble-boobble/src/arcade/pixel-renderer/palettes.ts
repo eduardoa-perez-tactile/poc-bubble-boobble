@@ -1,15 +1,15 @@
 import animations from '../../../data/sprites.json';
 import palettes from '../../../data/dragon-palettes.json';
 
-// Immutable virtual frames share original green texels and all19 frame bounds.
+// Immutable virtual frames share the original dragon/bubble texels and bounds.
 // The U coordinate carries a palette index in whole2048-texel atlas widths;
 // the shader strips it before integer texel sampling. No extra texture/batch.
 const aliases: Readonly<Record<string, {source: string; palette: number}>> = Object.fromEntries(
-  Object.entries(palettes).flatMap(([skin, palette]) =>
-    Object.entries(animations).filter(([name]) => name.startsWith('green/'))
+  Object.values(palettes).flatMap(palette =>
+    Object.entries(animations).filter(([name]) => name === palette.sourceAnimation || name.startsWith(palette.sourceAnimation+'/'))
       .flatMap(([, paths]) => paths.map(path => {
         const source = 'reference/' + path.replace(/^sprites\//,'').replace(/\.png$/,'');
-        return [source.replace('reference/green/',`reference/${skin}/`),{source,palette:palette.id}];
+        return [source.replace(`reference/${palette.sourceAnimation}/`,`reference/${palette.targetAnimation}/`),{source,palette:palette.id}];
       }))),
 );
 const packedSwaps: Readonly<Record<number, Readonly<Record<number,number>>>> = Object.fromEntries(

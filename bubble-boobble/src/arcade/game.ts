@@ -233,6 +233,9 @@ export function updateParticles(g: GameState) {
 export function canonicalState(source: GameState) {
   // Go Snapshot copies slice elements, including embedded player powers.
   const g = copyGame(source);
+  // Go has no cosmetic shooter metadata. Strip only that field from the copied
+  // bubbles; the authoritative session retains it for deterministic rendering.
+  for (const b of g.Bubbles) delete b.Shooter;
   const nullable = <T>(v: T[]) => (v.length ? v : null);
   return {
     Snapshot: {

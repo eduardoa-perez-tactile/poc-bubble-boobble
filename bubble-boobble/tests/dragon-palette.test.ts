@@ -63,6 +63,38 @@ renderTest('dragon palette all original animation frames',async({input,world,ste
  render.expectScreenshot('all-frames',{width:768,height:720,threshold:0,maxCap:0});
 },{scene});
 
+worldTest('bubble palette preserves all shot frame geometry alpha and non-rim texels',()=>{
+ for(let frame=0;frame<4;frame++)for(const skin of ['blue','red','yellow']){
+  const original=referenceFrame('bubble',frame*10),alias=referenceFrame(`${skin}/bubble`,frame*10);
+  expect(alias).toBe(`reference/${skin}/bubble/${frame}`);
+  expect(sourceFrame(alias)).toBe(original);
+  expect(pixelRect(alias).slice(1)).toEqual(pixelRect(original).slice(1));
+  const source=sources[original]!,palette=framePalette(alias);
+  for(let i=0;i<source.pixels.length;i+=4){
+   const p=source.pixels,rgba=(p[i]!|p[i+1]!<<8|p[i+2]!<<16|p[i+3]!<<24)>>>0;
+   const color=paletteColor(rgba,palette);
+   expect(color>>>24).toBe(rgba>>>24);
+   if((rgba&0xffffff)!==0x00ff00&&(rgba&0xffffff)!==0x00bb00)expect(color).toBe(rgba);
+  }
+ }
+ // Blue dragons remain their original supplied artwork, not a virtual skin.
+ expect(framePalette('reference/blue/walk/0')).toBe(0);
+ expect(sourceFrame('reference/blue/walk/0')).toBe('reference/blue/walk/0');
+},{scene});
+
+renderTest('bubble palette all original shot frames',async({input,world,step,render})=>{
+ input.view(768,720,1);await step(2);prepare(world);
+ const draws:PixelQuad[]=[];
+ for(let frame=0;frame<4;frame++)for(let col=0;col<8;col++){
+  const skin=['green','blue','red','yellow'][col%4]!;
+  draws.push({image:referenceFrame(skin==='green'?'bubble':`${skin}/bubble`,frame*10),
+   x:24+col*88,y:64+frame*136,w:44,h:44,flip:col>=4});
+ }
+ show(world,draws);await step(2);
+ render.expectDrawCalls('<=',4,{width:768,height:720});
+ render.expectScreenshot('shot-frames',{width:768,height:720,threshold:0,maxCap:0});
+},{scene});
+
 renderTest('dragon palette production composed colors retain encoded source RGB',async({input,step,cheat,render})=>{
  input.view(768,720,1);await step(2);await cheat(SpriteSizing);await step(2);
  const draws=arcadeDrawPlan(session.get().game!),food=draws.find(d=>d.image==='reference/food/1/0')!,source=sources[food.image]!;

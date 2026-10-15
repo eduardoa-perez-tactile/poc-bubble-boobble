@@ -85,6 +85,8 @@ export interface Enemy extends Body {
   Phase: number;
 }
 export interface Bubble extends Body {
+  // Cosmetic shot ownership; absent on ambient bubbles and older sessions.
+  Shooter?: number;
   ID: number;
   Dir: number;
   Age: number;
