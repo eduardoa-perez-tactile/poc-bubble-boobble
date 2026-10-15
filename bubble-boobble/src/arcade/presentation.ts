@@ -425,8 +425,9 @@ function sceneDraws(tick: number) {
       });
     }
     // The current title logo is a UI icon; original atlas texels remain reference evidence.
-    push(image("green/walk", tick, 80, 550, 96, 96, 1));
-    push(image("blue/walk", tick, 592, 550, 96, 96, -1));
+    for (let index = 0; index < partyColors.length; index++) {
+      push(image(`${partyColors[index]}/walk`, tick, 88 + index * 104, 600, 72, 72, index < 3 ? 1 : -1));
+    }
   } else if (ui.screen === "profiles")
     for (let index = 0; index < save.profiles.length; index++)
       push(
