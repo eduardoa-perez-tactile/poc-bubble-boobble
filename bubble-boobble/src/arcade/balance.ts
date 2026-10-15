@@ -1,6 +1,9 @@
 // Numeric session configuration in pixels/tick, pixels, and simulation ticks.
 // Jump, gravity, bounce, capture, and powerup acquisition rules stay separate.
 export interface PlayerBalance {
+  // Historical Go-oracle runs explicitly retain their original ballistic motion.
+  ArcadeMotion?: boolean;
+  ArcadeScoring?: boolean;
   MoveSpeed: number;
   ShoesSpeed: number;
   ShoesTravelThreshold: number;
@@ -12,6 +15,8 @@ export interface PlayerBalance {
   YellowFireCooldown: number;
 }
 export const productionPlayerBalance: Readonly<PlayerBalance> = Object.freeze({
+  ArcadeMotion: true,
+  ArcadeScoring: true,
   MoveSpeed: 2.5,
   ShoesSpeed: 3.5,
   ShoesTravelThreshold: 9600,
@@ -25,6 +30,8 @@ export const productionPlayerBalance: Readonly<PlayerBalance> = Object.freeze({
 // Explicit original numeric configuration for source-oracle audits; gameplay
 // selects production defaults. There is no environment-dependent sim branch.
 export const referencePlayerBalance: Readonly<PlayerBalance> = Object.freeze({
+  ArcadeMotion: false,
+  ArcadeScoring: false,
   MoveSpeed: 3,
   ShoesSpeed: 5,
   ShoesTravelThreshold: 11520,

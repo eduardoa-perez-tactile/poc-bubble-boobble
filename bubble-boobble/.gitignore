@@ -1,5 +1,6 @@
 .gameengine/
 build/
+builds/
 node_modules/
 .agents/
 .claude/

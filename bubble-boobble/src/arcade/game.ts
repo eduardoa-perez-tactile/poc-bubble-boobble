@@ -1,3 +1,4 @@
+import { companionInput } from './companion';
 import {
   type Enemy,
   EnemyState,
@@ -140,7 +141,7 @@ export function loadLevel(g: GameState, index: number) {
   g.Countdown = TPS;
 }
 export function stepGame(g: GameState, inputs: Input[] | Input) {
-  const ins = Array.isArray(inputs) ? inputs : [inputs];
+  const ins = Array.isArray(inputs) ? inputs.slice() : [inputs];
   g.Sounds = [];
   if (g.Paused || g.State === State.GameOver || g.State === State.Won) return;
   g.Tick++;
@@ -149,6 +150,7 @@ export function stepGame(g: GameState, inputs: Input[] | Input) {
     if (g.Countdown <= 0) g.State = State.Playing;
     return;
   }
+  if (g.Companion) ins[1] = companionInput(g);
   for (let i = 0; i < g.Players.length; i++) {
     const p = g.Players[i]!;
     if (p.Dead > 0) {
@@ -207,9 +209,9 @@ export function defeat(g: GameState, e: Enemy, multiplier: number) {
   e.VY = -8;
   addScore(g, 100 * multiplier, e.X, e.Y);
 }
-export function addScore(g: GameState, points: number, x: number, y: number) {
+export function addScore(g: GameState, points: number, x: number, y: number, showSmallPoints = false) {
   g.Score += points;
-  if (points >= 100)
+  if (points >= 100 || showSmallPoints && points > 0)
     g.Particles.push({ ...body(x, y), Text: String(points), Life: 45 });
   while (g.Score >= g.ExtraLifeAt) {
     for (let i = 0; i < g.Players.length; i++) {
@@ -238,6 +240,8 @@ export function canonicalState(source: GameState) {
   // Go has no cosmetic shooter metadata. Strip only that field from the copied
   // bubbles; the authoritative session retains it for deterministic rendering.
   for (const b of g.Bubbles) delete b.Shooter;
+  // Arcade motion phases have no fields in the pinned Go snapshot.
+  for (const p of g.Players) { delete p.MotionTick; delete p.JumpStep; }
   const nullable = <T>(v: T[]) => (v.length ? v : null);
   return {
     Snapshot: {
@@ -273,6 +277,7 @@ export function canonicalState(source: GameState) {
 export function copyGame(g: GameState): GameState {
   return {
     ...g,
+    ...(g.Companion ? { Companion: { ...g.Companion, Goal: g.Companion.Goal ? { ...g.Companion.Goal } : null } } : {}),
     NormalEnemySpeedScale: g.NormalEnemySpeedScale ?? 0.8,
     PlayerBalance: { ...productionPlayerBalance, ...g.PlayerBalance },
     Players: g.Players.map((p) => ({ ...p, Power: { ...p.Power } })),

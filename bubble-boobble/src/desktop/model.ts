@@ -9,7 +9,7 @@ export function getDesktopButtons(s:DesktopState,p:DesktopSave):DesktopButton[]{
  case 'menu':return [button('start','START GAME'),button('profiles','PROFILES'),button('scores','HIGH SCORES'),button('editor','LEVEL EDITOR'),button('settings','SETTINGS'),button('help','HOW TO PLAY'),button('credits','CREDITS'),button('quit','QUIT')];
  case 'profiles':return [...p.profiles.map((v,i)=>button(`profile:${i}`,`${i===p.active?'* ':''}${v.name}`)),button('new-profile','NEW PROFILE'),button('menu','BACK')];
  case 'new-profile':return [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('').map(c=>button(`char:${c}`,c)),button('char: ','SPACE'),button('delete-char','DEL'),button('create-profile','CREATE PROFILE'),button('profiles','CANCEL')];
- case 'settings':return [button('avatar',`DRAGON: ${p.profiles[p.active]!.avatar.toUpperCase()}`),button('music',`MUSIC: ${p.settings.music}%`),button('sound',`SOUND: ${p.settings.sound}%`),button('fullscreen',`FULLSCREEN: ${p.settings.fullscreen?'ON':'OFF'}`),button('menu','BACK')];
+ case 'settings':return [button('avatar',`DRAGON: ${p.profiles[p.active]!.avatar.toUpperCase()}`),button('music',`MUSIC: ${p.settings.music}%`),button('sound',`SOUND: ${p.settings.sound}%`),button('fullscreen',`FULLSCREEN: ${p.settings.fullscreen?'ON':'OFF'}`),button('play-mode',`MODE: ${s.playMode==='ai'?'AI CO-OP':s.playMode==='human'?'HUMAN CO-OP':'SOLO'}`),button('menu','BACK')];
  case 'pause':return [button('resume','RESUME'),button('restart','RESTART'),button('leave',s.custom?'BACK TO EDITOR':'END RUN')];
  case 'result':return [button('restart','PLAY AGAIN'),button('leave',s.custom?'BACK TO EDITOR':'MAIN MENU')];
  case 'editor':return [button('template-prev','<'),button('template',`COPY ROUND ${String(s.template+1).padStart(2,'0')}`),button('template-next','>'),button('new','NEW'),button('undo','UNDO'),...editorTools.map((t,i)=>button(`tool:${i}`,`${i===s.tool?'> ':''}${t}`)),button('save-level','SAVE'),button('load-level','LOAD'),button('test-level','PLAY TEST'),button('menu','BACK'),button('element',`BUBBLES: ${s.level.special.toUpperCase()||'NONE'}`),button('theme',`TILE: ${String(s.level.number).padStart(2,'0')}`)];
@@ -17,10 +17,10 @@ export function getDesktopButtons(s:DesktopState,p:DesktopSave):DesktopButton[]{
  default:return [button('menu','BACK')];
  }
 }
-const help='MOVE — LEFT / RIGHT OR A / D\nJUMP — UP OR W - HOLD TO BOUNCE ON BUBBLES\nBLOW BUBBLES — SPACE OR CTRL - TOUCH A BUBBLE TO POP IT\nTAKE A BREAK — ESC TO PAUSE / F11 FULLSCREEN / M MUTE\nGAMEPAD — STICK OR D-PAD / A JUMP / X FIRE / START PAUSE\nBONUSES — CANDIES, SHOES, RINGS, PARASOLS, CLOCK, DYNAMITE\nELEMENTS — WATER FLOWS, LIGHTNING STRIKES, FIRE SPREADS\nSURVIVE — 3 LIVES / ENEMIES GET ANGRY AFTER 30 SECONDS';
+const help='MOVE — LEFT / RIGHT OR A / D\nJUMP — UP OR W - HOLD TO BOUNCE ON BUBBLES\nBLOW BUBBLES — SPACE OR CTRL - TOUCH A BUBBLE TO POP IT\nTAKE A BREAK — ESC TO PAUSE / F11 FULLSCREEN / M MUTE\nGAMEPAD — STICK OR D-PAD / A JUMP / X FIRE / START PAUSE\nBONUSES — CANDIES, SHOES, RINGS, PARASOLS, CLOCK, DYNAMITE\nELEMENTS — WATER FLOWS, LIGHTNING STRIKES, FIRE SPREADS\nCO-OP — CHOOSE MODE IN SETTINGS / PLAYER 2: J L MOVE, I JUMP, K FIRE\nSURVIVE — 3 LIVES / ENEMIES GET ANGRY AFTER 30 SECONDS';
 export function desktopModel(s:DesktopState,p:DesktopSave,frame=0,nativeFullscreen=false){
  const profile=p.profiles[p.active]!;let title='',subtitle='',body='';
- switch(s.screen){case 'title':case 'menu':subtitle=`${profile.name}  /  BEST ${String(profile.high_score).padStart(7,'0')}`;break;
+ switch(s.screen){case 'title':case 'menu':subtitle=`${profile.name}  /  BEST ${String(profile.high_score).padStart(7,'0')}${!s.playMode||s.playMode==='solo'?'':s.playMode==='ai'?'  /  AI CO-OP':'  /  HUMAN CO-OP'}`;break;
 
  case 'profiles':title='PLAYER PROFILES';subtitle='SELECT A PLAYER OR CREATE A NEW PROFILE';break;
  case 'new-profile':title='NEW PLAYER';subtitle='YOUR NAME: UP TO 16 LETTERS OR NUMBERS';body=s.name+'_';break;
