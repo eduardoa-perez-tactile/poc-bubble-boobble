@@ -12,6 +12,7 @@ import {
   intersects,
   position,
 } from "./types";
+import { productionPlayerBalance } from './balance';
 import { solid } from "./physics";
 import { addScore, defeat, loadLevel } from "./game";
 export function foodScore(level: number) {
@@ -52,8 +53,9 @@ export function checkPowerSpawns(g: GameState) {
       c[key] -= threshold;
       g.Pending.push(power);
     }
-  if (c.Walked >= Width * 15) {
-    c.Walked -= Width * 15;
+  const shoesTravelThreshold = g.PlayerBalance?.ShoesTravelThreshold ?? productionPlayerBalance.ShoesTravelThreshold;
+  if (c.Walked >= shoesTravelThreshold) {
+    c.Walked -= shoesTravelThreshold;
     g.Pending.push("shoes");
   }
   if (c.Water >= 15 && g.WaterStage === 0) {
