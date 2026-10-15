@@ -37,7 +37,7 @@ worldTest('party presentation six dragons and shots use independent identities',
   expect(arcadeDrawPlan(g,'yellow').find(d=>d.x===192&&d.y===604)!.image).toBe(referenceFrame('blue/walk',0));
 },{scene});
 worldTest('party presentation rescue boss telegraphs and text remain within canvas', () => {
-  const g=party(); g.Players[5]!.Downed=true; enableCompanion(g,4);
+  const g=party(); g.Party!.Phase='boss';g.Party!.Timer=0;g.Players[5]!.Downed=true; enableCompanion(g,4);
   g.Party!.Boss={X:320,Y:80,HP:12,MaxHP:20,Tick:0,Invulnerable:0};
   g.Party!.Telegraphs=[{X:120,Y:100,Ticks:20}];
   const draws=arcadeDrawPlan(g);

@@ -35,20 +35,20 @@ worldTest('party powerups randomize safe supported locations and reproduce from 
 worldTest('party powerup alert marks benefits only and classic keeps its authored spawn',()=>{
  const g=createPartyGame(campaign,42);g.Pending=['shoes'];checkPowerSpawns(g);
  const power=g.Items[0]!,draws=arcadeDrawPlan(g);
- const alert=draws.find(d=>d.text==='+ POWER UP')!;
+ const alert=draws.find(d=>d.text==='RUN')!;
  expect(!!alert).toBe(true);expect(alert.y).toBeLessThan(power.Y+48);expect(alert.color).toEqual([100,255,130]);
- power.Power='';power.Food=1;expect(arcadeDrawPlan(g).some(d=>d.text==='+ POWER UP')).toBe(false);
- g.Items=[];expect(arcadeDrawPlan(g).some(d=>d.text==='+ POWER UP')).toBe(false);
+ power.Power='';power.Food=1;expect(arcadeDrawPlan(g).some(d=>d.text==='RUN')).toBe(false);
+ g.Items=[];expect(arcadeDrawPlan(g).some(d=>d.text==='RUN')).toBe(false);
  const classic=createGame(campaign,42),rng=classic.RNG;classic.Pending=['shoes'];checkPowerSpawns(classic);
  const [x,y]=position(classic.Level.power_spawn,32);
  expect([classic.Items[0]!.X,classic.Items[0]!.Y]).toEqual([x,y]);expect(classic.RNG).toBe(rng);
- expect(arcadeDrawPlan(classic).some(d=>d.text==='+ POWER UP')).toBe(false);
+ expect(arcadeDrawPlan(classic).some(d=>d.text==='RUN')).toBe(false);
 });
 
 renderTest('party randomized powerup has a small green benefit alert in the arena',async({cheat,step,input,world,render})=>{
  input.view(768,720,1);await step(3);await cheat(PartyReset,{wave:1,humans:6,countdown:180});await cheat(PartyPower,{});await step(2);
  expect(session.get().game!.Items.some(i=>i.Power==='pink_candy')).toBe(true);
- const labels=world.all(Text2D).map(row=>row.value).filter(row=>row.visible&&row.text==='+ POWER UP');
+ const labels=world.all(Text2D).map(row=>row.value).filter(row=>row.visible&&row.text==='RNG');
  expect(labels.length).toBe(1);
  // The host reads Text2D colors back as linear RGBA.
  const color=labels[0]!.color as unknown as number[];

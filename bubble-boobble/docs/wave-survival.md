@@ -36,6 +36,12 @@ host exposes no recorded disconnect event, so automatic takeover is deferred.
   can move and jump into position; enemies and their attacks stay frozen, and
   players cannot fire or take contact damage. Ten safe rest seconds precede the
   next wave's preparation.
+- Enemies descend from above the arena over the first 1.5 seconds, then animate
+  in place until release. This is a visual entrance; their simulation formation
+  stays fixed throughout preparation. Dragons have no decorative spawn bubbles.
+- An opaque panel above the formation shows the next wave and seconds remaining,
+  distinguishes resting, enemy arrival and positioning, and flashes **GO!** at
+  the start of combat. It stays clear of the top row once enemies have landed.
 - Six spawn areas: tile columns 3, 8, 13, 18, 23, 28, floor row 25.
 - Enemy budget: `min(32, 3 + wave * 2 + (occupied slots - 1) * 2)`.
   Six occupied slots face 15 enemies together on wave one, rising by two per
@@ -45,15 +51,19 @@ host exposes no recorded disconnect event, so automatic takeover is deferred.
 - Wave one mixes Zen-Chan and Monsta; waves two through five add Banebou,
   Mighta, Pulpul, and Invader respectively. Every unlocked type appears in each
   wave. Movement speed stays at the current playable tuning.
-- Dragon numbers, AI labels, rescue labels, spawn markers and footer text use
+- Dragon numbers, AI labels, rescue labels and footer text use
   their dragon's green, blue, red, yellow, purple or orange identity color.
 - Power-ups choose a random clear, supported platform or floor location,
   avoiding dragons and enemies. The game's seeded RNG keeps drops reproducible
   in replays. If no spot is clear, the queued reward waits. A small green
-  **+ POWER UP** label appears above the item; food and classic mode are unchanged.
+  benefit tag appears above the item: **RNG** (range), **SPD** (bubble speed),
+  **RAP** (fire rate), **RUN** (movement), **TIM** (time stop), **BOM** (dynamite),
+  **DEF** (protection), or **PTS** (ring bonuses). Food and classic mode are unchanged.
 - A defeated dragon becomes a stationary rescue bubble. An active dragon within
   52 pixels on both axes rescues it. A full team knockout ends the run.
-- Rests clear hazards, recover downed dragons and disable firing. Survivors keep
+- Rests clear hazards and recover downed dragons. Players can shoot, move and
+  jump; practice bubbles move, pop and expire normally, then clear for the next
+  wave's entrance. Survivors keep
   upgrades; knocked-out dragons lose them. Bots collect rewards and then idle.
 - The campaign's hurry-up and level-skip behavior do not run in survival.
   Parasols grant temporary protection instead of skipping waves. Score-based
@@ -65,6 +75,9 @@ host exposes no recorded disconnect event, so automatic takeover is deferred.
   one-second entrance warning. Ordinary
   traveling bubbles damage it while exposed. Existing enlarged Mighta art is a
   placeholder; dedicated boss art and richer attack patterns are future work.
+- Party mode suppresses the original pop sound to avoid overlapping bursts from
+  six dragons. Shooting, pickups, rescues and the remaining cues still play;
+  classic mode retains its original pop sound.
 
 The run owns its wave, timer, slots, pending entrances and boss state. Resting
 and preparing are explicit phases; arena data is copied from the campaign.
@@ -74,11 +87,14 @@ sufficient for replay. The legacy solo/two-player modes remain available.
 
 ## Formation and power-up feedback validation — October 15, 2026
 
-- 207 V8 logic tests, 33 desktop render tests, and all 18 saved replays pass.
+- 211 V8 logic tests, 34 desktop render tests, and all 20 saved replays pass.
 - The 31-enemy wave also passes the mobile-tier, phone-low memory test, with
   preparation and combat below the 14-draw-call ceiling.
 - The randomized power-up and its benefit label pass the same mobile-tier,
   phone-low memory test and draw-call ceiling, plus a recorded engine replay.
+- Entrance, positioning, GO and rest-shooting captures cover the new panel;
+  its labels fit 768×720, 1680×720 and 640×960. A real six-pop engine test proves
+  party pop cues are suppressed while shots and classic pops remain audible.
 - Typechecking and asset/scene validation pass. No new build or cook was made.
 - Hermes remains unavailable; these checks do not establish device GPU timing.
 

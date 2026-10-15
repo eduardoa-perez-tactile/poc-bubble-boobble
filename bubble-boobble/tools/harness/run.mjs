@@ -159,6 +159,8 @@ async function openEditor() {
 }
 // The installed replay CLI drops the test's recorded scene. Supply it to the host.
 const replays = [
+  {path:'tests/replays/party_polish_readable_countdown_falling_enemies_and_rest_practice_shots.greplay',scene:'scenes/arcade.scene.json',filter:'party polish readable countdown falling enemies and rest practice shots',tier:'t1'},
+  {path:'tests/replays/party_polish_six_real_pops_are_silent_while_shots_and_classic_pops_remain_audible.greplay',scene:'scenes/arcade.scene.json',filter:'party polish six real pops are silent while shots and classic pops remain audible'},
   {path:'tests/replays/party_randomized_powerup_has_a_small_green_benefit_alert_in_the_arena.greplay',scene:'scenes/arcade.scene.json',filter:'party randomized powerup has a small green benefit alert in the arena',tier:'t1'},
   {path:'tests/replays/party_recorded_wave_clear_rest_boss_and_results.greplay',scene:'scenes/arcade.scene.json',filter:'party recorded wave clear rest boss and results'},
   {path:'tests/replays/party_six_actual_controllers_move_separate_humans_and_operate_menus.greplay',scene:'scenes/arcade.scene.json',filter:'party six actual controllers move separate humans and operate menus'},

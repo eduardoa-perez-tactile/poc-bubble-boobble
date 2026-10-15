@@ -51,7 +51,8 @@ worldTest('party waves safe ten second rest preserves upgrades and recovers down
  stepGame(g,idle);expect(g.Party!.Phase).toBe('rest');expect(g.Players[1]!.Downed).toBe(false);
  expect(g.Projectiles.length).toBe(0);const wave=g.Party!.Wave;
  for(let i=0;i<599;i++)stepGame(g,[{Move:0,Jump:false,Fire:true}]);
- expect(g.Party!.Wave).toBe(wave);expect(g.Bubbles.length).toBe(0);
+ expect(g.Party!.Wave).toBe(wave);expect(g.Bubbles.length).toBeGreaterThan(0);
+ expect(g.Bubbles.some(b=>b.Age>1)).toBe(true);expect(g.Counters.Blown).toBeGreaterThan(0);
  stepGame(g,idle);expect(g.Party!.Wave).toBe(wave+1);expect(g.Party!.Phase).toBe('prepare');expect(g.Enemies.length).toBe(partyWaveBudget(wave+1,6));expect(g.Players[0]!.Power.Shoes).toBe(true);
 });
 worldTest('party waves contact rescue team wipe pause and campaign item isolation',()=>{

@@ -128,7 +128,7 @@ export function stepParty(g:GameState,inputs:Input[]) {
   for(let i=0;i<6;i++) {
     if(p.Slots[i]==='empty')continue;
     if(p.Slots[i]==='ai')ins[i]=companionInput(g,i);
-    if(alive(g.Players[i]!))updatePlayer(g,i,p.Phase==='rest'||p.Phase==='prepare'?{...(ins[i]??idle),Fire:false}:ins[i]??idle);
+    if(alive(g.Players[i]!))updatePlayer(g,i,p.Phase==='prepare'?{...(ins[i]??idle),Fire:false}:ins[i]??idle);
   }
   if(p.Phase==='prepare') {
     rescues(g);p.Timer--;g.Countdown=p.Timer;
@@ -136,7 +136,7 @@ export function stepParty(g:GameState,inputs:Input[]) {
     return;
   }
   if(p.Phase==='rest') {
-    updateItems(g);g.Particles=g.Particles.filter(v=>{v.Y-=.6;return --v.Life>0;});p.Timer--;g.Countdown=p.Timer;
+    updateBubbles(g,ins);updateEffects(g);updateItems(g);g.Particles=g.Particles.filter(v=>{v.Y-=.6;return --v.Life>0;});p.Timer--;g.Countdown=p.Timer;
     if(p.Timer<=0){p.Wave++;preparePartyWave(g);}
     return;
   }

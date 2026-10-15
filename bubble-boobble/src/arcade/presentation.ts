@@ -1,7 +1,6 @@
 import campaignPreviews from '../../data/levels.json';
 import { partyCardRect } from '../desktop/layout';
 import { partyColors } from './party-config';
-import { partySpawnColumns } from './party-config';
 // Presentation follows pinned internal/app/render.go. It never changes match state.
 import {
   defineSystem,
@@ -66,6 +65,11 @@ const dragonIndicatorColors: Readonly<Record<string, readonly [number, number, n
   green: [0,255,0], blue: [0,170,255], red: [255,0,0],
   yellow: [255,220,0], purple: [180,90,255], orange: [255,135,0],
 };
+const powerupTags: Readonly<Record<string, string>> = {
+  pink_candy: 'RNG', blue_candy: 'SPD', yellow_candy: 'RAP', shoes: 'RUN',
+  clock: 'TIM', dynamite: 'BOM', orange_parasol: 'DEF', red_parasol: 'DEF',
+  purple_parasol: 'DEF', crystal_ring: 'PTS', amethyst_ring: 'PTS', ruby_ring: 'PTS',
+};
 const image = (
   name: string,
   tick: number,
@@ -115,14 +119,12 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
   const skinAt = (index: number) => g.Party
     ? (isDragonSkin(g.Players[index]?.Skin) ? g.Players[index]!.Skin! : dragonSkins[index % dragonSkins.length]!)
     : index === 1 ? 'blue' : avatar;
+  const entranceY = (target: number, index: number) => {
+    if (g.Party?.Phase !== 'prepare') return target;
+    const t = Math.max(0, Math.min(1, (180 - g.Party.Timer - index % 6 * 5) / 60));
+    return -48 + (target + 48) * (1 - (1 - t) * (1 - t));
+  };
   if (g.Party) {
-    if (g.Party.Phase === 'prepare' || g.Party.Phase === 'rest')
-      for (let index = 0; index < g.Players.length; index++) {
-        if (g.Party.Slots[index] === 'empty') continue;
-        const [x, y] = position({col: partySpawnColumns[index]!, row: 25}, 44);
-        out.push(image(`${skinAt(index)}/bubble`, 30, x, y + 80, 44, 12));
-        out.push(label(String(index + 1), x + 16, y + 90, 10, dragonIndicatorColors[skinAt(index)]));
-      }
     for (const spawn of g.Party.Telegraphs ?? []) {
       out.push(image('bubble-warning', spawn.Ticks, spawn.X, spawn.Y + 48, 44));
       out.push(label('!', spawn.X + 16, spawn.Y + 38, 16));
@@ -130,7 +132,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
     const boss = g.Party.Boss;
     if (boss && boss.HP > 0) {
       if (!boss.Invulnerable || boss.Tick % 12 < 6)
-        out.push(image('mighta/angry', boss.Tick, boss.X, boss.Y + 48, 96));
+        out.push(image('mighta/angry', g.Party.Phase === 'prepare' ? g.Tick : boss.Tick, boss.X, entranceY(boss.Y + 48, 0), 96));
       out.push(label(`BOSS ${boss.HP}/${boss.MaxHP}`, Math.max(24, Math.min(560, boss.X - 24)), Math.max(68, boss.Y + 34), 12));
     }
   }
@@ -138,9 +140,10 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
     if (i.Age > 600 && i.Age % 12 < 6) continue;
     out.push(fittedItemImage(i.Power || `food/${i.Food}`, 0, i.X, i.Y + 48, 32));
     if (g.Party && i.Power)
-      out.push(label('+ POWER UP', Math.max(8, Math.min(680, i.X - 24)), Math.max(66, i.Y + 35), 8, [100,255,130]));
+      out.push(label(powerupTags[i.Power] ?? 'PWR', Math.max(8, Math.min(728, i.X + 1)), Math.max(66, i.Y + 34), 10, [100,255,130]));
   }
-  for (const e of g.Enemies) {
+  for (let index = 0; index < g.Enemies.length; index++) {
+    const e = g.Enemies[index]!;
     if (
       e.State === EnemyState.Trapped ||
       (e.State === EnemyState.Defeated && e.DeadTicks === 0)
@@ -151,7 +154,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
       state = e.Angry ? "shoot-angry" : "shoot";
     if (e.State === EnemyState.Defeated || e.State === EnemyState.Carried)
       state = "dead";
-    out.push(image(e.Kind + "/" + state, e.Age, e.X, e.Y + 48, 48, 48, e.Dir));
+    out.push(image(e.Kind + "/" + state, g.Party?.Phase === 'prepare' ? g.Tick + index * 3 : e.Age, e.X, entranceY(e.Y + 48, index), 48, 48, e.Dir));
   }
   for (const b of g.Bubbles) {
     const bubbleSkin = skinAt(b.Shooter ?? 0);
@@ -480,6 +483,7 @@ export const ArcadePresentation = defineSystem({
           : 0;
     const banner =
       !!g &&
+      !g.Party &&
       (ui.screen === "play" || ui.screen === "pause" || ui.screen === "result") &&
       (g.State === 0 ||
         g.State === 2 ||

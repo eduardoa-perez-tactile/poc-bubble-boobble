@@ -4,7 +4,8 @@ import { defineCheat } from '@gameengine/runtime/cheats';
 import campaign from '../../data/levels.json';
 import sprites from '../../data/sprites.json';
 import { ArcadeControl } from '../schema.gen.ts';
-import { createGame } from './game.ts';
+import { createGame, copyGame } from './game.ts';
+import { bubble } from './bubbles.ts';
 import type { Level } from './types.ts';
 import { session } from './session.ts';
 import { desktopAction } from '../desktop/state.ts';
@@ -13,6 +14,15 @@ import {item} from './items.ts';
 import type {ArcadeScenario} from './scenarios.ts';
 import scenarioInputs from '../../data/harness-scenarios.json';
 const scenarios=scenarioInputs as Record<string,ArcadeScenario>;
+export const PopBurst = defineCheat({
+  id:'arcade.pop-burst',group:'Audio',title:'Inspect simultaneous dragon pops',
+  run(){
+    const current=session.get();if(!current.game)return;
+    const g=copyGame(current.game);
+    g.Bubbles=g.Players.flatMap((p,Shooter)=>p.Lives>0&&!p.Downed?[{...bubble(p.X,p.Y),ID:++g.NextID,Shooter,Age:30,Floating:true}]:[]);
+    session.set({...current,game:g});
+  },
+});
 export const SpriteSizing = defineCheat({
   id: 'arcade.sprite-sizing', group: 'Arcade', title: 'Inspect pickup sprite proportions',
   resources: [write(ArcadeControl)],

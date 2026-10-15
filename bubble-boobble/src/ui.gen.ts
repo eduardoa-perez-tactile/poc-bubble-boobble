@@ -169,14 +169,15 @@ declare module '@gameengine/ui' {
      *   - `shade`: enum normal | pause | result, default "normal"
      *   - `party`: yesno, default false
      *   - `highTitle`: text, default "HIGH SCORE"
+     *   - `detail`: text, default ""
      * Events: none
      * Code areas: none
-     * Refs: `banner`, `banner-title`, `banner-hint`
+     * Refs: `banner`, `banner-title`, `banner-hint`, `party-detail`
      */
     'desktop-hud': {
-      props: { name: string | { loc: string } | LocText; score: string | { loc: string } | LocText; round: string | { loc: string } | LocText; high: string | { loc: string } | LocText; lives: string | { loc: string } | LocText; enemies: string | { loc: string } | LocText; banner: string | { loc: string } | LocText; hint: string | { loc: string } | LocText; showBanner: boolean; clear: boolean; freeze: string | { loc: string } | LocText; shade: 'normal' | 'pause' | 'result'; party: boolean; highTitle: string | { loc: string } | LocText };
+      props: { name: string | { loc: string } | LocText; score: string | { loc: string } | LocText; round: string | { loc: string } | LocText; high: string | { loc: string } | LocText; lives: string | { loc: string } | LocText; enemies: string | { loc: string } | LocText; banner: string | { loc: string } | LocText; hint: string | { loc: string } | LocText; showBanner: boolean; clear: boolean; freeze: string | { loc: string } | LocText; shade: 'normal' | 'pause' | 'result'; party: boolean; highTitle: string | { loc: string } | LocText; detail: string | { loc: string } | LocText };
       areas: never;
-      refs: 'banner' | 'banner-title' | 'banner-hint';
+      refs: 'banner' | 'banner-title' | 'banner-hint' | 'party-detail';
     };
     /**
      * Desktop key button: a widget, button (ui/docs/desktop-key-button.ui.json)

@@ -26,7 +26,9 @@ export const ArcadeAudioSystem=defineSystem({
   // future voices, while mute unloads/stops them instead of changing their bus.
   if(old.sound<0)ctx.events.emit(SetBusVolume,{bus:'SFX',volume:1});
   if(old.sound!==save.settings.sound)ctx.setField(ArcadeAudio,'sound',save.settings.sound);
-  if(g&&!muted&&save.settings.sound>0)for(const sound of g.Sounds)if(sound!=='opening'){
+  // Six simultaneous dragons can produce dozens of piercing pops. Party mode
+  // keeps the visual pop feedback while retaining the other gameplay cues.
+  if(g&&!muted&&save.settings.sound>0)for(const sound of g.Sounds)if(sound!=='opening'&&!(g.Party&&sound==='pop')){
    // Only the global 24-voice cap applies; disable the per-sound cap.
    // Supported mixer rule rejects an incoming cue when every occupied voice has
    // higher priority. Strict decrease also preserves order within one step.
