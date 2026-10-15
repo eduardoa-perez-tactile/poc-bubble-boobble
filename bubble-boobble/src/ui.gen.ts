@@ -306,19 +306,51 @@ declare module '@gameengine/ui' {
       refs: never;
     };
     /**
-     * Wave survival team: a view, screen (ui/docs/party-lobby.ui.json)
+     * Party dragon card: a widget, button (ui/docs/party-dragon-card.ui.json)
      *
      * Properties:
-     *   - `buttons`: list of desktop-button
-     *   - `status`: text, default ""
-     * Events: `press (<item>)`
+     *   - `label`: text, default "1UP GREEN"
+     *   - `modeLabel`: text, default "HUMAN / PAD 1"
+     *   - `selected`: yesno, default false
+     *   - `color`: enum green | blue | red | yellow | purple | orange, default "green"
+     * Events: `<id>`
      * Code areas: none
      * Refs: none
      */
-    'party-lobby': {
-      props: { buttons: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; status: string | { loc: string } | LocText };
+    'party-dragon-card': {
+      props: { label: string | { loc: string } | LocText; modeLabel: string | { loc: string } | LocText; selected: boolean; color: 'green' | 'blue' | 'red' | 'yellow' | 'purple' | 'orange' };
       areas: never;
       refs: never;
+    };
+    /**
+     * Wave survival team: a view, screen (ui/docs/party-lobby.ui.json)
+     *
+     * Properties:
+     *   - `status`: text, default ""
+     *   - `heading`: text, default "CHOOSE YOUR DRAGONS"
+     *   - `mode0`: text, default "AI TEAMMATE"
+     *   - `sel0`: yesno, default false
+     *   - `mode1`: text, default "AI TEAMMATE"
+     *   - `sel1`: yesno, default false
+     *   - `mode2`: text, default "AI TEAMMATE"
+     *   - `sel2`: yesno, default false
+     *   - `mode3`: text, default "AI TEAMMATE"
+     *   - `sel3`: yesno, default false
+     *   - `mode4`: text, default "AI TEAMMATE"
+     *   - `sel4`: yesno, default false
+     *   - `mode5`: text, default "AI TEAMMATE"
+     *   - `sel5`: yesno, default false
+     *   - `startSelected`: yesno, default false
+     *   - `backSelected`: yesno, default false
+     *   - `startLabel`: text, default "START SURVIVAL"
+     * Events: `dragon-0`, `dragon-1`, `dragon-2`, `dragon-3`, `dragon-4`, `dragon-5`, `start-party`, `menu`
+     * Code areas: none
+     * Refs: `dragon-0`, `dragon-1`, `dragon-2`, `dragon-3`, `dragon-4`, `dragon-5`, `start-party`, `menu`
+     */
+    'party-lobby': {
+      props: { status: string | { loc: string } | LocText; heading: string | { loc: string } | LocText; mode0: string | { loc: string } | LocText; sel0: boolean; mode1: string | { loc: string } | LocText; sel1: boolean; mode2: string | { loc: string } | LocText; sel2: boolean; mode3: string | { loc: string } | LocText; sel3: boolean; mode4: string | { loc: string } | LocText; sel4: boolean; mode5: string | { loc: string } | LocText; sel5: boolean; startSelected: boolean; backSelected: boolean; startLabel: string | { loc: string } | LocText };
+      areas: never;
+      refs: 'dragon-0' | 'dragon-1' | 'dragon-2' | 'dragon-3' | 'dragon-4' | 'dragon-5' | 'start-party' | 'menu';
     };
   }
 }

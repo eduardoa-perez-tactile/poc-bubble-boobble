@@ -8,7 +8,10 @@ level-one geometry, nine enemy waves and a boss on wave ten. Victory ends the
 run; an optional post-boss endless mode remains a future extension.
 
 Open **WAVE SURVIVAL** from the main menu. The default team is one human and five
-bots. Select each slot to cycle Human → AI → Empty. At least one human is
+bots. The selection screen presents six color-framed dragon portraits in a three-column,
+two-row grid inspired by an arcade character-select screen. Select each card to
+cycle Human → AI → Empty. Arrow keys or a controller navigate spatially; confirm
+changes the highlighted slot. Start and Back remain separate from the cards. At least one human is
 required. Start on a controller joins its corresponding slot. The two keyboard
 layouts remain available. See [controller-input.md](controller-input.md) for
 control mappings and the installed engine's input limitations.
@@ -62,11 +65,11 @@ sufficient for replay. The legacy solo/two-player modes remain available.
 
 Local macOS arm64 Game Engine release V8/Metal:
 
-- Full harness: 200 T0 logic cases and 28 desktop T1 cases passed, with 17
+- Full harness: 202 T0 logic cases and 29 desktop T1 cases passed, with 17
   independently verified explicit-scene replays, cold viewport checks,
   typechecking, validation, desktop cook and 600-frame cooked smoke.
 - Final focused lobby checks cover 768×720, 1680×720 and 640×960. Reviewed
-  goldens cover six distinct dragons, rests, the boss, the lobby and matching
+  goldens cover six distinct dragons, rests, the boss, the selection grid, open slots and matching
   palette shots. Menu baselines intentionally include the new Survival button.
 - All-tier pipeline recording observed the existing presentation route over 230
   explicit frames per tier: peaks 11/9/9 draws (desktop/mobile/compat), under 14.

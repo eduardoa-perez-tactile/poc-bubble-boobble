@@ -1,3 +1,5 @@
+import { partyCardRect } from '../desktop/layout';
+import { partyColors } from './party-config';
 import { partySpawnColumns } from './party-config';
 // Presentation follows pinned internal/app/render.go. It never changes match state.
 import {
@@ -383,6 +385,13 @@ function sceneDraws(tick: number) {
       solid("ink", 0, 0, 768, 48);
       solid("ink", 0, 672, 768, 48);
       actors.filter((d) => d.footer).forEach(push);
+    }
+  } else if (ui.screen === 'party') {
+    for(let index=0;index<6;index++) {
+      const r=partyCardRect(index);
+      solid('panel',r.x+3,r.y+30,r.width-6,134);
+      const pose=ui.selected===index&&tick%180<35?tick%180:0;
+      push(image(`${partyColors[index]}/walk`,pose,r.x+56,r.y+42,104,104,1));
     }
   } else if (ui.screen === "title" || ui.screen === "menu") {
     // Source rings are isolated on ink, never overlap, and precede the logo.

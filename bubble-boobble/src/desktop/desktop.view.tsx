@@ -25,4 +25,12 @@ export const DesktopAccountView=defineView<DesktopModel>({
  },
 });
 
-export const DesktopPartyView=defineView<DesktopModel>({name:'PartyLobby',samples:{team:desktopModel({...initialDesktopState,screen:'party',selected:6},initialDesktopSave)},render:(model,{intent})=><Screen safeArea class="desktop-screen"><Widget doc="party-lobby" id="party-lobby" class="desktop-party" props={{buttons:()=>model().buttons,status:()=>model().status}} onIntent={(_,e)=>intent(e.item??e.path.at(-1)!)}/></Screen>});
+export const DesktopPartyView=defineView<DesktopModel>({
+ name:'PartyLobby',samples:{team:desktopModel({...initialDesktopState,screen:'party',selected:0},initialDesktopSave)},
+ render:(model,{intent})=><Screen safeArea class="desktop-screen"><Widget doc="party-lobby" id="party-lobby" class="desktop-party"
+ props={{heading:()=>model().buttons[6]?.label==='RESUME SURVIVAL'?'YOUR DRAGON TEAM':'CHOOSE YOUR DRAGONS',status:()=>model().status,
+ mode0:()=>model().partyModes[0]??'OPEN SLOT',mode1:()=>model().partyModes[1]??'OPEN SLOT',mode2:()=>model().partyModes[2]??'OPEN SLOT',mode3:()=>model().partyModes[3]??'OPEN SLOT',mode4:()=>model().partyModes[4]??'OPEN SLOT',mode5:()=>model().partyModes[5]??'OPEN SLOT',
+ sel0:()=>model().selected===0,sel1:()=>model().selected===1,sel2:()=>model().selected===2,sel3:()=>model().selected===3,sel4:()=>model().selected===4,sel5:()=>model().selected===5,
+ startSelected:()=>model().selected===6,backSelected:()=>model().selected===7,startLabel:()=>model().buttons[6]?.label??'START SURVIVAL'}}
+ onIntent={(_,e)=>{const key=e.path.at(-1)!;intent(key.startsWith('dragon-')?`party-slot:${key.slice(7)}`:key);}}/></Screen>,
+});

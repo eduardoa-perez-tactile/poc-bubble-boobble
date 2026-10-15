@@ -13,7 +13,7 @@
         "w": 768,
         "h": 720,
         "pad": 0,
-        "bg": "#080c1b",
+        "bg": "#00000000",
         "position": "anchored",
         "anchor": [
           0.5,
@@ -27,9 +27,16 @@
       "children": [
         "pl_title",
         "pl_hint",
-        "pl_actions",
         "pl_controls",
-        "pl_status"
+        "pl_status",
+        "pl_card0",
+        "pl_card1",
+        "pl_card2",
+        "pl_card3",
+        "pl_card4",
+        "pl_card5",
+        "pl_start",
+        "pl_back"
       ]
     },
     "pl_title": {
@@ -44,11 +51,12 @@
         ],
         "offset": [
           0,
-          42
+          38
         ],
-        "fontSize": 32,
+        "fontSize": 26,
         "color": "#ffdc6a"
-      }
+      },
+      "property": "heading"
     },
     "pl_hint": {
       "type": "label",
@@ -62,40 +70,10 @@
         ],
         "offset": [
           0,
-          100
+          86
         ],
-        "fontSize": 12,
+        "fontSize": 10,
         "color": "#ebf5ff"
-      }
-    },
-    "pl_actions": {
-      "type": "element",
-      "name": "Element",
-      "children": [
-        "pl_buttons"
-      ],
-      "style": {
-        "pad": 0,
-        "position": "anchored",
-        "anchor": [
-          0,
-          0
-        ],
-        "offset": [
-          164,
-          160
-        ],
-        "w": 440,
-        "dir": "column",
-        "gap": 16
-      }
-    },
-    "pl_buttons": {
-      "type": "repeat",
-      "doc": "desktop-button",
-      "property": "buttons",
-      "style": {
-        "gap": 16
       }
     },
     "pl_controls": {
@@ -110,9 +88,9 @@
         ],
         "offset": [
           0,
-          620
+          678
         ],
-        "fontSize": 11,
+        "fontSize": 9,
         "textAlign": "center",
         "color": "#829fb1"
       }
@@ -129,10 +107,228 @@
         ],
         "offset": [
           0,
-          696
+          660
         ],
-        "fontSize": 11,
+        "fontSize": 10,
         "color": "#ffdc6a"
+      }
+    },
+    "pl_card0": {
+      "type": "use",
+      "doc": "party-dragon-card",
+      "key": "dragon-0",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          48,
+          132
+        ],
+        "w": 216,
+        "h": 214
+      },
+      "props": {
+        "label": "1UP  GREEN",
+        "color": "green",
+        "modeLabel": {
+          "property": "mode0"
+        },
+        "selected": {
+          "property": "sel0"
+        }
+      }
+    },
+    "pl_card1": {
+      "type": "use",
+      "doc": "party-dragon-card",
+      "key": "dragon-1",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          276,
+          132
+        ],
+        "w": 216,
+        "h": 214
+      },
+      "props": {
+        "label": "2UP  BLUE",
+        "color": "blue",
+        "modeLabel": {
+          "property": "mode1"
+        },
+        "selected": {
+          "property": "sel1"
+        }
+      }
+    },
+    "pl_card2": {
+      "type": "use",
+      "doc": "party-dragon-card",
+      "key": "dragon-2",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          504,
+          132
+        ],
+        "w": 216,
+        "h": 214
+      },
+      "props": {
+        "label": "3UP  RED",
+        "color": "red",
+        "modeLabel": {
+          "property": "mode2"
+        },
+        "selected": {
+          "property": "sel2"
+        }
+      }
+    },
+    "pl_card3": {
+      "type": "use",
+      "doc": "party-dragon-card",
+      "key": "dragon-3",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          48,
+          362
+        ],
+        "w": 216,
+        "h": 214
+      },
+      "props": {
+        "label": "4UP  YELLOW",
+        "color": "yellow",
+        "modeLabel": {
+          "property": "mode3"
+        },
+        "selected": {
+          "property": "sel3"
+        }
+      }
+    },
+    "pl_card4": {
+      "type": "use",
+      "doc": "party-dragon-card",
+      "key": "dragon-4",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          276,
+          362
+        ],
+        "w": 216,
+        "h": 214
+      },
+      "props": {
+        "label": "5UP  PURPLE",
+        "color": "purple",
+        "modeLabel": {
+          "property": "mode4"
+        },
+        "selected": {
+          "property": "sel4"
+        }
+      }
+    },
+    "pl_card5": {
+      "type": "use",
+      "doc": "party-dragon-card",
+      "key": "dragon-5",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          504,
+          362
+        ],
+        "w": 216,
+        "h": 214
+      },
+      "props": {
+        "label": "6UP  ORANGE",
+        "color": "orange",
+        "modeLabel": {
+          "property": "mode5"
+        },
+        "selected": {
+          "property": "sel5"
+        }
+      }
+    },
+    "pl_start": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "start-party",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          242,
+          612
+        ],
+        "w": 284,
+        "h": 44
+      },
+      "props": {
+        "label": {
+          "property": "startLabel"
+        },
+        "selected": {
+          "property": "startSelected"
+        }
+      }
+    },
+    "pl_back": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "menu",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          48,
+          612
+        ],
+        "w": 152,
+        "h": 44
+      },
+      "props": {
+        "label": "BACK",
+        "selected": {
+          "property": "backSelected"
+        }
       }
     }
   },
@@ -143,14 +339,73 @@
     "type": "instant"
   },
   "properties": {
-    "buttons": {
-      "type": "list",
-      "of": "desktop-button",
-      "default": []
-    },
     "status": {
       "type": "text",
       "default": ""
+    },
+    "heading": {
+      "type": "text",
+      "default": "CHOOSE YOUR DRAGONS"
+    },
+    "mode0": {
+      "type": "text",
+      "default": "AI TEAMMATE"
+    },
+    "sel0": {
+      "type": "yesno",
+      "default": false
+    },
+    "mode1": {
+      "type": "text",
+      "default": "AI TEAMMATE"
+    },
+    "sel1": {
+      "type": "yesno",
+      "default": false
+    },
+    "mode2": {
+      "type": "text",
+      "default": "AI TEAMMATE"
+    },
+    "sel2": {
+      "type": "yesno",
+      "default": false
+    },
+    "mode3": {
+      "type": "text",
+      "default": "AI TEAMMATE"
+    },
+    "sel3": {
+      "type": "yesno",
+      "default": false
+    },
+    "mode4": {
+      "type": "text",
+      "default": "AI TEAMMATE"
+    },
+    "sel4": {
+      "type": "yesno",
+      "default": false
+    },
+    "mode5": {
+      "type": "text",
+      "default": "AI TEAMMATE"
+    },
+    "sel5": {
+      "type": "yesno",
+      "default": false
+    },
+    "startSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "backSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "startLabel": {
+      "type": "text",
+      "default": "START SURVIVAL"
     }
   }
 }

@@ -8,7 +8,7 @@ import campaignData from '../../data/levels.json';
 import type { Level } from '../arcade/types.ts';
 import { cloneLevel, paintLevel, validateLevel } from './editor.ts';
 import { desktopSaveState } from './save.ts';
-import { desktopButtonRect } from './layout.ts';
+import { partyGridSelection, desktopButtonRect } from './layout.ts';
 import { getDesktopButtons } from './model.ts';
 const campaign=campaignData as Level[];
 export type PlayMode='solo'|'ai'|'human';
@@ -29,7 +29,7 @@ export function desktopAction(action:string,value='',index=0,x=0,y=0,now=0){
  if(action==='navigate'){navigate(value as DesktopScreen);return;}
  if(action==='select'){patch({selected:index});return;}
  if(action==='play-mode'){const modes:PlayMode[]=['solo','ai','human'];patch({playMode:modes[(modes.indexOf(s.playMode??'solo')+(index===-1?2:1))%3]!});return;}
- if(action==='party'){patch({screen:'party',partyEditing:s.screen==='pause'&&s.partyRun,selected:6,status:''});return;}
+ if(action==='party'){patch({screen:'party',partyEditing:s.screen==='pause'&&s.partyRun,selected:0,status:''});return;}
  if(action==='menu'&&s.screen==='party'&&s.partyEditing){patch({screen:'pause',partyEditing:false,selected:0,status:''});return;}
  if(action.startsWith('party-slot:')){const slot=Number(action.slice(11));if(!Number.isInteger(slot)||slot<0||slot>=6)return;const slots=(s.partySlots??defaultPartySlots).slice();const options:PartySlot[]=['human','ai','empty'];slots[slot]=options[(options.indexOf(slots[slot]!)+1)%3]!;patch({partySlots:slots});return;}
  if(action==='party-join'){if(index<0||index>=6)return;const slots=(s.partySlots??defaultPartySlots).slice();slots[index]='human';patch({partySlots:slots});return;}
@@ -84,8 +84,9 @@ export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(Ar
  const menuState=desktopState.get();
  if(menuState.screen!=='play'){
    const buttons=getDesktopButtons(menuState,desktopSaveState.get());
-   if(pads.menuYEdge&&buttons.length)desktopAction('select','',(menuState.selected+pads.menuYEdge+buttons.length)%buttons.length);
-   if(pads.menuXEdge&&(menuState.screen==='settings'||menuState.screen==='party')){const b=buttons[desktopState.get().selected];if(b)desktopAction(b.key,'',pads.menuXEdge);}
+   if(pads.menuYEdge&&buttons.length)desktopAction('select','',menuState.screen==='party'?partyGridSelection(menuState.selected,0,pads.menuYEdge):(menuState.selected+pads.menuYEdge+buttons.length)%buttons.length);
+   if(pads.menuXEdge&&menuState.screen==='party')desktopAction('select','',partyGridSelection(desktopState.get().selected,pads.menuXEdge,0));
+   if(pads.menuXEdge&&menuState.screen==='settings'){const b=buttons[desktopState.get().selected];if(b)desktopAction(b.key,'',pads.menuXEdge);}
    if(pads.menuBack)desktopAction(menuState.screen==='pause'?'resume':menuState.screen==='new-profile'?'profiles':'menu');
  }
  let s=desktopState.get(),held=s.confirmKeys??0;
@@ -103,7 +104,8 @@ export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(Ar
   const a=c.col(ActionState);s=desktopState.get();
   if(s.screen==='new-profile'&&c.is(ActionState,i,'name','delete')){if(a.pressed[i]){const started=s.deleteHeldAt<0?ctx.step:s.deleteHeldAt;if(s.deleteHeldAt<0)desktopState.set({...s,deleteHeldAt:started});const held=ctx.step-started;if(held===0||held>30&&held%3===0)desktopAction('delete-char');}else if(s.deleteHeldAt>=0)desktopState.set({...s,deleteHeldAt:-1});}
   if(!a.justPressed[i])continue;const buttons=getDesktopButtons(s,desktopSaveState.get());
-  if(c.is(ActionState,i,'name','menuY')){const selected=(s.selected+(a.value[i]!<0?-1:1)+buttons.length)%buttons.length;desktopAction('select','',selected);}
+  if(c.is(ActionState,i,'name','menuY')){const delta=a.value[i]!<0?-1:1;const selected=s.screen==='party'?partyGridSelection(s.selected,0,delta):(s.selected+delta+buttons.length)%buttons.length;desktopAction('select','',selected);}
+  if(c.is(ActionState,i,'name','menuX')&&s.screen==='party')desktopAction('select','',partyGridSelection(s.selected,a.value[i]!<0?-1:1,0));
   if(c.is(ActionState,i,'name','menuX')&&s.screen==='settings'){const b=buttons[s.selected];if(b)desktopAction(b.key,'',a.value[i]!<0?-1:1);}
   if(c.is(ActionState,i,'name','confirm'))confirm=true;
   if(c.is(ActionState,i,'name','profileConfirm'))profileConfirm=true;
