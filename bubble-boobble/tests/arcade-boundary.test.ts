@@ -1,3 +1,4 @@
+import {referencePlayerBalance} from '../src/arcade/balance';
 import {worldTest} from '@gameengine/test';
 import campaign from '../data/levels.json';
 import {scenarioGame} from '../src/arcade/scenarios';
@@ -11,6 +12,7 @@ for(const [scenario,fixture] of boundaryCases){
  worldTest(`arcade boundary pure exact Go ${scenario.name}`,()=>{
   const g=scenarioGame(campaign,scenario);
   g.NormalEnemySpeedScale=1;
+  g.PlayerBalance={...referencePlayerBalance};
   for(const f of fixture.frames){
    if(f.input){g.Paused=f.input.paused;stepGame(g,f.input.players);}
    match(f.state,canonicalState(g),`${scenario.name}.frame[${f.frame}]`);
@@ -18,7 +20,7 @@ for(const [scenario,fixture] of boundaryCases){
  },{scene:'scenes/main.scene.json'});
  worldTest(`arcade boundary engine input exact Go ${scenario.name}`,async({step,input,cheat})=>{
   await step(1);
-  await cheat(ResetArcade,{scenario:scenario.name,quiet:true,normalEnemySpeedScale:1});
+  await cheat(ResetArcade,{scenario:scenario.name,quiet:true,normalEnemySpeedScale:1,referencePlayerTuning:true});
   for(const f of fixture.frames){
    if(f.input){
     for(let player=0;player<scenario.players;player++){

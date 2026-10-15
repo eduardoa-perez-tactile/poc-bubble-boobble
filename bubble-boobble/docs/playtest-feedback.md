@@ -10,7 +10,9 @@ reference evidence, rather than expectations rewritten to match these changes.
 Before this tuning change the port used the original speed: ordinary enemies move 2.5 pixels per tick
 (150 pixels/second at 60 Hz); angry enemies move 3.5 (210 pixels/second).
 Invaders multiply these speeds by 1.5. Pulpul retains the original sinusoidal
-movement. The player moves 3 pixels per tick, or 5 with shoes.
+movement. At that point the player moved 3 pixels per tick, or 5 with shoes.
+The later [player balance tuning](player-balance.md) now sets 2.5/3.5 and
+reduces bubble speed, range and firing frequency.
 
 The Go entry point calls `ebiten.SetTPS(60)` and advances the match once per
 update. The engine project uses a 1/60-second fixed step, and `ArcadeStep`
@@ -31,7 +33,8 @@ Reproduce the CPU-only source comparison with
 `node tools/harness/enemy-speed-audit.mjs` after `npm run harness:setup`.
 It rebuilds the pinned oracle, verifies source/toolchain/campaign provenance,
 and checks those 1,805 states plus six pause/freeze/hurry boundary states using
-the explicit source-speed profile (`NormalEnemySpeedScale = 1`). The unchanged
+the explicit source configuration (`NormalEnemySpeedScale = 1` and
+`PlayerBalance = referencePlayerBalance`). The unchanged
 Go fixtures in the other pure/engine input oracle tests also select that profile;
 they are not claims that the new playable difficulty matches original Go state.
 The dev-only `arcade.reset` cheat exposes the numeric scale for controlled tests.

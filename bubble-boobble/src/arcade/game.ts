@@ -12,6 +12,7 @@ import {
   direction,
   powers,
 } from "./types";
+import { productionPlayerBalance } from './balance';
 import { spawnPosition } from "./physics";
 import { checkPlayerHit, respawn, updatePlayer } from "./player";
 import { spawnSpecial, updateBubbles, updateEffects } from "./bubbles";
@@ -27,6 +28,7 @@ export function createGame(
   if (!levels.length) throw new Error("no levels supplied");
   for (const level of levels) validateLevel(level);
   const g: GameState = {
+    PlayerBalance: { ...productionPlayerBalance },
     NormalEnemySpeedScale: 0.8,
     Campaign: levels,
     Level: levels[0]!,
@@ -272,6 +274,7 @@ export function copyGame(g: GameState): GameState {
   return {
     ...g,
     NormalEnemySpeedScale: g.NormalEnemySpeedScale ?? 0.8,
+    PlayerBalance: { ...productionPlayerBalance, ...g.PlayerBalance },
     Players: g.Players.map((p) => ({ ...p, Power: { ...p.Power } })),
     Enemies: g.Enemies.map((e) => ({ ...e })),
     Bubbles: g.Bubbles.map((b) => ({ ...b })),

@@ -1,3 +1,4 @@
+import {referencePlayerBalance} from './balance';
 import { write } from '@gameengine/runtime';
 import { defineCheat } from '@gameengine/runtime/cheats';
 import campaign from '../../data/levels.json';
@@ -43,14 +44,16 @@ export const ResetArcade = defineCheat({
     players: { type: 'int',min:1,max:2,default:1 },
     ready: { type:'bool',default:true }, quiet:{type:'bool',default:true},
     scenario: {type:'string',default:''},
+    referencePlayerTuning: {type:'bool',default:false,doc:'Use pinned Go player values for oracle comparisons only.'},
     normalEnemySpeedScale: {type:'number',min:0,max:1,default:0.8,doc:'Normal movement tuning; 1 reproduces source-speed oracle cases.'},
   },
   resources:[write(ArcadeControl)],
-  run(ctx,{round,seed,players,ready,scenario,normalEnemySpeedScale}) {
+  run(ctx,{round,seed,players,ready,scenario,normalEnemySpeedScale,referencePlayerTuning}) {
     const setup=scenario?scenarios[scenario]:undefined;
     if(scenario&&!setup)throw new Error(`Unknown arcade scenario: ${scenario}`);
     const game=setup?scenarioGame(campaign as Level[],setup):createGame((campaign as Level[]).slice(round-1),seed,players);
     game.NormalEnemySpeedScale=normalEnemySpeedScale;
+    if(referencePlayerTuning)game.PlayerBalance={...referencePlayerBalance};
     if(!setup&&!ready){game.State=1;game.Countdown=0;}
     // LIVE_PROBE_ANCHOR
     desktopAction('navigate','play');

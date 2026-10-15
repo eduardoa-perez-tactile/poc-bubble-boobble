@@ -46,8 +46,8 @@ export function compareStudyPrefix(frames, actualForFrame) {
 
 async function main() {
   const { build } = await import('../../.gameengine/engine/node_modules/esbuild/lib/main.js');
-  await build({ entryPoints: ['src/arcade/game.ts'], outfile: '.cache/arcade-parity.mjs', bundle: true, platform: 'node', format: 'esm', target: 'es2022' });
-  const { createGame, canonicalState, stepGame } = await import(pathToFileURL(resolve('.cache/arcade-parity.mjs')));
+  await build({ stdin: {contents: "export * from './src/arcade/game.ts'; export * from './src/arcade/balance.ts';", resolveDir: process.cwd(), loader: 'ts'}, outfile: '.cache/arcade-parity.mjs', bundle: true, platform: 'node', format: 'esm', target: 'es2022' });
+  const { createGame, referencePlayerBalance, canonicalState, stepGame } = await import(pathToFileURL(resolve('.cache/arcade-parity.mjs')));
   const levels = JSON.parse(readFileSync('data/levels.json'));
   mkdirSync('artifacts/campaign-study', { recursive: true });
   const rows = [];
@@ -60,7 +60,8 @@ async function main() {
     const frames = JSON.parse(out.stdout);
     if (!Array.isArray(frames) || frames.length !== 1 + s.spans.reduce((n, span) => n + span.ticks, 0)) throw new Error(`Round ${round}: incomplete oracle trace`);
     const g = createGame(levels.slice(round - 1), 42, players);
-    g.NormalEnemySpeedScale = 1; // Explicit source-speed audit, not playable default.
+    g.NormalEnemySpeedScale = 1;
+    g.PlayerBalance = {...referencePlayerBalance}; // Explicit source-speed audit, not playable default.
     const result = compareStudyPrefix(frames, f => {
       if (f.input) { g.Paused = f.input.paused; stepGame(g, f.input.players); }
       return canonicalState(g);
@@ -80,8 +81,8 @@ async function main() {
     }
   }
   const report = {
-    sourceProfile: { NormalEnemySpeedScale: 1 },
-    scope: 'Exact canonical prefixes against original Go; stop each round at first narrowly verified player ceiling boundary. Production default normal speed is intentionally slower. No claim about any suffix after a boundary.',
+    sourceProfile: { NormalEnemySpeedScale: 1, PlayerBalance: referencePlayerBalance },
+    scope: 'Exact canonical prefixes against original Go; stop each round at first narrowly verified player ceiling boundary. Production player/shooting and normal-enemy speeds are intentionally tuned. No claim about any suffix after a boundary.',
     exactRounds: rows.filter(r => !r.failure && !r.boundary).length,
     expectedBoundaryRounds: rows.filter(r => r.boundary).length,
     failedRounds: rows.filter(r => r.failure).length,

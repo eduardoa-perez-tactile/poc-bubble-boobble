@@ -42,8 +42,8 @@ const version = command(go, ['version'], { env }).trim();
 if (!version.includes(` ${lock.go.version} `)) throw new Error('Unpinned Go compiler');
 const binary = resolve('.cache/enemy-speed-oracle');
 command(go, ['build', '-o', binary, './cmd/port-oracle'], { cwd: checkout, env });
-await build({ stdin: { contents: "export * from './src/arcade/game.ts'; export * from './src/arcade/enemies.ts';", resolveDir: root, loader: 'ts' }, bundle: true, platform: 'node', format: 'esm', outfile: '.cache/enemy-speed-port.mjs', logLevel: 'silent' });
-const { createGame, stepGame, canonicalState, updateEnemies } = await import(pathToFileURL(resolve('.cache/enemy-speed-port.mjs')).href + `?audit=${process.pid}`);
+await build({ stdin: { contents: "export * from './src/arcade/game.ts'; export * from './src/arcade/balance.ts'; export * from './src/arcade/enemies.ts';", resolveDir: root, loader: 'ts' }, bundle: true, platform: 'node', format: 'esm', outfile: '.cache/enemy-speed-port.mjs', logLevel: 'silent' });
+const { createGame, referencePlayerBalance, stepGame, canonicalState, updateEnemies } = await import(pathToFileURL(resolve('.cache/enemy-speed-port.mjs')).href + `?audit=${process.pid}`);
 const levels = JSON.parse(levelsRaw);
 const idle = { Move: 0, Jump: false, Fire: false };
 const cases = Array.from({ length: 5 }, (_, i) => ({ name: `idle-round-${i + 1}`, round: i + 1, seed: 42, players: 1, spans: [{ ticks: 360, players: [idle], paused: false }] }));
@@ -53,6 +53,7 @@ for (const scenario of cases) {
   const frames = JSON.parse(command(binary, [], { cwd: checkout, input: JSON.stringify(scenario) }));
   const g = createGame(levels.slice(scenario.round - 1), scenario.seed, 1);
   g.NormalEnemySpeedScale = 1;
+  g.PlayerBalance = {...referencePlayerBalance};
   Object.assign(g, scenario.setup ?? {});
   const samples = [];
   for (let i = 0; i < frames.length; i++) {
@@ -61,7 +62,7 @@ for (const scenario of cases) {
     if (!isDeepStrictEqual(actual, frames[i].state)) throw new Error(`${scenario.name} frame ${i}: canonical state differs`);
     if ((i < 6 && scenario.setup) || [0,60,61,120,360].includes(i)) samples.push({ frame: i, State: g.State, LevelTicks: g.LevelTicks, enemies: g.Enemies.map(e => ({ Kind: e.Kind, X: e.X, Y: e.Y, Dir: e.Dir, Age: e.Age, Angry: e.Angry })) });
   }
-  rows.push({ profile: { NormalEnemySpeedScale: 1 }, scenario, frames: frames.length, samples });
+  rows.push({ profile: { NormalEnemySpeedScale: 1, PlayerBalance: referencePlayerBalance }, scenario, frames: frames.length, samples });
   console.log(`${scenario.name}: ${frames.length} source-speed-profile canonical states exactly match pinned Go`);
 }
 // Production is intentionally different. Compare locomotion against original
