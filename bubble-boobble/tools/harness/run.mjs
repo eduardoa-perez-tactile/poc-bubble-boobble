@@ -164,6 +164,8 @@ const replays = [
   { path: 'tests/replays/arcade_engine_input_full_go_parity_reference_round1_smoke.greplay', scene: 'scenes/arcade.scene.json', filter: 'arcade engine input full Go parity reference-round1-smoke' },
   { path: 'tests/replays/player_traversal_engine_input_wraps_round_three_and_preserves_upward_re_entry.greplay', scene: 'scenes/arcade.scene.json', filter: 'player traversal engine input wraps round three and preserves upward re-entry' },
   { path: 'tests/replays/desktop_complete_presentation_flows.greplay', scene: 'scenes/arcade.scene.json', filter: 'desktop complete presentation flows', tier: 't1' },
+  { path: 'tests/replays/dragon_skins_settings_selection_reaches_red_gameplay.greplay', scene: 'scenes/arcade.scene.json', filter: 'dragon skins settings selection reaches red gameplay', tier: 't1' },
+  { path: 'tests/replays/dragon_skins_settings_selection_reaches_yellow_gameplay.greplay', scene: 'scenes/arcade.scene.json', filter: 'dragon skins settings selection reaches yellow gameplay', tier: 't1' },
 ];
 function verifyReplays(selected = replays) {
   const bundle = engine(['bundle']).output.path;

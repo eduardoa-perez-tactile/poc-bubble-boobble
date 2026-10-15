@@ -3,7 +3,9 @@
 The game owns its renderer workaround; the engine and pinned Go source are
 unchanged. `src/arcade/presentation.ts` follows Go `internal/app/render.go`
 ordering, frame selection, sizes, mirroring, warning thresholds, flashing and
-avatar rules. Authoritative simulation state is read only during presentation.
+avatar rules, with the playtest item fitting and selectable skins described in
+[playtest-feedback.md](playtest-feedback.md) and [dragon-skins.md](dragon-skins.md).
+Authoritative simulation state is read only during presentation.
 The logical canvas is 768×720 with Contain fitting; physical letterboxes are
 black, matching Ebiten's opaque-screen `fillBlack` behavior. HUD documents share
 the centered logical canvas. Editor tiles begin at (24,146) with 16-pixel cells.
@@ -16,6 +18,12 @@ with per-instance transforms, atlas rectangles and colors. The installed runtime
 omits dynamic meshes from cold live viewports until an offscreen screenshot
 initializes them; static file meshes render immediately. The dynamic mesh helper
 remains for the isolated pixel prototype, not the production world.
+Textured instances carry an atlas rectangle in `MaterialParams`; red/yellow
+virtual frames encode their palette ID in whole 2048-texel U offsets, decoded
+before the atlas load. CPU-composed runs instead carry `(-1, encodedR, encodedG,
+encodedB)`. Renderer tint stays white: it is applied after material evaluation
+and cannot safely carry a color that the material must first decode from sRGB.
+All-zero parameters retain the dynamic prototype's vertex-color/UV path.
 `assets/materials/pixel-ordered.material.ts` uses the supported material
 DSL's raw WGSL function to call `textureLoad` at integer, mip-zero coordinates.
 This bypasses the built-in Sprite sampler, which visibly interpolated the
@@ -30,6 +38,12 @@ pause/result dimming also compose in encoded RGB, avoiding the brighter result
 of applying the source alpha values through a linear-light UI blend. HUD text
 uses corresponding dimmed colors; font rasterization remains a separate issue.
 Menu circles draw before the logo, so logo partial alpha resolves over them.
+
+The skin overlap regression exposed and corrected an inherited static-renderer
+error in that final tint stage. A real production food texel now reads
+`[0,178,0]`, matching the source composition, rather than the brightened
+`[0,218,0]`. The original dynamic prototype was unaffected; its earlier source-
+over checks alone did not prove the static instance color transport.
 
 Geometry is clipped to the logical canvas. Mesh scratch capacity is 262,144
 vertices and 393,216 indices (10.61 MiB including normals, colors, UVs and the

@@ -21,7 +21,7 @@ with `gameengine run --headless --paused`. The editor and host keep their own
 world clocks and allocation IDs; those are outside reference canonical state.
 
 Quick validates every cached fixture's provenance and the imported campaign
-checksum, runs five deliberate comparator tests, then three V8 T0 groups:
+checksum, runs nine deliberate comparator tests, then three V8 T0 groups:
 
 - Movement traces and the physical keyboard hold/release/jump path.
 - All five complete canonical engine-input traces: smoke and rounds 1/10/24/25.
@@ -46,7 +46,7 @@ npm run harness:milestone
 
 Verify runs provenance/comparator checks, the aborted-HTTP-body regression, a
 fresh-host cold live-viewport regression, all V8 T0 tests, all desktop T1 tests
-(including the complete 17-shot presentation route and its draw budget), five
+(including the complete 19-shot presentation route and its draw budget), seven
 engine replays with their explicit recorded scenes, then `gameengine check`
 (typecheck, validation, desktop cook and cooked smoke), followed by the original/
 derived audio provenance and nonempty cooked-alias uniqueness guard across all
@@ -82,8 +82,12 @@ default to 0.8 for normal enemy movement; separate tests cover that tuning.
 The scale is authoritative session state (and part of engine replay hashes),
 but is not an upstream field in the Go canonical projection. Source-speed
 comparisons do not claim that the new playable difficulty matches original Go.
-The fifth engine replay records the real round-three upward wrap through the
+An engine replay records the real round-three upward wrap through the
 cheat/event/fixed-step path and checks the world hash independently on playback.
+Two more replays record Settings selection of red and yellow and entry into solo
+and co-op gameplay. The presentation route also ends with both new skin previews;
+pipeline verification checks their labels and actual body-color pixels on every
+recorded GPU tier. See [dragon-skins.md](dragon-skins.md).
 
 Engine-input parity compares every exported field and sound-event sequence after
 each semantic input tick. The pure lane exercises the same simulation without the

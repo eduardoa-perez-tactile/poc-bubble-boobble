@@ -33,11 +33,13 @@ const PIXEL_MATERIAL = 'materials/pixel-ordered.mat.json';
 const animations: Readonly<Record<string, readonly string[]>> = manifest;
 const atlasRects: Readonly<Record<string, readonly number[]>> = atlas.rects;
 export function referenceFrame(name: string, tick: number): string {
-  const paths = animations[name];
+  const skin = name.startsWith('red/') ? 'red' : name.startsWith('yellow/') ? 'yellow' : '';
+  const paths = animations[skin ? 'green/' + name.slice(skin.length + 1) : name];
   const path = paths?.[Math.floor(Math.max(0, tick) / 10) % paths.length];
-  return path
+  const frame = path
     ? "reference/" + path.replace(/^sprites\//, "").replace(/\.png$/, "")
     : "";
+  return skin ? frame.replace('reference/green/',`reference/${skin}/`) : frame;
 }
 interface Draw {
   image: string;
@@ -94,7 +96,6 @@ const label = (text: string, x: number, y: number, size: number): Draw => ({
   size,
 });
 export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
-  if (g.Players.length === 2) avatar = "green";
   const out: Draw[] = [];
   for (const i of g.Items) {
     if (i.Age > 600 && i.Age % 12 < 6) continue;
@@ -432,14 +433,20 @@ export const ArcadePresentation = defineSystem({
         offsets.scale[t] = x1 - x0;
         offsets.scale[t + 1] = y1 - y0;
         offsets.scale[t + 2] = 1;
-        params[m] = arrays.uvs[u]!;
-        params[m + 1] = arrays.uvs[u + 5]!;
-        params[m + 2] = arrays.uvs[u + 2]! - arrays.uvs[u]!;
-        params[m + 3] = arrays.uvs[u + 1]! - arrays.uvs[u + 5]!;
-        colors[m] = arrays.colors[k]! / 255;
-        colors[m + 1] = arrays.colors[k + 1]! / 255;
-        colors[m + 2] = arrays.colors[k + 2]! / 255;
-        colors[m + 3] = 1;
+        if (arrays.uvs[u]! < 0) {
+          // Encoded source-over RGB must enter before the shader's sRGB decode;
+          // MeshRenderer.color is a later linear tint, not a shader input.
+          params[m] = -1;
+          params[m + 1] = arrays.colors[k]! / 255;
+          params[m + 2] = arrays.colors[k + 1]! / 255;
+          params[m + 3] = arrays.colors[k + 2]! / 255;
+        } else {
+          params[m] = arrays.uvs[u]!;
+          params[m + 1] = arrays.uvs[u + 5]!;
+          params[m + 2] = arrays.uvs[u + 2]! - arrays.uvs[u]!;
+          params[m + 3] = arrays.uvs[u + 1]! - arrays.uvs[u + 5]!;
+        }
+        colors[m] = colors[m + 1] = colors[m + 2] = colors[m + 3] = 1;
       }
     }
     for (const c of q.visuals.chunks())

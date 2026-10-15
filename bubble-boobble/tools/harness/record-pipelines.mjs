@@ -24,7 +24,9 @@ for(const tier of tiers){
  try{
   c=await GameEngineClient.connect(address,{client:'bubble-pipeline-recorder'});
   await c.call('engine.step',{n:2,frames:true});
-  const probe=()=>c.call('render.probe',{width:768,height:720,points:[[0,0]]});
+  // The second point is inside the dragon body in every settings walk frame.
+  // Read actual palette pixels as well as the selected UI label on every tier.
+  const probe=()=>c.call('render.probe',{width:768,height:720,points:[[0,0],[368,491]]});
   for(let i=0;i<30;i++){await probe();if((await c.call('assets.status',{})).pending===0)break;if(i===29)throw new Error('Assets remained pending after explicit render requests');}
   const loaded=await c.call('replay.load',{data:replay});
   await c.call('perf.start',{});
@@ -43,18 +45,29 @@ for(const tier of tiers){
   while(Date.now()<deadline){
    const advance=Math.min(3,loaded.steps-cursor);
    if(advance>0){await c.call('engine.step',{n:advance,frames:true});cursor+=advance;}
-   await probe();frames++;
+   const pixels=await probe();frames++;
    const [s,observation,status]=await Promise.all([c.call('render.stats',{}),c.call('script.eval',{code:observationCode}),c.call('replay.status',{})]);
    peak=Math.max(peak,s.drawCalls);
    const o=observation.value;
    if(o){seen.add(o.screen);if(o.round===24)marker.add('round24');if(o.state===0&&o.screen==='play')marker.add('ready');if(o.dead)marker.add('death');if(o.particles>0)marker.add('particles');for(const e of o.effects)marker.add(e);}
+   if(o?.screen==='settings'){
+    const settingsLayout=await c.call('ui.layout',{width:768,height:720});
+    for(const [skin,rgb] of [['red',[255,0,0]],['yellow',[255,220,0]]]){
+     const selected=settingsLayout.nodes.some(n=>n.text===`DRAGON: ${skin.toUpperCase()}`&&n.visible===true&&n.opacity>0&&n.drawn?.w>0&&n.drawn?.h>0);
+     if(selected){
+      const actual=pixels.points[1]?.rgba?.slice(0,3);
+      if(JSON.stringify(actual)!==JSON.stringify(rgb))throw new Error(`${tier} ${skin} preview body pixel: ${JSON.stringify(actual)}`);
+      marker.add(`skin:${skin}`);
+     }
+    }
+   }
    if(status.diverged||status.divergence)throw new Error(`Replay divergence: ${JSON.stringify(status)}`);
    if(status.finished){finished=true;replaySteps=status.steps;break;}
   }
   if(!finished)throw new Error(`${tier} replay did not finish`);
   const required=['title','menu','profiles','scores','settings','help','credits','editor','play','pause','result'];
   const missing=required.filter(p=>!seen.has(p));
-  const missingMarkers=['round24','ready','death','particles','fire','water','thunder'].filter(p=>!marker.has(p));
+  const missingMarkers=['round24','ready','death','particles','fire','water','thunder','skin:red','skin:yellow'].filter(p=>!marker.has(p));
   if(missing.length||missingMarkers.length)throw new Error(`${tier} missing rendered coverage: ${[...missing,...missingMarkers].join(', ')}; seen=${[...seen].join(',')} frames=${frames}`);
   if(peak>budget.structural.drawCallsMax)throw new Error(`${tier} peak ${peak} exceeds ${budget.structural.drawCallsMax}`);
   const perf=await c.call('perf.stats',{stop:true});
