@@ -32,10 +32,14 @@ host exposes no recorded disconnect event, so automatic takeover is deferred.
 
 ## First balance values
 
-- Each wave appears in full during a three-second preparation countdown. Players
-  can move and jump into position; enemies and their attacks stay frozen, and
-  players cannot fire or take contact damage. Ten safe rest seconds precede the
-  next wave's preparation.
+- The complete break between waves is five seconds: two seconds to rest and
+  collect rewards, followed by the next formation's three-second entrance.
+  The HUD counts down continuously from five to GO. The initial wave also has a
+  three-second entrance. Dragons can move, jump and shoot throughout the break.
+- Arriving enemies cannot be trapped or hit by elemental effects, and cannot
+  attack or inflict contact damage. Protection ends when combat begins and the
+  enemies start moving. Dynamite and clock pickups wait on the ground during
+  the break so their effects become usable when combat resumes.
 - Enemies descend from above the arena over the first 1.5 seconds, then animate
   in place until release. This is a visual entrance; their simulation formation
   stays fixed throughout preparation. Dragons have no decorative spawn bubbles.
@@ -51,6 +55,10 @@ host exposes no recorded disconnect event, so automatic takeover is deferred.
 - Wave one mixes Zen-Chan and Monsta; waves two through five add Banebou,
   Mighta, Pulpul, and Invader respectively. Every unlocked type appears in each
   wave. Movement speed stays at the current playable tuning.
+- The last undefeated enemy in a normal wave turns angry once it is active,
+  using the original red artwork and faster movement. Trapped enemies still
+  count as remaining enemies; preparing enemies and boss summons do not trigger
+  this rule.
 - Dragon numbers, AI labels, rescue labels and footer text use
   their dragon's green, blue, red, yellow, purple or orange identity color.
 - Power-ups choose a random clear, supported platform or floor location,
@@ -62,8 +70,8 @@ host exposes no recorded disconnect event, so automatic takeover is deferred.
 - A defeated dragon becomes a stationary rescue bubble. An active dragon within
   52 pixels on both axes rescues it. A full team knockout ends the run.
 - Rests clear hazards and recover downed dragons. Players can shoot, move and
-  jump; practice bubbles move, pop and expire normally, then clear for the next
-  wave's entrance. Survivors keep
+  jump; practice bubbles move, pop and expire normally through the entrance.
+  Rest bubbles clear when the next formation appears. Survivors keep
   upgrades; knocked-out dragons lose them. Bots collect rewards and then idle.
 - The campaign's hurry-up and level-skip behavior do not run in survival.
   Parasols grant temporary protection instead of skipping waves. Score-based
@@ -87,7 +95,7 @@ sufficient for replay. The legacy solo/two-player modes remain available.
 
 ## Formation and power-up feedback validation — October 15, 2026
 
-- 211 V8 logic tests, 34 desktop render tests, and all 20 saved replays pass.
+- 215 V8 logic tests, 35 desktop render tests, and all 21 saved replays pass.
 - The 31-enemy wave also passes the mobile-tier, phone-low memory test, with
   preparation and combat below the 14-draw-call ceiling.
 - The randomized power-up and its benefit label pass the same mobile-tier,
@@ -95,6 +103,9 @@ sufficient for replay. The legacy solo/two-player modes remain available.
 - Entrance, positioning, GO and rest-shooting captures cover the new panel;
   its labels fit 768×720, 1680×720 and 640×960. A real six-pop engine test proves
   party pop cues are suppressed while shots and classic pops remain audible.
+- A pacing replay covers the five-second break, preparation shooting against
+  protected enemies, and the red final enemy. Logic tests verify the exact
+  300-step break, elemental protection and the angry movement-speed increase.
 - Typechecking and asset/scene validation pass. No new build or cook was made.
 - Hermes remains unavailable; these checks do not establish device GPU timing.
 

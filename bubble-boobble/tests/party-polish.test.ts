@@ -37,8 +37,8 @@ worldTest('party polish benefit descriptions use three letters or fewer',()=>{
 });
 
 worldTest('party polish HUD explains rest arrival positioning and go',()=>{
- const g=createPartyGame(campaign,42);g.Party!.Phase='rest';g.Party!.Timer=600;g.State=2;
- let hud=hudModel(g,initialDesktopSave);expect(hud.banner).toBe('WAVE 2 IN 10S');expect(hud.hint).toBe('REST - COLLECT REWARDS');expect(hud.detail).toBe('MOVE, JUMP AND SHOOT');
+ const g=createPartyGame(campaign,42);g.Party!.Phase='rest';g.Party!.Timer=300;g.State=2;
+ let hud=hudModel(g,initialDesktopSave);expect(hud.banner).toBe('WAVE 2 IN 5S');expect(hud.hint).toBe('REST - COLLECT REWARDS');expect(hud.detail).toBe('MOVE, JUMP AND SHOOT');
  g.Party!.Timer=60;expect(hudModel(g,initialDesktopSave).banner).toBe('WAVE 2 IN 1S');
  g.Party!.Wave++;preparePartyWave(g);hud=hudModel(g,initialDesktopSave);expect(hud.banner).toBe('WAVE 2 IN 3S');expect(hud.hint).toBe('ENEMIES ARRIVING');
  for(let tick=0;tick<100;tick++)stepGame(g,idle);

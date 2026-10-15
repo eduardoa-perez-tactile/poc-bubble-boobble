@@ -6,7 +6,7 @@ import { updateBubbles, updateEffects } from './bubbles';
 import { updateItems, checkPowerSpawns, spawnFood } from './items';
 import { body, alive, EnemyState, State, Tile, ActorSize, intersects, type GameState, type Input, type Level, type PartySlot } from './types';
 
-import { partyColors, defaultPartySlots } from './party-config';
+import { partyColors, defaultPartySlots, partyPrepareTicks, partyBreakTicks } from './party-config';
 export { partyColors, partySpawnColumns, defaultPartySlots } from './party-config';
 const idle: Input = Object.freeze({Move:0,Jump:false,Fire:false});
 const entrances = [{col:4,row:10},{col:26,row:10},{col:4,row:20},{col:26,row:20}];
@@ -17,7 +17,7 @@ export function createPartyGame(levels:Level[], seed:number, slots:PartySlot[]=d
   if (slots.length!==6 || !slots.includes('human') || slots.some(s=>!['human','ai','empty'].includes(s))) throw new Error('Choose six slots with at least one human');
   if (!Number.isInteger(bossWave)||bossWave<2||bossWave>100) throw new Error('Invalid boss wave');
   const g=createGame(levels.slice(0,1),seed,6);
-  g.Party={Wave:1,BossWave:bossWave,Phase:'prepare',Timer:180,Slots:slots.slice(),ToSpawn:0,SpawnTick:0,Spawned:0,Telegraphs:[]};
+  g.Party={Wave:1,BossWave:bossWave,Phase:'prepare',Timer:partyPrepareTicks,Slots:slots.slice(),ToSpawn:0,SpawnTick:0,Spawned:0,Telegraphs:[]};
   g.Enemies=[];g.Companions=Array.from({length:6},()=>null);
   for(let i=0;i<6;i++) {
     g.Players[i]!.Skin=partyColors[i];
@@ -38,7 +38,7 @@ export function partyWaveBudget(wave:number,team:number) { return Math.min(32,3+
 export function preparePartyWave(g:GameState) {
   const p=g.Party!;
   g.State=State.Playing;g.LevelTicks=0;g.Hurry=false;g.Freeze=0;g.Bubbles=[];g.Projectiles=[];g.Effects=[];g.Enemies=[];
-  p.Phase='prepare';p.Timer=180;g.Countdown=180;p.Spawned=0;p.Telegraphs=[];p.SpawnTick=0;p.ToSpawn=0;
+  p.Phase='prepare';p.Timer=partyPrepareTicks;g.Countdown=p.Timer;p.Spawned=0;p.Telegraphs=[];p.SpawnTick=0;p.ToSpawn=0;
   delete p.Boss;
   if(p.Wave===p.BossWave) {
     const hp=12+occupied(g)*6;
@@ -99,8 +99,8 @@ function rescues(g:GameState) {
 function rest(g:GameState) {
   const p=g.Party!;
   for(const e of g.Enemies)if(e.State===EnemyState.Defeated&&e.DeadTicks>0)spawnFood(g,e.X,e.Y);
-  p.Phase='rest';p.Timer=600;p.Telegraphs=[];
-  g.State=State.Clearing;g.Countdown=600;g.Enemies=[];g.Projectiles=[];g.Bubbles=[];g.Effects=[];g.Freeze=0;g.Hurry=false;
+  p.Phase='rest';p.Timer=partyBreakTicks;p.Telegraphs=[];
+  g.State=State.Clearing;g.Countdown=p.Timer;g.Enemies=[];g.Projectiles=[];g.Bubbles=[];g.Effects=[];g.Freeze=0;g.Hurry=false;
   for(let i=0;i<g.Players.length;i++)if(g.Players[i]!.Downed)revive(g,i);
 }
 function stepBoss(g:GameState) {
@@ -120,6 +120,17 @@ function stepBoss(g:GameState) {
   g.Bubbles=g.Bubbles.filter(shot=>!shot.Removed);
   if(b.HP<=0) {addScore(g,5000,b.X,b.Y);g.State=State.Won;g.Projectiles=[];g.Enemies=[];g.Sounds.push('opening');}
 }
+function enrageLastEnemy(g:GameState) {
+  const p=g.Party!;
+  if(p.Phase!=='combat'||p.ToSpawn>0||p.Telegraphs.length>0)return;
+  let last;
+  for(const e of g.Enemies) {
+    if(e.State===EnemyState.Defeated)continue;
+    if(last)return;
+    last=e;
+  }
+  if(last?.State===EnemyState.Active)last.Angry=true;
+}
 /** Called only from the fixed-step simulation, with recorded human input. */
 export function stepParty(g:GameState,inputs:Input[]) {
   const p=g.Party!;
@@ -128,26 +139,30 @@ export function stepParty(g:GameState,inputs:Input[]) {
   for(let i=0;i<6;i++) {
     if(p.Slots[i]==='empty')continue;
     if(p.Slots[i]==='ai')ins[i]=companionInput(g,i);
-    if(alive(g.Players[i]!))updatePlayer(g,i,p.Phase==='prepare'?{...(ins[i]??idle),Fire:false}:ins[i]??idle);
+    if(alive(g.Players[i]!))updatePlayer(g,i,ins[i]??idle);
   }
   if(p.Phase==='prepare') {
+    updateBubbles(g,ins);updateEffects(g);updateItems(g);
+    g.Particles=g.Particles.filter(v=>{v.Y-=.6;return --v.Life>0;});
     rescues(g);p.Timer--;g.Countdown=p.Timer;
     if(p.Timer<=0)beginWave(g);
     return;
   }
   if(p.Phase==='rest') {
     updateBubbles(g,ins);updateEffects(g);updateItems(g);g.Particles=g.Particles.filter(v=>{v.Y-=.6;return --v.Life>0;});p.Timer--;g.Countdown=p.Timer;
-    if(p.Timer<=0){p.Wave++;preparePartyWave(g);}
+    if(p.Timer<=partyPrepareTicks){p.Wave++;preparePartyWave(g);}
     return;
   }
   rescues(g);
   if(!g.Players.some(alive)){g.State=State.GameOver;return;}
   g.LevelTicks++;
   spawnTelegraphs(g);
+  enrageLastEnemy(g);
   if(g.Freeze>0)g.Freeze--;else{updateEnemies(g);updateProjectiles(g);}
   // Remove completed actors to bound long-session work.
   updateDefeated(g);g.Enemies=g.Enemies.filter(e=>e.State!==EnemyState.Defeated||e.DeadTicks>0);
   updateBubbles(g,ins);updateEffects(g);updateItems(g);checkPowerSpawns(g);
+  enrageLastEnemy(g);
   if(p.Phase==='boss')stepBoss(g);
   if(g.State===State.Won)return;
   for(let i=0;i<6;i++)checkPlayerHit(g,i);

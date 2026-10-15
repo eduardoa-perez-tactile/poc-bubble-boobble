@@ -98,6 +98,11 @@ export function updateItems(g: GameState) {
   for (const it of g.Items) {
     it.Age++;
     if (it.Age > 12 * TPS) continue;
+    // Keep offensive pickups available until their targets can fight back.
+    if (g.Party && (g.Party.Phase === 'prepare' || g.Party.Phase === 'rest') && (it.Power === 'dynamite' || it.Power === 'clock')) {
+      kept.push(it);
+      continue;
+    }
     if (it.Power === "" && !it.Stationary) {
       const oldFeet = it.Y + 32;
       it.VY = Math.min(6, it.VY + 0.3);

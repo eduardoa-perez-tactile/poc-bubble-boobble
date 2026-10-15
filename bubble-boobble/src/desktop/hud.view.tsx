@@ -11,7 +11,7 @@ export function hudModel(g:GameState,s:DesktopSave,shade:HudModel['shade']='norm
    round:`WAVE ${p.Wave} / ${p.BossWave}`,high:boss?`${boss.HP} / ${boss.MaxHP}`:`${g.Players.filter(p=>p.Lives>0&&!p.Downed).length} / ${p.Slots.filter(s=>s!=='empty').length}`,lives:'',enemies:'',
    banner:rest?`WAVE ${p.Wave+1} IN ${seconds}S`:prepare?`${wave} IN ${seconds}S`:go?`${wave} - GO!`:'',
    hint:rest?'REST - COLLECT REWARDS':prepare?(p.Timer>90?'ENEMIES ARRIVING':'GET INTO POSITION'):go?(boss?'WATCH THE BOSS':'CLEAR ALL ENEMIES'):'',
-   detail:rest?'MOVE, JUMP AND SHOOT':prepare?'MOVE + JUMP TO PREPARE':go?'WORK TOGETHER!':'',
+   detail:rest?'MOVE, JUMP AND SHOOT':prepare?'MOVE, JUMP AND SHOOT':go?'WORK TOGETHER!':'',
    showBanner:rest||prepare||go,clear:rest,freeze:!rest&&!prepare&&!go&&boss?(boss.Invulnerable?'WATCH FOR FALLING SHOTS':'SHOOT THE BOSS!'):''};
  }
  const p=s.profiles[s.active]!;const clear=g.State===2;const ready=g.State===0;const hurry=g.Hurry&&g.State===1&&g.LevelTicks<1980&&g.Tick%30<24;

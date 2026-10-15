@@ -73,6 +73,7 @@ export function updateBubbles(g: GameState, inputs: Input[]) {
         b.Distance++;
         for (const e of g.Enemies)
           if (
+            g.Party?.Phase !== 'prepare' &&
             e.State === EnemyState.Active &&
             intersects(b.X, b.Y, 40, 40, e.X + 3, e.Y + 3, 38, 38)
           ) {
@@ -296,6 +297,7 @@ export function hitWithElement(
   w: number,
   h: number,
 ) {
+  if (g.Party?.Phase === 'prepare') return;
   if (effect.Element === "fire" && !effect.Ground) return;
   for (const e of g.Enemies)
     if (
@@ -312,7 +314,7 @@ export function hitWithElement(
 export function carryOnWater(g: GameState, effect: Effect) {
   if (effect.Spread) return;
   for (const e of g.Enemies)
-    if (e.State === EnemyState.Carried && e.CarriedBy === effect.ID) {
+    if (g.Party?.Phase !== 'prepare' && e.State === EnemyState.Carried && e.CarriedBy === effect.ID) {
       e.X = effect.X;
       e.Y = effect.Y - 12;
       e.CarryTicks++;

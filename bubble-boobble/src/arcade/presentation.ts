@@ -1,6 +1,6 @@
 import campaignPreviews from '../../data/levels.json';
 import { partyCardRect } from '../desktop/layout';
-import { partyColors } from './party-config';
+import { partyColors, partyPrepareTicks } from './party-config';
 // Presentation follows pinned internal/app/render.go. It never changes match state.
 import {
   defineSystem,
@@ -121,7 +121,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
     : index === 1 ? 'blue' : avatar;
   const entranceY = (target: number, index: number) => {
     if (g.Party?.Phase !== 'prepare') return target;
-    const t = Math.max(0, Math.min(1, (180 - g.Party.Timer - index % 6 * 5) / 60));
+    const t = Math.max(0, Math.min(1, (partyPrepareTicks - g.Party.Timer - index % 6 * 5) / 60));
     return -48 + (target + 48) * (1 - (1 - t) * (1 - t));
   };
   if (g.Party) {
