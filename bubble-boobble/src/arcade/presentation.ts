@@ -137,6 +137,8 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
   for (const i of g.Items) {
     if (i.Age > 600 && i.Age % 12 < 6) continue;
     out.push(fittedItemImage(i.Power || `food/${i.Food}`, 0, i.X, i.Y + 48, 32));
+    if (g.Party && i.Power)
+      out.push(label('+ POWER UP', Math.max(8, Math.min(680, i.X - 24)), Math.max(66, i.Y + 35), 8, [100,255,130]));
   }
   for (const e of g.Enemies) {
     if (

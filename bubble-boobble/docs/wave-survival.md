@@ -47,6 +47,10 @@ host exposes no recorded disconnect event, so automatic takeover is deferred.
   wave. Movement speed stays at the current playable tuning.
 - Dragon numbers, AI labels, rescue labels, spawn markers and footer text use
   their dragon's green, blue, red, yellow, purple or orange identity color.
+- Power-ups choose a random clear, supported platform or floor location,
+  avoiding dragons and enemies. The game's seeded RNG keeps drops reproducible
+  in replays. If no spot is clear, the queued reward waits. A small green
+  **+ POWER UP** label appears above the item; food and classic mode are unchanged.
 - A defeated dragon becomes a stationary rescue bubble. An active dragon within
   52 pixels on both axes rescues it. A full team knockout ends the run.
 - Rests clear hazards, recover downed dragons and disable firing. Survivors keep
@@ -68,11 +72,13 @@ Party mode dispatches through the existing fixed-step game owner. Bot decisions
 and held controller state belong to simulation documents, so recorded input is
 sufficient for replay. The legacy solo/two-player modes remain available.
 
-## Formation feedback validation — October 15, 2026
+## Formation and power-up feedback validation — October 15, 2026
 
-- 205 V8 logic tests, 32 desktop render tests, and all 17 saved replays pass.
+- 207 V8 logic tests, 33 desktop render tests, and all 18 saved replays pass.
 - The 31-enemy wave also passes the mobile-tier, phone-low memory test, with
   preparation and combat below the 14-draw-call ceiling.
+- The randomized power-up and its benefit label pass the same mobile-tier,
+  phone-low memory test and draw-call ceiling, plus a recorded engine replay.
 - Typechecking and asset/scene validation pass. No new build or cook was made.
 - Hermes remains unavailable; these checks do not establish device GPU timing.
 

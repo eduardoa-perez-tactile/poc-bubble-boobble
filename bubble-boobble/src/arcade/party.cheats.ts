@@ -7,6 +7,7 @@ import { copyGame } from './game';
 import { session } from './session';
 import { desktopGameRequest, desktopAction } from '../desktop/state';
 import { EnemyState, State } from './types';
+import { checkPowerSpawns } from './items';
 export const PartyReset=defineCheat({id:'party.reset',group:'Party',title:'Inspect wave survival',params:{countdown:{type:'int',min:1,max:180,default:1},wave:{type:'int',min:1,max:10,default:1},humans:{type:'int',min:1,max:6,default:1}},resources:[write(ArcadeControl)],run(ctx,{wave,humans,countdown}){
   const g=createPartyGame(campaign,42,Array.from({length:6},(_,i)=>i<humans?'human':'ai'));
   g.Party!.Wave=wave;preparePartyWave(g);g.Party!.Timer=countdown;
@@ -16,3 +17,4 @@ export const PartyReset=defineCheat({id:'party.reset',group:'Party',title:'Inspe
 export const PartyClear=defineCheat({id:'party.clear-wave',group:'Party',title:'Finish current enemy wave',run(){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Party!.ToSpawn=0;g.Party!.Telegraphs=[];for(const e of g.Enemies){e.State=EnemyState.Defeated;e.DeadTicks=0;}session.set({...current,game:g});}});
 export const PartyRescue=defineCheat({id:'party.rescue-setup',group:'Party',title:'Inspect teammate rescue',run(){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Players[1]!.Downed=true;g.Players[1]!.Lives=0;g.Players[1]!.Dead=0;g.Players[1]!.X=g.Players[0]!.X+110;g.Players[1]!.Y=g.Players[0]!.Y;session.set({...current,game:g});}});
 export const PartyVictory=defineCheat({id:'party.finish-boss',group:'Party',title:'Inspect boss victory result',run(){const current=session.get();if(!current.game?.Party?.Boss)return;const g=copyGame(current.game);g.Party!.Boss!.HP=0;g.State=State.Playing;session.set({...current,game:g});}});
+export const PartyPower=defineCheat({id:'party.powerup',group:'Party',title:'Inspect a randomized powerup',run(){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Pending.push('pink_candy');checkPowerSpawns(g);session.set({...current,game:g});}});

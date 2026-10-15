@@ -7,13 +7,15 @@ import {
   TPS,
   Tile,
   Width,
+  Rows,
   alive,
   body,
   intersects,
   position,
 } from "./types";
 import { productionPlayerBalance } from './balance';
-import { solid } from "./physics";
+import { blocked, solid } from "./physics";
+import { intN } from './rng';
 import { addScore, defeat, loadLevel } from "./game";
 export function foodScore(level: number) {
   return level <= 10
@@ -35,6 +37,20 @@ export function spawnFood(g: GameState, x: number, y: number) {
     ),
     Food: g.Level.number,
   });
+}
+function partyPowerLocation(g: GameState): [number, number] | undefined {
+  const locations: [number, number][] = [];
+  for (let row = 2; row < Rows; row++) {
+    for (let col = 2; col < 29; col++) {
+      const x = col * Tile, y = row * Tile - 32;
+      if (blocked(g, x, y, 32) || !solid(g, col, row) || !solid(g, Math.floor((x + 31) / Tile), row)) continue;
+      if (g.Players.some(p => alive(p) && intersects(p.X, p.Y, ActorSize, ActorSize, x, y, 32, 32))) continue;
+      if (g.Enemies.some(e => e.State !== EnemyState.Defeated && intersects(e.X, e.Y, ActorSize, ActorSize, x, y, 32, 32))) continue;
+      locations.push([x, y]);
+    }
+  }
+  // Consume the recorded game's RNG only when a drop can actually appear.
+  return locations.length ? locations[intN(g, locations.length)] : undefined;
 }
 export function checkPowerSpawns(g: GameState) {
   const c = g.Counters;
@@ -72,7 +88,9 @@ export function checkPowerSpawns(g: GameState) {
     g.WaterStage = 0;
   }
   if (g.Pending.length === 0 || g.Items.some((i) => i.Power !== "")) return;
-  const [x, y] = position(g.Level.power_spawn, 32);
+  const location = g.Party ? partyPowerLocation(g) : position(g.Level.power_spawn, 32);
+  if (!location) return;
+  const [x, y] = location;
   g.Items.push({ ...item(x, y), Power: g.Pending.shift()! });
 }
 export function updateItems(g: GameState) {
