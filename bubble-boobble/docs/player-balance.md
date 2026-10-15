@@ -8,6 +8,7 @@ translation corrections.
 | --- | --- | --- |
 | Movement | 3 px/tick (180 px/s) | 2.5 px/tick (150 px/s) |
 | Movement with shoes | 5 px/tick (300 px/s) | 3.5 px/tick (210 px/s) |
+| Shoes travel threshold | 11,520 horizontal px | 9,600 horizontal px |
 | Bubble speed | 8 px/tick | 6 px/tick |
 | Bubble speed with blue candy | 16 px/tick | 9 px/tick |
 | Bubble range | 200 px | 160 px |
@@ -21,11 +22,21 @@ range even when that requires a partial final movement tick. Pickups do not
 retroactively change existing bubbles' stored speed/range or an already-running
 firing cooldown. Shoes affect movement only.
 
-Jump impulse, gravity, bubble bounce, capture, pop/escape timers, powerup trigger
-thresholds, pickup effects and enemy projectiles retain their previous rules.
+Jump impulse, gravity, bubble bounce, capture, pop/escape timers, other powerup
+trigger thresholds, pickup effects and enemy projectiles retain their previous rules.
 All powers still start disabled and reset on death and round transitions.
 The separately requested slower normal enemies, player top traversal and cosmetic
 skin/bubble colors remain in place.
+
+The shoes threshold is lowered separately to preserve its earlier ideal earning
+time at the slower walking speed. The original 11,520 pixels at 180 px/s took
+64 seconds of actual movement; leaving that threshold unchanged at 150 px/s
+would take 76.8 seconds. The new 9,600-pixel threshold takes 64 seconds solo, or
+32 seconds when two unpowered players continuously contribute their full speed.
+These are unobstructed movement minima, not guaranteed pickup times. Shoes still
+join the shared FIFO queue, grant the boost only to their collector, and retain
+the existing expiry and death/round-reset behavior. Movement remains 150 px/s,
+or 210 px/s with shoes.
 
 `src/arcade/balance.ts` defines `productionPlayerBalance` and
 `referencePlayerBalance`. Each game's authoritative `PlayerBalance` stores numeric
@@ -59,7 +70,8 @@ The installed engine now rejects the retired `Camera.msaa` property in the
 isolated pixel-renderer test scene. That obsolete override is removed; MSAA
 continues to use the project's renderer-tier configuration. No engine code changes.
 
-Local checkpoint validation: `npm run harness:verify-full` passed in 60.786 s:
+Before the shoes-threshold followup, checkpoint validation with
+`npm run harness:verify-full` passed in 60.786 s:
 132 V8 T0 cases, 23 desktop T1 cases, nine independently verified explicit-scene
 replays, cold live viewport, typecheck/validation, desktop cook and 600-step smoke,
 and asset provenance checks. The all-tier recording completed 684 steps and
@@ -70,3 +82,10 @@ the explicit original profiles; Go fixtures remain unchanged.
 These are local macOS engine checks. Hermes is unavailable; physical device,
 OS input/display, and full natural campaign progression remain untested. No
 computer-use access was requested or used.
+
+Shoes-threshold followup validation: `npm run harness:verify-full` passed in
+53.770 s with 137 V8 T0 cases, 23 desktop T1 cases, nine independently verified
+replays, cold live viewport, typecheck/validation, desktop cook and smoke, and
+asset provenance checks. Cached pure Go comparisons passed with the original
+11,520-pixel threshold; Go fixtures, screenshot goldens and pipeline records
+remain unchanged. This does not add physical-device or natural-campaign evidence.

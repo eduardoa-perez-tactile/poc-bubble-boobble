@@ -3,6 +3,7 @@
 export interface PlayerBalance {
   MoveSpeed: number;
   ShoesSpeed: number;
+  ShoesTravelThreshold: number;
   BubbleSpeed: number;
   BlueBubbleSpeed: number;
   BubbleRange: number;
@@ -13,6 +14,7 @@ export interface PlayerBalance {
 export const productionPlayerBalance: Readonly<PlayerBalance> = Object.freeze({
   MoveSpeed: 2.5,
   ShoesSpeed: 3.5,
+  ShoesTravelThreshold: 9600,
   BubbleSpeed: 6,
   BlueBubbleSpeed: 9,
   BubbleRange: 160,
@@ -25,6 +27,7 @@ export const productionPlayerBalance: Readonly<PlayerBalance> = Object.freeze({
 export const referencePlayerBalance: Readonly<PlayerBalance> = Object.freeze({
   MoveSpeed: 3,
   ShoesSpeed: 5,
+  ShoesTravelThreshold: 11520,
   BubbleSpeed: 8,
   BlueBubbleSpeed: 16,
   BubbleRange: 200,
