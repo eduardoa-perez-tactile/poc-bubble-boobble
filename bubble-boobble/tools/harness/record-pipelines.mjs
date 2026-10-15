@@ -15,7 +15,7 @@ const {GameEngineClient}=await import(fileURLToPath(new URL('../../.cache/pipeli
 const budget=JSON.parse(readFileSync('tests/budgets/presentation.json','utf8'));
 const replay=readFileSync(budget.replay).toString('base64');
 const records={},rows=[];
-const observationCode='(()=>{const u=JSON.parse(__gameengine_host("doc.get",JSON.stringify({name:"desktop-ui"})));const d=JSON.parse(__gameengine_host("doc.get",JSON.stringify({name:"arcade.session"})));const g=d?.game;return {screen:u?.screen??"loading",round:g?.Level.number,state:g?.State,dead:!!g?.Players.some(p=>p.Dead>0),particles:g?.Particles.length??0,effects:g?.Effects.map(e=>e.Element)??[]}})()';
+const observationCode='(()=>{const u=JSON.parse(__gameengine_host("doc.get",JSON.stringify({name:"desktop-ui"})));const d=JSON.parse(__gameengine_host("doc.get",JSON.stringify({name:"arcade.session"})));const g=d?.game;return {screen:u?.screen??"loading",round:g?.Level.number,state:g?.State,dead:!!g?.Players.some(p=>p.Dead>0),particles:g?.Particles.length??0,effects:g?.Effects.map(e=>e.Element)??[],bubbles:g?.Bubbles.filter(b=>b.Shooter!==undefined&&!b.Element&&!b.EnemyID&&b.Age>=30&&b.Age<=450).map(b=>({x:b.X,y:b.Y,shooter:b.Shooter}))??[]}})()';
 function cli(args){const r=spawnSync('gameengine',[...args,'--json'],{encoding:'utf8',maxBuffer:8*1024*1024});if(r.error)throw r.error;if(r.status!==0)throw new Error(r.stdout+r.stderr);return JSON.parse(r.stdout);}
 for(const tier of tiers){
  const tierStarted=Date.now();
@@ -61,13 +61,24 @@ for(const tier of tiers){
      }
     }
    }
+   // The route ends by shooting once with yellow P1 and blue P2. Read both
+   // real bubble centers after their four-frame growth animation has settled.
+   if(o?.screen==='play'&&marker.has('skin:yellow')&&o.bubbles?.length&&(!marker.has('bubble:yellow')||!marker.has('bubble:blue'))){
+    const swatches=o.bubbles.filter(b=>b.shooter===0||b.shooter===1);
+    const colors=await c.call('render.probe',{width:768,height:720,points:swatches.map(b=>[Math.floor(b.x+22),Math.floor(b.y+48+44*9.5/17)])});frames++;
+    for(let i=0;i<swatches.length;i++){
+     const blue=swatches[i].shooter===1,expected=blue?[0,170,255]:[255,220,0],actual=colors.points[i]?.rgba?.slice(0,3);
+     if(JSON.stringify(actual)!==JSON.stringify(expected))throw new Error(`${tier} shooter ${swatches[i].shooter} bubble pixel: ${JSON.stringify(actual)}`);
+     marker.add(blue?'bubble:blue':'bubble:yellow');
+    }
+   }
    if(status.diverged||status.divergence)throw new Error(`Replay divergence: ${JSON.stringify(status)}`);
    if(status.finished){finished=true;replaySteps=status.steps;break;}
   }
   if(!finished)throw new Error(`${tier} replay did not finish`);
   const required=['title','menu','profiles','scores','settings','help','credits','editor','play','pause','result'];
   const missing=required.filter(p=>!seen.has(p));
-  const missingMarkers=['round24','ready','death','particles','fire','water','thunder','skin:red','skin:yellow'].filter(p=>!marker.has(p));
+  const missingMarkers=['round24','ready','death','particles','fire','water','thunder','skin:red','skin:yellow','bubble:yellow','bubble:blue'].filter(p=>!marker.has(p));
   if(missing.length||missingMarkers.length)throw new Error(`${tier} missing rendered coverage: ${[...missing,...missingMarkers].join(', ')}; seen=${[...seen].join(',')} frames=${frames}`);
   if(peak>budget.structural.drawCallsMax)throw new Error(`${tier} peak ${peak} exceeds ${budget.structural.drawCallsMax}`);
   const perf=await c.call('perf.stats',{stop:true});

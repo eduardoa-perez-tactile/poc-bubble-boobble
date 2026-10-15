@@ -46,7 +46,7 @@ npm run harness:milestone
 
 Verify runs provenance/comparator checks, the aborted-HTTP-body regression, a
 fresh-host cold live-viewport regression, all V8 T0 tests, all desktop T1 tests
-(including the complete 19-shot presentation route and its draw budget), seven
+(including the complete 20-shot presentation route and its draw budget), nine
 engine replays with their explicit recorded scenes, then `gameengine check`
 (typecheck, validation, desktop cook and cooked smoke), followed by the original/
 derived audio provenance and nonempty cooked-alias uniqueness guard across all
@@ -88,6 +88,10 @@ Two more replays record Settings selection of red and yellow and entry into solo
 and co-op gameplay. The presentation route also ends with both new skin previews;
 pipeline verification checks their labels and actual body-color pixels on every
 recorded GPU tier. See [dragon-skins.md](dragon-skins.md).
+Two bubble-color replays exercise firing all four solo colors and simultaneous
+co-op shots. Shot `Shooter` metadata is retained in engine world hashes but
+excluded explicitly from the Go bubble projection, whose schema has no owner
+field. Movement/capture/RNG/sound comparisons still include every original field.
 
 Engine-input parity compares every exported field and sound-event sequence after
 each semantic input tick. The pure lane exercises the same simulation without the

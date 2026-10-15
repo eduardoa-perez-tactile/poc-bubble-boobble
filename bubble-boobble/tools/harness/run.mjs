@@ -166,6 +166,8 @@ const replays = [
   { path: 'tests/replays/desktop_complete_presentation_flows.greplay', scene: 'scenes/arcade.scene.json', filter: 'desktop complete presentation flows', tier: 't1' },
   { path: 'tests/replays/dragon_skins_settings_selection_reaches_red_gameplay.greplay', scene: 'scenes/arcade.scene.json', filter: 'dragon skins settings selection reaches red gameplay', tier: 't1' },
   { path: 'tests/replays/dragon_skins_settings_selection_reaches_yellow_gameplay.greplay', scene: 'scenes/arcade.scene.json', filter: 'dragon skins settings selection reaches yellow gameplay', tier: 't1' },
+  { path: 'tests/replays/bubble_skins_actual_fire_input_all_solo_colors.greplay', scene: 'scenes/arcade.scene.json', filter: 'bubble skins actual fire input all solo colors', tier: 't1' },
+  { path: 'tests/replays/bubble_skins_actual_fire_input_simultaneous_co_op_colors.greplay', scene: 'scenes/arcade.scene.json', filter: 'bubble skins actual fire input simultaneous co-op colors', tier: 't1' },
 ];
 function verifyReplays(selected = replays) {
   const bundle = engine(['bundle']).output.path;

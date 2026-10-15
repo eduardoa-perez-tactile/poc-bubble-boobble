@@ -49,6 +49,7 @@ export function shootBubble(g: GameState, player: number) {
   g.Bubbles.push({
     ...bubble(p.X + p.Dir * 18, p.Y + 2),
     ID: g.NextID,
+    Shooter: player,
     Dir: p.Dir,
     Speed: speed,
     MaxDistance: reach,

@@ -1,7 +1,19 @@
 {
-  "red": {"id": 1, "swaps": [{"from": [0, 255, 0], "to": [255, 0, 0]}]},
-  "yellow": {"id": 2, "swaps": [
+  "red": {"id": 1, "sourceAnimation": "green", "targetAnimation": "red", "swaps": [{"from": [0, 255, 0], "to": [255, 0, 0]}]},
+  "yellow": {"id": 2, "sourceAnimation": "green", "targetAnimation": "yellow", "swaps": [
     {"from": [0, 255, 0], "to": [255, 220, 0]},
     {"from": [255, 255, 0], "to": [255, 119, 0]}
+  ]},
+  "bubbleBlue": {"id": 3, "sourceAnimation": "bubble", "targetAnimation": "blue/bubble", "swaps": [
+    {"from": [0, 255, 0], "to": [0, 170, 255]},
+    {"from": [0, 187, 0], "to": [0, 125, 187]}
+  ]},
+  "bubbleRed": {"id": 4, "sourceAnimation": "bubble", "targetAnimation": "red/bubble", "swaps": [
+    {"from": [0, 255, 0], "to": [255, 0, 0]},
+    {"from": [0, 187, 0], "to": [187, 0, 0]}
+  ]},
+  "bubbleYellow": {"id": 5, "sourceAnimation": "bubble", "targetAnimation": "yellow/bubble", "swaps": [
+    {"from": [0, 255, 0], "to": [255, 220, 0]},
+    {"from": [0, 187, 0], "to": [187, 161, 0]}
   ]}
 }

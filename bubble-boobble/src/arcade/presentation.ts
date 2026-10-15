@@ -33,13 +33,15 @@ const PIXEL_MATERIAL = 'materials/pixel-ordered.mat.json';
 const animations: Readonly<Record<string, readonly string[]>> = manifest;
 const atlasRects: Readonly<Record<string, readonly number[]>> = atlas.rects;
 export function referenceFrame(name: string, tick: number): string {
+  const bubbleSkin = name === 'blue/bubble' ? 'blue' : name === 'red/bubble' ? 'red' : name === 'yellow/bubble' ? 'yellow' : '';
   const skin = name.startsWith('red/') ? 'red' : name.startsWith('yellow/') ? 'yellow' : '';
-  const paths = animations[skin ? 'green/' + name.slice(skin.length + 1) : name];
+  const paths = animations[bubbleSkin ? 'bubble' : skin ? 'green/' + name.slice(skin.length + 1) : name];
   const path = paths?.[Math.floor(Math.max(0, tick) / 10) % paths.length];
   const frame = path
     ? "reference/" + path.replace(/^sprites\//, "").replace(/\.png$/, "")
     : "";
-  return skin ? frame.replace('reference/green/',`reference/${skin}/`) : frame;
+  return bubbleSkin ? frame.replace('reference/bubble/',`reference/${bubbleSkin}/bubble/`)
+    : skin ? frame.replace('reference/green/',`reference/${skin}/`) : frame;
 }
 interface Draw {
   image: string;
@@ -115,7 +117,8 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
     out.push(image(e.Kind + "/" + state, e.Age, e.X, e.Y + 48, 48, 48, e.Dir));
   }
   for (const b of g.Bubbles) {
-    let name = "bubble",
+    const bubbleSkin = b.Shooter === 1 ? 'blue' : avatar;
+    let name = bubbleSkin === 'green' ? 'bubble' : `${bubbleSkin}/bubble`,
       tick = Math.min(b.Age, 30);
     if (b.Element) {
       name = b.Element + "-bubble";

@@ -47,5 +47,14 @@ renderTest('desktop complete presentation flows',async({input,step,cheat,render,
   expect(desktopSaveState.get().profiles[desktopSaveState.get().active]!.avatar).toBe(skin);
   shot(`skin-${skin}-settings`);await step(6);
  }
+ await cheat(ResetArcade,{round:1,seed:42,players:2,ready:false});
+ input.action('fire',1);input.action('fire2',1);await step(1);
+ input.action('fire',0);input.action('fire2',0);await step(33);
+ const bubbles=session.get().game!.Bubbles;
+ expect(bubbles.length).toBe(2);expect(bubbles.map(b=>b.Shooter)).toEqual([0,1]);
+ expect(bubbles.every(b=>b.Age>=30)).toBe(true);
+ const colors=render.probe({width:768,height:720,points:bubbles.map(b=>[Math.floor(b.X+22),Math.floor(b.Y+48+44*9.5/17)] as [number,number])}).points;
+ expect(colors.map(p=>p.rgba)).toEqual([[255,220,0,255],[0,170,255,255]]);
+ shot('bubbles-yellow-blue');await step(6);
  expect(peak).toBeLessThanOrEqual(14);
 },{scene:'scenes/arcade.scene.json'});

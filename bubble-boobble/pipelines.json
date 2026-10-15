@@ -30,7 +30,7 @@
    "r": "3d",
    "key": {
     "Forward": {
-     "program": "4e6a1dfe77ea2e70",
+     "program": "3209a4bd719a3d11",
      "alpha": 1,
      "double_sided": true,
      "prepassed": false,
@@ -60,7 +60,7 @@
    "r": "3d",
    "key": {
     "Shadow": {
-     "program": "4e6a1dfe77ea2e70",
+     "program": "3209a4bd719a3d11",
      "alpha": 1,
      "double_sided": true,
      "skinned": false
@@ -118,7 +118,7 @@
    "r": "3d",
    "key": {
     "Forward": {
-     "program": "4e6a1dfe77ea2e70",
+     "program": "3209a4bd719a3d11",
      "alpha": 1,
      "double_sided": true,
      "prepassed": true,
@@ -148,7 +148,7 @@
    "r": "3d",
    "key": {
     "Prepass": {
-     "program": "4e6a1dfe77ea2e70",
+     "program": "3209a4bd719a3d11",
      "alpha": 1,
      "double_sided": true,
      "samples": 4,
@@ -174,7 +174,7 @@
    "r": "3d",
    "key": {
     "Shadow": {
-     "program": "4e6a1dfe77ea2e70",
+     "program": "3209a4bd719a3d11",
      "alpha": 1,
      "double_sided": true,
      "skinned": false
@@ -232,7 +232,7 @@
    "r": "3d",
    "key": {
     "Forward": {
-     "program": "4e6a1dfe77ea2e70",
+     "program": "3209a4bd719a3d11",
      "alpha": 1,
      "double_sided": true,
      "prepassed": false,
@@ -262,7 +262,7 @@
    "r": "3d",
    "key": {
     "Shadow": {
-     "program": "4e6a1dfe77ea2e70",
+     "program": "3209a4bd719a3d11",
      "alpha": 1,
      "double_sided": true,
      "skinned": false

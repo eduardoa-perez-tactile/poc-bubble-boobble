@@ -36,7 +36,43 @@ palette rendering at gameplay/preview/icon sizes. The full presentation replay
 also visits red and yellow settings previews; its pipeline check requires both
 the selected labels and actual body-color pixels on every recorded GPU tier.
 
-## Validation
+## Matching shot colors
+
+Ordinary bubbles use the firing dragon's color through all four growth frames
+and while floating. Player one follows the active profile; co-op player two
+shoots blue. The original green bubble artwork is unchanged. Blue uses the same
+`[0,170,255]` body hue as the blue dragon; red and yellow use `[255,0,0]` and
+`[255,220,0]`, with matching darker shades. Highlights and transparency remain.
+Warning, trapped-enemy and elemental bubbles keep their existing distinct art.
+
+Each fired bubble stores optional numeric `Shooter` metadata (0 or 1), retained
+through copies and filtering. Legacy bubbles without it fall back to player one.
+Physics never reads this field. The original Go canonical projection removes
+only `Shooter` from copied bubble entries; engine replay hashes retain it. Tests
+compare 240 owned/unowned ticks through capture with identical original state,
+RNG, counters and sounds.
+
+Virtual bubble palettes reuse the original four frames without extra textures.
+The presentation replay ends with actual yellow/blue co-op shots, and all-tier
+pipeline checks require both rendered bubble colors in addition to skin previews.
+
+Bubble-color validation on the local release V8/Metal host passed
+`harness:verify-full` in 56.016 seconds: 122 logic tests, 23 visual tests, nine
+independent replay verifications and the cooked-game/provenance checks. All
+46,464 rendered bubble palette samples match exactly across four frames, three
+new palettes and both orientations. Eight new captures were reviewed; existing
+goldens, source art, atlas/pixel data and Go fixtures remain unchanged.
+
+The all-tier route covers 684 steps and 230 rendered frames per tier. Both bubble
+color markers are verified from actual pixels; peak draws remain 11/9/9 against
+the existing limit of 14. The new custom program is `3209a4bd719a3d11`.
+Desktop protocol-driven CPU p95 is 1.796 ms per simulation step and 4.520 ms per
+sampled presentation frame, with 233 MiB process memory. Ownership adds one
+scalar to the existing shot object, without a separate tracking map; palettes
+add no texture allocation. These figures do not establish phone performance.
+The untested-platform and existing-warning limits below also apply here.
+
+## Initial skin validation (PR #7)
 
 October 15, local macOS arm64 release V8/Metal host:
 
