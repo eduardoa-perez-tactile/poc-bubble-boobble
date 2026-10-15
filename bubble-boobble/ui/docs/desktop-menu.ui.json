@@ -29,7 +29,6 @@
         "dm_logo",
         "dm_profile",
         "dm_hint",
-        "dm_start",
         "dm_profiles",
         "dm_scores",
         "dm_editor",
@@ -42,13 +41,13 @@
         "dm_prompt_holder",
         "dm_status_panel",
         "dm_status",
-        "dm_party"
+        "dm_start"
       ]
     },
     "dm_logo": {
       "type": "icon",
       "name": "Icon",
-      "image": "reference/logo",
+      "image": "branding/bubble-madness-logo",
       "style": {
         "size": 32,
         "position": "anchored",
@@ -62,7 +61,7 @@
         ],
         "w": 350,
         "h": 252,
-        "hide": true
+        "hide": false
       }
     },
     "dm_profile": {
@@ -102,30 +101,6 @@
         "color": "#829fb1"
       }
     },
-    "dm_start": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "start",
-      "props": {
-        "label": "START GAME",
-        "selected": {
-          "property": "startSelected"
-        }
-      },
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0,
-          0
-        ],
-        "offset": [
-          218,
-          328
-        ],
-        "w": 332,
-        "h": 44
-      }
-    },
     "dm_profiles": {
       "type": "use",
       "doc": "desktop-button",
@@ -144,11 +119,12 @@
         ],
         "offset": [
           104,
-          392
+          452
         ],
         "w": 270,
         "h": 38
-      }
+      },
+      "show": "development"
     },
     "dm_scores": {
       "type": "use",
@@ -168,11 +144,12 @@
         ],
         "offset": [
           394,
-          392
+          452
         ],
         "w": 270,
         "h": 38
-      }
+      },
+      "show": "development"
     },
     "dm_editor": {
       "type": "use",
@@ -192,11 +169,12 @@
         ],
         "offset": [
           104,
-          444
+          504
         ],
         "w": 270,
         "h": 38
-      }
+      },
+      "show": "development"
     },
     "dm_settings": {
       "type": "use",
@@ -215,11 +193,11 @@
           0
         ],
         "offset": [
-          394,
-          444
+          218,
+          388
         ],
-        "w": 270,
-        "h": 38
+        "w": 332,
+        "h": 44
       }
     },
     "dm_help": {
@@ -239,12 +217,13 @@
           0
         ],
         "offset": [
-          104,
-          496
+          394,
+          504
         ],
         "w": 270,
         "h": 38
-      }
+      },
+      "show": "development"
     },
     "dm_credits": {
       "type": "use",
@@ -263,12 +242,13 @@
           0
         ],
         "offset": [
-          394,
-          496
+          104,
+          556
         ],
         "w": 270,
         "h": 38
-      }
+      },
+      "show": "development"
     },
     "dm_quit": {
       "type": "use",
@@ -287,12 +267,13 @@
           0
         ],
         "offset": [
-          264,
-          570
+          394,
+          556
         ],
-        "w": 240,
+        "w": 270,
         "h": 38
-      }
+      },
+      "show": "development"
     },
     "dm_bubbles": {
       "type": "codeArea",
@@ -347,7 +328,8 @@
         "fontSize": 16,
         "color": "#ebf5ff"
       },
-      "show": "titleMode"
+      "show": "titleMode",
+      "property": "tagline"
     },
     "dm_prompt_holder": {
       "type": "element",
@@ -430,10 +412,10 @@
         "color": "#ffdc6a"
       }
     },
-    "dm_party": {
+    "dm_start": {
       "type": "use",
       "doc": "desktop-button",
-      "key": "party",
+      "key": "choose-mode",
       "style": {
         "position": "anchored",
         "anchor": [
@@ -442,15 +424,15 @@
         ],
         "offset": [
           218,
-          622
+          328
         ],
         "w": 332,
-        "h": 38
+        "h": 44
       },
       "props": {
-        "label": "WAVE SURVIVAL",
+        "label": "START GAME",
         "selected": {
-          "property": "partySelected"
+          "property": "startSelected"
         }
       }
     }
@@ -501,9 +483,6 @@
       "poses": {
         "yes": {
           "set": {
-            "dm_start": {
-              "hide": true
-            },
             "dm_profiles": {
               "hide": true
             },
@@ -525,7 +504,7 @@
             "dm_quit": {
               "hide": true
             },
-            "dm_party": {
+            "dm_start": {
               "hide": true
             }
           }
@@ -544,9 +523,13 @@
       "type": "yesno",
       "default": false
     },
-    "partySelected": {
+    "development": {
       "type": "yesno",
       "default": false
+    },
+    "tagline": {
+      "type": "text",
+      "default": "SIX DRAGONS. ONE MAD ADVENTURE."
     }
   }
 }

@@ -96,12 +96,13 @@ declare module '@gameengine/ui' {
      *   - `sel20`: yesno, default false
      *   - `sel21`: yesno, default false
      *   - `enemyCount`: text, default ""
+     *   - `brand`: text, default "BUBBLE MADNESS"
      * Events: `press (<item>)`, `template-prev`, `template`, `template-next`, `new`, `undo`, `save-level`, `load-level`, `test-level`, `menu`, `element`, `theme`
      * Code areas: none
      * Refs: `template-prev`, `template`, `template-next`, `new`, `undo`, `save-level`, `load-level`, `test-level`, `menu`, `element`, `theme`
      */
     'desktop-editor': {
-      props: { subtitle: string | { loc: string } | LocText; status: string | { loc: string } | LocText; rows: readonly { key: string; cells?: readonly { key: string; image?: string; label?: string | { loc: string } | LocText }[] }[]; toolbar: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; tools: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; buttons: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; footer: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; copyLabel: string | { loc: string } | LocText; elementLabel: string | { loc: string } | LocText; themeLabel: string | { loc: string } | LocText; sel0: boolean; sel1: boolean; sel2: boolean; sel3: boolean; sel4: boolean; sel16: boolean; sel17: boolean; sel18: boolean; sel19: boolean; sel20: boolean; sel21: boolean; enemyCount: string | { loc: string } | LocText };
+      props: { subtitle: string | { loc: string } | LocText; status: string | { loc: string } | LocText; rows: readonly { key: string; cells?: readonly { key: string; image?: string; label?: string | { loc: string } | LocText }[] }[]; toolbar: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; tools: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; buttons: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; footer: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; copyLabel: string | { loc: string } | LocText; elementLabel: string | { loc: string } | LocText; themeLabel: string | { loc: string } | LocText; sel0: boolean; sel1: boolean; sel2: boolean; sel3: boolean; sel4: boolean; sel16: boolean; sel17: boolean; sel18: boolean; sel19: boolean; sel20: boolean; sel21: boolean; enemyCount: string | { loc: string } | LocText; brand: string | { loc: string } | LocText };
       areas: never;
       refs: 'template-prev' | 'template' | 'template-next' | 'new' | 'undo' | 'save-level' | 'load-level' | 'test-level' | 'menu' | 'element' | 'theme';
     };
@@ -140,12 +141,13 @@ declare module '@gameengine/ui' {
      * Properties:
      *   - `title`: text, default ""
      *   - `subtitle`: text, default ""
+     *   - `brand`: text, default "BUBBLE MADNESS"
      * Events: none
      * Code areas: none
      * Refs: none
      */
     'desktop-heading': {
-      props: { title: string | { loc: string } | LocText; subtitle: string | { loc: string } | LocText };
+      props: { title: string | { loc: string } | LocText; subtitle: string | { loc: string } | LocText; brand: string | { loc: string } | LocText };
       areas: never;
       refs: never;
     };
@@ -222,15 +224,16 @@ declare module '@gameengine/ui' {
      *   - `promptVisible`: yesno, default true
      *   - `status`: text, default ""
      *   - `showStatus`: yesno, default false
-     *   - `partySelected`: yesno, default false
-     * Events: `start`, `profiles`, `scores`, `editor`, `settings`, `help`, `credits`, `quit`, `party`
+     *   - `development`: yesno, default false
+     *   - `tagline`: text, default "SIX DRAGONS. ONE MAD ADVENTURE."
+     * Events: `profiles`, `scores`, `editor`, `settings`, `help`, `credits`, `quit`, `choose-mode`
      * Code areas: `bubbles`, `dragons`
-     * Refs: `start`, `profiles`, `scores`, `editor`, `settings`, `help`, `credits`, `quit`, `party`
+     * Refs: `profiles`, `scores`, `editor`, `settings`, `help`, `credits`, `quit`, `choose-mode`
      */
     'desktop-menu': {
-      props: { subtitle: string | { loc: string } | LocText; startSelected: boolean; profilesSelected: boolean; scoresSelected: boolean; editorSelected: boolean; settingsSelected: boolean; helpSelected: boolean; creditsSelected: boolean; quitSelected: boolean; titleMode: boolean; promptVisible: boolean; status: string | { loc: string } | LocText; showStatus: boolean; partySelected: boolean };
+      props: { subtitle: string | { loc: string } | LocText; startSelected: boolean; profilesSelected: boolean; scoresSelected: boolean; editorSelected: boolean; settingsSelected: boolean; helpSelected: boolean; creditsSelected: boolean; quitSelected: boolean; titleMode: boolean; promptVisible: boolean; status: string | { loc: string } | LocText; showStatus: boolean; development: boolean; tagline: string | { loc: string } | LocText };
       areas: 'bubbles' | 'dragons';
-      refs: 'start' | 'profiles' | 'scores' | 'editor' | 'settings' | 'help' | 'credits' | 'quit' | 'party';
+      refs: 'profiles' | 'scores' | 'editor' | 'settings' | 'help' | 'credits' | 'quit' | 'choose-mode';
     };
     /**
      * Desktop profile row: a widget (ui/docs/desktop-profile-row.ui.json)
@@ -281,12 +284,13 @@ declare module '@gameengine/ui' {
      *   - `resultScore`: text, default ""
      *   - `resultStats`: text, default ""
      *   - `showResultStats`: yesno, default false
+     *   - `brand`: text, default "BUBBLE MADNESS"
      * Events: `press (<item>)`, `press (<item>) (<item>)`
      * Code areas: none
      * Refs: `pause-panel`, `title`, `result-score`, `result-stats`
      */
     'desktop-shell': {
-      props: { title: string | { loc: string } | LocText; subtitle: string | { loc: string } | LocText; body: string | { loc: string } | LocText; status: string | { loc: string } | LocText; buttons: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; rows: readonly { key: string; cells?: readonly { key: string; image?: string; label?: string | { loc: string } | LocText }[] }[]; logo: boolean; keys: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; page: 'title' | 'menu' | 'profiles' | 'new-profile' | 'settings' | 'scores' | 'help' | 'credits' | 'play' | 'pause' | 'result' | 'editor'; resultScore: string | { loc: string } | LocText; resultStats: string | { loc: string } | LocText; showResultStats: boolean };
+      props: { title: string | { loc: string } | LocText; subtitle: string | { loc: string } | LocText; body: string | { loc: string } | LocText; status: string | { loc: string } | LocText; buttons: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; rows: readonly { key: string; cells?: readonly { key: string; image?: string; label?: string | { loc: string } | LocText }[] }[]; logo: boolean; keys: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; page: 'title' | 'menu' | 'profiles' | 'new-profile' | 'settings' | 'scores' | 'help' | 'credits' | 'play' | 'pause' | 'result' | 'editor'; resultScore: string | { loc: string } | LocText; resultStats: string | { loc: string } | LocText; showResultStats: boolean; brand: string | { loc: string } | LocText };
       areas: never;
       refs: 'pause-panel' | 'title' | 'result-score' | 'result-stats';
     };
@@ -304,6 +308,39 @@ declare module '@gameengine/ui' {
       props: { label: string | { loc: string } | LocText; selected: boolean };
       areas: never;
       refs: never;
+    };
+    /**
+     * Game mode card: a widget, button (ui/docs/game-mode-card.ui.json)
+     *
+     * Properties:
+     *   - `label`: text, default "CLASSIC"
+     *   - `description`: text, default "25 ROUNDS / ARCADE CAMPAIGN"
+     *   - `players`: text, default "1-2 DRAGONS"
+     *   - `selected`: yesno, default false
+     * Events: `<id>`
+     * Code areas: none
+     * Refs: none
+     */
+    'game-mode-card': {
+      props: { label: string | { loc: string } | LocText; description: string | { loc: string } | LocText; players: string | { loc: string } | LocText; selected: boolean };
+      areas: never;
+      refs: never;
+    };
+    /**
+     * Game mode select: a view, screen (ui/docs/mode-select.ui.json)
+     *
+     * Properties:
+     *   - `classicSelected`: yesno, default false
+     *   - `madnessSelected`: yesno, default false
+     *   - `backSelected`: yesno, default false
+     * Events: `classic-mode`, `madness-mode`, `mode-back`
+     * Code areas: none
+     * Refs: `classic-mode`, `madness-mode`, `mode-back`
+     */
+    'mode-select': {
+      props: { classicSelected: boolean; madnessSelected: boolean; backSelected: boolean };
+      areas: never;
+      refs: 'classic-mode' | 'madness-mode' | 'mode-back';
     };
     /**
      * Party dragon card: a widget, button (ui/docs/party-dragon-card.ui.json)

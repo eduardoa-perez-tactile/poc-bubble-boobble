@@ -8,13 +8,13 @@ import campaignData from '../../data/levels.json';
 import type { Level } from '../arcade/types.ts';
 import { cloneLevel, paintLevel, validateLevel } from './editor.ts';
 import { desktopSaveState } from './save.ts';
-import { partyGridSelection, desktopButtonRect } from './layout.ts';
+import { partyGridSelection, modeGridSelection, desktopButtonRect } from './layout.ts';
 import { getDesktopButtons } from './model.ts';
 const campaign=campaignData as Level[];
 export type PlayMode='solo'|'ai'|'human';
-export type DesktopScreen='title'|'menu'|'profiles'|'new-profile'|'settings'|'scores'|'help'|'credits'|'editor'|'play'|'pause'|'result'|'party';
-export interface DesktopState {partySlots:PartySlot[];partyRun:boolean;partyEditing:boolean;screen:DesktopScreen;confirmKeys:number;playMode:PlayMode;name:string;status:string;statusStartedStep:number;selected:number;custom:boolean;recorded:boolean;won:boolean;score:number;round:number;tool:number;template:number;painting:boolean;deleteHeldAt:number;level:Level;history:Level[]}
-export const initialDesktopState:DesktopState={partySlots:defaultPartySlots.slice(),partyRun:false,partyEditing:false,screen:'title',confirmKeys:0,playMode:'solo',name:'',status:'',statusStartedStep:-1,selected:0,custom:false,recorded:false,won:false,score:0,round:1,tool:0,template:0,painting:false,deleteHeldAt:-1,level:cloneLevel(campaign[0]!),history:[]};
+export type DesktopScreen='title'|'menu'|'profiles'|'new-profile'|'settings'|'scores'|'help'|'credits'|'editor'|'play'|'pause'|'result'|'party'|'modes';
+export interface DesktopState {developmentMenu?:boolean;partySlots:PartySlot[];partyRun:boolean;partyEditing:boolean;screen:DesktopScreen;confirmKeys:number;playMode:PlayMode;name:string;status:string;statusStartedStep:number;selected:number;custom:boolean;recorded:boolean;won:boolean;score:number;round:number;tool:number;template:number;painting:boolean;deleteHeldAt:number;level:Level;history:Level[]}
+export const initialDesktopState:DesktopState={developmentMenu:false,partySlots:defaultPartySlots.slice(),partyRun:false,partyEditing:false,screen:'title',confirmKeys:0,playMode:'solo',name:'',status:'',statusStartedStep:-1,selected:0,custom:false,recorded:false,won:false,score:0,round:1,tool:0,template:0,painting:false,deleteHeldAt:-1,level:cloneLevel(campaign[0]!),history:[]};
 export const desktopState=defineDoc('desktop-ui',initialDesktopState as unknown as DocValue) as unknown as DocHandle<DesktopState>;
 export interface DesktopGameRequest {sequence:number;action:string;mode:PlayMode;players:number;level:number;customLevel:Level|null;partySlots?:PartySlot[]}
 export const desktopGameRequest=defineDoc('desktop-game-request',{sequence:0,action:'',mode:'solo',players:1,level:1,customLevel:null} as DocValue) as unknown as DocHandle<DesktopGameRequest>;
@@ -26,6 +26,11 @@ export function desktopAction(action:string,value='',index=0,x=0,y=0,now=0){
  let s=desktopState.get();const patch=(p:Partial<DesktopState>)=>{s={...s,...p,...(p.status!==undefined?{statusStartedStep:-1}:{})};desktopState.set(s);};
  const navigate=(screen:DesktopScreen)=>patch({screen,selected:0,status:''});
  const remember=()=>patch({history:[...s.history,cloneLevel(s.level)].slice(-50)});
+ if(action==='development-menu'){const enabled=index===1;if(s.developmentMenu!==enabled)patch({developmentMenu:enabled,selected:s.screen==='menu'?0:s.selected});return;}
+ if(action==='choose-mode'){navigate('modes');return;}
+ if(action==='classic-mode'){desktopAction('start');return;}
+ if(action==='madness-mode'){desktopAction('party');return;}
+ if(action==='mode-back'){navigate('menu');return;}
  if(action==='navigate'){navigate(value as DesktopScreen);return;}
  if(action==='select'){patch({selected:index});return;}
  if(action==='play-mode'){const modes:PlayMode[]=['solo','ai','human'];patch({playMode:modes[(modes.indexOf(s.playMode??'solo')+(index===-1?2:1))%3]!});return;}
@@ -84,7 +89,8 @@ export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(Ar
  const menuState=desktopState.get();
  if(menuState.screen!=='play'){
    const buttons=getDesktopButtons(menuState,desktopSaveState.get());
-   if(pads.menuYEdge&&buttons.length)desktopAction('select','',menuState.screen==='party'?partyGridSelection(menuState.selected,0,pads.menuYEdge):(menuState.selected+pads.menuYEdge+buttons.length)%buttons.length);
+   if(pads.menuYEdge&&buttons.length)desktopAction('select','',menuState.screen==='modes'?modeGridSelection(menuState.selected,0,pads.menuYEdge):menuState.screen==='party'?partyGridSelection(menuState.selected,0,pads.menuYEdge):(menuState.selected+pads.menuYEdge+buttons.length)%buttons.length);
+   if(pads.menuXEdge&&menuState.screen==='modes')desktopAction('select','',modeGridSelection(desktopState.get().selected,pads.menuXEdge,0));
    if(pads.menuXEdge&&menuState.screen==='party')desktopAction('select','',partyGridSelection(desktopState.get().selected,pads.menuXEdge,0));
    if(pads.menuXEdge&&menuState.screen==='settings'){const b=buttons[desktopState.get().selected];if(b)desktopAction(b.key,'',pads.menuXEdge);}
    if(pads.menuBack)desktopAction(menuState.screen==='pause'?'resume':menuState.screen==='new-profile'?'profiles':'menu');
@@ -104,7 +110,8 @@ export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(Ar
   const a=c.col(ActionState);s=desktopState.get();
   if(s.screen==='new-profile'&&c.is(ActionState,i,'name','delete')){if(a.pressed[i]){const started=s.deleteHeldAt<0?ctx.step:s.deleteHeldAt;if(s.deleteHeldAt<0)desktopState.set({...s,deleteHeldAt:started});const held=ctx.step-started;if(held===0||held>30&&held%3===0)desktopAction('delete-char');}else if(s.deleteHeldAt>=0)desktopState.set({...s,deleteHeldAt:-1});}
   if(!a.justPressed[i])continue;const buttons=getDesktopButtons(s,desktopSaveState.get());
-  if(c.is(ActionState,i,'name','menuY')){const delta=a.value[i]!<0?-1:1;const selected=s.screen==='party'?partyGridSelection(s.selected,0,delta):(s.selected+delta+buttons.length)%buttons.length;desktopAction('select','',selected);}
+  if(c.is(ActionState,i,'name','menuY')){const delta=a.value[i]!<0?-1:1;const selected=s.screen==='modes'?modeGridSelection(s.selected,0,delta):s.screen==='party'?partyGridSelection(s.selected,0,delta):(s.selected+delta+buttons.length)%buttons.length;desktopAction('select','',selected);}
+  if(c.is(ActionState,i,'name','menuX')&&s.screen==='modes')desktopAction('select','',modeGridSelection(s.selected,a.value[i]!<0?-1:1,0));
   if(c.is(ActionState,i,'name','menuX')&&s.screen==='party')desktopAction('select','',partyGridSelection(s.selected,a.value[i]!<0?-1:1,0));
   if(c.is(ActionState,i,'name','menuX')&&s.screen==='settings'){const b=buttons[s.selected];if(b)desktopAction(b.key,'',a.value[i]!<0?-1:1);}
   if(c.is(ActionState,i,'name','confirm'))confirm=true;

@@ -20,6 +20,18 @@
   {
    "r": "2d",
    "key": {
+    "Sprite": {
+     "blend": 0,
+     "mask": 0,
+     "samples": 1,
+     "format": 22,
+     "debug": 0
+    }
+   }
+  },
+  {
+   "r": "2d",
+   "key": {
     "Text": {
      "samples": 1,
      "format": 22
@@ -102,6 +114,18 @@
     "Shape": {
      "samples": 4,
      "format": 40
+    }
+   }
+  },
+  {
+   "r": "2d",
+   "key": {
+    "Sprite": {
+     "blend": 0,
+     "mask": 0,
+     "samples": 4,
+     "format": 40,
+     "debug": 0
     }
    }
   },
@@ -276,6 +300,18 @@
     "Shape": {
      "samples": 1,
      "format": 22
+    }
+   }
+  },
+  {
+   "r": "2d",
+   "key": {
+    "Sprite": {
+     "blend": 0,
+     "mask": 0,
+     "samples": 1,
+     "format": 22,
+     "debug": 0
     }
    }
   },

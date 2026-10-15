@@ -1,0 +1,209 @@
+{
+  "$schemaVersion": 1,
+  "guid": "3810aea0-f812-4ca7-8a9f-261fdeb6141d",
+  "name": "mode-select",
+  "title": "Game mode select",
+  "kind": "view",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Mode select",
+      "style": {
+        "w": 768,
+        "h": 720,
+        "pad": 0,
+        "bg": "#00000000",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0.5
+        ],
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "children": [
+        "ms_brand",
+        "ms_header",
+        "ms_title",
+        "ms_classic",
+        "ms_madness",
+        "ms_back",
+        "ms_hint"
+      ]
+    },
+    "ms_brand": {
+      "type": "label",
+      "name": "Label",
+      "text": "BUBBLE MADNESS",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          32
+        ],
+        "fontSize": 12,
+        "color": "#ffdc6a"
+      }
+    },
+    "ms_header": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          74
+        ],
+        "w": 768,
+        "h": 52,
+        "bg": "#17bec6"
+      }
+    },
+    "ms_title": {
+      "type": "label",
+      "name": "Label",
+      "text": "GAME MODE SELECT",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          88
+        ],
+        "fontSize": 26,
+        "color": "#080c1b"
+      }
+    },
+    "ms_classic": {
+      "type": "use",
+      "doc": "game-mode-card",
+      "key": "classic-mode",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          100,
+          168
+        ],
+        "w": 272,
+        "h": 380
+      },
+      "props": {
+        "label": "CLASSIC",
+        "description": "25 ROUNDS / ARCADE CAMPAIGN",
+        "players": "1-2 DRAGONS",
+        "selected": {
+          "property": "classicSelected"
+        }
+      }
+    },
+    "ms_madness": {
+      "type": "use",
+      "doc": "game-mode-card",
+      "key": "madness-mode",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          396,
+          168
+        ],
+        "w": 272,
+        "h": 380
+      },
+      "props": {
+        "label": "BUBBLE MADNESS",
+        "description": "WAVES / RESCUES / FINAL BOSS",
+        "players": "1-6 DRAGONS",
+        "selected": {
+          "property": "madnessSelected"
+        }
+      }
+    },
+    "ms_back": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "mode-back",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          264,
+          606
+        ],
+        "w": 240,
+        "h": 44
+      },
+      "props": {
+        "label": "BACK",
+        "selected": {
+          "property": "backSelected"
+        }
+      }
+    },
+    "ms_hint": {
+      "type": "label",
+      "name": "Label",
+      "text": "LEFT / RIGHT TO CHOOSE    A / ENTER TO CONTINUE\nB / ESC TO RETURN",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          674
+        ],
+        "fontSize": 10,
+        "textAlign": "center",
+        "color": "#829fb1"
+      }
+    }
+  },
+  "view": {
+    "behaviour": "screen"
+  },
+  "transition": {
+    "type": "instant"
+  },
+  "properties": {
+    "classicSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "madnessSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "backSelected": {
+      "type": "yesno",
+      "default": false
+    }
+  }
+}

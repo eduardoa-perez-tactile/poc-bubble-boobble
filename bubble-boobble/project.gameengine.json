@@ -1,6 +1,6 @@
 {
   "$schemaVersion": 1,
-  "name": "BubbleBoobble",
+  "name": "Bubble Madness",
   "bundleId": {
     "ios": "com.example.bubbleboobble",
     "android": "com.example.bubbleboobble"

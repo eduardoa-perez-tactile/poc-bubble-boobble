@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "package": "BubbleBoobble",
+  "package": "Bubble Madness",
   "enums": [],
   "types": [
     {
@@ -61,7 +61,7 @@
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "ArcadeControl",
@@ -87,7 +87,7 @@
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "ArcadeInput",
@@ -125,7 +125,7 @@
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "ArcadePlatformState",
@@ -139,7 +139,7 @@
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "ArcadeVisual",
@@ -153,7 +153,7 @@
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "Bubble",
@@ -174,7 +174,7 @@
           "doc": "Units per step"
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "DesktopIntent",
@@ -212,7 +212,7 @@
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "EditorPointer",
@@ -246,7 +246,7 @@
           "default": -1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "Game",
@@ -267,7 +267,7 @@
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "HarnessControl",
@@ -282,7 +282,7 @@
           "doc": "Controlled starter scenario; suppresses random spawns"
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "MovementInput",
@@ -308,7 +308,7 @@
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "PortInput",
@@ -328,7 +328,7 @@
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "PortMatch",
@@ -392,7 +392,7 @@
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "PortPlayer",
@@ -492,14 +492,14 @@
           "lanes": 1
         }
       ],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     },
     {
       "name": "PortVisual",
       "kind": "component",
       "sim": true,
       "fields": [],
-      "package": "BubbleBoobble"
+      "package": "Bubble Madness"
     }
   ],
   "commands": [],

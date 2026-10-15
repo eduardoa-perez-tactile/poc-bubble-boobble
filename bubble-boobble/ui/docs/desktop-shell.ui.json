@@ -767,7 +767,8 @@
         ],
         "fontSize": 11,
         "color": "#70f089"
-      }
+      },
+      "property": "brand"
     },
     "ds_dash": {
       "type": "element",
@@ -1142,6 +1143,10 @@
     "showResultStats": {
       "type": "yesno",
       "default": false
+    },
+    "brand": {
+      "type": "text",
+      "default": "BUBBLE MADNESS"
     }
   },
   "transition": {

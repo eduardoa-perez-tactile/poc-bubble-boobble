@@ -1,3 +1,4 @@
+import campaignPreviews from '../../data/levels.json';
 import { partyCardRect } from '../desktop/layout';
 import { partyColors } from './party-config';
 import { partySpawnColumns } from './party-config';
@@ -386,6 +387,21 @@ function sceneDraws(tick: number) {
       solid("ink", 0, 672, 768, 48);
       actors.filter((d) => d.footer).forEach(push);
     }
+  } else if(ui.screen==='modes') {
+    for(let mode=0;mode<2;mode++) {
+      const x=mode===0?100:396,y=168,level=campaignPreviews[0]!;
+      solid('black',x+4,y+4,264,248);
+      for(let row=0;row<26;row++)for(let col=0;col<32;col++)if(level.tiles[row]![col])images.push({image:`reference/tiles/${mode===0?'01':'03'}`,x:x+24+col*7,y:y+34+row*7,w:7,h:7});
+      if(mode===0){
+        push(image('green/walk',0,x+40,y+184,40));push(image('blue/walk',0,x+192,y+184,40,40,1));
+        push(image('zenchan/walk',0,x+116,y+62,36));
+        push(image('bubble',30,x+98,y+122,32));push(image('bubble',30,x+154,y+100,24));
+      }else{
+        push(image('mighta/angry',0,x+92,y+58,88));
+        for(let i=0;i<6;i++)push(image(`${partyColors[i]}/walk`,0,x+28+i*36,y+188,32,32,i<3?1:-1));
+        push(image('fire-bubble',0,x+34,y+88,32));push(image('thunder-bubble',0,x+206,y+100,32));
+      }
+    }
   } else if (ui.screen === 'party') {
     for(let index=0;index<6;index++) {
       const r=partyCardRect(index);
@@ -408,7 +424,7 @@ function sceneDraws(tick: number) {
         h: size,
       });
     }
-    images.push({ image: "reference/logo", x: 209, y: 26, w: 350, h: 252 });
+    // The current title logo is a UI icon; original atlas texels remain reference evidence.
     push(image("green/walk", tick, 80, 550, 96, 96, 1));
     push(image("blue/walk", tick, 592, 550, 96, 96, -1));
   } else if (ui.screen === "profiles")
