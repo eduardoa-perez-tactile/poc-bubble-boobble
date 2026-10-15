@@ -37,6 +37,10 @@ const PIXEL_MATERIAL = 'materials/pixel-ordered.mat.json';
 const animations: Readonly<Record<string, readonly string[]>> = manifest;
 const atlasRects: Readonly<Record<string, readonly number[]>> = atlas.rects;
 export function referenceFrame(name: string, tick: number): string {
+  if(name.startsWith('boss/')){
+    const pose=name.slice(5),frames=pose==='move'||pose==='captured'?4:2;
+    return `derived/boss/${pose}-${Math.floor(Math.max(0,tick)/10)%frames}`;
+  }
   if (name === 'green/bubble') name = 'bubble';
   const prefix = name.split('/')[0]!;
   const bubbleSkin = isDragonSkin(prefix) && name === `${prefix}/bubble` ? prefix : '';
@@ -66,7 +70,7 @@ const dragonIndicatorColors: Readonly<Record<string, readonly [number, number, n
   yellow: [255,220,0], purple: [180,90,255], orange: [255,135,0],
 };
 const powerupTags: Readonly<Record<string, string>> = {
-  pink_candy: 'RNG', blue_candy: 'SPD', yellow_candy: 'RAP', shoes: 'RUN',
+  thunder_potion:'THR', pink_candy: 'RNG', blue_candy: 'SPD', yellow_candy: 'RAP', shoes: 'RUN',
   clock: 'TIM', dynamite: 'BOM', orange_parasol: 'DEF', red_parasol: 'DEF',
   purple_parasol: 'DEF', crystal_ring: 'PTS', amethyst_ring: 'PTS', ruby_ring: 'PTS',
 };
@@ -130,15 +134,16 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
       out.push(label('!', spawn.X + 16, spawn.Y + 38, 16));
     }
     const boss = g.Party.Boss;
-    if (boss && boss.HP > 0) {
-      if (!boss.Invulnerable || boss.Tick % 12 < 6)
-        out.push(image('mighta/angry', g.Party.Phase === 'prepare' ? g.Tick : boss.Tick, boss.X, entranceY(boss.Y + 48, 0), 96));
-      out.push(label(`BOSS ${boss.HP}/${boss.MaxHP}`, Math.max(24, Math.min(560, boss.X - 24)), Math.max(68, boss.Y + 34), 12));
+    if (boss) {
+      const captured=boss.Mode==='captured', y=entranceY(boss.Y+48,0);
+      if(captured || !boss.Invulnerable || boss.Tick%4<2)
+        out.push(image(captured?'boss/captured':boss.Mode==='windup'?'boss/attack':'boss/move',g.Party.Phase==='prepare'?g.Tick:boss.Tick,boss.X,y,96,96,boss.Dir));
+      if(boss.Mode==='windup')out.push(label('!',boss.X+42,Math.max(68,boss.Y+32),20,[255,220,45]));
     }
   }
   for (const i of g.Items) {
-    if (i.Age > 600 && i.Age % 12 < 6) continue;
-    out.push(fittedItemImage(i.Power || `food/${i.Food}`, 0, i.X, i.Y + 48, 32));
+    if (i.Power!=='thunder_potion' && i.Age > 600 && i.Age % 12 < 6) continue;
+    out.push(fittedItemImage((i.Power==='thunder_potion'?'thunder-bubble':i.Power) || `food/${i.Food}`, 0, i.X, i.Y + 48, 32));
     if (g.Party && i.Power)
       out.push(label(powerupTags[i.Power] ?? 'PWR', Math.max(8, Math.min(728, i.X + 1)), Math.max(66, i.Y + 34), 10, [100,255,130]));
   }
@@ -186,7 +191,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
   for (const p of g.Projectiles)
     out.push(
       image(
-        p.Laser ? "laser" : "boulder",
+        p.Bottle ? "boss/bottle" : p.Laser ? "laser" : "boulder",
         p.Age,
         p.X,
         p.Y + 48,

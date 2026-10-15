@@ -69,14 +69,6 @@ worldTest('party waves snapshot isolation includes boss slots telegraphs and bot
  expect(g.Party!.Slots[0]).toBe('human');expect(g.Party!.Telegraphs[0]!.Ticks).toBeGreaterThan(1);
  for(let i=0;i<30;i++){stepGame(g,idle);stepGame(b,idle);}expect(JSON.stringify(g)).toBe(JSON.stringify(b));
 });
-worldTest('party waves boss windup vulnerability damage and victory',()=>{
- const g=game();g.Party!.Wave=10;preparePartyWave(g);g.Party!.Timer=1;stepGame(g,idle);expect(g.Party!.Phase).toBe('boss');const boss=g.Party!.Boss!;
- boss.Tick=88;stepGame(g,idle);expect(boss.Invulnerable).toBe(1);stepGame(g,idle);expect(boss.Invulnerable).toBe(0);expect(g.Projectiles.length).toBeGreaterThan(0);
- boss.HP=1;boss.Tick=100;g.Projectiles=[];g.Enemies=[];g.Party!.Telegraphs=[];
- Object.assign(g.Players[0]!,{X:260,Y:196,Dir:1,Ground:true,Cooldown:0,Invincible:100});
- stepGame(g,[{Move:0,Jump:false,Fire:true}]);for(let tick=0;tick<30&&g.State!==State.Won;tick++)stepGame(g,idle);
- expect(g.State).toBe(State.Won);
-});
 worldTest('party waves lobby starts restarts and leaves through engine intents',async({input,step})=>{
  await step(3);input.emit(DesktopIntent,{action:'party'});await step(1);expect(desktopState.get().screen).toBe('party');
  input.emit(DesktopIntent,{action:'start-party'});await step(1);expect(session.get().game!.Players.length).toBe(6);expect(session.get().game!.Party!.Slots.filter(s=>s==='ai').length).toBe(5);

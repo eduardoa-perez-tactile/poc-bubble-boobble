@@ -53,6 +53,9 @@ function partyPowerLocation(g: GameState): [number, number] | undefined {
   return locations.length ? locations[intN(g, locations.length)] : undefined;
 }
 export function checkPowerSpawns(g: GameState) {
+  // The boss supplies thunder pickups. Ordinary thunder rewards would repeatedly
+  // spawn clocks and leave the moving fight frozen under six-player fire.
+  if(g.Party?.Boss)return;
   const c = g.Counters;
   const rules: [keyof typeof c, number, string][] = [
     ["Blown", 35, "pink_candy"],
@@ -97,7 +100,7 @@ export function updateItems(g: GameState) {
   const kept: Item[] = [];
   for (const it of g.Items) {
     it.Age++;
-    if (it.Age > 12 * TPS) continue;
+    if (it.Age > 12 * TPS && it.Power !== 'thunder_potion') continue;
     // Keep offensive pickups available until their targets can fight back.
     if (g.Party && (g.Party.Phase === 'prepare' || g.Party.Phase === 'rest') && (it.Power === 'dynamite' || it.Power === 'clock')) {
       kept.push(it);
@@ -130,6 +133,7 @@ export function updateItems(g: GameState) {
         !intersects(p.X, p.Y, ActorSize, ActorSize, it.X, it.Y, 32, 32)
       )
         continue;
+      if(it.Power==='thunder_potion'&&p.Power.Thunder)continue;
       if (it.Power !== "") {
         if (applyPower(g, it.Power, player)) return true;
       } else {
@@ -149,6 +153,9 @@ export function applyPower(g: GameState, power: string, player: number) {
   let points = 100,
     warp = 0;
   switch (power) {
+    case 'thunder_potion':
+      p.Thunder=true;
+      break;
     case "pink_candy":
       p.Pink = true;
       g.Counters.Pink++;

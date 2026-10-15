@@ -1,15 +1,15 @@
-import { createGame, addScore, remainingEnemies } from './game';
+import { createBoss, ensureThunderPickups, stepBoss } from './boss';
+import { createGame, remainingEnemies } from './game';
 import { enableCompanion, companionInput } from './companion';
 import { respawn, updatePlayer, checkPlayerHit } from './player';
 import { updateEnemies, updateProjectiles, updateDefeated } from './enemies';
 import { updateBubbles, updateEffects } from './bubbles';
 import { updateItems, checkPowerSpawns, spawnFood } from './items';
-import { body, alive, EnemyState, State, Tile, ActorSize, intersects, type GameState, type Input, type Level, type PartySlot } from './types';
+import { body, alive, EnemyState, State, Tile, ActorSize, type GameState, type Input, type Level, type PartySlot } from './types';
 
 import { partyColors, defaultPartySlots, partyPrepareTicks, partyBreakTicks, partySurvivorCount } from './party-config';
 export { partyColors, partySpawnColumns, defaultPartySlots } from './party-config';
 const idle: Input = Object.freeze({Move:0,Jump:false,Fire:false});
-const entrances = [{col:4,row:10},{col:26,row:10},{col:4,row:20},{col:26,row:20}];
 const kinds = ['zenchan','monsta','banebou','mighta','pulpul','invader'];
 
 /** One authoritative party document; the campaign's arena is copied, never modified. */
@@ -41,8 +41,8 @@ export function preparePartyWave(g:GameState) {
   p.Phase='prepare';p.Timer=partyPrepareTicks;g.Countdown=p.Timer;p.Spawned=0;p.Telegraphs=[];p.SpawnTick=0;p.ToSpawn=0;
   delete p.Boss;
   if(p.Wave===p.BossWave) {
-    const hp=12+occupied(g)*6;
-    p.Boss={X:336,Y:150,HP:hp,MaxHP:hp,Tick:0,Invulnerable:1};
+    p.Boss=createBoss(occupied(g));
+    g.Items=[];ensureThunderPickups(g);
     return;
   }
   const count=partyWaveBudget(p.Wave,occupied(g));
@@ -64,13 +64,6 @@ function beginWave(g:GameState) {
   const p=g.Party!;
   p.Timer=0;p.Phase=p.Boss?'boss':'combat';
   for(const dragon of g.Players) if(alive(dragon))dragon.Invincible=120;
-}
-function scheduleEnemy(g:GameState) {
-  const p=g.Party!;
-  const c=entrances[p.Spawned%entrances.length]!;
-  // Spawn at platform feet, not inside geometry; 60 ticks of visible warning.
-  p.Telegraphs.push({X:c.col*Tile,Y:c.row*Tile-ActorSize,Ticks:60});
-  p.Spawned++;p.ToSpawn--;
 }
 function spawnTelegraphs(g:GameState) {
   const p=g.Party!;
@@ -102,23 +95,6 @@ function rest(g:GameState) {
   p.Phase='rest';p.Timer=partyBreakTicks;p.Telegraphs=[];
   g.State=State.Clearing;g.Countdown=p.Timer;g.Enemies=[];g.Projectiles=[];g.Bubbles=[];g.Effects=[];g.Freeze=0;g.Hurry=false;
   for(let i=0;i<g.Players.length;i++)if(g.Players[i]!.Downed)revive(g,i);
-}
-function stepBoss(g:GameState) {
-  const p=g.Party!,b=p.Boss!;b.Tick++;
-  // First 90 ticks wind up the attack; the following 150 expose the boss.
-  const phase=b.Tick%300;
-  b.Invulnerable=phase<90||phase>=240?1:0;
-  if(phase===90) {
-    for(const dragon of g.Players)if(alive(dragon))g.Projectiles.push({...body(Math.max(60,Math.min(690,dragon.X+14)),48),VY:4,Laser:true,Age:0,Removed:false});
-    g.Sounds.push('laser');
-  }
-  if(b.Tick%600===1&&remainingEnemies(g)<6) {p.ToSpawn=2;scheduleEnemy(g);scheduleEnemy(g);}
-  if(!b.Invulnerable)for(const shot of g.Bubbles) {
-    if(shot.Removed||shot.EnemyID||shot.Element||shot.Floating||shot.Age<=0)continue;
-    if(intersects(shot.X,shot.Y,40,40,b.X,b.Y,96,96)){shot.Removed=true;b.HP--;addScore(g,100,b.X,b.Y);g.Sounds.push('pop');if(b.HP<=0)break;}
-  }
-  g.Bubbles=g.Bubbles.filter(shot=>!shot.Removed);
-  if(b.HP<=0) {addScore(g,5000,b.X,b.Y);g.State=State.Won;g.Projectiles=[];g.Enemies=[];g.Sounds.push('opening');}
 }
 function enrageLastEnemy(g:GameState) {
   const p=g.Party!;

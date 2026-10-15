@@ -91,6 +91,8 @@ export function hurtPlayer(g: GameState, index: number) {
 export function checkPlayerHit(g: GameState, index: number) {
   const p = g.Players[index]!;
   if (p.Invincible > 0 || !alive(p)) return;
+  const boss=g.Party?.Boss;
+  if(g.Party?.Phase==='boss'&&boss&&boss.Mode!=='captured'&&intersects(p.X+5,p.Y+5,34,36,boss.X+8,boss.Y+8,80,80)){hurtPlayer(g,index);return;}
   for (const e of g.Enemies)
     if (
       e.State === EnemyState.Active &&

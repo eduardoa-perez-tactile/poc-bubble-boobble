@@ -1,3 +1,4 @@
+import { captureBoss } from './boss';
 import { defineCheat } from '@gameengine/runtime/cheats';
 import { write } from '@gameengine/runtime';
 import { ArcadeControl } from '../schema.gen';
@@ -17,7 +18,13 @@ export const PartyReset=defineCheat({id:'party.reset',group:'Party',title:'Inspe
 }});
 export const PartyClear=defineCheat({id:'party.clear-wave',group:'Party',title:'Finish current enemy wave',run(){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Party!.ToSpawn=0;g.Party!.Telegraphs=[];for(const e of g.Enemies){e.State=EnemyState.Defeated;e.DeadTicks=0;}session.set({...current,game:g});}});
 export const PartyRescue=defineCheat({id:'party.rescue-setup',group:'Party',title:'Inspect teammate rescue',run(){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Players[1]!.Downed=true;g.Players[1]!.Lives=0;g.Players[1]!.Dead=0;g.Players[1]!.X=g.Players[0]!.X+110;g.Players[1]!.Y=g.Players[0]!.Y;session.set({...current,game:g});}});
-export const PartyVictory=defineCheat({id:'party.finish-boss',group:'Party',title:'Inspect boss victory result',run(){const current=session.get();if(!current.game?.Party?.Boss)return;const g=copyGame(current.game);g.Party!.Boss!.HP=0;g.State=State.Playing;session.set({...current,game:g});}});
+export const PartyVictory=defineCheat({id:'party.finish-boss',group:'Party',title:'Inspect boss victory result',run(){const current=session.get();if(!current.game?.Party?.Boss)return;const g=copyGame(current.game);const b=g.Party!.Boss!;b.HP=0;b.Mode='captured';b.Timer=30;const p=g.Players.find(p=>p.Lives>0&&!p.Downed)!;p.X=b.X;p.Y=b.Y;p.VY=0;p.Invincible=120;g.State=State.Playing;session.set({...current,game:g});}});
 export const PartyPower=defineCheat({id:'party.powerup',group:'Party',title:'Inspect a randomized powerup',run(){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Pending.push('pink_candy');checkPowerSpawns(g);session.set({...current,game:g});}});
 export const PartyLastEnemy=defineCheat({id:'party.last-enemy',group:'Party',title:'Inspect the last angry enemy',run(){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);for(let i=1;i<g.Enemies.length;i++){g.Enemies[i]!.State=EnemyState.Defeated;g.Enemies[i]!.DeadTicks=0;}session.set({...current,game:g});}});
 export const PartyHit=defineCheat({id:'party.hit-dragon',group:'Party',title:'Inspect a dragon elimination',params:{slot:{type:'int',min:0,max:5,default:0}},run(_ctx,{slot}){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Players[slot]!.Invincible=0;hurtPlayer(g,slot);session.set({...current,game:g});}});
+export const PartyBossDuel=defineCheat({id:'party.boss-duel',group:'Party',title:'Inspect thunder shot and boss capture',params:{captured:{type:'bool',default:false}},run(_ctx,{captured}){
+ const current=session.get();if(!current.game?.Party?.Boss)return;const g=copyGame(current.game),b=g.Party!.Boss!;
+ Object.assign(b,{X:420,Y:500,VX:0,VY:0,HP:1,Mode:'moving',Timer:600});
+ Object.assign(g.Players[0]!,{X:250,Y:556,Dir:1,Ground:true,Invincible:600,Cooldown:0,Lives:1,Downed:false,Dead:0});g.Players[0]!.Power.Thunder=true;
+ g.Bubbles=[];g.Projectiles=[];g.Effects=[];g.Items=[];if(captured)captureBoss(g);session.set({...current,game:g});
+}});

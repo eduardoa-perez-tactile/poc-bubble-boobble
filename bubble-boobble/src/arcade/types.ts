@@ -52,6 +52,7 @@ export interface Body {
   Ground: boolean;
 }
 export interface Powers {
+  Thunder?: boolean;
   Pink: boolean;
   Blue: boolean;
   Yellow: boolean;
@@ -92,6 +93,7 @@ export interface Enemy extends Body {
   Phase: number;
 }
 export interface Bubble extends Body {
+  ThunderShot?: boolean;
   // Cosmetic shot ownership; absent on ambient bubbles and older sessions.
   Shooter?: number;
   ID: number;
@@ -107,6 +109,7 @@ export interface Bubble extends Body {
   Element: string;
 }
 export interface Projectile extends Body {
+  Bottle?: boolean;
   Laser: boolean;
   Age: number;
   Removed: boolean;
@@ -142,7 +145,10 @@ export interface Counters {
   Walked: number;
 }
 export type PartySlot = 'human' | 'ai' | 'empty';
-export interface PartyBoss { X:number; Y:number; HP:number; MaxHP:number; Tick:number; Invulnerable:number }
+export interface PartyBoss {
+  X:number; Y:number; HP:number; MaxHP:number; Tick:number; Invulnerable:number;
+  VX:number; VY:number; Dir:number; Mode:'moving'|'windup'|'captured'; Timer:number;
+}
 export interface PartyState {
   Wave:number;
   BossWave:number;

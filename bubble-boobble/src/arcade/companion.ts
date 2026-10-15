@@ -125,9 +125,15 @@ function chooseGoal(g: GameState, ai: CompanionState, index: number): Goal {
     if (i !== index && downed(teammate)) offer({ Kind: 'rescue', ID: i, X: teammate.X, Y: teammate.Y }, 1400);
   }
   const boss = g.Party?.Boss;
-  if (boss && boss.HP > 0) {
+  if (boss && (boss.HP > 0 || boss.Mode==='captured')) {
     const center = boss.X + 48, side = p.X + ActorSize / 2 <= center ? -1 : 1;
-    offer({ Kind: 'boss', ID: -1, X: Math.max(2 * Tile, Math.min(Width - 2 * Tile - ActorSize, center + side * 80)), Y: boss.Y + 46 }, 560, center, boss.Y + 46);
+    const captured=boss.Mode==='captured';
+    offer({ Kind: 'boss', ID: -1, X: captured?boss.X:Math.max(2*Tile,Math.min(Width-2*Tile-ActorSize,center+side*160)), Y:boss.Y+46 }, captured?2000:p.Power.Thunder?560:0, center, boss.Y+46);
+    // Pop reachable thunder bubbles rather than firing forever from a safe ledge.
+    if(p.Power.Thunder&&!captured)for(const bubble of g.Bubbles)
+      if(bubble.ThunderShot&&!bubble.Removed&&bubble.Age>20&&Math.abs(bubble.Y-p.Y)<170)
+        offer({Kind:'bubble',ID:bubble.ID,X:bubble.X,Y:bubble.Y},950);
+
   }
   for (const b of g.Bubbles) if (!b.Removed && b.EnemyID !== 0)
     offer({ Kind: 'bubble', ID: b.ID, X: b.X, Y: b.Y }, 650 + Math.min(250, b.CapturedAge / 4));
@@ -138,7 +144,7 @@ function chooseGoal(g: GameState, ai: CompanionState, index: number): Goal {
   }
   for (let i = 0; i < g.Items.length; i++) {
     const item = g.Items[i]!;
-    offer({ Kind: 'item', ID: i, X: item.X, Y: item.Y }, g.State === State.Clearing ? 500 : item.Power ? 260 : 140);
+    offer({ Kind: 'item', ID: i, X: item.X, Y: item.Y }, item.Power==='thunder_potion' ? (p.Power.Thunder?-10000:1800) : g.State === State.Clearing ? 500 : item.Power ? 260 : 140);
   }
   return best;
 }
@@ -234,6 +240,8 @@ export function companionInput(g: GameState, index = 1): Input {
   // Re-evaluate immediate hazards every tick, independently of the slower goal selection.
   if (p.Invincible === 0) {
     let dangerX: number | null = null, closest = Infinity;
+    const boss=g.Party?.Boss;
+    if(boss&&g.Party?.Phase==='boss'&&boss.Mode!=='captured'&&p.Y+44>boss.Y&&p.Y<boss.Y+96&&Math.abs(boss.X+48-p.X-22)<105){dangerX=boss.X+48;closest=Math.abs(dangerX-p.X-22);}
     for (const e of g.Enemies) if (e.State === EnemyState.Active && Math.abs(e.Y - p.Y) < 38) {
       const distance = Math.abs(e.X - p.X);
       if (distance < 62 && distance < closest) { dangerX = e.X; closest = distance; }
@@ -252,7 +260,7 @@ export function companionInput(g: GameState, index = 1): Input {
   const facing = input.Move || p.Dir, range = p.Power.Pink ? g.PlayerBalance.PinkBubbleRange : g.PlayerBalance.BubbleRange;
   for (const e of g.Enemies) if (e.State === EnemyState.Active && Math.abs(e.Y - p.Y) < 30 && (e.X - p.X) * facing >= 0 && Math.abs(e.X - p.X) < range) input.Fire = true;
   const boss = g.Party?.Boss;
-  if (boss && boss.HP > 0 && boss.Invulnerable === 0 && p.Y + ActorSize > boss.Y && p.Y < boss.Y + 96 && (boss.X + 48 - p.X) * facing >= 0 && Math.abs(boss.X + 48 - p.X) < range + 48) input.Fire = true;
+  if (boss && boss.HP > 0 && p.Power.Thunder && p.Y + ActorSize > boss.Y && p.Y < boss.Y + 96 && (boss.X + 48 - p.X) * facing >= 0 && Math.abs(boss.X + 48 - p.X) < 400) input.Fire = true;
   ai.Move = input.Move;
   return input;
 }

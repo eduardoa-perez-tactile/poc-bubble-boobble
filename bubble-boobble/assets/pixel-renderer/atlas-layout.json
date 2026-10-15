@@ -1633,6 +1633,78 @@
       640,
       50,
       50
+    ],
+    "derived/boss/move-0": [
+      800,
+      640,
+      64,
+      64
+    ],
+    "derived/boss/move-1": [
+      868,
+      640,
+      64,
+      64
+    ],
+    "derived/boss/move-2": [
+      936,
+      640,
+      64,
+      64
+    ],
+    "derived/boss/move-3": [
+      1004,
+      640,
+      64,
+      64
+    ],
+    "derived/boss/attack-0": [
+      1072,
+      640,
+      64,
+      64
+    ],
+    "derived/boss/attack-1": [
+      1140,
+      640,
+      64,
+      64
+    ],
+    "derived/boss/captured-0": [
+      1208,
+      640,
+      64,
+      64
+    ],
+    "derived/boss/captured-1": [
+      1276,
+      640,
+      64,
+      64
+    ],
+    "derived/boss/captured-2": [
+      1344,
+      640,
+      64,
+      64
+    ],
+    "derived/boss/captured-3": [
+      1412,
+      640,
+      64,
+      64
+    ],
+    "derived/boss/bottle-0": [
+      1480,
+      640,
+      16,
+      16
+    ],
+    "derived/boss/bottle-1": [
+      1548,
+      640,
+      16,
+      16
     ]
   },
   "sources": {
@@ -1904,6 +1976,7 @@
     "derived/circle/0": "ff61cb6307d37f91acd483c45cfef73926427661554f865b80175f568479237a",
     "derived/circle/1": "f139b58f27b0e53bc48003d999e5d5eb410baa30fac945a186e5caff46e18560",
     "derived/circle/2": "42c323c9d61c5dc2bc7db1107ccf8e382ae7fdc5cbd218a12cdd0740bc60a751",
-    "derived/circle/3": "e1f661432805beffebaec514502a8a52ead9583773b3fa17619af1f760023591"
+    "derived/circle/3": "e1f661432805beffebaec514502a8a52ead9583773b3fa17619af1f760023591",
+    "arcade-boss/super-drunk.png": "3fed3c13f995af89ace6fac01a1a2be74a4a5250dd49f022b4e720f1655f1487"
   }
 }

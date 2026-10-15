@@ -1,3 +1,4 @@
+import { createBoss } from '../src/arcade/boss';
 import {expect, worldTest, renderTest} from '@gameengine/test';
 import {MaterialGlobals, MeshRenderer} from '@gameengine/runtime';
 import {createGame} from '../src/arcade/game.ts';
@@ -38,7 +39,7 @@ worldTest('party presentation six dragons and shots use independent identities',
 },{scene});
 worldTest('party presentation rescue boss telegraphs and text remain within canvas', () => {
   const g=party(); g.Party!.Phase='boss';g.Party!.Timer=0;g.Players[5]!.Downed=true; enableCompanion(g,4);
-  g.Party!.Boss={X:320,Y:80,HP:12,MaxHP:20,Tick:0,Invulnerable:0};
+  g.Party!.Boss={...createBoss(6),X:320,Y:80,HP:12,MaxHP:20};
   g.Party!.Telegraphs=[{X:120,Y:100,Ticks:20}];
   const draws=arcadeDrawPlan(g);
   expect(draws.some(d=>d.text==='6 HELP')).toBe(true);
@@ -47,8 +48,8 @@ worldTest('party presentation rescue boss telegraphs and text remain within canv
   expect(draws.find(d=>d.text==='5 AI'&&!d.footer)!.color).toEqual([180,90,255]);
   expect(draws.some(d=>d.text==='5 AI'&&d.footer)).toBe(true);
   expect(draws.some(d=>d.image===referenceFrame('orange/bubble',30)&&d.w===60)).toBe(true);
-  expect(draws.some(d=>d.image===referenceFrame('mighta/angry',0)&&d.w===96)).toBe(true);
-  expect(draws.some(d=>d.text==='BOSS 12/20')).toBe(true);
+  expect(draws.some(d=>d.image===referenceFrame('boss/move',0)&&d.w===96)).toBe(true);
+  expect(draws.some(d=>d.image.startsWith('derived/boss/'))).toBe(true);
   expect(draws.some(d=>d.text==='!')).toBe(true);
   for(const d of draws.filter(d=>d.text)) {
     expect(d.x).toBeGreaterThanOrEqual(0); expect(d.x).toBeLessThan(768);
@@ -103,3 +104,14 @@ renderTest('party palette six dragon GPU body and matching bubbles',async({input
   render.expectDrawCalls('<=',4,{width:768,height:720});
   render.expectScreenshot('six-colors',{width:768,height:720});
 },{scene});
+
+worldTest('party boss captured animation uses the original complete arcade bubble frames',()=>{
+ const g=party();g.Party!.Phase='boss';g.Party!.Boss={...createBoss(6),X:320,Y:400,HP:0,Mode:'captured'};
+ for(let frame=0;frame<4;frame++){
+  g.Party!.Boss!.Tick=frame*10;
+  const draws=arcadeDrawPlan(g),boss=draws.filter(d=>d.image.startsWith('derived/boss/'));
+  expect(boss.length).toBe(1);expect(boss[0]!.image).toBe(`derived/boss/captured-${frame}`);
+  expect([boss[0]!.x,boss[0]!.y,boss[0]!.w,boss[0]!.h]).toEqual([320,448,96,96]);
+  expect(draws.some(d=>d.x===312&&d.w===112)).toBe(false);
+ }
+});

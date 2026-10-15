@@ -1,3 +1,4 @@
+import { createBoss } from '../src/arcade/boss';
 import { expect, worldTest } from '@gameengine/test';
 import { createGame, copyGame, stepGame } from '../src/arcade/game';
 import campaign from '../data/levels.json';
@@ -73,14 +74,15 @@ worldTest('party AI decisions reproduce from independent snapshots and keep lega
   legacy.State = State.Playing; companionInput(legacy); expect(!!legacy.Companion!.Goal).toBe(true);
 });
 
-worldTest('party AI approaches the boss and fires during its vulnerable window', () => {
+worldTest('party AI approaches the boss and fires thunder while damage flashes remain cosmetic', () => {
   const g = party(), p = g.Players[3]!; enableCompanion(g, 3); g.Enemies = [];
-  g.Party = { Slots: ['human', 'human', 'human', 'ai', 'human', 'human'], Boss: { X: 400, Y: 150, HP: 20, MaxHP: 20, Tick: 0, Invulnerable: 0 } } as NonNullable<GameState['Party']>;
-  p.X = 330; p.Y = 196; p.Dir = 1; p.Ground = true;
+  g.Party = { Slots: ['human', 'human', 'human', 'ai', 'human', 'human'], Boss: { ...createBoss(6), X:400, Y:150 } } as NonNullable<GameState['Party']>;
+  p.X = 250; p.Y = 196; p.Dir = 1; p.Ground = true;p.Power.Thunder=true;
   expect(companionInput(g, 3).Fire).toBe(true);
   expect(g.Companions![3]!.Goal!.Kind).toBe('boss');
   g.Party.Boss!.Invulnerable = 60;
-  expect(companionInput(g, 3).Fire).toBe(false);
+  expect(companionInput(g, 3).Fire).toBe(true);
+  p.Power.Thunder=false;expect(companionInput(g,3).Fire).toBe(false);
 });
 
 worldTest('party AI rests quietly after collecting wave rewards', () => {
@@ -106,11 +108,11 @@ worldTest('party AI five bots capture enemies through the real party wave loop',
   const graph = g.Companions![1]!.Graph;
   for (let i = 2; i < 6; i++) expect(g.Companions![i]!.Graph === graph).toBe(true);
 });
-worldTest('party AI reaches the upper platform and damages the real boss with ordinary bubbles', () => {
+worldTest('party AI collects thunder and damages the moving boss through real bubble pops', () => {
   const g = createPartyGame(campaign as Level[], 42, undefined, 2);
   g.Party!.Wave = 2; preparePartyWave(g); g.Party!.Timer = 1; stepGame(g, [idle]);
   const hp = g.Party!.Boss!.HP;
-  for (let tick = 0; tick < 2400 && g.Party!.Boss!.HP === hp; tick++) {
+  for (let tick = 0; tick < 3600 && g.Party!.Boss!.HP === hp; tick++) {
     for (const p of g.Players) p.Invincible = 2;
     stepGame(g, [idle]);
   }
