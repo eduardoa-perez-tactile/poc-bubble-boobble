@@ -22,6 +22,7 @@ function party(): GameState {
 }
 worldTest('party presentation six dragons and shots use independent identities', () => {
   const g=party(), draws=arcadeDrawPlan(g,'red');
+  const colors=[[0,255,0],[0,170,255],[255,0,0],[255,220,0],[180,90,255],[255,135,0]];
   expect(referenceFrame('green/bubble',30)).toBe(referenceFrame('bubble',30));
   for(let index=0;index<6;index++) {
     const skin=dragonSkins[index]!, x=72+index*120;
@@ -29,6 +30,7 @@ worldTest('party presentation six dragons and shots use independent identities',
     expect(draws.find(d=>d.x===x&&d.y===448)!.image).toBe(referenceFrame(skin==='green'?'bubble':`${skin}/bubble`,30));
     expect(draws.filter(d=>d.footer&&d.image===referenceFrame(`${skin}/walk`,0)).length).toBe(1);
     expect(draws.some(d=>d.text===String(index+1)&&!d.footer)).toBe(true);
+    for(const indicator of draws.filter(d=>d.text.startsWith(String(index+1))))expect(indicator.color).toEqual(colors[index]);
   }
   const before=JSON.stringify(g); arcadeDrawPlan(g); expect(JSON.stringify(g)).toBe(before);
   delete g.Party; g.Players=g.Players.slice(0,2);
@@ -40,7 +42,9 @@ worldTest('party presentation rescue boss telegraphs and text remain within canv
   g.Party!.Telegraphs=[{X:120,Y:100,Ticks:20}];
   const draws=arcadeDrawPlan(g);
   expect(draws.some(d=>d.text==='6 HELP')).toBe(true);
+  expect(draws.find(d=>d.text==='6 HELP')!.color).toEqual([255,135,0]);
   expect(draws.some(d=>d.text==='5 AI'&&!d.footer)).toBe(true);
+  expect(draws.find(d=>d.text==='5 AI'&&!d.footer)!.color).toEqual([180,90,255]);
   expect(draws.some(d=>d.text==='5 AI'&&d.footer)).toBe(true);
   expect(draws.some(d=>d.image===referenceFrame('orange/bubble',30)&&d.w===60)).toBe(true);
   expect(draws.some(d=>d.image===referenceFrame('mighta/angry',0)&&d.w===96)).toBe(true);

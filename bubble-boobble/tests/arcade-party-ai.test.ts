@@ -1,7 +1,7 @@
 import { expect, worldTest } from '@gameengine/test';
 import { createGame, copyGame, stepGame } from '../src/arcade/game';
 import campaign from '../data/levels.json';
-import { createPartyGame } from '../src/arcade/party';
+import { createPartyGame, preparePartyWave } from '../src/arcade/party';
 import { companionInput, enableCompanion } from '../src/arcade/companion';
 import { updatePlayer } from '../src/arcade/player';
 import { ActorSize, EnemyState, Rows, State, Tile, type GameState, type Level } from '../src/arcade/types';
@@ -108,7 +108,7 @@ worldTest('party AI five bots capture enemies through the real party wave loop',
 });
 worldTest('party AI reaches the upper platform and damages the real boss with ordinary bubbles', () => {
   const g = createPartyGame(campaign as Level[], 42, undefined, 2);
-  g.Party!.Wave = 2; g.Party!.Timer = 1; stepGame(g, [idle]);
+  g.Party!.Wave = 2; preparePartyWave(g); g.Party!.Timer = 1; stepGame(g, [idle]);
   const hp = g.Party!.Boss!.HP;
   for (let tick = 0; tick < 2400 && g.Party!.Boss!.HP === hp; tick++) {
     for (const p of g.Players) p.Invincible = 2;

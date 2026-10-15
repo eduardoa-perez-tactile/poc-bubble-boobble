@@ -60,7 +60,12 @@ interface Draw {
   text: string;
   size: number;
   footer?: boolean;
+  color?: readonly [number, number, number];
 }
+const dragonIndicatorColors: Readonly<Record<string, readonly [number, number, number]>> = {
+  green: [0,255,0], blue: [0,170,255], red: [255,0,0],
+  yellow: [255,220,0], purple: [180,90,255], orange: [255,135,0],
+};
 const image = (
   name: string,
   tick: number,
@@ -94,7 +99,7 @@ export function fittedItemImage(name: string, tick: number, x: number, y: number
   draw.y += (size - draw.h) / 2;
   return draw;
 }
-const label = (text: string, x: number, y: number, size: number): Draw => ({
+const label = (text: string, x: number, y: number, size: number, color?: readonly [number, number, number]): Draw => ({
   image: "",
   x,
   y,
@@ -103,6 +108,7 @@ const label = (text: string, x: number, y: number, size: number): Draw => ({
   flip: false,
   text,
   size,
+  color,
 });
 export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
   const out: Draw[] = [];
@@ -115,7 +121,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
         if (g.Party.Slots[index] === 'empty') continue;
         const [x, y] = position({col: partySpawnColumns[index]!, row: 25}, 44);
         out.push(image(`${skinAt(index)}/bubble`, 30, x, y + 80, 44, 12));
-        out.push(label(String(index + 1), x + 16, y + 90, 10));
+        out.push(label(String(index + 1), x + 16, y + 90, 10, dragonIndicatorColors[skinAt(index)]));
       }
     for (const spawn of g.Party.Telegraphs ?? []) {
       out.push(image('bubble-warning', spawn.Ticks, spawn.X, spawn.Y + 48, 44));
@@ -200,7 +206,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
     if (g.Party && p.Downed) {
       out.push(image(`${skinAt(index)}/bubble`, 30, p.X - 6, p.Y + 42, 60));
       out.push(image(`${skinAt(index)}/dead`, 0, p.X + 6, p.Y + 54, 36, 36, p.Dir));
-      out.push(label(`${index + 1} HELP`, Math.max(8, Math.min(680, p.X - 8)), Math.max(66, Math.min(650, p.Y + 36)), 10));
+      out.push(label(`${index + 1} HELP`, Math.max(8, Math.min(680, p.X - 8)), Math.max(66, Math.min(650, p.Y + 36)), 10, dragonIndicatorColors[skinAt(index)]));
       continue;
     }
     if (p.Lives === 0 && p.Dead === 0) continue;
@@ -231,7 +237,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
       ),
     );
     if (g.Party)
-      out.push(label(`${index + 1}${g.Companions?.[index] ? ' AI' : ''}`, Math.max(8, Math.min(712, p.X + 8)), Math.max(66, Math.min(650, p.Y + 40)), 10));
+      out.push(label(`${index + 1}${g.Companions?.[index] ? ' AI' : ''}`, Math.max(8, Math.min(712, p.X + 8)), Math.max(66, Math.min(650, p.Y + 40)), 10, dragonIndicatorColors[skinAt(index)]));
   }
   for (const p of g.Particles)
     out.push(
@@ -243,8 +249,8 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
     for (let index = 0; index < 6; index++) {
       const p = g.Party.Slots[index] === 'empty' ? undefined : g.Players[index], x = 12 + index * 126;
       if (p) out.push({ ...image(`${skinAt(index)}/walk`, 0, x, 680, 28), footer: true });
-      out.push({ ...label(p ? `${index + 1}${g.Companions?.[index] ? ' AI' : ''}` : `${index + 1} --`, x + 34, 684, 11), footer: true });
-      if (p) out.push({ ...label(p.Downed ? 'HELP' : 'READY', x + 34, 702, 8), footer: true });
+      out.push({ ...label(p ? `${index + 1}${g.Companions?.[index] ? ' AI' : ''}` : `${index + 1} --`, x + 34, 684, 11, dragonIndicatorColors[skinAt(index)]), footer: true });
+      if (p) out.push({ ...label(p.Downed ? 'HELP' : 'READY', x + 34, 702, 8, dragonIndicatorColors[skinAt(index)]), footer: true });
     }
     return out;
   }
@@ -546,9 +552,7 @@ export const ArcadePresentation = defineSystem({
           font: "reference/arcade",
           size: d.size,
           color: (() => {
-            let r = 255,
-              g = 220,
-              b = 106;
+            let [r, g, b] = d.color ?? [255, 220, 106];
             if (
               banner &&
               d.x >= 108 &&

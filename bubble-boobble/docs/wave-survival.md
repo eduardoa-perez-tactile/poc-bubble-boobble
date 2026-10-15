@@ -7,7 +7,7 @@ filling the remaining dragon slots. The first prototype uses the campaign's
 level-one geometry, nine enemy waves and a boss on wave ten. Victory ends the
 run; an optional post-boss endless mode remains a future extension.
 
-Open **WAVE SURVIVAL** from the main menu. The default team is one human and five
+Open **START GAME → BUBBLE MADNESS** from the main menu. The default team is one human and five
 bots. The selection screen presents six color-framed dragon portraits in a three-column,
 two-row grid inspired by an arcade character-select screen. Select each card to
 cycle Human → AI → Empty. Arrow keys or a controller navigate spatially; confirm
@@ -27,20 +27,26 @@ host exposes no recorded disconnect event, so automatic takeover is deferred.
 |---|---|---|
 | Six-dragon foundation | Six slots, floor spawn areas, purple/orange skins, matching shots, player numbers and six-slot footer | Palette CPU/GPU probes, actual arena goldens, slot tests |
 | Local input and bots | Independent recorded input for six pad indices; per-bot memory with shared immutable navigation graphs | Raw engine-input integration, independent snapshot tests, legacy companion regressions |
-| Wave survival | Preparation, telegraphed entrances, escalating budget/variety/spawn frequency, safe rest periods | Wave boundary tests, full natural bot wave clear with damage disabled, recorded transition replay |
+| Wave survival | Whole-wave formations, movable preparation countdown, escalating enemy counts and mixed types, safe rest periods | Wave boundary/placement/variety tests, full natural bot wave clear with damage disabled, recorded transition replay |
 | Recovery and boss | Contact rescue, automatic rest recovery, persistent survivor upgrades, boss windup/vulnerability/attacks/summons, victory/results/restart | Rescue/wipe tests, real bot boss damage, ordinary bubble boss kill, result replay and visual captures |
 
 ## First balance values
 
-- Three seconds to prepare; ten seconds between waves.
+- Each wave appears in full during a three-second preparation countdown. Players
+  can move and jump into position; enemies and their attacks stay frozen, and
+  players cannot fire or take contact damage. Ten safe rest seconds precede the
+  next wave's preparation.
 - Six spawn areas: tile columns 3, 8, 13, 18, 23, 28, floor row 25.
-- Enemy entrances at left/right positions on the upper and lower platforms;
-  one second of warning precedes each spawn.
-- Enemy budget: `3 + wave * 2 + (occupied slots - 1) * 2`.
-- Simultaneous enemy/telegraph cap: `min(12, 4 + occupied slots)`.
-- Spawn interval starts at 150 ticks and drops by ten per wave, with a 45-tick
-  floor. Six enemy kinds enter the rotation progressively. Movement speed stays
-  at the current playable tuning. Occupied slots include bots.
+- Enemy budget: `min(32, 3 + wave * 2 + (occupied slots - 1) * 2)`.
+  Six occupied slots face 15 enemies together on wave one, rising by two per
+  wave to 31 on wave nine. Occupied slots include bots.
+- Formations spread across eight columns and four heights, alternating sides
+  between waves. Normal waves have no delayed reinforcements or spawn queue.
+- Wave one mixes Zen-Chan and Monsta; waves two through five add Banebou,
+  Mighta, Pulpul, and Invader respectively. Every unlocked type appears in each
+  wave. Movement speed stays at the current playable tuning.
+- Dragon numbers, AI labels, rescue labels, spawn markers and footer text use
+  their dragon's green, blue, red, yellow, purple or orange identity color.
 - A defeated dragon becomes a stationary rescue bubble. An active dragon within
   52 pixels on both axes rescues it. A full team knockout ends the run.
 - Rests clear hazards, recover downed dragons and disable firing. Survivors keep
@@ -51,7 +57,8 @@ host exposes no recorded disconnect event, so automatic takeover is deferred.
   remain separate from this prototype's team result.
 - Boss health is `12 + occupied slots * 6`. Its 300-tick cycle winds up for 90
   ticks, exposes it for 150, then closes for 60. The attack drops projectiles at
-  active dragons' positions; it summons two enemies every 600 ticks. Ordinary
+  active dragons' positions; it summons two enemies every 600 ticks with a
+  one-second entrance warning. Ordinary
   traveling bubbles damage it while exposed. Existing enlarged Mighta art is a
   placeholder; dedicated boss art and richer attack patterns are future work.
 
@@ -61,7 +68,15 @@ Party mode dispatches through the existing fixed-step game owner. Bot decisions
 and held controller state belong to simulation documents, so recorded input is
 sufficient for replay. The legacy solo/two-player modes remain available.
 
-## Validation checkpoint — October 15, 2026
+## Formation feedback validation — October 15, 2026
+
+- 205 V8 logic tests, 32 desktop render tests, and all 17 saved replays pass.
+- The 31-enemy wave also passes the mobile-tier, phone-low memory test, with
+  preparation and combat below the 14-draw-call ceiling.
+- Typechecking and asset/scene validation pass. No new build or cook was made.
+- Hermes remains unavailable; these checks do not establish device GPU timing.
+
+## Initial validation checkpoint — October 15, 2026
 
 Local macOS arm64 Game Engine release V8/Metal:
 

@@ -2,14 +2,14 @@ import { defineCheat } from '@gameengine/runtime/cheats';
 import { write } from '@gameengine/runtime';
 import { ArcadeControl } from '../schema.gen';
 import campaign from '../../data/levels.json';
-import { createPartyGame } from './party';
+import { createPartyGame, preparePartyWave } from './party';
 import { copyGame } from './game';
 import { session } from './session';
 import { desktopGameRequest, desktopAction } from '../desktop/state';
 import { EnemyState, State } from './types';
-export const PartyReset=defineCheat({id:'party.reset',group:'Party',title:'Inspect wave survival',params:{wave:{type:'int',min:1,max:10,default:1},humans:{type:'int',min:1,max:6,default:1}},resources:[write(ArcadeControl)],run(ctx,{wave,humans}){
+export const PartyReset=defineCheat({id:'party.reset',group:'Party',title:'Inspect wave survival',params:{countdown:{type:'int',min:1,max:180,default:1},wave:{type:'int',min:1,max:10,default:1},humans:{type:'int',min:1,max:6,default:1}},resources:[write(ArcadeControl)],run(ctx,{wave,humans,countdown}){
   const g=createPartyGame(campaign,42,Array.from({length:6},(_,i)=>i<humans?'human':'ai'));
-  g.Party!.Wave=wave;g.Party!.Timer=1;
+  g.Party!.Wave=wave;preparePartyWave(g);g.Party!.Timer=countdown;
   desktopAction('party');desktopAction('start-party');
   session.set({active:true,mode:'party',game:g});ctx.setField(ArcadeControl,'skip',true);ctx.setField(ArcadeControl,'requestSequence',desktopGameRequest.get().sequence);
 }});

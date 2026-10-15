@@ -25,6 +25,7 @@ export function createPartyGame(levels:Level[], seed:number, slots:PartySlot[]=d
     respawn(g,i);
     if(slots[i]==='ai')enableCompanion(g,i);
   }
+  preparePartyWave(g);
   return g;
 }
 export function copyParty(g:GameState) {
@@ -32,18 +33,37 @@ export function copyParty(g:GameState) {
   return p?{...p,Slots:p.Slots.slice(),Telegraphs:p.Telegraphs.map(t=>({...t})),...(p.Boss?{Boss:{...p.Boss}}:{})}:undefined;
 }
 const occupied=(g:GameState)=>g.Party!.Slots.reduce((n,s)=>n+(s!=='empty'?1:0),0);
-export function partyWaveBudget(wave:number,team:number) { return 3+wave*2+Math.max(0,team-1)*2; }
-function beginWave(g:GameState) {
+export function partyWaveBudget(wave:number,team:number) { return Math.min(32,3+wave*2+Math.max(0,team-1)*2); }
+/** Show the whole formation before releasing it, just like a campaign round. */
+export function preparePartyWave(g:GameState) {
   const p=g.Party!;
   g.State=State.Playing;g.LevelTicks=0;g.Hurry=false;g.Freeze=0;g.Bubbles=[];g.Projectiles=[];g.Effects=[];g.Enemies=[];
-  for(const dragon of g.Players) if(alive(dragon))dragon.Invincible=120;
-  p.Timer=0;p.Spawned=0;p.Telegraphs=[];p.SpawnTick=0;
-  p.Phase=p.Wave===p.BossWave?'boss':'combat';
-  p.ToSpawn=p.Phase==='boss'?0:partyWaveBudget(p.Wave,occupied(g));
-  if(p.Phase==='boss') {
+  p.Phase='prepare';p.Timer=180;g.Countdown=180;p.Spawned=0;p.Telegraphs=[];p.SpawnTick=0;p.ToSpawn=0;
+  delete p.Boss;
+  if(p.Wave===p.BossWave) {
     const hp=12+occupied(g)*6;
     p.Boss={X:336,Y:150,HP:hp,MaxHP:hp,Tick:0,Invulnerable:1};
+    return;
   }
+  const count=partyWaveBudget(p.Wave,occupied(g));
+  const variety=Math.min(kinds.length,p.Wave+1);
+  // Eight columns across four heights: clear of walls, platforms and the floor spawns.
+  // Fill all heights evenly; alternate the columns' direction between waves.
+  const rows=[20,10,15,5];
+  const columns=[0,7,3,4,1,6,2,5];
+  for(let index=0;index<count;index++) {
+    const column=columns[Math.floor(index/rows.length)]!;
+    const x=(8+(p.Wave%2?column:7-column)*2)*Tile;
+    const y=rows[index%rows.length]!*Tile-ActorSize;
+    g.NextID++;
+    g.Enemies.push({...body(x,y),ID:g.NextID,Kind:kinds[(index+p.Wave-1)%variety]!,State:EnemyState.Active,Dir:x<384?1:-1,Vertical:index%2?1:-1,Angry:false,Age:0,Cooldown:120,Shoot:0,DeadTicks:0,Phase:index*.6,CarriedBy:0,CarryTicks:0});
+  }
+  p.Spawned=count;
+}
+function beginWave(g:GameState) {
+  const p=g.Party!;
+  p.Timer=0;p.Phase=p.Boss?'boss':'combat';
+  for(const dragon of g.Players) if(alive(dragon))dragon.Invincible=120;
 }
 function scheduleEnemy(g:GameState) {
   const p=g.Party!;
@@ -58,7 +78,7 @@ function spawnTelegraphs(g:GameState) {
   p.Telegraphs=p.Telegraphs.filter(t=>t.Ticks>0);
   for(const t of ready) {
     g.NextID++;
-    const variety=Math.min(kinds.length,1+Math.floor((p.Wave-1)/2));
+    const variety=Math.min(kinds.length,p.Wave+1);
     g.Enemies.push({...body(t.X,t.Y),ID:g.NextID,Kind:kinds[(g.NextID-1)%variety]!,State:EnemyState.Active,Dir:t.X<384?1:-1,Vertical:1,Angry:false,Age:0,Cooldown:120,Shoot:0,DeadTicks:0,Phase:0,CarriedBy:0,CarryTicks:0});
   }
 }
@@ -104,29 +124,25 @@ function stepBoss(g:GameState) {
 export function stepParty(g:GameState,inputs:Input[]) {
   const p=g.Party!;
   g.Tick++;
-  if(p.Phase==='prepare') {
-    p.Timer--;g.Countdown=p.Timer;
-    if(p.Timer<=0)beginWave(g);
-    return;
-  }
   const ins=inputs.slice();
   for(let i=0;i<6;i++) {
     if(p.Slots[i]==='empty')continue;
     if(p.Slots[i]==='ai')ins[i]=companionInput(g,i);
-    if(alive(g.Players[i]!))updatePlayer(g,i,p.Phase==='rest'?{...(ins[i]??idle),Fire:false}:ins[i]??idle);
+    if(alive(g.Players[i]!))updatePlayer(g,i,p.Phase==='rest'||p.Phase==='prepare'?{...(ins[i]??idle),Fire:false}:ins[i]??idle);
+  }
+  if(p.Phase==='prepare') {
+    rescues(g);p.Timer--;g.Countdown=p.Timer;
+    if(p.Timer<=0)beginWave(g);
+    return;
   }
   if(p.Phase==='rest') {
     updateItems(g);g.Particles=g.Particles.filter(v=>{v.Y-=.6;return --v.Life>0;});p.Timer--;g.Countdown=p.Timer;
-    if(p.Timer<=0){p.Wave++;beginWave(g);}
+    if(p.Timer<=0){p.Wave++;preparePartyWave(g);}
     return;
   }
   rescues(g);
   if(!g.Players.some(alive)){g.State=State.GameOver;return;}
   g.LevelTicks++;
-  const cap=Math.min(12,4+occupied(g));
-  if(p.Phase==='combat'&&p.ToSpawn>0&&remainingEnemies(g)+p.Telegraphs.length<cap) {
-    if(p.SpawnTick<=0){scheduleEnemy(g);p.SpawnTick=Math.max(45,150-(p.Wave-1)*10);}else p.SpawnTick--;
-  }
   spawnTelegraphs(g);
   if(g.Freeze>0)g.Freeze--;else{updateEnemies(g);updateProjectiles(g);}
   // Remove completed actors to bound long-session work.

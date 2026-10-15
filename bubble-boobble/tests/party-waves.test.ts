@@ -1,10 +1,11 @@
 import { worldTest, renderTest, expect } from '@gameengine/test';
 import campaign from '../data/levels.json';
-import { createPartyGame, partyWaveBudget } from '../src/arcade/party';
+import { createPartyGame, partyWaveBudget, preparePartyWave } from '../src/arcade/party';
 import { copyGame, stepGame } from '../src/arcade/game';
 import { hurtPlayer } from '../src/arcade/player';
 import { applyPower } from '../src/arcade/items';
 import { EnemyState, State, type PartySlot } from '../src/arcade/types';
+import { blocked } from '../src/arcade/physics';
 import { DesktopIntent } from '../src/schema.gen';
 import { session } from '../src/arcade/session';
 import { desktopState } from '../src/desktop/state';
@@ -16,16 +17,32 @@ function start(g:ReturnType<typeof game>){for(let i=0;i<180;i++)stepGame(g,[idle
 worldTest('party waves six spawn areas and safe preparation',()=>{
  const g=game();expect(g.Players.map(p=>p.X)).toEqual([72,192,312,432,552,672]);
  expect(g.Players.map(p=>p.Skin)).toEqual(['green','blue','red','yellow','purple','orange']);
+ const formation=g.Enemies.map(e=>[e.X,e.Y,e.Age]);
+ expect(formation.length).toBe(partyWaveBudget(1,6));
+ for(const e of g.Enemies)expect(blocked(g,e.X,e.Y,44)).toBe(false);
  for(let i=0;i<179;i++)stepGame(g,[{Move:1,Jump:true,Fire:true}]);
- expect(g.Party!.Phase).toBe('prepare');expect(g.Enemies.length).toBe(0);expect(g.Bubbles.length).toBe(0);
- stepGame(g,idle);expect(g.Party!.Phase).toBe('combat');expect(g.Party!.ToSpawn).toBe(partyWaveBudget(1,6));
+ expect(g.Party!.Phase).toBe('prepare');expect(g.Enemies.map(e=>[e.X,e.Y,e.Age])).toEqual(formation);expect(g.Bubbles.length).toBe(0);
+ expect(g.Players[0]!.X).toBeGreaterThan(72);expect(g.Players[0]!.Lives).toBe(1);
+ stepGame(g,idle);expect(g.Party!.Phase).toBe('combat');expect(g.Party!.ToSpawn).toBe(0);
+ stepGame(g,idle);expect(g.Enemies.some((e,i)=>e.X!==formation[i]![0]||e.Y!==formation[i]![1])).toBe(true);
  expect(partyWaveBudget(2,6)).toBeGreaterThan(partyWaveBudget(1,6));
 });
-worldTest('party waves entrance warning precedes bounded enemy spawns',()=>{
- const g=game();start(g);stepGame(g,idle);expect(g.Party!.Telegraphs.length).toBe(1);expect(g.Enemies.length).toBe(0);
- for(let i=0;i<59;i++)stepGame(g,idle);
- expect(g.Enemies.length).toBe(1);expect(g.Enemies[0]!.X).toBeGreaterThan(0);
- for(let i=0;i<2400;i++){for(const p of g.Players)p.Invincible=2;stepGame(g,idle);expect(g.Enemies.filter(e=>e.State!==EnemyState.Defeated).length+g.Party!.Telegraphs.length).toBeLessThanOrEqual(10);}
+worldTest('party waves increase whole formations and mix every unlocked monster type',()=>{
+ for(const team of [1,6]) {
+  const g=createPartyGame(campaign,42,humans.map((_,i)=>i<team?'human':'empty'));
+  let previous=0;
+  for(let wave=1;wave<10;wave++) {
+   expect(g.Party!.Phase).toBe('prepare');expect(g.Enemies.length).toBe(partyWaveBudget(wave,team));
+   expect(g.Enemies.length).toBeGreaterThan(previous);previous=g.Enemies.length;
+   expect(new Set(g.Enemies.map(e=>e.Kind)).size).toBe(Math.min(6,wave+1));
+   expect(new Set(g.Enemies.map(e=>`${e.X},${e.Y}`)).size).toBe(g.Enemies.length);
+   expect(Math.max(...g.Enemies.map(e=>e.X))-Math.min(...g.Enemies.map(e=>e.X))).toBeGreaterThan(300);
+   for(const e of g.Enemies)expect(blocked(g,e.X,e.Y,44)).toBe(false);
+   start(g);expect(g.Party!.Phase).toBe('combat');expect(g.Party!.ToSpawn).toBe(0);
+   g.Enemies=[];stepGame(g,idle);expect(g.Party!.Phase).toBe('rest');
+   for(let tick=0;tick<600;tick++)stepGame(g,idle);
+  }
+ }
 });
 worldTest('party waves safe ten second rest preserves upgrades and recovers downed teammates',()=>{
  const g=game();start(g);g.Players[0]!.Power.Shoes=true;g.Players[1]!.Invincible=0;hurtPlayer(g,1);
@@ -35,7 +52,7 @@ worldTest('party waves safe ten second rest preserves upgrades and recovers down
  expect(g.Projectiles.length).toBe(0);const wave=g.Party!.Wave;
  for(let i=0;i<599;i++)stepGame(g,[{Move:0,Jump:false,Fire:true}]);
  expect(g.Party!.Wave).toBe(wave);expect(g.Bubbles.length).toBe(0);
- stepGame(g,idle);expect(g.Party!.Wave).toBe(wave+1);expect(g.Party!.Phase).toBe('combat');expect(g.Players[0]!.Power.Shoes).toBe(true);
+ stepGame(g,idle);expect(g.Party!.Wave).toBe(wave+1);expect(g.Party!.Phase).toBe('prepare');expect(g.Enemies.length).toBe(partyWaveBudget(wave+1,6));expect(g.Players[0]!.Power.Shoes).toBe(true);
 });
 worldTest('party waves contact rescue team wipe pause and campaign item isolation',()=>{
  const g=game();start(g);const p=g.Players[1]!;p.Invincible=0;hurtPlayer(g,1);p.X=g.Players[0]!.X+40;p.Y=g.Players[0]!.Y;
@@ -45,12 +62,12 @@ worldTest('party waves contact rescue team wipe pause and campaign item isolatio
  for(let i=0;i<6;i++){g.Players[i]!.Invincible=0;hurtPlayer(g,i);}stepGame(g,idle);expect(g.State).toBe(State.GameOver);
 });
 worldTest('party waves snapshot isolation includes boss slots telegraphs and bots',()=>{
- const g=game();start(g);stepGame(g,idle);const a=copyGame(g),b=copyGame(g);a.Party!.Slots[0]='ai';a.Party!.Telegraphs[0]!.Ticks=1;
+ const g=game();start(g);g.Party!.Telegraphs=[{X:192,Y:196,Ticks:60}];const a=copyGame(g),b=copyGame(g);a.Party!.Slots[0]='ai';a.Party!.Telegraphs[0]!.Ticks=1;
  expect(g.Party!.Slots[0]).toBe('human');expect(g.Party!.Telegraphs[0]!.Ticks).toBeGreaterThan(1);
  for(let i=0;i<30;i++){stepGame(g,idle);stepGame(b,idle);}expect(JSON.stringify(g)).toBe(JSON.stringify(b));
 });
 worldTest('party waves boss windup vulnerability damage and victory',()=>{
- const g=game();g.Party!.Wave=10;g.Party!.Timer=1;stepGame(g,idle);expect(g.Party!.Phase).toBe('boss');const boss=g.Party!.Boss!;
+ const g=game();g.Party!.Wave=10;preparePartyWave(g);g.Party!.Timer=1;stepGame(g,idle);expect(g.Party!.Phase).toBe('boss');const boss=g.Party!.Boss!;
  boss.Tick=88;stepGame(g,idle);expect(boss.Invulnerable).toBe(1);stepGame(g,idle);expect(boss.Invulnerable).toBe(0);expect(g.Projectiles.length).toBeGreaterThan(0);
  boss.HP=1;boss.Tick=100;g.Projectiles=[];g.Enemies=[];g.Party!.Telegraphs=[];
  Object.assign(g.Players[0]!,{X:260,Y:196,Dir:1,Ground:true,Cooldown:0,Invincible:100});
@@ -81,6 +98,17 @@ renderTest('party actual six dragon arena and rest HUD',async({cheat,step,input,
  input.view(768,720,1);await step(3);await cheat(PartyReset,{wave:1,humans:6});await step(12);expect(render.probe({width:768,height:720,points:[[1,49]]}).points[0]!.rgba.slice(0,3)).toEqual([244,106,252]);await render.expectScreenshot('six_dragons',{width:768,height:720});
  await cheat(PartyClear,{});await step(2);await render.expectScreenshot('rest',{width:768,height:720});
  await cheat(PartyReset,{wave:10,humans:6});await step(108);await render.expectScreenshot('boss',{width:768,height:720});
+},{scene:'scenes/arcade.scene.json'});
+
+renderTest('party whole wave preview and late mixed formation stay within render budget',async({cheat,step,input,render})=>{
+ input.view(768,720,1);await step(3);await cheat(PartyReset,{wave:1,humans:6,countdown:180});await step(12);
+ expect(session.get().game!.Party!.Phase).toBe('prepare');expect(session.get().game!.Enemies.length).toBe(15);
+ render.expectScreenshot('formation_preview',{width:768,height:720});
+ await cheat(PartyReset,{wave:9,humans:6,countdown:180});await step(12);
+ expect(session.get().game!.Enemies.length).toBe(31);expect(new Set(session.get().game!.Enemies.map(e=>e.Kind)).size).toBe(6);
+ render.expectDrawCalls('<=',14,{width:768,height:720});render.expectScreenshot('late_formation',{width:768,height:720});
+ await step(180);expect(session.get().game!.Party!.Phase).toBe('combat');
+ for(let frame=0;frame<8;frame++){await step(15);render.expectDrawCalls('<=',14,{width:768,height:720});}
 },{scene:'scenes/arcade.scene.json'});
 
 declare const __gameengine_host:(op:string,arg:string)=>string;
