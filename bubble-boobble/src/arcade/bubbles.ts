@@ -1,3 +1,4 @@
+import { startPlayerJump } from './physics';
 import {
   ActorSize,
   type Bubble,
@@ -130,8 +131,7 @@ export function updateBubbles(g: GameState, inputs: Input[]) {
         p.X < b.X + 36
       ) {
         p.Y = b.Y - ActorSize;
-        p.VY = -10.5;
-        p.Ground = false;
+        startPlayerJump(g, p, -10.5);
         g.Sounds.push("jump");
         continue;
       }
@@ -158,6 +158,9 @@ export function popBubble(g: GameState, index: number, player: number) {
       const [x, y] = position(g.Level.food_spawn, 32);
       g.Items.push({ ...item(x, y), Food: g.Level.number, Stationary: true });
     }
+    // Empty ordinary bubbles score once each, including every bubble in a chain.
+    if (b.EnemyID === 0 && b.Element === '' && g.PlayerBalance?.ArcadeScoring !== false)
+      addScore(g, 10, b.X, b.Y, true);
     if (b.Element !== "") releaseElement(g, b, player);
     for (let j = 0; j < g.Bubbles.length; j++) {
       const other = g.Bubbles[j]!;

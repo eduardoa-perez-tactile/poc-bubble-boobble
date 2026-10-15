@@ -9,7 +9,7 @@ import {
   intersects,
   powers,
 } from "./types";
-import { movePlayer, spawnPosition } from "./physics";
+import { movePlayer, spawnPosition, startPlayerJump } from "./physics";
 import { addScore } from "./game";
 import { productionPlayerBalance } from './balance';
 import { shootBubble } from "./bubbles";
@@ -46,8 +46,7 @@ export function updatePlayer(g: GameState, index: number, input: Input) {
   if (p.Ground) p.Coyote = 6;
   else if (p.Coyote > 0) p.Coyote--;
   if (p.JumpBuffer > 0 && p.Coyote > 0) {
-    p.VY = -11.5;
-    p.Ground = false;
+    startPlayerJump(g, p);
     p.Coyote = 0;
     p.JumpBuffer = 0;
     g.Counters.Jumps++;
@@ -61,7 +60,7 @@ export function updatePlayer(g: GameState, index: number, input: Input) {
     p.WalkFrame++;
   }
   const oldX = p.X;
-  movePlayer(g, p, i.Move * speed);
+  movePlayer(g, p, i.Move * speed, p.Power.Shoes);
   const distance = Math.abs(p.X - oldX);
   g.Counters.Walked += distance;
   if (p.Power.Crystal) {

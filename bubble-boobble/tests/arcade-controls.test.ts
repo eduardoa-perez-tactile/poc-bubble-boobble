@@ -14,7 +14,7 @@ worldTest('arcade physical fire movement jump and pause bindings',async({input,s
  input.key(37,false);input.key(51,true);await step(3);
  expect(session.get().game!.Players[0]!.X).toBeCloseTo(103.5,10);
  input.key(51,false);input.key(52,true);await step(1);
- expect(session.get().game!.Players[0]!.VY).toBe(-11);
+ expect(session.get().game!.Players[0]!.VY).toBe(-12);
  input.key(52,false);input.action('pause',1);await step(1);
  expect(session.get().game!.Paused).toBe(true);
  const tick=session.get().game!.Tick;

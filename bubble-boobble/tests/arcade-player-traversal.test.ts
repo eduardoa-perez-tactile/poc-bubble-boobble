@@ -52,7 +52,7 @@ worldTest('player traversal requires matching full-width openings and preserves 
  const g=setup(),p=g.Players[0]!;
  Object.assign(p,{X:10*Tile,Y:Height-1,VY:4,Ground:false});
  updatePlayer(g,0,idle);
- expect(p.Y).toBe(Tile);expect(p.VY).toBe(2);
+ expect(p.Y).toBe(Tile);expect(p.VY).toBe(3);
 });
 worldTest('player traversal bubble boost crosses top opening without popping the bubble',()=>{
  const g=setup(),p=g.Players[0]!;
@@ -60,7 +60,7 @@ worldTest('player traversal bubble boost crosses top opening without popping the
  g.Bubbles=[{...bubble(10*Tile,52),ID:10,Age:30,Floating:true}];
  const jump={...idle,Jump:true};
  updateBubbles(g,[jump]);
- expect(p.VY).toBe(-10.5);expect(g.Bubbles.length).toBe(1);expect(g.Counters.Popped).toBe(0);
+ expect(p.VY).toBe(-6);expect(g.Bubbles.length).toBe(1);expect(g.Counters.Popped).toBe(0);
  for(let i=0;i<12&&p.Y<Height/2;i++)updatePlayer(g,0,jump);
  expect(p.Y).toBeGreaterThan(Height-ActorSize);expect(p.Y).toBeLessThanOrEqual(Height);expect(p.VY).toBeLessThan(0);
  for(let i=0;i<10;i++)updatePlayer(g,0,jump);
@@ -75,7 +75,7 @@ worldTest('player traversal co-op wraps independently without changing jump-edge
  // Holding jump in mid-air does not create an ordinary jump or reset velocity.
  updatePlayer(g,1,{...idle,Jump:true});const vy=other.VY;
  updatePlayer(g,1,{...idle,Jump:true});
- expect(other.VY).toBe(vy+.5);expect(g.Counters.Jumps).toBe(0);
+ expect(other.VY).toBe(vy);expect(g.Counters.Jumps).toBe(0);
 });
 
 worldTest('player traversal real campaign round three wraps through paired openings',()=>{
@@ -120,7 +120,7 @@ worldTest('player traversal bubble jump retains reference age and held-input rul
   Object.assign(p,{X:10*Tile,Y:494,VY:4,Ground:false});
   g.Bubbles=[{...bubble(10*Tile,534),ID:10,Age:age,Floating:true}];
   updateBubbles(g,[{...idle,Jump:jump}]);
-  expect(p.VY).toBe(age===30&&jump?-10.5:4);
+  expect(p.VY).toBe(age===30&&jump?-6:4);
   expect(g.Counters.Popped).toBe(age===30&&!jump?1:0);
  }
 });

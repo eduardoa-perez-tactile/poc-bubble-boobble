@@ -1,3 +1,4 @@
+import { enableCompanion } from './companion';
 import { ActionState, WorldView, defineSystem, query, read, write } from '@gameengine/runtime';
 import { ArcadeControl, ArcadeInput } from '../schema.gen.ts';
 import campaign from '../../data/levels.json';
@@ -18,6 +19,7 @@ export const ArcadeStep=defineSystem({
       if(request.action==='start'||request.action==='playtest'){
         const custom=request.action==='playtest'&&request.customLevel;
         const game=createGame(custom?[custom]:(campaign as Level[]),1,request.players);
+        if(request.mode==='ai')enableCompanion(game);
         game.Custom=!!custom;current={active:true,mode:custom?'custom':'campaign',game};session.set(current);
       } else if(request.action==='quit'||request.action==='exit'){current={...current,active:false};session.set(current);}
       else if(current.game&&(request.action==='pause'||request.action==='resume')){

@@ -20,10 +20,12 @@ Candy effects still combine independently. Blue changes speed, pink changes
 range, and yellow changes the interval between shots. Shots stop at their exact
 range even when that requires a partial final movement tick. Pickups do not
 retroactively change existing bubbles' stored speed/range or an already-running
-firing cooldown. Shoes affect movement only.
+firing cooldown. Shoes affect horizontal movement and the arcade-derived vertical
+movement cadence; see [arcade motion](arcade-motion.md).
 
-Jump impulse, gravity, bubble bounce, capture, pop/escape timers, other powerup
-trigger thresholds, pickup effects and enemy projectiles retain their previous rules.
+Player jumps and falls now use the arcade-derived motion profile described in
+[arcade motion](arcade-motion.md). Capture, pop/escape timers, other powerup trigger
+thresholds, pickup effects and enemy projectiles retain their previous rules.
 All powers still start disabled and reset on death and round transitions.
 The separately requested slower normal enemies, player top traversal and cosmetic
 skin/bubble colors remain in place.
@@ -89,3 +91,21 @@ replays, cold live viewport, typecheck/validation, desktop cook and smoke, and
 asset provenance checks. Cached pure Go comparisons passed with the original
 11,520-pixel threshold; Go fixtures, screenshot goldens and pipeline records
 remain unchanged. This does not add physical-device or natural-campaign evidence.
+
+## Empty bubbles and fruit feedback
+
+Production scoring awards 10 points for each popped ordinary empty bubble,
+including each bubble in a chain. Enemy bubbles retain their existing combo
+awards; their pop does not add another empty-bubble bonus. Expiry and jumping
+on a bubble do not score. The 10-point award follows the
+[arcade FAQ's empty-bubble rule](https://gamefaqs.gamespot.com/arcade/583720-bubble-bobble/faqs/1221).
+
+Fruit pickups always display the awarded value using the same 45-tick floating
+text effect as defeated enemies, including fruit worth less than 100 points.
+The score, HUD, shared co-op score and extra-life thresholds use the same central
+score function. Frequent small ring awards keep their previous non-popup behavior.
+
+`PlayerBalance.ArcadeScoring` defaults to true in production and false in the
+explicit historical Go profile, preserving the original oracle fixtures.
+`arcade-scoring.test.ts` covers chains, duplicate prevention, fruit values, both
+players, extra lives, copy isolation, renderer text and recorded engine HUD updates.

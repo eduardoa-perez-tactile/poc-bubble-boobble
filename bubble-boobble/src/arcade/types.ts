@@ -1,3 +1,4 @@
+import type { CompanionState } from './companion';
 import type { PlayerBalance } from './balance';
 export const Columns = 32,
   Rows = 26,
@@ -41,6 +42,9 @@ export interface Input {
   Fire: boolean;
 }
 export interface Body {
+  // Player-only motion phase; absent on reference actors and other body types.
+  MotionTick?: number;
+  JumpStep?: number;
   X: number;
   Y: number;
   VX: number;
@@ -136,6 +140,7 @@ export interface Counters {
   Walked: number;
 }
 export interface GameState {
+  Companion?: CompanionState;
   PlayerBalance: PlayerBalance;
   // Authoritative locomotion tuning; angry enemies retain their original speed.
   NormalEnemySpeedScale: number;

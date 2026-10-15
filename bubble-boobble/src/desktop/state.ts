@@ -1,4 +1,4 @@
-import { defineDoc, defineSystem, query, read, ActionState, TextInput, PointerHover, PointerDown } from '@gameengine/runtime';
+import { defineDoc, defineSystem, query, read, ActionState, TextInput, PointerHover, PointerDown, KeyEvent } from '@gameengine/runtime';
 import type { DocHandle, DocValue } from '@gameengine/runtime';
 import { DesktopIntent, ArcadeControl } from '../schema.gen.ts';
 import campaignData from '../../data/levels.json';
@@ -8,13 +8,14 @@ import { desktopSaveState } from './save.ts';
 import { desktopButtonRect } from './layout.ts';
 import { getDesktopButtons } from './model.ts';
 const campaign=campaignData as Level[];
+export type PlayMode='solo'|'ai'|'human';
 export type DesktopScreen='title'|'menu'|'profiles'|'new-profile'|'settings'|'scores'|'help'|'credits'|'editor'|'play'|'pause'|'result';
-export interface DesktopState {screen:DesktopScreen;name:string;status:string;statusStartedStep:number;selected:number;custom:boolean;recorded:boolean;won:boolean;score:number;round:number;tool:number;template:number;painting:boolean;deleteHeldAt:number;level:Level;history:Level[]}
-export const initialDesktopState:DesktopState={screen:'title',name:'',status:'',statusStartedStep:-1,selected:0,custom:false,recorded:false,won:false,score:0,round:1,tool:0,template:0,painting:false,deleteHeldAt:-1,level:cloneLevel(campaign[0]!),history:[]};
+export interface DesktopState {screen:DesktopScreen;confirmKeys:number;playMode:PlayMode;name:string;status:string;statusStartedStep:number;selected:number;custom:boolean;recorded:boolean;won:boolean;score:number;round:number;tool:number;template:number;painting:boolean;deleteHeldAt:number;level:Level;history:Level[]}
+export const initialDesktopState:DesktopState={screen:'title',confirmKeys:0,playMode:'solo',name:'',status:'',statusStartedStep:-1,selected:0,custom:false,recorded:false,won:false,score:0,round:1,tool:0,template:0,painting:false,deleteHeldAt:-1,level:cloneLevel(campaign[0]!),history:[]};
 export const desktopState=defineDoc('desktop-ui',initialDesktopState as unknown as DocValue) as unknown as DocHandle<DesktopState>;
-export interface DesktopGameRequest {sequence:number;action:string;players:number;level:number;customLevel:Level|null}
-export const desktopGameRequest=defineDoc('desktop-game-request',{sequence:0,action:'',players:1,level:1,customLevel:null} as DocValue) as unknown as DocHandle<DesktopGameRequest>;
-const request=(action:string,custom=false)=>desktopGameRequest.set({sequence:desktopGameRequest.get().sequence+1,action,players:1,level:1,customLevel:custom?cloneLevel(desktopState.get().level):null});
+export interface DesktopGameRequest {sequence:number;action:string;mode:PlayMode;players:number;level:number;customLevel:Level|null}
+export const desktopGameRequest=defineDoc('desktop-game-request',{sequence:0,action:'',mode:'solo',players:1,level:1,customLevel:null} as DocValue) as unknown as DocHandle<DesktopGameRequest>;
+const request=(action:string,custom=false)=>desktopGameRequest.set({sequence:desktopGameRequest.get().sequence+1,action,mode:desktopState.get().playMode??'solo',players:desktopState.get().playMode==='ai'||desktopState.get().playMode==='human'?2:1,level:1,customLevel:custom?cloneLevel(desktopState.get().level):null});
 export function showDesktopPause(paused=true){const s=desktopState.get();desktopState.set({...s,screen:paused?'pause':'play',selected:0});}
 export function finishDesktopRun(won:boolean,score:number,round:number){const s=desktopState.get();if(!s.recorded&&!s.custom&&desktopSaveState.loaded())desktopSaveState.dispatch('record',{won,score,round},0);desktopState.set({...s,screen:'result',recorded:true,won,score,round,selected:0});}
 export function setDesktopRunScore(score:number,round:number){const s=desktopState.get();if(s.score!==score||s.round!==round)desktopState.set({...s,score,round});}
@@ -24,6 +25,7 @@ export function desktopAction(action:string,value='',index=0,x=0,y=0,now=0){
  const remember=()=>patch({history:[...s.history,cloneLevel(s.level)].slice(-50)});
  if(action==='navigate'){navigate(value as DesktopScreen);return;}
  if(action==='select'){patch({selected:index});return;}
+ if(action==='play-mode'){const modes:PlayMode[]=['solo','ai','human'];patch({playMode:modes[(modes.indexOf(s.playMode??'solo')+(index===-1?2:1))%3]!});return;}
  if(action==='name'){patch({name:value.slice(0,16)});return;}
  if(action==='space')action='char: ';
  if(action.startsWith('char:')){patch({name:(s.name+action.slice(5)).slice(0,16)});return;}
@@ -56,14 +58,25 @@ export function desktopAction(action:string,value='',index=0,x=0,y=0,now=0){
  if(action==='element'){remember();const choices=['','water','thunder','fire'];const special=choices[(choices.indexOf(s.level.special)+1)%4]!;patch({level:{...s.level,special,special_count:special?16:0}});return;}
  if(action==='theme'){remember();const number=s.level.number%25+1;patch({level:{...s.level,number,tiles:s.level.tiles.map(row=>row.map(t=>t?number:0))}});}
 }
-export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(ArcadeControl)],query:query(read(ActionState)),events:[DesktopIntent,TextInput,PointerHover,PointerDown],run(ctx,q){
+export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(ArcadeControl)],query:query(read(ActionState)),events:[DesktopIntent,TextInput,PointerHover,PointerDown,KeyEvent],run(ctx,q){
  if(!ctx.get(ArcadeControl).active)return;
  const status=desktopState.get();if(status.status){if(status.statusStartedStep<0)desktopState.set({...status,statusStartedStep:ctx.step});else if(ctx.step-status.statusStartedStep>=300)desktopState.set({...status,status:'',statusStartedStep:-1});}
  if(desktopState.get().screen==='title'&&ctx.events.count(PointerDown))desktopAction('menu');
  for(const pointer of ctx.events.read(PointerHover)){const s=desktopState.get(),p=desktopSaveState.get(),buttons=getDesktopButtons(s,p);for(let i=0;i<buttons.length;i++){const r=desktopButtonRect(s,p,i);if(r&&pointer.world[0]>=r.x&&pointer.world[0]<r.x+r.width&&720-pointer.world[1]>=r.y&&720-pointer.world[1]<r.y+r.height&&s.selected!==i){desktopAction('select','',i);break;}}}
  for(const e of ctx.events.read(DesktopIntent))desktopAction(e.action,e.value,e.index,e.x,e.y,ctx.time);
  for(const c of q.chunks())for(let i=0;i<c.length;i++)if(c.is(ActionState,i,'name','fullscreen')&&c.col(ActionState).justPressed[i])desktopAction('fullscreen','',0,0,0,ctx.time);
- let s=desktopState.get();if(s.screen==='play')return;
+ // ActionState reflects the final held state, so a down/up pair within one step can lose justPressed.
+ // Keep a recorded-key latch in document state, both for short taps and native repeat suppression.
+ let confirm=false,profileConfirm=false;
+ let s=desktopState.get(),held=s.confirmKeys??0;
+ for(const e of ctx.events.read(KeyEvent)){
+  const bit=e.code===38?1:e.code===37?2:0;if(!bit)continue;
+  if(e.down&&!(held&bit)){confirm=true;if(bit===1)profileConfirm=true;}
+  held=e.down?held|bit:held&~bit;
+ }
+ if(held!==(s.confirmKeys??0)){s={...s,confirmKeys:held};desktopState.set(s);}
+ if(s.screen==='play')return;
+ const inputScreen=s.screen;
  let editorModifier=false;for(const c of q.chunks())for(let i=0;i<c.length;i++)if(c.is(ActionState,i,'name','editorModifier')&&c.col(ActionState).pressed[i])editorModifier=true;
  if(s.screen==='new-profile')for(const e of ctx.events.read(TextInput))desktopAction('name',desktopState.get().name+e.text.replace(/[^A-Za-z0-9 _-]/g,'').toUpperCase());
  for(const c of q.chunks())for(let i=0;i<c.length;i++){
@@ -72,8 +85,11 @@ export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(Ar
   if(!a.justPressed[i])continue;const buttons=getDesktopButtons(s,desktopSaveState.get());
   if(c.is(ActionState,i,'name','menuY')){const selected=(s.selected+(a.value[i]!<0?-1:1)+buttons.length)%buttons.length;desktopAction('select','',selected);}
   if(c.is(ActionState,i,'name','menuX')&&s.screen==='settings'){const b=buttons[s.selected];if(b)desktopAction(b.key,'',a.value[i]!<0?-1:1);}
-  if((s.screen!=='new-profile'&&c.is(ActionState,i,'name','confirm'))||(s.screen==='new-profile'&&c.is(ActionState,i,'name','profileConfirm'))){const b=buttons[s.selected];if(b)desktopAction(b.key,'',0,0,0,ctx.time);}
+  if(c.is(ActionState,i,'name','confirm'))confirm=true;
+  if(c.is(ActionState,i,'name','profileConfirm'))profileConfirm=true;
   if(c.is(ActionState,i,'name','back'))desktopAction(s.screen==='pause'?'resume':s.screen==='new-profile'?'profiles':'menu');
   if(s.screen==='editor'){if(editorModifier&&c.is(ActionState,i,'name','undo'))desktopAction('undo');if(editorModifier&&c.is(ActionState,i,'name','save'))desktopAction('save-level');if(c.is(ActionState,i,'name','playtest'))desktopAction('test-level');}
  }
+ s=desktopState.get();
+ if(s.screen===inputScreen&&(s.screen==='new-profile'?profileConfirm:confirm)){const b=getDesktopButtons(s,desktopSaveState.get())[s.selected];if(b)desktopAction(b.key,'',0,0,0,ctx.time);}
 }});

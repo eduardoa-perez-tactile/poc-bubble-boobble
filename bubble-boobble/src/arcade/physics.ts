@@ -117,14 +117,53 @@ function matchingVerticalOpening(g: GameState, b: Body): boolean {
     if (solid(g, col, 0) || solid(g, col, Rows - 1)) return false;
   return true;
 }
-export function movePlayer(g: GameState, b: Body, dx: number) {
+// Arcade-derived motion data: BubNext 47ad995, game.asm data_4AED,
+// bank0000.asm data_1276/data_12A7. One arcade pixel is three game pixels.
+// Pairs are signed vertical displacement (screen Y), then duration in substeps.
+const jumpSegments: readonly (readonly [number, number])[] = [
+  [-6, 16], [-3, 9], [0, 2], [-3, 1], [0, 2],
+  [0, 3], [3, 1], [0, 2], [3, 9], [6, 16],
+];
+const normalCadence: readonly number[] = [1, 1, 1, 1, 2];
+const shoesCadence: readonly number[] = [2, 2, 2, 2, 2, 2, 2, 2, 2, 1];
+export function startPlayerJump(g: GameState, b: Body, referenceImpulse = -11.5) {
+  if (g.PlayerBalance?.ArcadeMotion !== false) { b.JumpStep = 0; b.VY = -6; }
+  else b.VY = referenceImpulse;
+  b.Ground = false;
+}
+function jumpDisplacement(step: number): number {
+  for (const [dy, duration] of jumpSegments) {
+    if (step < duration) return dy;
+    step -= duration;
+  }
+  return 3; // Completed jump: continue with the steady ledge-fall step.
+}
+export function movePlayer(g: GameState, b: Body, dx: number, shoes = false) {
+  const arcade = g.PlayerBalance?.ArcadeMotion !== false;
+  if (arcade) {
+    const cadence = shoes ? shoesCadence : normalCadence;
+    const phase = (b.MotionTick ?? 0) % cadence.length;
+    const count = cadence[phase]!;
+    b.MotionTick = (phase + 1) % cadence.length;
+    if (b.JumpStep !== undefined) {
+      let dy = 0;
+      for (let i = 0; i < count; i++) dy += jumpDisplacement(b.JumpStep++);
+      b.VY = dy;
+      if (b.JumpStep >= 61) delete b.JumpStep;
+    } else if (b.VY < 0) {
+      // Preserve an externally supplied upward impulse (old sessions/dev scenarios)
+      // until its apex. Normal jumps and bubble boosts always use the table above.
+      b.VY = Math.min(0, b.VY + .5);
+    } else b.VY = count * 3;
+  }
   // Row zero is the board border, not a playable roof above the screen.
-  advanceActor(g, b, dx, true, 1);
-  // Deliberate player rule beyond the pinned Go clamp: rising platforms stay
-  // one-way, and a full exit through paired gaps re-enters below, still rising.
+  advanceActor(g, b, dx, !arcade, 1);
+  if (b.Ground) delete b.JumpStep;
+  // Preserve the requested paired-opening upward wrap and one-way platforms.
   if (b.VY < 0 && b.Y + ActorSize < 0 && matchingVerticalOpening(g, b))
     b.Y += Height + ActorSize;
-  wrapBottom(b);
+  if (arcade) { if (b.Y > Height) b.Y = Tile; }
+  else wrapBottom(b);
 }
 export function moveFlying(g: GameState, e: Enemy, dx: number, dy: number) {
   const steps = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy))));

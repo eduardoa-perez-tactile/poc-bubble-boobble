@@ -6,6 +6,19 @@ playable default is the arcade scene; the original starter and movement scenes
 remain independent regression targets. [movement.md](movement.md) documents the
 first slice; [numerics.md](numerics.md) explains exact Go arithmetic and RNG.
 
+## Testing boundary
+
+All automated gameplay and UI testing uses the Game Engine: tests, recorded physical
+key events, replays, headless sessions, readback viewports, render probes and engine
+screenshots. The harness does not require desktop/computer-use access.
+
+Do not launch standalone builds, invoke `npm run desktop` or `desktop:*` probes,
+synthesize OS input, take window focus, or use computer/browser automation to
+playtest unless the user explicitly requests that specific action. This applies
+even when OS automation is available. Missing engine coverage is reported as a
+limitation; it does not authorize desktop control or a request for computer access.
+The native scripts retained in the repository are outside the default testing workflow.
+
 ## Fast daily loop
 
 ```sh
@@ -21,11 +34,15 @@ with `gameengine run --headless --paused`. The editor and host keep their own
 world clocks and allocation IDs; those are outside reference canonical state.
 
 Quick validates every cached fixture's provenance and the imported campaign
-checksum, runs nine deliberate comparator tests, then three V8 T0 groups:
+checksum, runs nine deliberate comparator tests, then seven V8 T0 groups:
 
 - Movement traces and the physical keyboard hold/release/jump path.
 - All five complete canonical engine-input traces: smoke and rounds 1/10/24/25.
 - Go trigonometry, fused arithmetic and PCG distribution/state cases.
+- Desktop menu/profile/settings controls, including short Enter/Space taps and held-key repeats.
+- AI companion behavior and the engine-input co-op mode/start/pause/restart path.
+- Arcade-derived player falling/jump curves, shoes cadence, wrapping, bubble boosts, and recorded co-op input.
+- Empty-bubble scoring, mixed chains, fruit point effects, extra lives, and real engine HUD updates.
 
 A supplied filter replaces the three default groups:
 
@@ -46,14 +63,14 @@ npm run harness:milestone
 
 Verify runs provenance/comparator checks, the aborted-HTTP-body regression, a
 fresh-host cold live-viewport regression, all V8 T0 tests, all desktop T1 tests
-(including the complete 20-shot presentation route and its draw budget), nine
+(including the complete 20-shot presentation route and its draw budget), the registered
 engine replays with their explicit recorded scenes, then `gameengine check`
 (typecheck, validation, desktop cook and cooked smoke), followed by the original/
 derived audio provenance and nonempty cooked-alias uniqueness guard across all
 asset kinds. Empty script/config aliases are ignored. It never changes expected
 fixtures, goldens or replay files. Any failed or unavailable required stage blocks
 a passing result. Warnings from engine check remain visible. `verify-full` adds
-an independently rendered 170-frame structural replay. Run it at checkpoints;
+an independently rendered structural replay (230 explicit frames at this checkpoint). Run it at checkpoints;
 also regenerate all-tier pipelines whenever materials or rendered flows change.
 The regular verify lane retains every regression test and cooked smoke check,
 while avoiding that second render of the same full presentation route after every edit.
@@ -333,8 +350,9 @@ draws. These observations establish world rendering in the engine's live viewpor
 they do not establish full Go pixel equality. Evidence is saved under
 `artifacts/viewport-smoke.{png,json,log}`.
 
-Per the user's current instruction, OS/computer-use access is unavailable.
-Physical OS-surface and foreground-window image checks are explicitly deferred
+By explicit user instruction, testing stays inside the Game Engine. Standalone
+playtesting, OS/computer control and foreground-window image checks are outside
+the authorized workflow, regardless of permission availability, and are deferred
 without blocking merge. The required cold engine-viewport regression remains an
 active gate; its coverage concerns engine frame contents rather than the OS
 compositor's final displayed pixels.
@@ -368,3 +386,31 @@ The broadened asset guard rejects the saved pre-fix manifest's duplicate
 with 75 unique nonempty aliases and 36 reference audio aliases; original asset
 and derived-audio provenance checks also pass. This proves collision detection
 and removal, independently of the live-viewport rendering diagnosis.
+
+## AI co-op, arcade motion and scoring integration checkpoint
+
+Local `harness:verify-full` passed in 62.08 s: 171 V8 T0 tests, 25 desktop T1
+tests, all 15 registered explicit-scene replays, the cold viewport and bridge
+regressions, typecheck, validation, desktop cook, 600-frame cooked smoke and audio
+provenance/alias checks. The registry now includes AI mode lifecycle and physical
+Enter tap replays alongside motion and scoring regressions.
+
+The five changed Settings screenshots were reviewed: the mode selector adds a
+row and moves Back down. Registered replays were recorded again because the new
+authoritative mode/controller, confirmation latch, motion phases and balance
+fields intentionally change their document hashes. Go oracle fixtures remain
+unchanged; their explicit reference profile retains the original Go rules.
+
+All-tier pipeline recording passed with 230 explicit frames per tier and peak
+draws 11/9/9 on desktop/mobile/compat (budget 14); the resulting pipeline file
+was identical. Engine check still warns about program `7946469ed20397e0` having
+no compiled material, despite this complete recording. The existing release
+build requires the disclosed pipeline-warning override until that engine
+warmup issue is resolved. Existing camera warnings also remain.
+
+All 12 companion logic tests additionally pass with `--memory-class phone-low`.
+Previously measured release-host AI simulation p95 was 0.390 ms, with a 21.193 ms
+initial graph build on this Mac; these are desktop measurements, not phone
+performance claims. Hermes equivalence remains unavailable because this engine
+installation has no Hermes host. Testing used engine APIs and headless hosts;
+standalone builds and desktop automation are excluded from this workflow.

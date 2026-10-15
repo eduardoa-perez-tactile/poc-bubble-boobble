@@ -110,7 +110,7 @@ export function updateItems(g: GameState) {
       if (it.Power !== "") {
         if (applyPower(g, it.Power, player)) return true;
       } else {
-        addScore(g, foodScore(it.Food), it.X, it.Y);
+        addScore(g, foodScore(it.Food), it.X, it.Y, g.PlayerBalance?.ArcadeScoring !== false);
         g.Sounds.push("food");
       }
       collected = true;

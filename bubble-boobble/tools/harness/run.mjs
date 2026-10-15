@@ -168,6 +168,12 @@ const replays = [
   { path: 'tests/replays/dragon_skins_settings_selection_reaches_yellow_gameplay.greplay', scene: 'scenes/arcade.scene.json', filter: 'dragon skins settings selection reaches yellow gameplay', tier: 't1' },
   { path: 'tests/replays/bubble_skins_actual_fire_input_all_solo_colors.greplay', scene: 'scenes/arcade.scene.json', filter: 'bubble skins actual fire input all solo colors', tier: 't1' },
   { path: 'tests/replays/bubble_skins_actual_fire_input_simultaneous_co_op_colors.greplay', scene: 'scenes/arcade.scene.json', filter: 'bubble skins actual fire input simultaneous co-op colors', tier: 't1' },
+  { path: 'tests/replays/arcade_player_motion_real_engine_fall_inputs_shoes_false.greplay', scene: 'scenes/arcade.scene.json', filter: 'arcade player motion real engine fall inputs shoes false' },
+  { path: 'tests/replays/arcade_player_motion_real_engine_fall_inputs_shoes_true.greplay', scene: 'scenes/arcade.scene.json', filter: 'arcade player motion real engine fall inputs shoes true' },
+  { path: 'tests/replays/arcade_player_motion_real_engine_jump_pause_and_co_op_phases.greplay', scene: 'scenes/arcade.scene.json', filter: 'arcade player motion real engine jump pause and co-op phases' },
+  { path: 'tests/replays/arcade_scoring_real_engine_pops_and_fruit_pickups_update_hud_and_animate_points.greplay', scene: 'scenes/arcade.scene.json', filter: 'arcade scoring real engine pops and fruit pickups update HUD and animate points' },
+  { path: 'tests/replays/companion_modes_start_restart_pause_and_preserve_human_co_op_controls.greplay', scene: 'scenes/arcade.scene.json', filter: 'companion modes start restart pause and preserve human co-op controls' },
+  { path: 'tests/replays/desktop_physical_enter_tap_between_simulation_steps_is_not_dropped.greplay', scene: 'scenes/arcade.scene.json', filter: 'desktop physical Enter tap between simulation steps is not dropped' },
 ];
 function verifyReplays(selected = replays) {
   const bundle = engine(['bundle']).output.path;
@@ -211,7 +217,8 @@ async function main() {
     case 'quick':
       selftest();
       if (process.argv[3]) engine(['test', '--js', 'v8', '--filter', process.argv[3]]);
-      else for (const filter of ['*movement*', '*arcade engine input*', '*arcade Go*']) engine(['test', '--js', 'v8', '--filter', filter]);
+      // Keep confirmation and co-op regressions in the engine lane; never substitute OS playtesting.
+      else for (const filter of ['*movement*', '*arcade engine input*', '*arcade Go*', 'desktop *', 'companion *', 'arcade player motion *', 'arcade scoring *']) engine(['test', '--js', 'v8', '--filter', filter]);
       break;
     case 'verify':
     case 'verify-full': {

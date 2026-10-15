@@ -39,7 +39,7 @@ worldTest('arcade balance walking and shoes retain responsive fixed-step movemen
   expect(player.X).toBeCloseTo(start,10);expect(player.Dir).toBe(-1);
   const stopped=player.X;stepGame(game,[idle]);expect(player.X).toBe(stopped);
   stepGame(game,[{...idle,Jump:true}]);
-  expect(player.VY).toBe(-11);expect(game.Counters.Jumps).toBe(1);
+  expect(player.VY).toBe(shoes?-12:-6);expect(game.Counters.Jumps).toBe(1);
  }
 },{scene});
 

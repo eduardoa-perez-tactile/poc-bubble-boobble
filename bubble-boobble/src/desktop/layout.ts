@@ -8,7 +8,7 @@ export function desktopButtonRect(s:DesktopState,p:DesktopSave,index:number):Des
  case 'menu':if(index===0)return rect(218,328,332,44);if(index>=1&&index<=6)return rect(104+((index-1)%2)*290,392+Math.floor((index-1)/2)*52,270);return index===7?rect(264,570,240):null;
  case 'profiles':if(index<p.profiles.length)return rect(164,132+index*46,440,36);return index===p.profiles.length?rect(164,532,440):index===p.profiles.length+1?rect(264,594,240):null;
  case 'new-profile':if(index<36)return rect(104+(index%10)*56,252+Math.floor(index/10)*48,48);return [rect(440,396,104),rect(552,396,104),rect(164,520,440),rect(164,570,440)][index-36]??null;
- case 'settings':return index<5?rect(164,180+index*50,440):null;
+ case 'settings':return index<6?rect(164,180+index*50,440):null;
  case 'scores':case 'help':case 'credits':return index===0?rect(264,624,240):null;
  case 'pause':return index<3?rect(164,320+index*50,440):null;
  case 'result':return index<2?rect(164,450+index*50,440):null;

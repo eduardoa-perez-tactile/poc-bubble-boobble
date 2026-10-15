@@ -12,6 +12,9 @@ const rightJump={Move:1,Jump:true,Fire:false};
 const idle={Move:0,Jump:false,Fire:false};
 function onPlatform(round:number,index:number,x:number,row:number,shoes=false){
  const g=createGame((campaign as Level[]).slice(round-1),42,2),p=g.Players[index]!;
+ // Historical tuning traces retain the old ballistic profile explicitly.
+ // Production arcade motion is covered by arcade-player-motion.test.ts.
+ g.PlayerBalance.ArcadeMotion=false;
  Object.assign(p,{X:x,Y:row*Tile-ActorSize,VY:0,Ground:true,Invincible:0});
  p.Power.Shoes=shoes;
  return g;
@@ -30,7 +33,7 @@ function jumpToLanding(g:GameState,index:number,maxTicks:number){
 // These fixtures retain actual campaign tiles. Only the player's starting pose
 // is controlled; enemies are not advanced, so this proves movement reach rather
 // than claiming that either route clears the campaign or avoids hostile actors.
-worldTest('player balance traversal retains real five-tile and three-tile rises for both players',()=>{
+worldTest('historical ballistic player traversal retains real five-tile and three-tile rises for both players',()=>{
  for(const index of [0,1])for(const route of [
   {round:1,x:96,startRow:25,targetRow:20,ticks:28,endX:166},
   {round:24,x:260,startRow:22,targetRow:19,ticks:38,endX:355},
@@ -47,7 +50,7 @@ worldTest('player balance traversal retains real five-tile and three-tile rises 
  }
 },{scene});
 
-worldTest('player balance traversal shoes retain the eight-tile round seven horizontal gap',()=>{
+worldTest('historical ballistic player traversal shoes retain the eight-tile round seven horizontal gap',()=>{
  for(const index of [0,1]){
   const g=onPlatform(7,index,283,15,true),p=g.Players[index]!;
   // Left platform ends at col12; the next starts at col20:192 pixels.
@@ -62,7 +65,7 @@ worldTest('player balance traversal shoes retain the eight-tile round seven hori
  }
 },{scene});
 
-worldTest('player balance traversal documents a lost shoes landing and a real bubble-assisted alternative',()=>{
+worldTest('historical ballistic player traversal documents a lost shoes landing and a real bubble-assisted alternative',()=>{
  // Round3's row20 left island ends at col11; the right island starts at21.
  // Old shoes reach the upper-right row15 bridge. New shoes alone miss that
  // landing and descend into the gap; this deliberate shorter reach is retained.
