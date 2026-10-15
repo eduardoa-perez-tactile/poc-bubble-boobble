@@ -76,11 +76,13 @@ Historical movement-only fixtures exercise the retained `src/movement.ts`
 prototype used by `round1.scene`, including its original ceiling. They do not
 claim that the playable arcade scene still clamps upward jumps. The pure runner
 projects that prototype's fields into canonical state; full arcade cases continue
-to run `stepGame` with an explicit source-speed scale of 1 and compare every
+to run `stepGame` with an explicit source-speed scale of 1 and
+`referencePlayerBalance`, and compare every
 exported canonical field against their unchanged Go fixtures. Production games
-default to 0.8 for normal enemy movement; separate tests cover that tuning.
-The scale is authoritative session state (and part of engine replay hashes),
-but is not an upstream field in the Go canonical projection. Source-speed
+default to 0.8 for normal enemy movement and the gentler player/shooting values
+in [player-balance.md](player-balance.md); separate tests cover those defaults.
+Both tuning fields are authoritative session state (and part of engine replay
+hashes), but are not upstream fields in the Go canonical projection. Source-speed
 comparisons do not claim that the new playable difficulty matches original Go.
 An engine replay records the real round-three upward wrap through the
 cheat/event/fixed-step path and checks the world hash independently on playback.

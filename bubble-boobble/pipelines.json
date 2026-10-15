@@ -125,7 +125,39 @@
      "samples": 4,
      "format": 40,
      "skinned": false,
+     "debug": 0,
+     "fade": true
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Forward": {
+     "program": "3209a4bd719a3d11",
+     "alpha": 1,
+     "double_sided": true,
+     "prepassed": true,
+     "samples": 4,
+     "format": 40,
+     "skinned": false,
      "debug": 0
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Forward": {
+     "program": "7946469ed20397e0",
+     "alpha": 0,
+     "double_sided": false,
+     "prepassed": true,
+     "samples": 4,
+     "format": 40,
+     "skinned": false,
+     "debug": 0,
+     "fade": true
     }
    }
   },
@@ -153,7 +185,35 @@
      "double_sided": true,
      "samples": 4,
      "format": 40,
+     "skinned": false,
+     "fade": true
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Prepass": {
+     "program": "3209a4bd719a3d11",
+     "alpha": 1,
+     "double_sided": true,
+     "samples": 4,
+     "format": 40,
      "skinned": false
+    }
+   }
+  },
+  {
+   "r": "3d",
+   "key": {
+    "Prepass": {
+     "program": "7946469ed20397e0",
+     "alpha": 0,
+     "double_sided": false,
+     "samples": 4,
+     "format": 40,
+     "skinned": false,
+     "fade": true
     }
    }
   },

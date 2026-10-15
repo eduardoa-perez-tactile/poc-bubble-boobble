@@ -1,3 +1,4 @@
+import type { PlayerBalance } from './balance';
 export const Columns = 32,
   Rows = 26,
   Tile = 24,
@@ -135,6 +136,7 @@ export interface Counters {
   Walked: number;
 }
 export interface GameState {
+  PlayerBalance: PlayerBalance;
   // Authoritative locomotion tuning; angry enemies retain their original speed.
   NormalEnemySpeedScale: number;
   Campaign: Level[];

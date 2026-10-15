@@ -11,6 +11,7 @@ import {
 } from "./types";
 import { movePlayer, spawnPosition } from "./physics";
 import { addScore } from "./game";
+import { productionPlayerBalance } from './balance';
 import { shootBubble } from "./bubbles";
 export function respawn(g: GameState, index: number) {
   const c = { ...g.Level.player };
@@ -34,7 +35,8 @@ export function respawn(g: GameState, index: number) {
 }
 export function updatePlayer(g: GameState, index: number, input: Input) {
   const p = g.Players[index]!,
-    i = { ...input };
+    i = { ...input },
+    balance = g.PlayerBalance ?? productionPlayerBalance;
   if (p.Invincible > 0) p.Invincible--;
   if (p.Shoot > 0) p.Shoot--;
   if (p.Cooldown > 0) p.Cooldown--;
@@ -52,7 +54,7 @@ export function updatePlayer(g: GameState, index: number, input: Input) {
     if (p.Power.Amethyst) addScore(g, 500, p.X, p.Y);
     g.Sounds.push("jump");
   }
-  const speed = p.Power.Shoes ? 5 : 3;
+  const speed = p.Power.Shoes ? balance.ShoesSpeed : balance.MoveSpeed;
   i.Move = Math.max(-1, Math.min(1, i.Move));
   if (i.Move !== 0) {
     p.Dir = i.Move;
@@ -71,7 +73,7 @@ export function updatePlayer(g: GameState, index: number, input: Input) {
   }
   if (i.Fire && p.Cooldown === 0) {
     shootBubble(g, index);
-    p.Cooldown = p.Power.Yellow ? 5 : 18;
+    p.Cooldown = p.Power.Yellow ? balance.YellowFireCooldown : balance.FireCooldown;
     p.Shoot = 12;
   }
 }

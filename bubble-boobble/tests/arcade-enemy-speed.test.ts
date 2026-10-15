@@ -1,3 +1,4 @@
+import {referencePlayerBalance} from '../src/arcade/balance';
 import { worldTest } from '@gameengine/test';
 import levels from '../data/levels.json';
 import { copyGame, createGame, loadLevel, stepGame } from '../src/arcade/game';
@@ -26,6 +27,7 @@ worldTest('arcade enemy speed: explicit source-speed profile matches first five 
   for (let index = 0; index < earlyRounds.length; index++) {
     const g = createGame(levels.slice(index), 42, 1);
     g.NormalEnemySpeedScale = 1;
+    g.PlayerBalance = {...referencePlayerBalance};
     const initial = JSON.stringify(g.Enemies);
     for (let tick = 0; tick < TPS; tick++) stepGame(g, [idle]);
     check(g.State === State.Playing && g.LevelTicks === 0, `round${index + 1}: Ready updated playing time`);

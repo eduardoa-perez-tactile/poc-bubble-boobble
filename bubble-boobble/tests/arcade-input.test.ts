@@ -18,7 +18,7 @@ import {match} from './arcade-assert';
 for(const [fixture,scenario] of [[smoke,setup],[round1,setup1],[round10,setup10],[round24,setup24],[round25,setup25]] as const) {
  worldTest(`arcade engine input full Go parity ${fixture.scenario}`,async({step,input,cheat})=>{
   await step(1);
-  await cheat(ResetArcade,{round:scenario.round,seed:scenario.seed,players:scenario.players,quiet:true,normalEnemySpeedScale:1});
+  await cheat(ResetArcade,{round:scenario.round,seed:scenario.seed,players:scenario.players,quiet:true,normalEnemySpeedScale:1,referencePlayerTuning:true});
   for(const f of fixture.frames){
    if(f.input){
     for(let player=0;player<scenario.players;player++){

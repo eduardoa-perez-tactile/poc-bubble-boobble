@@ -14,6 +14,7 @@ import {
   intersects,
   position,
 } from "./types";
+import { productionPlayerBalance } from './balance';
 import { blocked } from "./physics";
 import { addScore, defeat, enemy } from "./game";
 import { item } from "./items";
@@ -43,8 +44,9 @@ export const effect = (X = 0, Y = 0): Effect => ({
 });
 export function shootBubble(g: GameState, player: number) {
   const p = g.Players[player]!,
-    speed = p.Power.Blue ? 16 : 8,
-    reach = p.Power.Pink ? 400 : 200;
+    balance = g.PlayerBalance ?? productionPlayerBalance,
+    speed = p.Power.Blue ? balance.BlueBubbleSpeed : balance.BubbleSpeed,
+    reach = p.Power.Pink ? balance.PinkBubbleRange : balance.BubbleRange;
   g.NextID++;
   g.Bubbles.push({
     ...bubble(p.X + p.Dir * 18, p.Y + 2),
