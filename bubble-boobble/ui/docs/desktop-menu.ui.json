@@ -27,14 +27,8 @@
       "children": [
         "dm_bubbles",
         "dm_logo",
-        "dm_profile",
         "dm_hint",
-        "dm_profiles",
-        "dm_scores",
-        "dm_editor",
         "dm_settings",
-        "dm_help",
-        "dm_credits",
         "dm_quit",
         "dm_dragons",
         "dm_tagline",
@@ -64,25 +58,6 @@
         "hide": false
       }
     },
-    "dm_profile": {
-      "type": "label",
-      "name": "Label",
-      "text": "Label",
-      "property": "subtitle",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          0,
-          294
-        ],
-        "fontSize": 12,
-        "color": "#70f089"
-      }
-    },
     "dm_hint": {
       "type": "label",
       "name": "Label",
@@ -100,81 +75,6 @@
         "fontSize": 10,
         "color": "#829fb1"
       }
-    },
-    "dm_profiles": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "profiles",
-      "props": {
-        "label": "PROFILES",
-        "selected": {
-          "property": "profilesSelected"
-        }
-      },
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0,
-          0
-        ],
-        "offset": [
-          104,
-          452
-        ],
-        "w": 270,
-        "h": 38
-      },
-      "show": "development"
-    },
-    "dm_scores": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "scores",
-      "props": {
-        "label": "HIGH SCORES",
-        "selected": {
-          "property": "scoresSelected"
-        }
-      },
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0,
-          0
-        ],
-        "offset": [
-          394,
-          452
-        ],
-        "w": 270,
-        "h": 38
-      },
-      "show": "development"
-    },
-    "dm_editor": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "editor",
-      "props": {
-        "label": "LEVEL EDITOR",
-        "selected": {
-          "property": "editorSelected"
-        }
-      },
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0,
-          0
-        ],
-        "offset": [
-          104,
-          504
-        ],
-        "w": 270,
-        "h": 38
-      },
-      "show": "development"
     },
     "dm_settings": {
       "type": "use",
@@ -200,56 +100,6 @@
         "h": 44
       }
     },
-    "dm_help": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "help",
-      "props": {
-        "label": "HOW TO PLAY",
-        "selected": {
-          "property": "helpSelected"
-        }
-      },
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0,
-          0
-        ],
-        "offset": [
-          394,
-          504
-        ],
-        "w": 270,
-        "h": 38
-      },
-      "show": "development"
-    },
-    "dm_credits": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "credits",
-      "props": {
-        "label": "CREDITS",
-        "selected": {
-          "property": "creditsSelected"
-        }
-      },
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0,
-          0
-        ],
-        "offset": [
-          104,
-          556
-        ],
-        "w": 270,
-        "h": 38
-      },
-      "show": "development"
-    },
     "dm_quit": {
       "type": "use",
       "doc": "desktop-button",
@@ -267,13 +117,12 @@
           0
         ],
         "offset": [
-          394,
-          556
+          218,
+          448
         ],
-        "w": 270,
-        "h": 38
-      },
-      "show": "development"
+        "w": 332,
+        "h": 44
+      }
     },
     "dm_bubbles": {
       "type": "codeArea",
@@ -314,7 +163,7 @@
     "dm_tagline": {
       "type": "label",
       "name": "Label",
-      "text": "25 ROUNDS. ONE BUBBLY ADVENTURE.",
+      "text": "TEN DRAGONS. ONE MAD ADVENTURE.",
       "style": {
         "position": "anchored",
         "anchor": [
@@ -328,8 +177,7 @@
         "fontSize": 16,
         "color": "#ebf5ff"
       },
-      "show": "titleMode",
-      "property": "tagline"
+      "show": "titleMode"
     },
     "dm_prompt_holder": {
       "type": "element",
@@ -441,35 +289,11 @@
     "behaviour": "screen"
   },
   "properties": {
-    "subtitle": {
-      "type": "text",
-      "default": ""
-    },
     "startSelected": {
       "type": "yesno",
       "default": false
     },
-    "profilesSelected": {
-      "type": "yesno",
-      "default": false
-    },
-    "scoresSelected": {
-      "type": "yesno",
-      "default": false
-    },
-    "editorSelected": {
-      "type": "yesno",
-      "default": false
-    },
     "settingsSelected": {
-      "type": "yesno",
-      "default": false
-    },
-    "helpSelected": {
-      "type": "yesno",
-      "default": false
-    },
-    "creditsSelected": {
       "type": "yesno",
       "default": false
     },
@@ -483,22 +307,7 @@
       "poses": {
         "yes": {
           "set": {
-            "dm_profiles": {
-              "hide": true
-            },
-            "dm_scores": {
-              "hide": true
-            },
-            "dm_editor": {
-              "hide": true
-            },
             "dm_settings": {
-              "hide": true
-            },
-            "dm_help": {
-              "hide": true
-            },
-            "dm_credits": {
               "hide": true
             },
             "dm_quit": {
@@ -522,14 +331,6 @@
     "showStatus": {
       "type": "yesno",
       "default": false
-    },
-    "development": {
-      "type": "yesno",
-      "default": false
-    },
-    "tagline": {
-      "type": "text",
-      "default": "SIX DRAGONS. ONE MAD ADVENTURE."
     }
   }
 }

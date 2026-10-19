@@ -3,7 +3,7 @@ import { session } from '../src/arcade/session';
 import { createBoss, stepBoss } from '../src/arcade/boss';
 import { expect, worldTest, renderTest } from '@gameengine/test';
 import campaign from '../data/levels.json';
-import { createPartyGame } from '../src/arcade/party';
+import { createPartyGame, preparePartyWave } from '../src/arcade/party';
 import { copyGame, stepGame } from '../src/arcade/game';
 import { arcadeDrawPlan, referenceFrame } from '../src/arcade/presentation';
 import { bubble, popBubble, releaseElement, hitWithElement, carryOnWater, updateEffects } from '../src/arcade/bubbles';
@@ -97,5 +97,39 @@ renderTest('party feedback ready GO and last kill fit every window',async({input
   expect(session.get().game!.Party!.LastKill!.Slot).toBe(9);
   render.expectDrawCalls('<=',14,{width:width!,height:height!});
   render.expectScreenshot(`flint_last_kill_${width}x${height}`,{width:width!,height:height!});
+  await step(120);expect(session.get().game!.Party!.Phase).toBe('prepare');
+  const before=session.get().game!.Players[0]!;const x=before.X,y=before.Y;
+  input.action('partyMove1',1);input.action('partyJump1',1);await step(1);
+  expect(session.get().game!.Players[0]!.X).toBeGreaterThan(x);
+  expect(session.get().game!.Players[0]!.Y).toBeLessThan(y);
+  expect(hudModel(session.get().game!,initialDesktopSave).startHint).toBe('MOVE, JUMP AND SHOOT');
+  render.expectScreenshot(`between_waves_movement_${width}x${height}`,{width:width!,height:height!});
+  input.action('partyMove1',0);input.action('partyJump1',0);
  }
 },{scene:'scenes/arcade.scene.json',memory:'phone-low'});
+
+worldTest('party feedback later wave countdowns allow moving jumping shooting and active AI',()=>{
+ for(const wave of [2,5,9,10]){
+  const g=game();g.Party!.Wave=wave;preparePartyWave(g);
+  const x=g.Players[0]!.X,enemies=g.Enemies.map(e=>[e.X,e.Y,e.Age]);
+  for(let tick=0;tick<10;tick++)stepGame(g,[{Move:1,Jump:true,Fire:true}]);
+  expect(g.Party!.Phase).toBe('prepare');expect(g.Players[0]!.X).toBeGreaterThan(x);
+  expect(g.Counters.Jumps).toBeGreaterThan(0);expect(g.Counters.Blown).toBeGreaterThan(0);
+  expect(g.Companions!.slice(1).some(ai=>!!ai?.Goal)).toBe(true);
+  expect(g.Enemies.map(e=>[e.X,e.Y,e.Age])).toEqual(enemies);
+  const hud=hudModel(g,initialDesktopSave);expect(hud.startHint).toBe('MOVE, JUMP AND SHOOT');
+  expect(hud.detail).toBe('MOVE, JUMP AND SHOOT');
+ }
+});
+
+worldTest('party feedback movement stays enabled across the rest to preparation boundary',()=>{
+ const g=game();for(let i=0;i<180;i++)stepGame(g,idle);
+ g.Enemies=[];stepGame(g,idle);expect(g.Party!.Phase).toBe('rest');
+ for(let i=0;i<119;i++)stepGame(g,idle);
+ const x=g.Players[0]!.X;
+ stepGame(g,[{Move:1,Jump:false,Fire:false}]);expect(g.Party!.Phase).toBe('prepare');
+ expect(g.Party!.Wave).toBe(2);expect(g.Players[0]!.X).toBeGreaterThan(x);
+ const after=g.Players[0]!.X;
+ stepGame(g,[{Move:1,Jump:true,Fire:true}]);
+ expect(g.Players[0]!.X).toBeGreaterThan(after);expect(g.Counters.Jumps).toBeGreaterThan(0);
+});

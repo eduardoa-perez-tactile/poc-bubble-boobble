@@ -1,4 +1,4 @@
-import { isFlyingEnemy } from './party-spawns';
+import { menuBubble, menuDragon } from '../desktop/animation';
 import { arenaLayout } from './arena-layout';
 import { arenaBackdrop, bubblePose, dragonPose, dragonShadow, dragonBadges, rect, ring, sparkle, popQuads, advanceFeel, emptyFeel, cueQuads, feelColors, type FeelState } from './juice';
 import { ArcadeFeel, ArcadeAudio } from '../schema.gen';
@@ -178,7 +178,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
       state = e.Angry ? "shoot-angry" : "shoot";
     if (e.State === EnemyState.Defeated || e.State === EnemyState.Carried)
       state = "dead";
-    out.push(image(e.Kind + "/" + state, g.Party?.Phase === 'prepare' ? g.Tick + index * 3 : e.Age, e.X, isFlyingEnemy(e.Kind)?entranceY(e.Y + 48, index):e.Y+48, 48, 48, e.Dir));
+    out.push(image(e.Kind + "/" + state, g.Party?.Phase === 'prepare' ? g.Tick + index * 3 : e.Age, e.X, entranceY(e.Y + 48, index), 48, 48, e.Dir));
   }
   for (const b of g.Bubbles) {
     const bubbleSkin = skinAt(b.Shooter ?? 0);
@@ -504,12 +504,9 @@ export function sceneDraws(tick: number, feel?:FeelState, view?:{width:number;he
       push(image(`${partyColors[index]}/walk`,pose,r.x+(r.width-88)/2,r.y+46,88,88,1));
     }
   } else if (ui.screen === "title" || ui.screen === "menu") {
-    // Source rings are isolated on ink, never overlap, and precede the logo.
+    const menuTick=save.settings.reducedEffects?0:tick;
     for (let index = 0; index < 18; index++) {
-      const radius = 8 + (index % 4) * 5,
-        size = radius * 2 + 4,
-        x = (index * 137 + 39) % 768,
-        y = (((index * 91 - Math.floor(tick / 2)) % 720) + 720) % 720;
+      const {radius,x,y}=menuBubble(index,menuTick),size=radius*2+4;
       images.push({
         image: `derived/circle/${index % 4}`,
         x: x - radius - 2,
@@ -519,8 +516,9 @@ export function sceneDraws(tick: number, feel?:FeelState, view?:{width:number;he
       });
     }
     // The current title logo is a UI icon; original atlas texels remain reference evidence.
-    for (let index = 0; index < 6; index++) {
-      push(image(`${partyColors[index]}/walk`, tick, 88 + index * 104, 600, 72, 72, index < 3 ? 1 : -1));
+    for (let index = 0; index < partyColors.length; index++) {
+      const d=menuDragon(index,menuTick,!!save.settings.reducedEffects);
+      push(image(`${partyColors[index]}/walk`,d.tick,d.x,d.y,58,58,d.flip));
     }
   } else if (ui.screen === "profiles")
     for (let index = 0; index < save.profiles.length; index++)

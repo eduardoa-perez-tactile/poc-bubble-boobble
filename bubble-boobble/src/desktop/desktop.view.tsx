@@ -9,7 +9,7 @@ export const DesktopMenuView=defineView<DesktopModel>({
  name:'DesktopMenu',
  samples:{development:desktopModel({...initialDesktopState,screen:'menu',developmentMenu:true},initialDesktopSave),main:desktopModel({...initialDesktopState,screen:'menu'},initialDesktopSave),title:desktopModel(initialDesktopState,initialDesktopSave),titleHidden:desktopModel(initialDesktopState,initialDesktopSave,66)},
  render:(model,{intent})=><Screen safeArea class="desktop-screen"><Widget doc="desktop-menu" id="desktop-main" class="desktop-menu"
- props={{development:()=>model().developmentMenu,subtitle:()=>model().subtitle,titleMode:()=>model().page==='title',promptVisible:()=>model().frame%90<65,status:()=>model().status,showStatus:()=>!!model().status,startSelected:()=>model().selected===0,settingsSelected:()=>model().selected===1,profilesSelected:()=>model().selected===2,scoresSelected:()=>model().selected===3,editorSelected:()=>model().selected===4,helpSelected:()=>model().selected===5,creditsSelected:()=>model().selected===6,quitSelected:()=>model().selected===7}}
+ props={{titleMode:()=>model().page==='title',promptVisible:()=>model().frame%90<65,status:()=>model().status,showStatus:()=>!!model().status,startSelected:()=>model().selected===0,settingsSelected:()=>model().selected===1,quitSelected:()=>model().selected===2}}
  onIntent={(_,e)=>intent(e.path.at(-1)!)}/></Screen>,
 });
 const accountSamples=Object.fromEntries((['profiles','scores','new-profile','settings'] as const).map(screen=>[screen,desktopModel({...initialDesktopState,screen,name:'BUB'},initialDesktopSave)]));

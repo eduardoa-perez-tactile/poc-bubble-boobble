@@ -46,13 +46,18 @@ worldTest('party placement reserves scarce footing for walkers before flyers and
  expect(flyer.Ground).toBe(false);expect(blocked(g,flyer.X,flyer.Y,ActorSize)).toBe(false);
 });
 
-worldTest('party placement keeps ground enemy artwork on its platform throughout the countdown',()=>{
+worldTest('party placement all enemy artwork falls from above then lands on its supported target',()=>{
  const g=createPartyGame(campaign,42,Array.from({length:10},()=> 'human'));
  g.Party!.Wave=9;preparePartyWave(g);
- for(const timer of [180,170,120,1]){
+ const positions=g.Enemies.map(e=>[e.X,e.Y,e.Ground,e.VY]);
+ for(const timer of [180,170,150,120,90,1]){
   g.Party!.Timer=timer;
   const draws=arcadeDrawPlan(g);
-  for(const e of g.Enemies)if(!['monsta','pulpul'].includes(e.Kind))
-   expect(draws.some(d=>d.image.startsWith(`reference/${e.Kind}/`)&&d.x===e.X&&d.y===e.Y+48)).toBe(true);
+  for(let index=0;index<g.Enemies.length;index++){
+   const e=g.Enemies[index]!,t=Math.max(0,Math.min(1,(180-timer-index%6*5)/60));
+   const y=-48+(e.Y+96)*(1-(1-t)*(1-t));
+   expect(draws.some(d=>d.image.startsWith(`reference/${e.Kind}/`)&&d.x===e.X&&d.y===y)).toBe(true);
+  }
+  expect(g.Enemies.map(e=>[e.X,e.Y,e.Ground,e.VY])).toEqual(positions);
  }
 });

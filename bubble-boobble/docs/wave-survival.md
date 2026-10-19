@@ -31,7 +31,7 @@ below describes the earlier checkpoints.
 |---|---|---|
 | Six-dragon foundation | Six slots, floor spawn areas, purple/orange skins, matching shots, player numbers and six-slot footer | Palette CPU/GPU probes, actual arena goldens, slot tests |
 | Local input and bots | Independent recorded input for six pad indices; per-bot memory with shared immutable navigation graphs | Raw engine-input integration, independent snapshot tests, legacy companion regressions |
-| Wave survival | Whole-wave formations, held preparation countdown, escalating enemy counts and mixed types, safe rest periods | Wave boundary/placement/variety tests, full natural bot wave clear with damage disabled, recorded transition replay |
+| Wave survival | Whole-wave formations, clear preparation countdown, escalating enemy counts and mixed types, safe rest periods | Wave boundary/placement/variety tests, full natural bot wave clear with damage disabled, recorded transition replay |
 | Recovery and boss | Contact rescue, automatic rest recovery, persistent survivor upgrades, boss windup/vulnerability/attacks/summons, victory/results/restart | Rescue/wipe tests, real bot boss damage, ordinary bubble boss kill, result replay and visual captures |
 
 ## First balance values
@@ -40,8 +40,9 @@ below describes the earlier checkpoints.
   collect rewards, followed by the next formation's three-second entrance.
   The HUD counts down continuously from five to GO. The initial wave also has a
   three-second entrance with a centered 3–2–1. Dragons can move, jump and shoot
-  during the two-second rest, then wait for GO during preparation. Human practice
-  shots remain available while waiting; AI dragons wait without moving or firing.
+  throughout the full inter-wave break, including the next wave’s preparation.
+  Only the opening match countdown holds movement; human practice shots remain
+  available there, and AI wait for the opening GO.
 - Arriving enemies cannot be trapped or hit by elemental effects, and cannot
   attack or inflict contact damage. Enemies begin moving at GO; dragons retain
   a two-second start grace period, without sprite blinking. Dynamite and clock pickups wait on the ground during

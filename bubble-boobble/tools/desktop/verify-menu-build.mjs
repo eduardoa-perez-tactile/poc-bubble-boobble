@@ -39,7 +39,7 @@ try{
  const flag=await client.call('script.eval',{code:'JSON.parse(__gameengine_host("doc.get",JSON.stringify({name:"desktop-ui"}))).developmentMenu'});
  const buttons=await client.api.ui.interactables({width:768,height:720});
  const labels=buttons.elements.map(b=>b.label).sort();
- const expected=['START GAME','SETTINGS',...(flavor==='dev'?['PROFILES','HIGH SCORES','LEVEL EDITOR','HOW TO PLAY','CREDITS','QUIT']:[])].sort();
+ const expected=['START GAME','SETTINGS','QUIT'].sort();
  if(flag.value!==(flavor==='dev')||JSON.stringify(labels)!==JSON.stringify(expected))throw new Error(`Unexpected ${flavor} menu: flag=${flag.value}, labels=${JSON.stringify(labels)}`);
  const result={ok:true,flavor,scriptHash:entry.hash,scriptBytes:entry.size,developmentMenu:flag.value,labels,scope:'Exact shipped code.gpak script on diagnostic headless engine host; no standalone app launch'};
  writeFileSync(`artifacts/menu-build-${flavor}.json`,JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));

@@ -80,7 +80,7 @@ renderTest('desktop account buttons match reference hit rectangles',async({input
 },{scene});
 renderTest('desktop title animation uses reference global phase and wraps',async({input,step,render,ui,world})=>{
  input.view(768,720,1);await step(5);render.stats({width:768,height:720});const b=menuBubble(1,world.resource(Time).step);const first=render.probe({width:768,height:720,points:[[b.x+b.radius,b.y]]}).points[0]!.rgba;expect(first[1]).toBeGreaterThan(12);
- await step(60);render.stats({width:768,height:720});const later=render.probe({width:768,height:720,points:[[b.x+b.radius,b.y],[b.x+b.radius,b.y-30]]}).points;expect(later[0]!.rgba).toEqual([8,12,27,255]);expect(later[1]!.rgba).toEqual(first);
+ await step(60);render.stats({width:768,height:720});const moved=menuBubble(1,world.resource(Time).step);const later=render.probe({width:768,height:720,points:[[b.x+b.radius,b.y],[moved.x+moved.radius,moved.y]]}).points;expect(later[0]!.rgba).toEqual([8,12,27,255]);expect(later[1]!.rgba).toEqual(first);
  input.emit(DesktopIntent,{action:'menu'});await step(1);render.stats({width:768,height:720});const start=ui.interactables().find(b=>b.label==='START GAME')!;expect(start.rect.x).toBe(218);expect(start.rect.y).toBe(328);expect(start.rect.width).toBe(332);expect(start.rect.height).toBe(44);
  render.expectScreenshot('menu',{width:768,height:720});
 },{scene});
