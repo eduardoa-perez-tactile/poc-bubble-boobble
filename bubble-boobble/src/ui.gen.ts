@@ -217,29 +217,21 @@ declare module '@gameengine/ui' {
      * Desktop menu: a view, screen (ui/docs/desktop-menu.ui.json)
      *
      * Properties:
-     *   - `subtitle`: text, default ""
      *   - `startSelected`: yesno, default false
-     *   - `profilesSelected`: yesno, default false
-     *   - `scoresSelected`: yesno, default false
-     *   - `editorSelected`: yesno, default false
      *   - `settingsSelected`: yesno, default false
-     *   - `helpSelected`: yesno, default false
-     *   - `creditsSelected`: yesno, default false
      *   - `quitSelected`: yesno, default false
      *   - `titleMode`: yesno, default false
      *   - `promptVisible`: yesno, default true
      *   - `status`: text, default ""
      *   - `showStatus`: yesno, default false
-     *   - `development`: yesno, default false
-     *   - `tagline`: text, default "SIX DRAGONS. ONE MAD ADVENTURE."
-     * Events: `profiles`, `scores`, `editor`, `settings`, `help`, `credits`, `quit`, `choose-mode`
+     * Events: `settings`, `quit`, `choose-mode`
      * Code areas: `bubbles`, `dragons`
-     * Refs: `profiles`, `scores`, `editor`, `settings`, `help`, `credits`, `quit`, `choose-mode`
+     * Refs: `settings`, `quit`, `choose-mode`
      */
     'desktop-menu': {
-      props: { subtitle: string | { loc: string } | LocText; startSelected: boolean; profilesSelected: boolean; scoresSelected: boolean; editorSelected: boolean; settingsSelected: boolean; helpSelected: boolean; creditsSelected: boolean; quitSelected: boolean; titleMode: boolean; promptVisible: boolean; status: string | { loc: string } | LocText; showStatus: boolean; development: boolean; tagline: string | { loc: string } | LocText };
+      props: { startSelected: boolean; settingsSelected: boolean; quitSelected: boolean; titleMode: boolean; promptVisible: boolean; status: string | { loc: string } | LocText; showStatus: boolean };
       areas: 'bubbles' | 'dragons';
-      refs: 'profiles' | 'scores' | 'editor' | 'settings' | 'help' | 'credits' | 'quit' | 'choose-mode';
+      refs: 'settings' | 'quit' | 'choose-mode';
     };
     /**
      * Desktop profile row: a widget (ui/docs/desktop-profile-row.ui.json)

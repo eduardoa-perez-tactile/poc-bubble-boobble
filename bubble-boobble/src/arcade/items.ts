@@ -27,13 +27,16 @@ export const item = (X: number, Y: number): Item => ({
   Food: 0,
   Age: 0,
 });
+// Existing fruit art, cycled by wave rather than the survival arena's fixed level.
+const partyFruit = [13,14,15,16,17,18,19,20] as const;
+export const rewardFood = (g:GameState) => g.Party ? partyFruit[(g.Party.Wave-1)%partyFruit.length]! : g.Level.number;
 export function spawnFood(g: GameState, x: number, y: number) {
   g.Items.push({
     ...item(
       Math.max(2 * Tile, Math.min(arenaWidth(g) - 2 * Tile - 32, x)),
       Math.max(Tile, Math.min(arenaHeight(g) - 2 * Tile, y)),
     ),
-    Food: g.Level.number,
+    Food: rewardFood(g),
   });
 }
 function partyPowerLocation(g: GameState): [number, number] | undefined {
@@ -135,7 +138,7 @@ export function updateItems(g: GameState) {
       if (it.Power !== "") {
         if (applyPower(g, it.Power, player)) return true;
       } else {
-        addScore(g, foodScore(it.Food), it.X, it.Y, g.PlayerBalance?.ArcadeScoring !== false);
+        addScore(g, foodScore(g.Party ? g.Level.number : it.Food), it.X, it.Y, g.PlayerBalance?.ArcadeScoring !== false);
         g.Sounds.push("food");
       }
       collected = true;

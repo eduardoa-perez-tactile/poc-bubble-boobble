@@ -14,11 +14,11 @@ export function hudModel(g:GameState,s:DesktopSave,shade:HudModel['shade']='norm
   const startCue=prepare?String(Math.ceil(p.Timer/60)):go&&g.LevelTicks<60?'GO!':'';
   const survivors=partySurvivorCount(g);
   const seconds=Math.ceil(p.Timer/60),wave=boss?'BOSS':`WAVE ${p.Wave}`;
-  return {startCue,startHint:prepare?'GET READY - MOVE AT GO!':'MOVE, JUMP AND SHOOT',showStartCue:shade==='normal'&&!!startCue,startGo:!prepare,celebrationColor,party:true,highTitle:boss?'BOSS HP':survivors===1?'LAST DRAGON':'DRAGONS',shade,name:'TEAM SCORE',score:String(g.Score).padStart(7,'0'),
+  return {startCue,startHint:prepare&&p.Wave===1?'GET READY - MOVE AT GO!':'MOVE, JUMP AND SHOOT',showStartCue:shade==='normal'&&!!startCue,startGo:!prepare,celebrationColor,party:true,highTitle:boss?'BOSS HP':survivors===1?'LAST DRAGON':'DRAGONS',shade,name:'TEAM SCORE',score:String(g.Score).padStart(7,'0'),
    round:`WAVE ${p.Wave} / ${p.BossWave}`,high:boss?`${boss.HP} / ${boss.MaxHP}`:`${survivors} / ${p.Slots.filter(s=>s!=='empty').length}`,lives:'',enemies:'',
    banner:award?`${partyNames[finisher!]} - LAST KILL!`:captured?'POP THE GIANT BUBBLE!':rest?`WAVE ${p.Wave+1} IN ${seconds}S`:prepare?`${wave} IN ${seconds}S`:go?`${wave} - GO!`:'',
-   hint:award?`WAVE ${p.Wave} CLEAR!`:captured?'TOUCH IT TO FINISH':rest?'REST - COLLECT REWARDS':prepare?(p.Timer>90?'ENEMIES ARRIVING':'WAIT FOR GO!'):go?(boss?'GRAB A THUNDER PICKUP':'CLEAR ALL ENEMIES'):'',
-   detail:award?(g.State===4?'FINAL BOSS FINISHER':`NEXT WAVE IN ${seconds}S`):captured?'ANY DRAGON CAN DO IT':prepare?'PRACTICE SHOTS - MOVE AT GO!':boss&&go?'BLOW AND POP TO FIRE LIGHTNING':rest?'MOVE, JUMP AND SHOOT':go?'2S SAFE START - CLEAR ALL ENEMIES':'',
+   hint:award?`WAVE ${p.Wave} CLEAR!`:captured?'TOUCH IT TO FINISH':rest?'REST - COLLECT REWARDS':prepare?(p.Timer>90?'ENEMIES ARRIVING':p.Wave===1?'WAIT FOR GO!':'GET INTO POSITION'):go?(boss?'GRAB A THUNDER PICKUP':'CLEAR ALL ENEMIES'):'',
+   detail:award?(g.State===4?'FINAL BOSS FINISHER':`NEXT WAVE IN ${seconds}S`):captured?'ANY DRAGON CAN DO IT':prepare?(p.Wave===1?'PRACTICE SHOTS - MOVE AT GO!':'MOVE, JUMP AND SHOOT'):boss&&go?'BLOW AND POP TO FIRE LIGHTNING':rest?'MOVE, JUMP AND SHOOT':go?'2S SAFE START - CLEAR ALL ENEMIES':'',
    showBanner:award||shade!=='result'&&(captured||rest||prepare||go),clear:rest,freeze:shade!=='result'&&!captured&&!rest&&!prepare&&!go?(boss?(boss.Mode==='windup'?'BOTTLE SPREAD - DODGE!':'POP THUNDER BUBBLES!'):survivors===1?'LAST DRAGON STANDING':''):''};
  }
  const p=s.profiles[s.active]!;const clear=g.State===2;const ready=g.State===0;const hurry=g.Hurry&&g.State===1&&g.LevelTicks<1980&&g.Tick%30<24;

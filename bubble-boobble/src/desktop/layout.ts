@@ -7,7 +7,7 @@ export function desktopButtonRect(s:DesktopState,p:DesktopSave,index:number):Des
  const rect=(x:number,y:number,width:number,height=38)=>({x,y,width,height});
  switch(s.screen){
  case 'party':return index<partySize?partyCardRect(index):index===partySize?rect(242,612,284,44):index===partySize+1?rect(48,612,152,44):null;
- case 'menu':if(index===0)return rect(218,328,332,44);if(index===1)return rect(218,388,332,44);return s.developmentMenu&&index>=2&&index<8?rect(104+((index-2)%2)*290,452+Math.floor((index-2)/2)*52,270):null;
+ case 'menu':return index>=0&&index<3?rect(218,328+index*60,332,44):null;
  case 'modes':return index===0?rect(100,168,272,380):index===1?rect(396,168,272,380):index===2?rect(264,606,240,44):null;
  case 'profiles':if(index<p.profiles.length)return rect(164,132+index*46,440,36);return index===p.profiles.length?rect(164,532,440):index===p.profiles.length+1?rect(264,594,240):null;
  case 'new-profile':if(index<36)return rect(104+(index%10)*56,252+Math.floor(index/10)*48,48);return [rect(440,396,104),rect(552,396,104),rect(164,520,440),rect(164,570,440)][index-36]??null;

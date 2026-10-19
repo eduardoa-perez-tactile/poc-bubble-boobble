@@ -18,7 +18,7 @@ import {
 import { productionPlayerBalance } from './balance';
 import { blocked } from "./physics";
 import { addScore, defeat, enemy } from "./game";
-import { item } from "./items";
+import { item, rewardFood } from "./items";
 import { goSin, goFMA } from "./trig";
 export const bubble = (X = 0, Y = 0): Bubble => ({
   ...body(X, Y),
@@ -158,7 +158,7 @@ export function popBubble(g: GameState, index: number, player: number) {
       combo++;
       defeat(g, e, 1 << Math.min(combo - 1, 5),player);
       const [x, y] = position(g.Level.food_spawn, 32, g.Level);
-      g.Items.push({ ...item(x, y), Food: g.Level.number, Stationary: true });
+      g.Items.push({ ...item(x, y), Food: rewardFood(g), Stationary: true });
     }
     // Empty ordinary bubbles score once each, including every bubble in a chain.
     if (b.EnemyID === 0 && b.Element === '' && g.PlayerBalance?.ArcadeScoring !== false)

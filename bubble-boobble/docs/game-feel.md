@@ -66,7 +66,8 @@ Regression coverage in `tests/multiplayer-feedback.test.ts` reproduces the shoot
 
 The follow-up passes all 279 desktop regression cases and all 27 saved replays, plus the focused phone-low/mobile render scenario. The updated 262-frame pipeline route peaks at 12 / 10 / 10 draw calls on desktop / mobile / compat, within the 14-call budget. Typechecking, validation and cooked startup checks pass.
 
-Wave starts hold all dragons through a large 3–2–1 cue, then show green GO text.
+The match opens with a held 3–2–1 cue and green GO text. Between later waves,
+movement and jumping remain available throughout the break and preparation.
 Start protection lasts two seconds without hiding dragon sprites. Human practice
 shots remain available during the countdown. Each wave's final kill gets a
 brief character-colored LAST KILL banner and plain-text marker above its finisher;

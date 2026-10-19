@@ -27,8 +27,10 @@ tested for separation. Original campaign menu portraits retain their layout.
 
 ## Wave signals and finishers
 
-Dragons wait through a centered 3–2–1 countdown. Human practice shots remain
-available, but movement and jumping unlock at GO; AI dragons also wait for GO.
+The opening match holds dragons through a centered 3–2–1 countdown, with human
+practice shots available. After that, humans and AI can move, jump and shoot
+throughout the whole inter-wave break, including preparation for the next wave.
+GO signals enemy release rather than unlocking movement between waves.
 The large green GO cue lasts one second, and the top wave-start banner lasts
 two seconds. The existing two-second start protection remains, with solid,
 visible dragons throughout that grace period instead of blinking. Later rescue
@@ -48,8 +50,10 @@ at GO, and the finishing label stays clear of floating score text.
 Wave previews use type-aware placement on the existing arena geometry. Zenchan,
 Banebou, Mighta and Invader reserve grounded slots first: the entire collision
 body must fit above a continuous supporting surface, with zero vertical speed
-and grounded state already set. Their artwork stays at that supported position
-throughout the countdown; the falling entrance applies only to flying enemies. Monsta and Pulpul can use remaining platform
+and grounded state already set. All enemy artwork falls from above during the
+countdown, then settles on that assigned position before GO. This entrance is
+presentation only: ground enemies keep their supported simulation coordinates.
+Monsta and Pulpul can use remaining platform
 space; if no platform slot fits, they use a clear air pocket. Neither group can
 overlap another starting enemy or an occupied dragon start/current position.
 Slots are allocated deterministically once per wave, with the same enemy types
@@ -147,8 +151,8 @@ OS input/display, device GPU/thermal or human group playtest was performed.
 
 ### Dragon Courtyard validation — October 19, 2026
 
-Validation passes: **259 V8 logic cases, 44 desktop render cases and
-31 independently verified replays**, plus typechecking, validation, desktop cook,
+Validation passes: **263 V8 logic cases, 45 desktop render cases and
+32 independently verified replays**, plus typechecking, validation, desktop cook,
 600-step cooked smoke and original-asset provenance. Six courtyard-specific cases
 and the ten-dragon cases pass on the mobile tier with phone-low memory tracking.
 Native/wide/tall/ultrawide wall probes, full-board captures, crown-jump framing,
@@ -189,3 +193,13 @@ six-dragon HUD and the exact-texel prototype. These are not counted as passing
 mobile coverage. Desktop render checks, all 31 recorded replays and the cooked
 build check pass. Successful mobile captures have been refreshed for the final
 names, character-colored text and temporary overhead labels.
+
+## Wave fruit
+
+Survival rewards rotate through the eight existing fruit sprites (food 13–20),
+starting with red berries and progressing through citrus, peach, banana, pear
+and watermelon before repeating. Both bubble-pop rewards and defeated-enemy
+drops use the current wave. Pickup points stay at the arena’s original value;
+Classic keeps its original per-level foods and scores. No new textures or
+palette variants are needed. `tests/wave-fruit.test.ts` checks both paths,
+collection points, the deterministic cycle and actual final-pop render captures.

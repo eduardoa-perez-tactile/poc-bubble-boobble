@@ -114,12 +114,12 @@ export function stepParty(g:GameState,inputs:Input[]) {
   // Check before phase handling so a wiped team cannot enter another wave.
   if(partySurvivorCount(g)===0){g.State=State.GameOver;return;}
   warmPartyNavigation(g);
-  const ins=inputs.slice();
+  const ins=inputs.slice(),holdMovement=p.Phase==='prepare'&&p.Wave===1;
   for(let i=0;i<g.Players.length;i++) {
     if(p.Slots[i]==='empty')continue;
-    if(p.Slots[i]==='ai')ins[i]=p.Phase==='prepare'?idle:companionInput(g,i);
-    if(p.Phase==='prepare')ins[i]={Move:0,Jump:false,Fire:!!ins[i]?.Fire};
-    if(alive(g.Players[i]!))updatePlayer(g,i,ins[i]??idle,p.Phase!=='prepare');
+    if(p.Slots[i]==='ai')ins[i]=holdMovement?idle:companionInput(g,i);
+    if(holdMovement)ins[i]={Move:0,Jump:false,Fire:!!ins[i]?.Fire};
+    if(alive(g.Players[i]!))updatePlayer(g,i,ins[i]??idle,!holdMovement);
   }
   if(p.Phase==='prepare') {
     updateBubbles(g,ins);updateEffects(g);updateItems(g);
