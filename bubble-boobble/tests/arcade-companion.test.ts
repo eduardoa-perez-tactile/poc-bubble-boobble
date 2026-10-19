@@ -132,10 +132,10 @@ renderTest('companion mode selector fits settings and changes through the real b
   input.view(768, 720, 1); await step(3); input.emit(DesktopIntent, { action: 'settings' }); await step(1);
   render.stats({ width: 768, height: 720 });
   const mode = ui.interactables().find(b => b.label === 'MODE: SOLO')!;
-  expect(mode.rect.y).toBe(380); expect(mode.rect.height).toBe(38);
+  expect(mode.rect.y).toBe(354); expect(mode.rect.height).toBe(38);
   await ui.press(mode.id!); await step(1); render.stats({ width: 768, height: 720 });
   expect(desktopState.get().playMode).toBe('ai'); expect(ui.interactables().some(b => b.label === 'MODE: AI CO-OP')).toBe(true);
-  const back = ui.interactables().find(b => b.label === 'BACK')!; expect(back.rect.y).toBe(430);
+  const back = ui.interactables().find(b => b.label === 'BACK')!; expect(back.rect.y).toBe(454);
   for (const [width, height] of [[1680, 720], [640, 960]] as const) {
     input.view(width, height, 1); await step(1); render.stats({ width, height });
     for (const label of ['MODE: AI CO-OP', 'BACK']) {

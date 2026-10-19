@@ -1,3 +1,5 @@
+import { arenaBackdrop, bubblePose, dragonPose, dragonShadow, dragonBadges, rect, ring, sparkle, popQuads, advanceFeel, emptyFeel, cueQuads, feelColors, type FeelState } from './juice';
+import { ArcadeFeel, ArcadeAudio } from '../schema.gen';
 import campaignPreviews from '../../data/levels.json';
 import { partyCardRect } from '../desktop/layout';
 import { partyColors, partyPrepareTicks } from './party-config';
@@ -17,6 +19,9 @@ import {
   MaterialParams,
   Time,
   WorldView,
+  CameraShake,
+  shakeCamera,
+  audio,
 } from "@gameengine/runtime";
 import { ArcadeControl, ArcadeVisual } from "../schema.gen.ts";
 import { dragonSkins, isDragonSkin } from "../desktop/skins.ts";
@@ -27,6 +32,7 @@ import atlas from "../../assets/pixel-renderer/atlas-layout.json";
 import { session } from "./session.ts";
 import { orderedArrays, orderedCapacity } from "./pixel-renderer/ordered.ts";
 import type { PixelQuad } from "./pixel-renderer/types.ts";
+import { goSin } from "./trig";
 import { EnemyState, position } from "./types.ts";
 import type { GameState, Level } from "./types.ts";
 
@@ -118,8 +124,9 @@ const label = (text: string, x: number, y: number, size: number, color?: readonl
   size,
   color,
 });
-export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
+export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState, reduced = false): Draw[] {
   const out: Draw[] = [];
+  const badges=g.Party?dragonBadges(g):[];
   const skinAt = (index: number) => g.Party
     ? (isDragonSkin(g.Players[index]?.Skin) ? g.Players[index]!.Skin! : dragonSkins[index % dragonSkins.length]!)
     : index === 1 ? 'blue' : avatar;
@@ -136,13 +143,22 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
     const boss = g.Party.Boss;
     if (boss) {
       const captured=boss.Mode==='captured', y=entranceY(boss.Y+48,0);
+      const windup=boss.Mode==='windup',pulse=windup?(30-boss.Timer)/30:0;
+      const w=96+(captured?goSin(boss.Timer*.16)*3:pulse*9),h=96-pulse*7;
       if(captured || !boss.Invulnerable || boss.Tick%4<2)
-        out.push(image(captured?'boss/captured':boss.Mode==='windup'?'boss/attack':'boss/move',g.Party.Phase==='prepare'?g.Tick:boss.Tick,boss.X,y,96,96,boss.Dir));
+        out.push(image(captured?'boss/captured':windup?'boss/attack':'boss/move',g.Party.Phase==='prepare'?g.Tick:boss.Tick+boss.Invulnerable,boss.X+48-w/2-(boss.Invulnerable?boss.Dir*2:0),y+96-h,w,h,boss.Dir));
       if(boss.Mode==='windup')out.push(label('!',boss.X+42,Math.max(68,boss.Y+32),20,[255,220,45]));
     }
   }
+  const accents: PixelQuad[] = [];
+  if(g.Party)for(const p of g.Players)out.push(...dragonShadow(g,p).map(q=>({...q,flip:false,text:'',size:0})));
   for (const i of g.Items) {
     if (i.Power!=='thunder_potion' && i.Age > 600 && i.Age % 12 < 6) continue;
+    if(g.Party && i.Power) {
+      const t=(g.Tick+i.Age)%90;
+      if(!reduced && t<24)sparkle(accents,i.X+16,i.Y+42, '#ffe8a3',2+t%3);
+      rect(accents,'#34425a',i.X+7,i.Y+80,18,2);
+    }
     out.push(fittedItemImage((i.Power==='thunder_potion'?'thunder-bubble':i.Power) || `food/${i.Food}`, 0, i.X, i.Y + 48, 32));
     if (g.Party && i.Power)
       out.push(label(powerupTags[i.Power] ?? 'PWR', Math.max(8, Math.min(728, i.X + 1)), Math.max(66, i.Y + 34), 10, [100,255,130]));
@@ -186,7 +202,17 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
         tick = b.Age;
       }
     }
-    out.push(image(name, tick, b.X, b.Y + 48, 44));
+    const draw=image(name,tick,b.X,b.Y+48,44);
+    if(g.Party){
+      Object.assign(draw,bubblePose(b));
+      // A small glint preserves the hollow bubble silhouette and its contents.
+      if(!reduced)rect(accents,'#d9f8ff',draw.x+draw.w*.25,draw.y+draw.h*.21,4,2);
+      if(b.EnemyID&&b.CapturedAge>=12)ring(accents,b.X+22,b.Y+70,22,b.CapturedAge>1000?'#ffb16a':'#94dfea',20);
+      if(b.EnemyID&&b.CapturedAge<12)ring(accents,b.X+22,b.Y+70,22+b.CapturedAge*.8,'#ffe8a3',b.CapturedAge);
+      if(b.Element) {sparkle(accents,b.X+37,b.Y+59,b.Element==='fire'?'#ffb16a':b.Element==='thunder'?'#ffe17c':'#63caff',3);}
+      if(!reduced&&!b.Floating&&b.Age>3&&b.Age<18)rect(accents,feelColors[(b.Shooter??0)%6]!,b.X+22-b.Dir*25,b.Y+71,5,2);
+    }
+    out.push(draw);
   }
   for (const p of g.Projectiles)
     out.push(
@@ -216,11 +242,12 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
     if (g.Party && p.Downed) {
       out.push(image(`${skinAt(index)}/bubble`, 30, p.X - 6, p.Y + 42, 60));
       out.push(image(`${skinAt(index)}/dead`, 0, p.X + 6, p.Y + 54, 36, 36, p.Dir));
-      out.push(label(`${index + 1} HELP`, Math.max(8, Math.min(680, p.X - 8)), Math.max(66, Math.min(650, p.Y + 36)), 10, dragonIndicatorColors[skinAt(index)]));
+      if(!reduced)ring(accents,p.X+24,p.Y+72,30+2*goSin(g.Tick*.12),feelColors[index%6]!);
       continue;
     }
     if (p.Lives === 0 && p.Dead === 0) continue;
-    if (p.Invincible !== 0 && p.Invincible % 12 >= 6 && (!g.Party || g.Party.Phase==='combat' || g.Party.Phase==='boss')) continue;
+    const blinking = p.Invincible !== 0 && p.Invincible % 12 >= 6 && (!g.Party || g.Party.Phase==='combat' || g.Party.Phase==='boss');
+    if(blinking&&!g.Party)continue;
     let state = "walk",
       tick = p.WalkFrame;
     if (!p.Ground) {
@@ -235,8 +262,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
       state = "dead";
       tick = 90 - p.Dead;
     }
-    out.push(
-      image(
+    const dragonDraw = image(
         skinAt(index) + "/" + state,
         tick,
         p.X,
@@ -244,17 +270,47 @@ export function arcadeDrawPlan(g: GameState, avatar = "green"): Draw[] {
         48,
         48,
         p.Dir,
-      ),
-    );
-    if (g.Party)
-      out.push(label(`${index + 1}${g.Companions?.[index] ? ' AI' : ''}`, Math.max(8, Math.min(712, p.X + 8)), Math.max(66, Math.min(650, p.Y + 40)), 10, dragonIndicatorColors[skinAt(index)]));
+      );
+    if(g.Party&&p.Dead===0){
+      const age=(kind:string)=>{const cue=feel?.cues.slice().reverse().find(c=>c.kind===kind&&c.slot===index);return cue?feel!.clock-cue.at:99;};
+      Object.assign(dragonDraw,dragonPose(p,g.Tick,age('land'),age('turn')));
+
+    }
+    if(!blinking)out.push(dragonDraw);
+
   }
-  for (const p of g.Particles)
+  if(g.Party)for(const b of badges){
+    // The complete badge is separated from the sprite, and remains during blinking.
+    rect(accents,feelColors[b.slot%6]!,b.x,b.y,b.w,b.h);
+    rect(accents,'#0b1424',b.x+1,b.y+1,b.w-2,b.h-2);
+    out.push(label(b.text,b.x+6,b.y+14,10,b.help?[255,225,124]:[235,245,255]));
+  }
+  for (const p of g.Particles) {
+    if(g.Party&&!p.Text)continue;
     out.push(
       p.Text
         ? label(p.Text, p.X, p.Y + 48, 12)
         : image("pop", 0, p.X, p.Y + 48, 44),
     );
+    if(g.Party&&p.Text){const d=out[out.length-1]!;d.y-=Math.max(0,12-(45-p.Life));d.size=Number(p.Text)>=400?15:11;d.color=Number(p.Text)>=400?[255,240,170]:[180,230,255];}
+  }
+  if(g.Party){
+    const quads=[...accents,...popQuads(g,reduced),...(feel?cueQuads(feel,reduced):[])];
+    out.push(...quads.map(q=>({...q,flip:false,text:'',size:0})));
+    const chain=g.Particles.filter(p=>!p.Text&&p.Life>=7).length;
+    if(chain>=3)out.push(label(`${chain} CHAIN!`,Math.max(48,Math.min(600,g.Particles.find(p=>!p.Text)!.X)),Math.max(135,Math.min(610,g.Particles.find(p=>!p.Text)!.Y+10)),15,[255,240,170]));
+    if(feel)for(const c of feel.cues)if(c.kind==='rescue'&&feel.clock-c.at<40){
+      const x=Math.max(50,Math.min(650,c.x-28));
+      let y=Math.max(64,c.y-45-(feel.clock-c.at)*.4);
+      // Keep the rescue celebration above every nameplate in the local cluster.
+      for(let pass=0;pass<badges.length;pass++){
+        const overlap=badges.find(b=>x<b.x+b.w&&x+70>b.x&&y-10<b.y+b.h&&y>b.y);
+        if(!overlap)break;
+        y=Math.max(60,overlap.y-4);
+      }
+      out.push(label('SAVED!',x,y,10,[115,245,170]));
+    }
+  }
   if (g.Party) {
     for (let index = 0; index < 6; index++) {
       const p = g.Party.Slots[index] === 'empty' ? undefined : g.Players[index], x = 12 + index * 126;
@@ -329,7 +385,8 @@ export const ArcadePool = defineSystem({
   resources: [read(ArcadeControl)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
   run(ctx, q) {
-    const plan = sceneDraws(ctx.step), needed = plan.texts.length + 1, pixelCount = orderedCapacity(plan.images);
+    const plan = sceneDraws(ctx.step), party=!!session.get().game?.Party;
+    const needed = plan.texts.length + 1 + (party?36:0), pixelCount = orderedCapacity(plan.images)+(party?512:0);
     let count = 0, pixels = 0;
     for (const c of q.chunks()) for (let i = 0; i < c.length; i++) {
       const slot = c.col(ArcadeVisual).slot[i]!;
@@ -351,7 +408,7 @@ export const ArcadePool = defineSystem({
     });
   },
 });
-function sceneDraws(tick: number) {
+export function sceneDraws(tick: number, feel?:FeelState) {
   const ui = desktopState.get(),
     s = session.get(),
     save = desktopSaveState.get(),
@@ -379,25 +436,31 @@ function sceneDraws(tick: number) {
       editor ? 512 : 768,
       editor ? 416 : 624,
     );
+    if(g?.Party)images.push(...arenaBackdrop(g,!!save.settings.reducedEffects));
     for (let row = 0; row < 26; row++)
       for (let col = 0; col < 32; col++) {
         const tile = level.tiles[row]?.[col] ?? 0,
           size = editor ? 16 : 24,
           x = (editor ? 24 : 0) + col * size,
           y = (editor ? 146 : 48) + row * size;
-        if (tile)
-          images.push({
-            image: `reference/tiles/${String(tile).padStart(2, "0")}`,
-            x,
-            y,
-            w: size,
-            h: size,
-          });
+        if(tile && !editor && g?.Party){
+          // Draw connected runs once. Quiet bevelled masonry replaces the
+          // high-contrast reference stripes only in the modern party mode.
+          if(col===0||!level.tiles[row]?.[col-1]){
+            let end=col+1;while(end<32&&level.tiles[row]?.[end])end++;
+            const w=(end-col)*size,theme=Math.floor((g.Party.Wave-1)/3)%3;
+            const base=['#244357','#3c3158','#214e54'][theme]!,edge=['#639ba9','#9b82b5','#70a99c'][theme]!;
+            rect(images,base,x,y,w,size);
+            if(row===0||!level.tiles[row-1]?.[col])rect(images,edge,x+2,y,w-4,3);
+            rect(images,'#102333',x,y+size-3,w,3);
+            for(let seam=48;seam<w;seam+=48)rect(images,'#193449',x+seam,y+5,1,size-9);
+          }
+        }else if(tile)images.push({image:`reference/tiles/${String(tile).padStart(2,"0")}`,x,y,w:size,h:size});
         else if (editor) solid("black", x + 1, y + 1, 15, 15);
       }
     if (editor) editorDrawPlan(ui.level, avatar, tick).forEach(push);
     else if (g) {
-      const actors = arcadeDrawPlan(g, avatar);
+      const actors = arcadeDrawPlan(g, avatar, feel, !!save.settings.reducedEffects);
       actors.filter((d) => !d.footer).forEach(push);
       solid("ink", 0, 0, 768, 48);
       solid("ink", 0, 672, 768, 48);
@@ -458,9 +521,35 @@ function sceneDraws(tick: number) {
         ),
       );
   else if (ui.screen === "settings")
-    push(image(avatar + "/walk", tick, 336, 476, 96));
+    push(image(avatar + "/walk", tick, 354, 514, 60));
   return { images, texts };
 }
+export const ArcadeFeelSystem=defineSystem({
+  name:'ArcadeFeelSystem',stage:'LateUpdate',before:['ArcadePresentation'],
+  resources:[read(Time),read(ArcadeAudio),write(ArcadeFeel)],
+  query:query(write(CameraShake)),
+  run(ctx,q){
+    const current=session.get(),g=current.game;
+    if(!current.active||!g?.Party){if(ctx.get(ArcadeFeel).data)ctx.setField(ArcadeFeel,'data','');return;}
+    const data=ctx.get(ArcadeFeel).data,old:FeelState=data?JSON.parse(data):emptyFeel();
+    const next=advanceFeel(old,g,ctx.get(Time).step);
+    const reduced=!!desktopSaveState.get().settings.reducedEffects;
+    const fresh=next.cues.filter(c=>!old.cues.some(o=>o.kind===c.kind&&o.at===c.at&&o.slot===c.slot));
+    if(!ctx.get(ArcadeAudio).muted&&!g.Paused){
+      const volume=desktopSaveState.get().settings.sound/100;
+      for(const cue of fresh){
+        const sound=cue.kind==='rescue'?'rescue':cue.kind==='boss-hit'?'boss-hit':cue.kind==='clear'?'wave-clear':cue.kind==='victory'?'victory':'';
+        if(sound&&volume>0)audio.play(`audio/${sound}`,{volume:volume*.7,priority:cue.kind==='rescue'?90:75,maxVoices:2});
+      }
+    }
+    for(const c of q.chunks())for(let i=0;i<c.length;i++){
+      if(reduced||g.Paused){c.col(CameraShake).trauma[i]=0;continue;}
+      if(fresh.some(cue=>cue.kind==='capture'||cue.kind==='victory'))shakeCamera(c.entity(i),.32);
+      else if(fresh.some(cue=>cue.kind==='boss-hit'||cue.kind==='clear'))shakeCamera(c.entity(i),.22);
+    }
+    ctx.setField(ArcadeFeel,'data',JSON.stringify(next));
+  },
+});
 export const ArcadePresentation = defineSystem({
   name: "ArcadePresentation",
   stage: "LateUpdate",
@@ -474,10 +563,11 @@ export const ArcadePresentation = defineSystem({
     ),
     mesh: query(read(ArcadeVisual), write(MeshRenderer), write(VisualOffset), write(MaterialParams)),
   },
-  resources: [read(ArcadeControl), read(Time), write(MaterialGlobals)],
+  resources: [read(ArcadeControl), read(Time), read(ArcadeFeel), write(MaterialGlobals)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
   run(ctx, q) {
-    const plan = sceneDraws(ctx.get(Time).step),
+    const data=ctx.get(ArcadeFeel).data;
+    const plan = sceneDraws(ctx.get(Time).step,data?JSON.parse(data):undefined),
       ui = desktopState.get(),
       g = session.get().game;
     const fade =

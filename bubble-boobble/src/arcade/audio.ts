@@ -19,6 +19,7 @@ export const ArcadeAudioSystem=defineSystem({
    ctx.setField(ArcadeAudio,'muted',muted);
    // Go stops existing players on mute; a silent bus would let them resurface.
    ctx.events.emit(muted?UnloadSoundBank:LoadSoundBank,{bank:'reference/audio/sfx.bank'});
+   ctx.events.emit(muted?UnloadSoundBank:LoadSoundBank,{bank:'audio/juice.bank'});
    if(muted)sfxPriority=2147483647; // Unload stops every older bank voice before reuse.
   }
   if(old.music!==save.settings.music||old.muted!==muted||old.paused!==paused||old.native!==native){ctx.events.emit(SetBusVolume,{bus:'Music',volume:native||muted||paused?0:save.settings.music/100});ctx.setField(ArcadeAudio,'music',save.settings.music);}
@@ -26,9 +27,21 @@ export const ArcadeAudioSystem=defineSystem({
   // future voices, while mute unloads/stops them instead of changing their bus.
   if(old.sound<0)ctx.events.emit(SetBusVolume,{bus:'SFX',volume:1});
   if(old.sound!==save.settings.sound)ctx.setField(ArcadeAudio,'sound',save.settings.sound);
+  // Party sounds are coalesced per fixed step and use meaningful voice priorities.
+  // Classic keeps its original gain and ordering contract.
+  if(g?.Party&&!muted&&!paused&&save.settings.sound>0){
+    const gain=save.settings.sound/100;
+    const play=(sound:string,volume:number,priority:number,pitch=1,maxVoices=2)=>ctx.events.emit(PlaySound,{sound,volume:gain*volume,priority,pitch,maxVoices});
+    if(g.Sounds.includes('shoot'))play('audio/bubble-shot',.48,10,1+(g.Tick%5)*.025,3);
+    const pops=g.Particles.filter(p=>!p.Text&&p.Life===14).length;
+    if(g.Sounds.includes('pop'))play('audio/bubble-pop',.5,30,1+Math.min(6,pops)*.045,2);
+    if(g.Bubbles.some(b=>b.EnemyID&&b.CapturedAge===1))play('audio/capture',.55,50,1,2);
+    for(const sound of ['death','item','laser','fire','water','jump'])if(g.Sounds.includes(sound))
+      play(`reference/audio/${sound}`,sound==='jump'?.3:sound==='laser'?.45:.65,sound==='death'?100:sound==='item'?60:20,1,sound==='laser'?2:3);
+  }
   // Six simultaneous dragons can produce dozens of piercing pops. Party mode
   // keeps the visual pop feedback while retaining the other gameplay cues.
-  if(g&&!muted&&save.settings.sound>0)for(const sound of g.Sounds)if(sound!=='opening'&&!(g.Party&&sound==='pop')){
+  if(g&&!g.Party&&!muted&&save.settings.sound>0)for(const sound of g.Sounds)if(sound!=='opening'&&!(g.Party&&sound==='pop')){
    // Only the global 24-voice cap applies; disable the per-sound cap.
    // Supported mixer rule rejects an incoming cue when every occupied voice has
    // higher priority. Strict decrease also preserves order within one step.

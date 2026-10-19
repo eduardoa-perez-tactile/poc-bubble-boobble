@@ -88,9 +88,10 @@ host exposes no recorded disconnect event, so automatic takeover is deferred.
   one-second entrance warning. Ordinary
   traveling bubbles damage it while exposed. Existing enlarged Mighta art is a
   placeholder; dedicated boss art and richer attack patterns are future work.
-- Party mode suppresses the original pop sound to avoid overlapping bursts from
-  six dragons. Shooting, pickups, rescues and the remaining cues still play;
-  classic mode retains its original pop sound.
+- Party mode coalesces simultaneous shots and pops, with original short cues,
+  limited voices and priorities for captures, rescues and danger. Classic retains
+  its original mix. See [multiplayer game feel](game-feel.md) for the visual pass
+  and the saved Full / Reduced effects setting.
 
 The run owns its wave, timer, slots, pending entrances and boss state. Resting
 and preparing are explicit phases; arena data is copied from the campaign.
@@ -107,7 +108,7 @@ sufficient for replay. The legacy solo/two-player modes remain available.
   phone-low memory test and draw-call ceiling, plus a recorded engine replay.
 - Entrance, positioning, GO and rest-shooting captures cover the new panel;
   its labels fit 768×720, 1680×720 and 640×960. A real six-pop engine test proves
-  party pop cues are suppressed while shots and classic pops remain audible.
+  party pop cues coalesce while shots and classic pops remain audible.
 - A pacing replay covers the five-second break, preparation shooting against
   protected enemies, and the red final enemy. Logic tests verify the exact
   300-step break, elemental protection and the angry movement-speed increase.

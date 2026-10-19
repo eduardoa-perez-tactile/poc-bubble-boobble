@@ -96,6 +96,20 @@ export const schemaIr = {
       "package": "Bubble Madness"
     },
     {
+      "name": "ArcadeFeel",
+      "kind": "resource",
+      "sim": false,
+      "fields": [
+        {
+          "name": "data",
+          "kind": "string",
+          "scalar": "u32",
+          "lanes": 1
+        }
+      ],
+      "package": "Bubble Madness"
+    },
+    {
       "name": "ArcadeInput",
       "kind": "event",
       "sim": true,
@@ -551,6 +565,15 @@ export interface ArcadeControlValue {
 }
 /** ArcadeControl (resource, sim) */
 export const ArcadeControl = typeToken<ArcadeControlViews, ArcadeControlValue>('ArcadeControl', 'resource', { sig: 'active:bool:1,skip:bool:1,requestSequence:u32:1', read: (v: ArcadeControlViews, i: number, o: Record<string, unknown>) => { o.active = v.active[i] !== 0; o.skip = v.skip[i] !== 0; o.requestSequence = v.requestSequence[i]; return o; } });
+
+export interface ArcadeFeelViews {
+  data: Uint32Array;
+}
+export interface ArcadeFeelValue {
+  data: string;
+}
+/** ArcadeFeel (resource, presentation-only) */
+export const ArcadeFeel = typeToken<ArcadeFeelViews, ArcadeFeelValue>('ArcadeFeel', 'resource', { sig: 'data:string:1', read: (v: ArcadeFeelViews, i: number, o: Record<string, unknown>) => { o.data = $r.str(v.data[i]!); return o; } });
 
 export interface ArcadeInputViews {
   player: Uint32Array;

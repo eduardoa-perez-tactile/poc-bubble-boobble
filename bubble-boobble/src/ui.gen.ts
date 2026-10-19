@@ -286,13 +286,16 @@ declare module '@gameengine/ui' {
      *   - `resultStats`: text, default ""
      *   - `showResultStats`: yesno, default false
      *   - `brand`: text, default "BUBBLE MADNESS"
+     *   - `celebration`: trigger (a counter: each change fires it)
+     *   - `resultReady`: yesno, default true
+     *   - `resultHint`: text, default ""
      * Events: `press (<item>)`, `press (<item>) (<item>)`
-     * Code areas: none
+     * Code areas: `confetti`
      * Refs: `pause-panel`, `title`, `result-score`, `result-stats`
      */
     'desktop-shell': {
-      props: { title: string | { loc: string } | LocText; subtitle: string | { loc: string } | LocText; body: string | { loc: string } | LocText; status: string | { loc: string } | LocText; buttons: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; rows: readonly { key: string; cells?: readonly { key: string; image?: string; label?: string | { loc: string } | LocText }[] }[]; logo: boolean; keys: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; page: 'title' | 'menu' | 'profiles' | 'new-profile' | 'settings' | 'scores' | 'help' | 'credits' | 'play' | 'pause' | 'result' | 'editor'; resultScore: string | { loc: string } | LocText; resultStats: string | { loc: string } | LocText; showResultStats: boolean; brand: string | { loc: string } | LocText };
-      areas: never;
+      props: { title: string | { loc: string } | LocText; subtitle: string | { loc: string } | LocText; body: string | { loc: string } | LocText; status: string | { loc: string } | LocText; buttons: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; rows: readonly { key: string; cells?: readonly { key: string; image?: string; label?: string | { loc: string } | LocText }[] }[]; logo: boolean; keys: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; page: 'title' | 'menu' | 'profiles' | 'new-profile' | 'settings' | 'scores' | 'help' | 'credits' | 'play' | 'pause' | 'result' | 'editor'; resultScore: string | { loc: string } | LocText; resultStats: string | { loc: string } | LocText; showResultStats: boolean; brand: string | { loc: string } | LocText; celebration: number; resultReady: boolean; resultHint: string | { loc: string } | LocText };
+      areas: 'confetti';
       refs: 'pause-panel' | 'title' | 'result-score' | 'result-stats';
     };
     /**

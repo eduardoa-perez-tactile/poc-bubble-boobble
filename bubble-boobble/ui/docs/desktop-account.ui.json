@@ -552,7 +552,7 @@
         ],
         "offset": [
           164,
-          180
+          154
         ],
         "dir": "column",
         "gap": 12
@@ -568,7 +568,7 @@
       "name": "Code area",
       "key": "settingsAvatar",
       "style": {
-        "w": 96,
+        "w": 60,
         "position": "anchored",
         "anchor": [
           0,
@@ -576,9 +576,9 @@
         ],
         "offset": [
           336,
-          476
+          514
         ],
-        "h": 96
+        "h": 60
       }
     },
     "da_stats_name": {

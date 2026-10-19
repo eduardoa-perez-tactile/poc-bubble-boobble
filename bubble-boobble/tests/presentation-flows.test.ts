@@ -1,3 +1,5 @@
+import { PartyReset, PartyBossDuel, PartyVictory } from '../src/arcade/party.cheats';
+import { FeelShowcase } from '../src/arcade/juice.cheats';
 import {expect,renderTest} from '@gameengine/test';
 import {DesktopIntent} from '../src/schema.gen';
 import {ResetArcade} from '../src/arcade/arcade.cheats';
@@ -56,5 +58,9 @@ renderTest('desktop complete presentation flows',async({input,step,cheat,render,
  const colors=render.probe({width:768,height:720,points:bubbles.map(b=>[Math.floor(b.X+22),Math.floor(b.Y+48+44*9.5/17)] as [number,number])}).points;
  expect(colors.map(p=>p.rgba)).toEqual([[255,220,0,255],[0,170,255,255]]);
  shot('bubbles-yellow-blue');await step(6);
+ // The warm-up replay also visits the party feedback and UI particle pipeline.
+ await cheat(PartyReset,{humans:6});await step(2);await cheat(FeelShowcase,{});shot('party-feel');await step(6);
+ await cheat(PartyReset,{wave:10,humans:6});await step(2);await cheat(PartyBossDuel,{captured:true});shot('party-capture');await step(3);
+ await cheat(PartyVictory,{});await step(18);shot('party-victory');await step(60);
  expect(peak).toBeLessThanOrEqual(14);
 },{scene:'scenes/arcade.scene.json'});

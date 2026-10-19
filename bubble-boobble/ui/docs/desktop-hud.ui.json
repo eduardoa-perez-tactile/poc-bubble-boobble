@@ -373,7 +373,33 @@
     },
     "showBanner": {
       "type": "yesno",
-      "default": false
+      "default": false,
+      "poses": {
+        "no": {
+          "set": {
+            "dh_banner": {
+              "scale": 0.95,
+              "opacity": 0
+            }
+          },
+          "transition": {
+            "type": "easeOut",
+            "ms": 100
+          }
+        },
+        "yes": {
+          "set": {
+            "dh_banner": {
+              "scale": 1,
+              "opacity": 1
+            }
+          },
+          "transition": {
+            "type": "easeOut",
+            "ms": 150
+          }
+        }
+      }
     },
     "clear": {
       "type": "yesno",
