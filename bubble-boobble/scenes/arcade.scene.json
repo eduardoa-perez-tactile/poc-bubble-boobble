@@ -6,7 +6,9 @@
       "name": "Camera",
       "id": "camera",
       "Camera": { "clearColor": "#000000ff", "orthoSize": 360 },
-      "LocalTransform": { "position": [384, 360, 0] }
+      "CameraShake": { "decay": 3, "maxOffset": [8, 6, 0], "maxAngle": 0, "frequency": 22 },
+      "LocalTransform": { "position": [384, 360, 0] },
+      "VisualOffset": {}
     },
     {
       "name": "Runtime Visuals",

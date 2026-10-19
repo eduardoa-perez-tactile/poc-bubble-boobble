@@ -67,7 +67,7 @@ worldTest('arcade audio mute stops active SFX and reloads the first unmuted cue'
  expect(audio.status().voices).toBe(1);
  input.action('fire',0);input.action('mute',1);await step(1);
  expect(world.resource(ArcadeAudio).muted).toBe(true);
- expect(world.events(UnloadSoundBank).map(e=>e.bank)).toEqual(['reference/audio/sfx.bank']);
+ expect(world.events(UnloadSoundBank).map(e=>e.bank)).toEqual(['reference/audio/sfx.bank','audio/juice.bank']);
  expect(audio.status().voices).toBe(0);
  input.action('mute',0);await step(1);
  await cheat(ResetArcade,{ready:false});
@@ -79,7 +79,7 @@ worldTest('arcade audio mute stops active SFX and reloads the first unmuted cue'
  input.action('fire',0);await step(1);await cheat(ResetArcade,{ready:false});
  input.action('fire',1);input.action('mute',1);await step(1);
  expect(world.resource(ArcadeAudio).muted).toBe(false);
- expect(world.events(LoadSoundBank).map(e=>e.bank)).toEqual(['reference/audio/sfx.bank']);
+ expect(world.events(LoadSoundBank).map(e=>e.bank)).toEqual(['reference/audio/sfx.bank','audio/juice.bank']);
  expect(world.events(PlaySound).map(e=>[e.sound,e.volume])).toEqual([['reference/audio/shoot',.75]]);
  expect(audio.status().buses.SFX).toBe(1);
  expect(audio.status().banks['reference/audio/sfx.bank']?.ready).toBe(true);
@@ -145,7 +145,7 @@ worldTest('arcade audio same-step SFX priorities strictly descend and mute reset
  expect(world.resource(ArcadeAudio).sfxPriority).toBe(-2147483648);
  input.action('fire',0);input.action('mute',1);await step(1);
  expect(audio.status().voices).toBe(0);
- expect(world.events(UnloadSoundBank).length).toBe(1);
+ expect(world.events(UnloadSoundBank).length).toBe(2);
  expect(world.resource(ArcadeAudio).sfxPriority).toBe(2147483647);
  input.action('mute',0);await step(1);await cheat(ResetArcade,{ready:false});
  input.action('fire',1);input.action('mute',1);await step(1);

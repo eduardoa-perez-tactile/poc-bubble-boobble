@@ -30,3 +30,6 @@ export const ArcadeAudio = resource('ArcadeAudio', { track: string(), native: bo
 export const EditorPointer = resource('EditorPointer', { drawing: bool(), erasing: bool(), col: i32({default:-1}), row: i32({default:-1}) }, { sim:true });
 
 export const ArcadePlatformState = resource('ArcadePlatformState', { exitSequence:u32() }, { sim:false });
+
+// Bounded cosmetic history is never read by simulation or included in replay hashes.
+export const ArcadeFeel = resource('ArcadeFeel', { data: string() }, { sim:false });

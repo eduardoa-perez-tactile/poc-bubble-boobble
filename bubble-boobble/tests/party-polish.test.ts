@@ -49,11 +49,11 @@ worldTest('party polish HUD explains rest arrival positioning and go',()=>{
  expect(hudModel(g,initialDesktopSave).showBanner).toBe(false);
 });
 
-worldTest('party polish six real pops are silent while shots and classic pops remain audible',async({cheat,step,input,world})=>{
+worldTest('party polish six real pops coalesce while classic cues retain their original mix',async({cheat,step,input,world})=>{
  await step(3);await cheat(PartyReset,{wave:1,humans:6});await step(2);await cheat(PopBurst,{});
  expect(session.get().game!.Sounds.filter(s=>s==='pop').length).toBe(6);
- expect(world.events(PlaySound).some(s=>s.sound==='reference/audio/pop')).toBe(false);
- input.action('partyFire1',1);await step(1);expect(world.events(PlaySound).map(s=>s.sound)).toEqual(['reference/audio/shoot']);
+ expect(world.events(PlaySound).filter(s=>s.sound==='audio/bubble-pop').length).toBe(1);
+ input.action('partyFire1',1);await step(1);expect(world.events(PlaySound).map(s=>s.sound)).toEqual(['audio/bubble-shot']);
  input.action('partyFire1',0);await step(1);await cheat(ResetArcade,{ready:false});await cheat(PopBurst,{});
  expect(session.get().game!.Sounds).toEqual(['pop']);expect(world.events(PlaySound).map(s=>s.sound)).toEqual(['reference/audio/pop']);
 },{scene});
@@ -67,7 +67,7 @@ renderTest('party polish readable countdown falling enemies and rest practice sh
  await step(80);render.expectScreenshot('go',{width:768,height:720});
  await cheat(PartyClear,{});await step(2);input.action('partyFire1',1);await step(6);
  expect(session.get().game!.Bubbles.length).toBeGreaterThan(0);
- expect(render.probe({width:768,height:720,points:[[110,140]]}).points[0]!.rgba.slice(0,3)).toEqual([0,0,0]);
+ expect(render.probe({width:768,height:720,points:[[110,140]]}).points[0]!.rgba.slice(0,3)).toEqual([12,21,43]);
  render.expectScreenshot('rest_shooting',{width:768,height:720});
  for(const [width,height] of [[768,720],[1680,720],[640,960]]){
   input.view(width!,height!,1);await step(1);render.expectDrawCalls('<=',14,{width:width!,height:height!});

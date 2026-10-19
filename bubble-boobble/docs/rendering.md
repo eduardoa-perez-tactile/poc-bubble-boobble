@@ -1,5 +1,9 @@
 # Desktop rendering evidence
 
+Wave Survival now adds a [modern presentation pass](game-feel.md) through the same
+ordered pixel renderer. The source-parity observations below concern Classic;
+party arenas intentionally use new colors, geometry, effects and actor poses.
+
 The game owns its renderer workaround; the engine and pinned Go source are
 unchanged. `src/arcade/presentation.ts` follows Go `internal/app/render.go`
 ordering, frame selection, sizes, mirroring, warning thresholds, flashing and

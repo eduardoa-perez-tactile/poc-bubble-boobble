@@ -68,7 +68,7 @@ export const RiseAndPop = defineSystem({
 export { PortBoot, PortControls, PortMovement, PortPresentation } from './port.ts';
 
 export { DesktopSystem, DesktopUI } from './desktop/index.ts';
-export { ArcadeBoot, ArcadePool, ArcadePresentation } from './arcade/presentation.ts';
+export { ArcadeBoot, ArcadePool, ArcadeFeelSystem, ArcadePresentation } from './arcade/presentation.ts';
 export { ArcadeStep } from './arcade/engine.ts';
 export { ArcadeEditorInput } from './arcade/editor-input.ts';
 export { ArcadeAudioSystem, ArcadePlatform } from './arcade/audio.ts';

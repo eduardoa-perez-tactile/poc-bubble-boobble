@@ -1,0 +1,55 @@
+# Multiplayer game feel
+
+The modern presentation applies to Bubble Madness / Wave Survival. Classic keeps its original arena art, actor sizes, scoring, movement and sound ordering. Shared settings now include **EFFECTS: FULL / REDUCED**; the extra row and smaller dragon preview fit the existing logical canvas.
+
+## Presentation
+
+- Traveling bubbles stretch on emission, settle into a floating wobble, and have a small glint and short ownership-colored trail. Capture compresses the bubble vertically and adds a ring. Trapped, elemental and rescue bubbles have different visual treatments; player numbers and HELP labels supplement color.
+- Pops expand into pixel rings and a few droplets. Rendering caps simultaneous pop effects at 18. Existing score particles receive stronger typography for larger awards, with a compact burst/chain announcement.
+- Dragons stretch in the air, recoil when firing, compress on landing, and briefly narrow on turns. Contact shadows and persistent identity markers keep them grounded and identifiable during invulnerability blinking.
+- Three coordinated arena palettes advance every three waves. Quiet masonry, highlighted platform tops, distant arches and sparse motes replace the party arena's bright stripes. Connected tile runs share primitives rather than adding an object per tile.
+- Rescues produce a rising ring, sparkles, SAVED label and distinct ascending cue. Boss windups compress the sprite; a hit holds its animation pose, recoils and produces an impact ring. Its original dedicated boss frames remain intact. Capture and major team moments use short, bounded camera impulses.
+- Wave banners ease into place. Results use a score-panel pop and a short UI confetti burst for a team victory. Gameplay instructions disappear on the result screen.
+
+These are cosmetic changes. Collision boxes, input handling, enemy rules, boss damage, rescue distance and score multipliers are unchanged. The existing player controller already supplies coyote time and jump buffering.
+
+## Sound and reduced effects
+
+Original short mono cues are generated reproducibly by `python3 tools/art/build-feel-audio.py`, and preloaded through `audio/juice.bank`. Party audio coalesces simultaneous shots and pops into one cue per fixed step, limits voices and prioritizes captures, rescues and danger. Existing elemental and item sounds remain with adjusted party gains. Muting unloads both sound banks so no older cue can return on unmute.
+
+Reduced effects disable camera shake, trails, ambient motes, landing dust, decorative rescue sparkles and victory confetti. Capture/pop rings, identity markers, HELP/SAVED labels and core sound feedback remain available.
+
+## Architecture and limits
+
+`src/arcade/juice.ts` owns pure geometry and bounded cosmetic history. `ArcadeFeel` is a presentation-only resource with a six-player snapshot and at most 32 short-lived cues. Pause holds its clock. The simulation never reads it.
+
+Opaque color primitives use the existing ordered pixel material, including exact encoded-RGB composition behind partially transparent original artwork. The party visual pool reserves 512 extra pixel slots and 36 text slots for transient cues; simulation owns allocation and LateUpdate only changes visual fields. Pool population and intentional audio-event changes require refreshed replay hashes, even though match mechanics are unchanged.
+
+The single victory VFX emitter has a separate phone-low override. There are no new full-screen post-processing passes or runtime lights.
+
+## Verification
+
+Engine-only tests cover effect purity and lifetime, pause, sRGB composition, audio priorities/coalescing, rescue audio, boss capture, victory, reduced effects, and native/wide/tall layouts. `tests/arcade-feel.test.ts` includes a phone-low render scenario; the presentation warm-up route now visits party capture and victory as well as Classic screens.
+
+Measured on macOS / Apple M2 Max, native Metal / V8:
+
+- Final regression suite: all 271 cases pass; all 24 saved replays verify.
+- Six-player showcase: peak 8 draw calls; six-player firing boss sample: peak 8, with 67 shots, up to 7 bottles and 12 lightning effects over 300 steps.
+- Expanded complete presentation route: 262 explicitly rendered frames per tier; peaks 11 / 9 / 9 draws on desktop / mobile / compat, below the existing 14-call ceiling.
+- A 600-step wave-nine headless sample: simulation p95 0.887 ms, maximum 1.423 ms, zero hitch steps; sampled presentation p95 1.202 ms; process memory 195.09 MiB. Its requested final frame used 10 draws.
+- New focused phone-low/mobile tests pass. The UI confetti resolves to 18 particles on phone-low.
+
+Headless CPU and structural checks do not establish device GPU frame time, thermals, audio quality through speakers or human multiplayer readability. Those require playtesting. Screenshots are regression evidence, not proof of motion quality.
+
+## Design references
+
+- [Juice It or Lose It](https://gdcvault.com/play/1016789/Juice-It-or-Lose): layered feedback for simple arcade interactions.
+- [The Art of Screenshake, linked from Jan Willem Nijman's site](https://www.jwaaaap.com/): small action-game presentation improvements.
+- [Celeste & Forgiveness](https://www.maddymakesgames.com/articles/celeste_and_forgiveness/index.html): input forgiveness; already represented in the player controller.
+- [Juicing Your Cameras With Math](https://www.gdcvault.com/play/1023557/Math-for-Game-Programmers-Juicing): bounded, decaying camera feedback.
+- [Eight Hit Stop Techniques](https://www.youtube.com/watch?v=tycbMSjDDLg): local emphasis without repeatedly freezing all six players.
+- [Dead Cells color and readability](https://www.gamedeveloper.com/production/art-design-deep-dive-giving-back-colors-to-cryptic-worlds-in-i-dead-cells-i-): foreground/background hierarchy.
+- [SLYNYRD: Side View Run 'N Gun](https://www.slynyrd.com/blog/2026/1/26/side-view-run-n-gun): economical sprite animation.
+- [Game Accessibility Guidelines](https://gameaccessibilityguidelines.com/full-list/): redundant identity cues and reduced background movement.
+
+The final typecheck, validation, desktop cook and cooked smoke pass. Hermes cross-engine verification is unavailable because its host binary is not installed. Pipeline capture completes on all three tiers; the installed host still emits the pre-existing built-in Standard program hash warning (`7946469ed20397e0`) in the packaged CLI metadata. The game-owned pixel material is recognized; no warning was suppressed or raw pipeline record deleted.

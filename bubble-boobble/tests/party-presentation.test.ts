@@ -28,7 +28,8 @@ worldTest('party presentation six dragons and shots use independent identities',
   for(let index=0;index<6;index++) {
     const skin=dragonSkins[index]!, x=72+index*120;
     expect(draws.find(d=>d.x===x&&d.y===604)!.image).toBe(referenceFrame(`${skin}/walk`,0));
-    expect(draws.find(d=>d.x===x&&d.y===448)!.image).toBe(referenceFrame(skin==='green'?'bubble':`${skin}/bubble`,30));
+    const shot=draws.find(d=>!d.footer&&d.image===referenceFrame(skin==='green'?'bubble':`${skin}/bubble`,30))!;
+    expect(shot.x+shot.w/2).toBe(x+22);expect(shot.y+shot.h/2).toBe(470);
     expect(draws.filter(d=>d.footer&&d.image===referenceFrame(`${skin}/walk`,0)).length).toBe(1);
     expect(draws.some(d=>d.text===String(index+1)&&!d.footer)).toBe(true);
     for(const indicator of draws.filter(d=>d.text.startsWith(String(index+1))))expect(indicator.color).toEqual(colors[index]);
@@ -111,7 +112,7 @@ worldTest('party boss captured animation uses the original complete arcade bubbl
   g.Party!.Boss!.Tick=frame*10;
   const draws=arcadeDrawPlan(g),boss=draws.filter(d=>d.image.startsWith('derived/boss/'));
   expect(boss.length).toBe(1);expect(boss[0]!.image).toBe(`derived/boss/captured-${frame}`);
-  expect([boss[0]!.x,boss[0]!.y,boss[0]!.w,boss[0]!.h]).toEqual([320,448,96,96]);
+  expect(boss[0]!.x+boss[0]!.w/2).toBe(368);expect(boss[0]!.y+boss[0]!.h).toBe(544);expect(boss[0]!.w).toBeGreaterThan(92);expect(boss[0]!.w).toBeLessThan(100);
   expect(draws.some(d=>d.x===312&&d.w===112)).toBe(false);
  }
 });

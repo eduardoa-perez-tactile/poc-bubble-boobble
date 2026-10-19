@@ -48,7 +48,7 @@ export function desktopAction(action:string,value='',index=0,x=0,y=0,now=0){
  if(action==='new-profile'){patch({name:''});navigate('new-profile');return;}
  if(action==='create-profile'){if(!desktopSaveState.loaded()){patch({status:'SAVE IS LOADING'});return;}const r=desktopSaveState.dispatch('create',s.name,now);if(r.ok)navigate('profiles');else patch({status:r.reason});return;}
  if(action==='delete-char'){patch({name:s.name.slice(0,-1)});return;}
- if(['avatar','music','sound','fullscreen'].includes(action)){if(desktopSaveState.loaded())desktopSaveState.dispatch('setting',{action,delta:index===-1?-25:25},now);return;}
+ if(['avatar','music','sound','fullscreen','effects'].includes(action)){if(desktopSaveState.loaded())desktopSaveState.dispatch('setting',{action,delta:index===-1?-25:25},now);return;}
  if(action==='pause'){request('pause');showDesktopPause();return;}
  if(action==='resume'){request('resume');navigate('play');return;}
  if(action==='start'||action==='restart'||action==='test-level'){

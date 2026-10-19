@@ -90,7 +90,7 @@ renderTest('party wave lobby buttons fit desktop extremes and launch actual game
  const start=ui.interactables().find(b=>b.label==='START SURVIVAL')!;await ui.press(start.id!);await step(2);expect(session.get().game!.Party!.Wave).toBe(1);
 },{scene:'scenes/arcade.scene.json'});
 renderTest('party actual six dragon arena and rest HUD',async({cheat,step,input,render})=>{
- input.view(768,720,1);await step(3);await cheat(PartyReset,{wave:1,humans:6});await step(12);expect(render.probe({width:768,height:720,points:[[1,49]]}).points[0]!.rgba.slice(0,3)).toEqual([244,106,252]);await render.expectScreenshot('six_dragons',{width:768,height:720});
+ input.view(768,720,1);await step(3);await cheat(PartyReset,{wave:1,humans:6});await step(12);expect(render.probe({width:768,height:720,points:[[1,49]]}).points[0]!.rgba.slice(0,3)).toEqual([36,67,87]);await render.expectScreenshot('six_dragons',{width:768,height:720});
  await cheat(PartyClear,{});await step(2);await render.expectScreenshot('rest',{width:768,height:720});
  await cheat(PartyReset,{wave:10,humans:6});await step(108);await render.expectScreenshot('boss',{width:768,height:720});
 },{scene:'scenes/arcade.scene.json'});

@@ -817,7 +817,8 @@
       "name": "Element",
       "children": [
         "ds_result_score",
-        "ds_result_stats"
+        "ds_result_stats",
+        "ds_celebration"
       ],
       "style": {
         "pad": 0,
@@ -875,11 +876,42 @@
       },
       "show": "showResultStats",
       "point": "result-stats"
+    },
+    "ds_celebration": {
+      "type": "codeArea",
+      "name": "Code area",
+      "key": "confetti",
+      "style": {
+        "w": 680,
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          210
+        ],
+        "h": 300
+      }
     }
   },
   "view": {
     "behaviour": "screen",
-    "safe": true
+    "safe": true,
+    "enter": {
+      "set": {
+        "ds_result": {
+          "opacity": 1,
+          "scale": 1,
+          "ty": 0
+        },
+        "ds_title": {
+          "opacity": 1,
+          "ty": 0
+        }
+      }
+    }
   },
   "properties": {
     "title": {
@@ -1147,9 +1179,38 @@
     "brand": {
       "type": "text",
       "default": "BUBBLE MADNESS"
+    },
+    "celebration": {
+      "type": "trigger"
     }
   },
   "transition": {
     "type": "instant"
+  },
+  "reactions": {
+    "resultPop": {
+      "on": {
+        "property": "celebration",
+        "change": "trigger"
+      },
+      "set": {
+        "root": {
+          "scale": 1.1
+        },
+        "ds_result": {
+          "scale": 0.92,
+          "ty": 18
+        }
+      },
+      "in": {
+        "type": "instant"
+      },
+      "hold": 0,
+      "back": {
+        "type": "back",
+        "ms": 300,
+        "overshoot": 1.1
+      }
+    }
   }
 }

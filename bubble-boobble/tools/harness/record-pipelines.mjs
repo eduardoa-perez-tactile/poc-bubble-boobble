@@ -15,7 +15,7 @@ const {GameEngineClient}=await import(fileURLToPath(new URL('../../.cache/pipeli
 const budget=JSON.parse(readFileSync('tests/budgets/presentation.json','utf8'));
 const replay=readFileSync(budget.replay).toString('base64');
 const records={},rows=[];
-const observationCode='(()=>{const u=JSON.parse(__gameengine_host("doc.get",JSON.stringify({name:"desktop-ui"})));const d=JSON.parse(__gameengine_host("doc.get",JSON.stringify({name:"arcade.session"})));const g=d?.game;return {screen:u?.screen??"loading",round:g?.Level.number,state:g?.State,dead:!!g?.Players.some(p=>p.Dead>0),particles:g?.Particles.length??0,effects:g?.Effects.map(e=>e.Element)??[],bubbles:g?.Bubbles.filter(b=>b.Shooter!==undefined&&!b.Element&&!b.EnemyID&&b.Age>=30&&b.Age<=450).map(b=>({x:b.X,y:b.Y,shooter:b.Shooter}))??[]}})()';
+const observationCode='(()=>{const u=JSON.parse(__gameengine_host("doc.get",JSON.stringify({name:"desktop-ui"})));const d=JSON.parse(__gameengine_host("doc.get",JSON.stringify({name:"arcade.session"})));const g=d?.game;return {screen:u?.screen??"loading",round:g?.Level.number,state:g?.State,party:!!g?.Party,bossMode:g?.Party?.Boss?.Mode??"",dead:!!g?.Players.some(p=>p.Dead>0),particles:g?.Particles.length??0,effects:g?.Effects.map(e=>e.Element)??[],bubbles:g?.Bubbles.filter(b=>b.Shooter!==undefined&&!b.Element&&!b.EnemyID&&b.Age>=30&&b.Age<=450).map(b=>({x:b.X,y:b.Y,shooter:b.Shooter}))??[]}})()';
 function cli(args){const r=spawnSync('gameengine',[...args,'--json'],{encoding:'utf8',maxBuffer:8*1024*1024});if(r.error)throw r.error;if(r.status!==0)throw new Error(r.stdout+r.stderr);return JSON.parse(r.stdout);}
 for(const tier of tiers){
  const tierStarted=Date.now();
@@ -26,7 +26,7 @@ for(const tier of tiers){
   await c.call('engine.step',{n:2,frames:true});
   // The second point is inside the dragon body in every settings walk frame.
   // Read actual palette pixels as well as the selected UI label on every tier.
-  const probe=()=>c.call('render.probe',{width:768,height:720,points:[[0,0],[368,491]]});
+  const probe=()=>c.call('render.probe',{width:768,height:720,points:[[0,0],[374,523]]});
   for(let i=0;i<30;i++){await probe();if((await c.call('assets.status',{})).pending===0)break;if(i===29)throw new Error('Assets remained pending after explicit render requests');}
   const loaded=await c.call('replay.load',{data:replay});
   await c.call('perf.start',{});
@@ -49,7 +49,7 @@ for(const tier of tiers){
    const [s,observation,status]=await Promise.all([c.call('render.stats',{}),c.call('script.eval',{code:observationCode}),c.call('replay.status',{})]);
    peak=Math.max(peak,s.drawCalls);
    const o=observation.value;
-   if(o){seen.add(o.screen);if(o.round===24)marker.add('round24');if(o.state===0&&o.screen==='play')marker.add('ready');if(o.dead)marker.add('death');if(o.particles>0)marker.add('particles');for(const e of o.effects)marker.add(e);}
+   if(o){seen.add(o.screen);if(o.party)marker.add('party');if(o.party&&o.bossMode==='captured')marker.add('bossCapture');if(o.party&&o.state===4)marker.add('partyVictory');if(o.round===24)marker.add('round24');if(o.state===0&&o.screen==='play')marker.add('ready');if(o.dead)marker.add('death');if(o.particles>0)marker.add('particles');for(const e of o.effects)marker.add(e);}
    if(o?.screen==='settings'){
     const settingsLayout=await c.call('ui.layout',{width:768,height:720});
     for(const [skin,rgb] of [['red',[255,0,0]],['yellow',[255,220,0]]]){
@@ -78,7 +78,7 @@ for(const tier of tiers){
   if(!finished)throw new Error(`${tier} replay did not finish`);
   const required=['title','menu','profiles','scores','settings','help','credits','editor','play','pause','result'];
   const missing=required.filter(p=>!seen.has(p));
-  const missingMarkers=['round24','ready','death','particles','fire','water','thunder','skin:red','skin:yellow','bubble:yellow','bubble:blue'].filter(p=>!marker.has(p));
+  const missingMarkers=['round24','ready','death','particles','fire','water','thunder','skin:red','skin:yellow','bubble:yellow','bubble:blue','party','bossCapture','partyVictory'].filter(p=>!marker.has(p));
   if(missing.length||missingMarkers.length)throw new Error(`${tier} missing rendered coverage: ${[...missing,...missingMarkers].join(', ')}; seen=${[...seen].join(',')} frames=${frames}`);
   if(peak>budget.structural.drawCallsMax)throw new Error(`${tier} peak ${peak} exceeds ${budget.structural.drawCallsMax}`);
   const perf=await c.call('perf.stats',{stop:true});

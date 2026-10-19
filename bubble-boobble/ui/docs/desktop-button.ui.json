@@ -81,6 +81,17 @@
     }
   },
   "transition": {
-    "type": "instant"
+    "type": "easeOut",
+    "ms": 110
+  },
+  "states": {
+    "pressed": {
+      "set": {
+        "root": {
+          "scale": 0.96,
+          "ty": 1
+        }
+      }
+    }
   }
 }

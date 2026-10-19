@@ -41,8 +41,15 @@ const contributors = new Uint32Array(4096);
 const black = 0xff000000,
   ink = 0xff1b0c08,
   panel = 0xff311d13;
+export function solidColor(image: string): number | undefined {
+  if (!/^solid\/#[0-9a-f]{6}$/i.test(image)) return undefined;
+  const n = parseInt(image.slice(7), 16);
+  return ((n >>> 16) | (n & 0xff00) | ((n & 255) << 16) | 0xff000000) >>> 0;
+}
 function sample(q: PixelQuad, x: number, y: number): number {
   if (x < q.x || y < q.y || x >= q.x + q.w || y >= q.y + q.h) return 0;
+  const solid = solidColor(q.image);
+  if (solid !== undefined) return solid;
   if (q.image === "solid/black") return black;
   if (q.image === "solid/ink") return ink;
   if (q.image === "solid/panel") return panel;
@@ -168,7 +175,8 @@ export function orderedArrays(
     if (!q.image || q.w <= 0 || q.h <= 0) continue;
     const rect = pixelRect(q.image, q.flip),
       z = index * 0.001;
-    quad(q.x, q.y, q.w, q.h, z, rect);
+    const solid = solidColor(q.image);
+    quad(q.x, q.y, q.w, q.h, z, solid === undefined ? rect : [], solid);
     if (!sources[sourceFrame(q.image)]?.partial) continue;
     const x0 = Math.max(0, Math.ceil(q.x - 0.5)),
       x1 = Math.min(768, Math.ceil(q.x + q.w - 0.5)),
