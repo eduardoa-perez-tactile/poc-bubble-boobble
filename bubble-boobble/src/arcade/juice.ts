@@ -106,6 +106,26 @@ export type FeelCue={kind:'jump'|'land'|'turn'|'rescue'|'boss-hit'|'clear'|'vict
 type Snapshot={tick:number;wave:number;phase:string;state:number;hp:number;bossMode:string;players:{x:number;y:number;ground:boolean;vy:number;jumping:boolean;dir:number;downed:boolean;lives:number}[]};
 export type FeelState={clock:number;step:number;previous:Snapshot|null;cues:FeelCue[];};
 export const emptyFeel=():FeelState=>({clock:0,step:0,previous:null,cues:[]});
+// Numeric resource fields are overwritten in place. Changing JSON strings would
+// remain interned for the lifetime of the engine session and eventually exhaust it.
+const feelPhases=['prepare','combat','rest','boss'];
+const feelModes=['','moving','windup','captured'];
+const feelKinds:FeelCue['kind'][]=['jump','land','turn','rescue','boss-hit','clear','victory','capture'];
+export function packFeel(f:FeelState){
+ const p=f.previous;
+ const players=(read:(p:NonNullable<FeelState['previous']>['players'][number])=>number)=>Array.from({length:10},(_,i)=>p?.players[i]?read(p.players[i]!):0);
+ const cues=(read:(c:FeelCue)=>number)=>Array.from({length:32},(_,i)=>f.cues[i]?read(f.cues[i]!):0);
+ return {header:[f.clock,f.step,p?1:0,p?.tick??0,p?.wave??0,feelPhases.indexOf(p?.phase??''),p?.state??0,p?.hp??0,feelModes.indexOf(p?.bossMode??''),p?.players.length??0,f.cues.length,0],
+  playerX:players(p=>p.x),playerY:players(p=>p.y),playerVY:players(p=>p.vy),
+  playerFlags:players(p=>(p.ground?1:0)|(p.jumping?2:0)|(p.downed?4:0)),playerDir:players(p=>p.dir),playerLives:players(p=>p.lives),
+  cueKind:cues(c=>feelKinds.indexOf(c.kind)),cueX:cues(c=>c.x),cueY:cues(c=>c.y),cueAt:cues(c=>c.at),cueSlot:cues(c=>c.slot),cueStrength:cues(c=>c.strength??1)};
+}
+export function unpackFeel(f:ReturnType<typeof packFeel>):FeelState{
+ const h=f.header;
+ return {clock:h[0]!,step:h[1]!,previous:h[2]?{tick:h[3]!,wave:h[4]!,phase:feelPhases[h[5]!]??'',state:h[6]!,hp:h[7]!,bossMode:feelModes[h[8]!]??'',
+  players:Array.from({length:h[9]!},(_,i)=>({x:f.playerX[i]!,y:f.playerY[i]!,vy:f.playerVY[i]!,ground:!!(f.playerFlags[i]!&1),jumping:!!(f.playerFlags[i]!&2),downed:!!(f.playerFlags[i]!&4),dir:f.playerDir[i]!,lives:f.playerLives[i]!}))}:null,
+  cues:Array.from({length:h[10]!},(_,i)=>({kind:feelKinds[f.cueKind[i]!]!,x:f.cueX[i]!,y:f.cueY[i]!,at:f.cueAt[i]!,slot:f.cueSlot[i]!,strength:f.cueStrength[i]!}))};
+}
 /** Bounded presentation history; persisted in a sim:false resource, never in match state. */
 export function advanceFeel(old:FeelState,g:GameState,step:number):FeelState {
   const previous=old.previous,reset=!previous||g.Tick<previous.tick||g.Party!.Wave<previous.wave;

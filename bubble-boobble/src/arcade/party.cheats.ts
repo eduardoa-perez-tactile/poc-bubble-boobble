@@ -45,3 +45,10 @@ export const PartyFinalPop=defineCheat({id:'party.final-pop',group:'Party',title
  g.NextID++;g.Bubbles=[{...bubble(p.X,p.Y),ID:g.NextID,EnemyID:enemy.ID,Age:30,Floating:true,Shooter:(slot+1)%g.Players.length}];
  g.Effects=[];g.Projectiles=[];session.set({...current,game:g});
 }});
+
+export const PartyBossSoak=defineCheat({id:'party.boss-soak',group:'Party',title:'Sustain a protected ten-dragon boss stress fight',run(){
+ const current=session.get();if(!current.game?.Party?.Boss)return;const g=copyGame(current.game);
+ g.Party!.Boss!.HP=1000000;g.Party!.Boss!.MaxHP=1000000;
+ for(const p of g.Players){p.Invincible=1000000;p.Power.Thunder=true;}
+ session.set({...current,game:g});
+}});

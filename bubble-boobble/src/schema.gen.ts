@@ -101,10 +101,82 @@ export const schemaIr = {
       "sim": false,
       "fields": [
         {
-          "name": "data",
-          "kind": "string",
-          "scalar": "u32",
-          "lanes": 1
+          "name": "header",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 12
+        },
+        {
+          "name": "playerX",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 10
+        },
+        {
+          "name": "playerY",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 10
+        },
+        {
+          "name": "playerVY",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 10
+        },
+        {
+          "name": "playerFlags",
+          "kind": "array",
+          "scalar": "i32",
+          "lanes": 10
+        },
+        {
+          "name": "playerDir",
+          "kind": "array",
+          "scalar": "i32",
+          "lanes": 10
+        },
+        {
+          "name": "playerLives",
+          "kind": "array",
+          "scalar": "i32",
+          "lanes": 10
+        },
+        {
+          "name": "cueKind",
+          "kind": "array",
+          "scalar": "i32",
+          "lanes": 32
+        },
+        {
+          "name": "cueX",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 32
+        },
+        {
+          "name": "cueY",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 32
+        },
+        {
+          "name": "cueAt",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 32
+        },
+        {
+          "name": "cueSlot",
+          "kind": "array",
+          "scalar": "i32",
+          "lanes": 32
+        },
+        {
+          "name": "cueStrength",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 32
         }
       ],
       "package": "Bubble Madness"
@@ -567,13 +639,37 @@ export interface ArcadeControlValue {
 export const ArcadeControl = typeToken<ArcadeControlViews, ArcadeControlValue>('ArcadeControl', 'resource', { sig: 'active:bool:1,skip:bool:1,requestSequence:u32:1', read: (v: ArcadeControlViews, i: number, o: Record<string, unknown>) => { o.active = v.active[i] !== 0; o.skip = v.skip[i] !== 0; o.requestSequence = v.requestSequence[i]; return o; } });
 
 export interface ArcadeFeelViews {
-  data: Uint32Array;
+  header: Float64Array;
+  playerX: Float64Array;
+  playerY: Float64Array;
+  playerVY: Float64Array;
+  playerFlags: Int32Array;
+  playerDir: Int32Array;
+  playerLives: Int32Array;
+  cueKind: Int32Array;
+  cueX: Float64Array;
+  cueY: Float64Array;
+  cueAt: Float64Array;
+  cueSlot: Int32Array;
+  cueStrength: Float64Array;
 }
 export interface ArcadeFeelValue {
-  data: string;
+  header: number[];
+  playerX: number[];
+  playerY: number[];
+  playerVY: number[];
+  playerFlags: number[];
+  playerDir: number[];
+  playerLives: number[];
+  cueKind: number[];
+  cueX: number[];
+  cueY: number[];
+  cueAt: number[];
+  cueSlot: number[];
+  cueStrength: number[];
 }
 /** ArcadeFeel (resource, presentation-only) */
-export const ArcadeFeel = typeToken<ArcadeFeelViews, ArcadeFeelValue>('ArcadeFeel', 'resource', { sig: 'data:string:1', read: (v: ArcadeFeelViews, i: number, o: Record<string, unknown>) => { o.data = $r.str(v.data[i]!); return o; } });
+export const ArcadeFeel = typeToken<ArcadeFeelViews, ArcadeFeelValue>('ArcadeFeel', 'resource', { sig: 'header:array:12,playerX:array:10,playerY:array:10,playerVY:array:10,playerFlags:array:10,playerDir:array:10,playerLives:array:10,cueKind:array:32,cueX:array:32,cueY:array:32,cueAt:array:32,cueSlot:array:32,cueStrength:array:32', read: (v: ArcadeFeelViews, i: number, o: Record<string, unknown>) => { o.header = $r.lanes(v.header, i, 12, o.header); o.playerX = $r.lanes(v.playerX, i, 10, o.playerX); o.playerY = $r.lanes(v.playerY, i, 10, o.playerY); o.playerVY = $r.lanes(v.playerVY, i, 10, o.playerVY); o.playerFlags = $r.lanes(v.playerFlags, i, 10, o.playerFlags); o.playerDir = $r.lanes(v.playerDir, i, 10, o.playerDir); o.playerLives = $r.lanes(v.playerLives, i, 10, o.playerLives); o.cueKind = $r.lanes(v.cueKind, i, 32, o.cueKind); o.cueX = $r.lanes(v.cueX, i, 32, o.cueX); o.cueY = $r.lanes(v.cueY, i, 32, o.cueY); o.cueAt = $r.lanes(v.cueAt, i, 32, o.cueAt); o.cueSlot = $r.lanes(v.cueSlot, i, 32, o.cueSlot); o.cueStrength = $r.lanes(v.cueStrength, i, 32, o.cueStrength); return o; } });
 
 export interface ArcadeInputViews {
   player: Uint32Array;

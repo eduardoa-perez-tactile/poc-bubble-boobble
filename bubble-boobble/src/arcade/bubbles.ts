@@ -125,7 +125,7 @@ export function updateBubbles(g: GameState, inputs: Input[]) {
         p = g.Players[player]!;
       if (!alive(p) || b.Age <= 20 || b.Removed) continue;
       if (
-        input.Jump &&
+        !(g.Party && b.ThunderShot) && input.Jump &&
         p.VY >= 0 &&
         p.Y + ActorSize >= b.Y &&
         p.Y + ActorSize - p.VY <= b.Y + 10 &&

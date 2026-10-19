@@ -1,3 +1,4 @@
+import { unpackFeel } from '../src/arcade/juice';
 import pixels from '../assets/pixel-renderer/pixels.json';
 import { PopBurst } from '../src/arcade/arcade.cheats';
 import { expect, worldTest, renderTest } from '@gameengine/test';
@@ -66,10 +67,10 @@ renderTest('feel six player capture chain rescue boss and results fit every aspe
   render.expectScreenshot(`arena_${width}x${height}`,{width:width!,height:height!});
  }
  await cheat(PartyRescue,{});input.action('partyMove1',1);
- for(let t=0;t<60;t++) {input.action('partyMove1',1);await step(1);const state=JSON.parse(world.resource(ArcadeFeel).data);if(state.cues.some((c:{kind:string})=>c.kind==='rescue'))break;}
+ for(let t=0;t<60;t++) {input.action('partyMove1',1);await step(1);const state=unpackFeel(world.resource(ArcadeFeel));if(state.cues.some((c:{kind:string})=>c.kind==='rescue'))break;}
  input.action('partyMove1',0);
 
- expect(JSON.parse(world.resource(ArcadeFeel).data).cues.some((c:{kind:string})=>c.kind==='rescue')).toBe(true);
+ expect(unpackFeel(world.resource(ArcadeFeel)).cues.some((c:{kind:string})=>c.kind==='rescue')).toBe(true);
  expect(audio.sounds().some(s=>s.sound==='audio/rescue')).toBe(true);
  render.expectScreenshot('rescue',{width:768,height:720});
  await cheat(PartyReset,{wave:10,humans:6});await step(2);await cheat(PartyBossDuel,{captured:true});await step(1);

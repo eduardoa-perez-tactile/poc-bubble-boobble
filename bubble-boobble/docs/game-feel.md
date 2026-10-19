@@ -72,3 +72,22 @@ Start protection lasts two seconds without hiding dragon sprites. Human practice
 shots remain available during the countdown. Each wave's final kill gets a
 brief character-colored LAST KILL banner and plain-text marker above its finisher;
 bubble chains credit the popper, and elemental effects retain their owner.
+
+### Sustained-session crash fix
+
+The 12,000-tick ten-dragon boss soak reproduced `E_INTERN_LIMIT`: serializing
+cosmetic history into a new `ArcadeFeel.data` string every frame filled the
+engine's 32 MiB intern table. The resource now overwrites numeric arrays for
+ten player snapshots and 32 cues. No changing serialized strings are interned.
+The same soak completes with a stable 1,233-entry visual pool and a peak of
+eight desktop / six mobile draw calls. The macOS CPU resource report showed memory growth
+but did not itself record a termination reason.
+
+Boss thunder bubbles retain the shooter’s colored rim with a lightning glyph.
+Contact pops these attack bubbles even while Jump is held; ordinary bubbles
+retain their bounce behavior. Ten-slot logic checks verify the owner, emitted
+bolt and boss damage, plus native/wide/tall render captures of all ten rims.
+
+Validation: 265 V8 logic cases, 47 desktop render cases, and the 200-second
+simulated ten-dragon soak on desktop and mobile rendering tiers pass. Six
+pre-existing mobile pixel/draw assertions remain unchanged.

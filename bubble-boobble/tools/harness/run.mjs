@@ -159,6 +159,7 @@ async function openEditor() {
 }
 // The installed replay CLI drops the test's recorded scene. Supply it to the host.
 const replays = [
+  {path:'tests/replays/party_boss_ten_dragons_fire_identifiable_lightning_bubbles.greplay',scene:'scenes/arcade.scene.json',filter:'party boss ten dragons fire identifiable lightning bubbles',tier:'t1'},
   {path:'tests/replays/wave_fruit_real_final_pops_show_a_different_reward_each_wave.greplay',scene:'scenes/arcade.scene.json',filter:'wave fruit real final pops show a different reward each wave',tier:'t1'},
   {path:'tests/replays/party_feedback_ready_go_and_last_kill_fit_every_window.greplay',scene:'scenes/arcade.scene.json',filter:'party feedback ready GO and last kill fit every window',tier:'t1'},
   {path:'tests/replays/courtyard_full_arena_and_ten_identities_fit_native_wide_tall_and_ultrawide_windows.greplay',scene:'scenes/arcade.scene.json',filter:'courtyard full arena and ten identities fit native wide tall and ultrawide windows',tier:'t1'},

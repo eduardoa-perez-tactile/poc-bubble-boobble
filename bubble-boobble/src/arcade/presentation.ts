@@ -1,6 +1,6 @@
 import { menuBubble, menuDragon } from '../desktop/animation';
 import { arenaLayout } from './arena-layout';
-import { arenaBackdrop, bubblePose, dragonPose, dragonShadow, dragonBadges, rect, ring, sparkle, popQuads, advanceFeel, emptyFeel, cueQuads, feelColors, type FeelState } from './juice';
+import { arenaBackdrop, bubblePose, dragonPose, dragonShadow, dragonBadges, rect, ring, sparkle, popQuads, advanceFeel, emptyFeel, cueQuads, packFeel, unpackFeel, feelColors, type FeelState } from './juice';
 import { ArcadeFeel, ArcadeAudio } from '../schema.gen';
 import campaignPreviews from '../../data/levels.json';
 import { partyCardRect } from '../desktop/layout';
@@ -183,8 +183,8 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
   for (const b of g.Bubbles) {
     const bubbleSkin = skinAt(b.Shooter ?? 0);
     let name = bubbleSkin === 'green' ? 'bubble' : `${bubbleSkin}/bubble`,
-      tick = Math.min(b.Age, 30);
-    if (b.Element) {
+      tick = g.Party&&b.ThunderShot ? 30 : Math.min(b.Age, 30);
+    if (b.Element && !(g.Party && b.ThunderShot)) {
       name = b.Element + "-bubble";
       tick = b.Age;
     }
@@ -216,6 +216,14 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
       if(!reduced&&!b.Floating&&b.Age>3&&b.Age<18)rect(accents,feelColors[(b.Shooter??0)%feelColors.length]!,b.X+22-b.Dir*25,b.Y+71,5,2);
     }
     out.push(draw);
+    if(g.Party&&b.ThunderShot){
+      // Keep the owner's existing colored rim and add a bright lightning glyph.
+      const x=draw.x+draw.w/2,y=draw.y+draw.h/2;
+      rect(accents,'#fff3c4',x+1,y-9,5,4);
+      rect(accents,'#ffe17c',x-2,y-5,6,4);
+      rect(accents,'#fff3c4',x-4,y-1,8,3);
+      rect(accents,'#ffe17c',x,y+2,3,6);
+    }
   }
   for (const p of g.Projectiles)
     out.push(
@@ -543,8 +551,8 @@ export const ArcadeFeelSystem=defineSystem({
   query:query(write(CameraShake)),
   run(ctx,q){
     const current=session.get(),g=current.game;
-    if(!current.active||!g?.Party){if(ctx.get(ArcadeFeel).data)ctx.setField(ArcadeFeel,'data','');return;}
-    const data=ctx.get(ArcadeFeel).data,old:FeelState=data?JSON.parse(data):emptyFeel();
+    if(!current.active||!g?.Party){if(ctx.get(ArcadeFeel).header[2])ctx.set(ArcadeFeel,packFeel(emptyFeel()));return;}
+    const old=unpackFeel(ctx.get(ArcadeFeel));
     const next=advanceFeel(old,g,ctx.get(Time).step);
     const reduced=!!desktopSaveState.get().settings.reducedEffects;
     const fresh=next.cues.filter(c=>!old.cues.some(o=>o.kind===c.kind&&o.at===c.at&&o.slot===c.slot));
@@ -560,7 +568,7 @@ export const ArcadeFeelSystem=defineSystem({
       if(fresh.some(cue=>cue.kind==='capture'||cue.kind==='victory'))shakeCamera(c.entity(i),.32);
       else if(fresh.some(cue=>cue.kind==='boss-hit'||cue.kind==='clear'))shakeCamera(c.entity(i),.22);
     }
-    ctx.setField(ArcadeFeel,'data',JSON.stringify(next));
+    ctx.set(ArcadeFeel,packFeel(next));
   },
 });
 export const ArcadePresentation = defineSystem({
@@ -579,8 +587,8 @@ export const ArcadePresentation = defineSystem({
   resources: [read(ArcadeControl), read(Time), read(ArcadeFeel), read(ViewInfo), write(MaterialGlobals)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
   run(ctx, q) {
-    const data=ctx.get(ArcadeFeel).data;
-    const plan = sceneDraws(ctx.get(Time).step,data?JSON.parse(data):undefined,ctx.get(ViewInfo)),
+    const feel=unpackFeel(ctx.get(ArcadeFeel));
+    const plan = sceneDraws(ctx.get(Time).step,feel,ctx.get(ViewInfo)),
       ui = desktopState.get(),
       g = session.get().game;
     const fade =

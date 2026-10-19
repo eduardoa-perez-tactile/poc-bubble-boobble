@@ -1,4 +1,4 @@
-import { component, f32, f64, i32, bool, string, event, resource, u32 } from '@gameengine/schema';
+import { component, array, f32, f64, i32, bool, string, event, resource, u32 } from '@gameengine/schema';
 
 export const Game = resource('Game', { score: u32({ doc: 'Bubbles popped' }), spawned: u32() }, { sim: true });
 
@@ -32,4 +32,11 @@ export const EditorPointer = resource('EditorPointer', { drawing: bool(), erasin
 export const ArcadePlatformState = resource('ArcadePlatformState', { exitSequence:u32() }, { sim:false });
 
 // Bounded cosmetic history is never read by simulation or included in replay hashes.
-export const ArcadeFeel = resource('ArcadeFeel', { data: string() }, { sim:false });
+export const ArcadeFeel = resource('ArcadeFeel', {
+ // clock, step, initialized, prior tick/wave/phase/state/HP/mode, player/cue counts.
+ header:array(f64(),12),
+ playerX:array(f64(),10),playerY:array(f64(),10),playerVY:array(f64(),10),
+ playerFlags:array(i32(),10),playerDir:array(i32(),10),playerLives:array(i32(),10),
+ cueKind:array(i32(),32),cueX:array(f64(),32),cueY:array(f64(),32),
+ cueAt:array(f64(),32),cueSlot:array(i32(),32),cueStrength:array(f64(),32),
+}, { sim:false });

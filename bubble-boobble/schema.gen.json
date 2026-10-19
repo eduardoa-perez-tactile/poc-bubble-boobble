@@ -95,10 +95,82 @@
       "sim": false,
       "fields": [
         {
-          "name": "data",
-          "kind": "string",
-          "scalar": "u32",
-          "lanes": 1
+          "name": "header",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 12
+        },
+        {
+          "name": "playerX",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 10
+        },
+        {
+          "name": "playerY",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 10
+        },
+        {
+          "name": "playerVY",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 10
+        },
+        {
+          "name": "playerFlags",
+          "kind": "array",
+          "scalar": "i32",
+          "lanes": 10
+        },
+        {
+          "name": "playerDir",
+          "kind": "array",
+          "scalar": "i32",
+          "lanes": 10
+        },
+        {
+          "name": "playerLives",
+          "kind": "array",
+          "scalar": "i32",
+          "lanes": 10
+        },
+        {
+          "name": "cueKind",
+          "kind": "array",
+          "scalar": "i32",
+          "lanes": 32
+        },
+        {
+          "name": "cueX",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 32
+        },
+        {
+          "name": "cueY",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 32
+        },
+        {
+          "name": "cueAt",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 32
+        },
+        {
+          "name": "cueSlot",
+          "kind": "array",
+          "scalar": "i32",
+          "lanes": 32
+        },
+        {
+          "name": "cueStrength",
+          "kind": "array",
+          "scalar": "f64",
+          "lanes": 32
         }
       ],
       "package": "Bubble Madness"

@@ -1,3 +1,4 @@
+import { unpackFeel } from '../src/arcade/juice';
 import { FeedbackCluster, FeelShowcase } from '../src/arcade/juice.cheats';
 import { ArcadeFeel, DesktopIntent } from '../src/schema.gen';
 import { expect, worldTest, renderTest } from '@gameengine/test';
@@ -82,11 +83,11 @@ renderTest('feedback jump dust grounded shadows nameplates and guarded results r
  input.view(768,720,1);await step(5);await cheat(PartyReset,{humans:6,countdown:180});await step(3);
  await step(session.get().game!.Party!.Timer);
  input.action('partyJump1',1);await step(1);
- let f=JSON.parse(world.resource(ArcadeFeel).data);
+ let f=unpackFeel(world.resource(ArcadeFeel));
  expect(f.cues.some((c:{kind:string})=>c.kind==='jump')).toBe(true);render.expectScreenshot('takeoff',{width:768,height:720});
  await step(12);render.expectScreenshot('airborne',{width:768,height:720});
  for(let i=0;i<100&&!session.get().game!.Players[0]!.Ground;i++)await step(1);
- f=JSON.parse(world.resource(ArcadeFeel).data);expect(f.cues.some((c:{kind:string;at:number})=>c.kind==='land'&&f.clock-c.at<2)).toBe(true);
+ f=unpackFeel(world.resource(ArcadeFeel));expect(f.cues.some((c:{kind:string;at:number})=>c.kind==='land'&&f.clock-c.at<2)).toBe(true);
  render.expectScreenshot('landing',{width:768,height:720});
  let peak=0;
  for(const [width,height] of [[768,720],[1680,720],[640,960]]){

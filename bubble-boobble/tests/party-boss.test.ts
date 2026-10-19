@@ -1,10 +1,13 @@
 import { worldTest, renderTest, expect } from '@gameengine/test';
+import { arcadeDrawPlan, referenceFrame } from '../src/arcade/presentation';
+import { partyColors } from '../src/arcade/party-config';
 import campaign from '../data/levels.json';
 import { createPartyGame, preparePartyWave } from '../src/arcade/party';
 import { stepGame, copyGame } from '../src/arcade/game';
-import { bubble, effect, shootBubble, updateEffects } from '../src/arcade/bubbles';
+import { bubble, effect, shootBubble, updateEffects, updateBubbles } from '../src/arcade/bubbles';
 import { applyPower, checkPowerSpawns } from '../src/arcade/items';
 import { checkPlayerHit, hurtPlayer } from '../src/arcade/player';
+import { ArcadeVisual } from '../src/schema.gen';
 import { body, State, EnemyState } from '../src/arcade/types';
 const idle={Move:0,Jump:false,Fire:false};
 function bossGame(team=6){
@@ -76,7 +79,7 @@ worldTest('party boss five bots can complete the moving fight and pop the finale
  }
  expect(g.Party!.Boss!.HP).toBe(0);expect(g.State).toBe(State.Won);
 });
-import { PartyReset, PartyBossDuel } from '../src/arcade/party.cheats';
+import { PartyReset, PartyBossDuel, PartyBossSoak } from '../src/arcade/party.cheats';
 import { session } from '../src/arcade/session';
 import { desktopState } from '../src/desktop/state';
 worldTest('party boss recorded thunder shot capture and finishing pop',async({cheat,input,step})=>{
@@ -122,4 +125,59 @@ renderTest('party boss six firing dragons stay bounded on phone low',async({chea
  }
  expect(shots).toBeGreaterThan(60);expect(bubbles).toBeLessThanOrEqual(108);expect(projectiles).toBeLessThanOrEqual(21);expect(drawCalls).toBeLessThanOrEqual(14);
  console.log(JSON.stringify({peakDrawCalls:drawCalls,peakBubbles:bubbles,peakBottles:projectiles,peakLightning:effects,shots}));
+},{scene:'scenes/arcade.scene.json',memory:'phone-low'});
+
+renderTest('party boss ten dragons sustain a long lightning fight without growing visual pools',async({cheat,step,input,render,world})=>{
+ input.view(768,720,1);await step(3);await cheat(PartyReset,{wave:10,team:10,humans:1});await step(2);await cheat(PartyBossSoak,{});
+ input.action('partyFire1',1);
+ let warmPool=0,peakPool=0,peakDraws=0,peakBubbles=0;
+ for(let t=0;t<12000;t+=120){
+  await step(120);const g=session.get().game!;
+  expect(g.Party!.Phase).toBe('boss');
+  const pool=world.all(ArcadeVisual).length;peakPool=Math.max(peakPool,pool);
+  if(t===1200)warmPool=pool;
+  peakBubbles=Math.max(peakBubbles,g.Bubbles.length);
+  if(t%600===0)peakDraws=Math.max(peakDraws,render.stats({width:768,height:720}).drawCalls);
+ }
+ expect(peakPool).toBeLessThanOrEqual(warmPool+256);
+ expect(peakBubbles).toBeLessThanOrEqual(180);expect(peakDraws).toBeLessThanOrEqual(14);
+ console.log(JSON.stringify({warmPool,peakPool,peakBubbles,peakDraws,ticks:12000}));
+ render.expectScreenshot('boss_soak',{width:768,height:720});
+},{scene:'scenes/arcade.scene.json',memory:'phone-low'});
+
+worldTest('party boss jumping into your own lightning bubble releases a bolt and damages the boss',()=>{
+ for(let slot=0;slot<10;slot++){
+  const g=createPartyGame(campaign,42,Array.from({length:10},()=> 'human'));
+  g.Party!.Wave=10;preparePartyWave(g);g.Party!.Phase='boss';
+  const p=g.Players[slot]!;Object.assign(p,{X:200,Y:300,VY:0,Dir:1});
+  const boss=g.Party!.Boss!;Object.assign(boss,{X:235,Y:330});const hp=boss.HP;
+  g.Bubbles=[{...bubble(200,336),ID:100,Shooter:slot,Element:'thunder',ThunderShot:true,Floating:true,Age:30}];
+  const inputs=Array.from({length:10},()=>idle);inputs[slot]={...idle,Jump:true};
+  updateBubbles(g,inputs);
+  expect(g.Bubbles.length).toBe(0);expect(g.Effects.length).toBe(1);
+  expect(g.Effects[0]!.Owner).toBe(slot);expect(g.Effects[0]!.Element).toBe('thunder');
+  updateEffects(g);expect(boss.HP).toBe(hp-1);
+ }
+});
+worldTest('party boss lightning shots preserve every shooter color',()=>{
+ const g=createPartyGame(campaign,42,Array.from({length:10},()=> 'human'));
+ g.Party!.Wave=10;preparePartyWave(g);
+ g.Bubbles=partyColors.map((_,slot)=>({...bubble(100+slot*70,300),ID:100+slot,Shooter:slot,Element:'thunder',ThunderShot:true,Age:30}));
+ const draws=arcadeDrawPlan(g);
+ for(const [slot,color] of partyColors.entries())
+  expect(draws.some(d=>d.image===referenceFrame(`${color}/bubble`,30)&&Math.abs(d.x-g.Bubbles[slot]!.X)<8)).toBe(true);
+});
+
+renderTest('party boss ten dragons fire identifiable lightning bubbles',async({cheat,step,input,render})=>{
+ input.view(768,720,1);await step(3);await cheat(PartyReset,{wave:10,team:10,humans:10});await step(2);
+ expect(session.get().game!.Players.every(p=>p.Power.Thunder)).toBe(true);
+ __gameengine_host('test.input',JSON.stringify(Array.from({length:10},(_,pad)=>({type:'gamepadButton',pad,button:2,down:true}))));
+ await step(1);
+ const g=session.get().game!;
+ expect(new Set(g.Bubbles.filter(b=>b.ThunderShot).map(b=>b.Shooter)).size).toBe(10);
+ for(const [width,height] of [[768,720],[1680,720],[640,960]]){
+  input.view(width!,height!,1);await step(1);
+  render.expectDrawCalls('<=',14,{width:width!,height:height!});
+  render.expectScreenshot(`colored_lightning_${width}x${height}`,{width:width!,height:height!});
+ }
 },{scene:'scenes/arcade.scene.json',memory:'phone-low'});
