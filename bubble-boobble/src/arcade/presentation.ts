@@ -1,3 +1,4 @@
+import { isFlyingEnemy } from './party-spawns';
 import { arenaLayout } from './arena-layout';
 import { arenaBackdrop, bubblePose, dragonPose, dragonShadow, dragonBadges, rect, ring, sparkle, popQuads, advanceFeel, emptyFeel, cueQuads, feelColors, type FeelState } from './juice';
 import { ArcadeFeel, ArcadeAudio } from '../schema.gen';
@@ -177,7 +178,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
       state = e.Angry ? "shoot-angry" : "shoot";
     if (e.State === EnemyState.Defeated || e.State === EnemyState.Carried)
       state = "dead";
-    out.push(image(e.Kind + "/" + state, g.Party?.Phase === 'prepare' ? g.Tick + index * 3 : e.Age, e.X, entranceY(e.Y + 48, index), 48, 48, e.Dir));
+    out.push(image(e.Kind + "/" + state, g.Party?.Phase === 'prepare' ? g.Tick + index * 3 : e.Age, e.X, isFlyingEnemy(e.Kind)?entranceY(e.Y + 48, index):e.Y+48, 48, 48, e.Dir));
   }
   for (const b of g.Bubbles) {
     const bubbleSkin = skinAt(b.Shooter ?? 0);

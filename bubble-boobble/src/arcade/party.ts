@@ -1,5 +1,5 @@
 import { createPartyArena } from './party-arena';
-import { blocked } from './physics';
+import { partyEnemyFormation } from './party-spawns';
 import { createBoss, ensureThunderPickups, stepBoss } from './boss';
 import { createGame, remainingEnemies } from './game';
 import { enableCompanion, companionInput, warmPartyNavigation } from './companion';
@@ -7,7 +7,7 @@ import { respawn, updatePlayer, checkPlayerHit } from './player';
 import { updateEnemies, updateProjectiles, updateDefeated } from './enemies';
 import { updateBubbles, updateEffects } from './bubbles';
 import { updateItems, checkPowerSpawns, spawnFood } from './items';
-import { arenaWidth, body, alive, EnemyState, State, Tile, ActorSize, type GameState, type Input, type Level, type PartySlot } from './types';
+import { arenaWidth, body, alive, EnemyState, State, type GameState, type Input, type Level, type PartySlot } from './types';
 
 import { partyColors, defaultPartySlots, partyPrepareTicks, partyBreakTicks, partySurvivorCount } from './party-config';
 export { partyColors, partySpawnColumns, defaultPartySlots } from './party-config';
@@ -50,26 +50,12 @@ export function preparePartyWave(g:GameState) {
   }
   const count=partyWaveBudget(p.Wave,occupied(g));
   const variety=Math.min(kinds.length,p.Wave+1);
-  // Eight columns across four heights: clear of walls, platforms and the floor spawns.
-  // Fill all heights evenly; alternate the columns' direction between waves.
-  const rows=[20,10,15,5];
-  const columns=[0,7,3,4,1,6,2,5];
-  const positions:{x:number;y:number}[]=[];
-  if(g.Players.length>6)for(const row of [9,14,19,22])for(let col=3;col<=39;col+=4) {
-    const x=col*Tile,y=row*Tile-ActorSize;
-    if(!blocked(g,x,y,ActorSize))positions.push({x,y});
-  }
+  const waveKinds=Array.from({length:count},(_,index)=>kinds[(index+p.Wave-1)%variety]!);
+  const formation=partyEnemyFormation(g,waveKinds);
   for(let index=0;index<count;index++) {
-    const column=columns[Math.floor(index/rows.length)]!;
-    let x=(8+(p.Wave%2?column:7-column)*2)*Tile;
-    let y=rows[index%rows.length]!*Tile-ActorSize;
-    if(positions.length) {
-      const offset=(index*7)%positions.length;
-      const pos=positions[p.Wave%2?offset:positions.length-1-offset]!;
-      x=pos.x;y=pos.y;
-    }
+    const spawn=formation[index]!,x=spawn.X,y=spawn.Y;
     g.NextID++;
-    g.Enemies.push({...body(x,y),ID:g.NextID,Kind:kinds[(index+p.Wave-1)%variety]!,State:EnemyState.Active,Dir:x<arenaWidth(g)/2?1:-1,Vertical:index%2?1:-1,Angry:false,Age:0,Cooldown:120,Shoot:0,DeadTicks:0,Phase:index*.6,CarriedBy:0,CarryTicks:0});
+    g.Enemies.push({...body(x,y),Ground:spawn.Ground,ID:g.NextID,Kind:waveKinds[index]!,State:EnemyState.Active,Dir:x<arenaWidth(g)/2?1:-1,Vertical:index%2?1:-1,Angry:false,Age:0,Cooldown:120,Shoot:0,DeadTicks:0,Phase:index*.6,CarriedBy:0,CarryTicks:0});
   }
   p.Spawned=count;
 }

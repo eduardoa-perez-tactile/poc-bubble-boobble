@@ -12,9 +12,9 @@ import { PopBurst, ResetArcade } from '../src/arcade/arcade.cheats';
 import { session } from '../src/arcade/session';
 const scene='scenes/arcade.scene.json',idle={Move:0,Jump:false,Fire:false};
 
-worldTest('party polish enemies descend and idle without moving their simulation formation',()=>{
+worldTest('party polish flyers descend and idle without moving their simulation formation',()=>{
  const g=createPartyGame(campaign,42,Array.from({length:6},()=> 'human'));
- const formation=g.Enemies.map(e=>[e.X,e.Y,e.Age]),e=g.Enemies[0]!;
+ const formation=g.Enemies.map(e=>[e.X,e.Y,e.Age]),e=g.Enemies.find(e=>e.Kind==='monsta')!;
  const dragonDraws=arcadeDrawPlan(g).filter(d=>d.image.includes('/bubble/'));
  expect(dragonDraws.length).toBe(0);
  const first=()=>arcadeDrawPlan(g).find(d=>d.x===e.X&&d.image.includes(`/${e.Kind}/`))!;

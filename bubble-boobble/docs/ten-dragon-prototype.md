@@ -25,6 +25,20 @@ The lobby uses five columns and two rows. The gameplay footer uses five entries
 on each of two rows inside the existing footer band. Ten simultaneous badges are
 tested for separation. Original campaign menu portraits retain their layout.
 
+## Enemy placement
+
+Wave previews use type-aware placement on the existing arena geometry. Zenchan,
+Banebou, Mighta and Invader reserve grounded slots first: the entire collision
+body must fit above a continuous supporting surface, with zero vertical speed
+and grounded state already set. Their artwork stays at that supported position
+throughout the countdown; the falling entrance applies only to flying enemies. Monsta and Pulpul can use remaining platform
+space; if no platform slot fits, they use a clear air pocket. Neither group can
+overlap another starting enemy or an occupied dragon start/current position.
+Slots are allocated deterministically once per wave, with the same enemy types
+and budgets as before. `tests/party-placement.test.ts` checks every normal wave
+for every team size in six- and ten-slot modes, plus scarce footing and ceilings.
+The arena tiles and platforms are unchanged by this placement fix.
+
 ## Playable arena
 
 Dragon Courtyard is implemented as **44×30 tiles**, or 1056×720 world pixels.
@@ -115,7 +129,7 @@ OS input/display, device GPU/thermal or human group playtest was performed.
 
 ### Dragon Courtyard validation — October 19, 2026
 
-The final full harness passes: **251 V8 logic cases, 43 desktop render cases and
+Validation passes: **254 V8 logic cases, 43 desktop render cases and
 30 independently verified replays**, plus typechecking, validation, desktop cook,
 600-step cooked smoke and original-asset provenance. Six courtyard-specific cases
 and the ten-dragon cases pass on the mobile tier with phone-low memory tracking.
