@@ -62,7 +62,7 @@ worldTest('courtyard fit preserves readable badges and uses wide windows without
 });
 worldTest('courtyard navigation warms bounded batches without mutating earlier snapshots',()=>{
  const g=createPartyGame(campaign,42),x=g.Players[0]!.X;
- stepGame(g,[{...idle,Move:1}]);expect(g.Players[0]!.X).toBeGreaterThan(x);
+ stepGame(g,[{...idle,Move:1}]);expect(g.Players[0]!.X).toBe(x);
  const partial=g.Companions![1]!.Graph!;expect(partial.BuildIndex).toBe(4);
  g.Party!.Phase='combat';const bot=g.Players[1]!;bot.Dir=1;g.Enemies=[{...g.Enemies[0]!,X:bot.X+100,Y:bot.Y}];
  expect(companionInput(g,1).Fire).toBe(true);expect(partial.BuildIndex).toBe(4);

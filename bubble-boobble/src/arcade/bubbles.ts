@@ -156,7 +156,7 @@ export function popBubble(g: GameState, index: number, player: number) {
     const e = enemy(g, b.EnemyID);
     if (e && e.State === EnemyState.Trapped) {
       combo++;
-      defeat(g, e, 1 << Math.min(combo - 1, 5));
+      defeat(g, e, 1 << Math.min(combo - 1, 5),player);
       const [x, y] = position(g.Level.food_spawn, 32, g.Level);
       g.Items.push({ ...item(x, y), Food: g.Level.number, Stationary: true });
     }
@@ -209,6 +209,7 @@ export function releaseElement(g: GameState, b: Bubble, player: number) {
   g.NextID++;
   const e = {
     ...effect(b.X, b.Y),
+    ...(g.Party?{Owner:player}:{}),
     ID: g.NextID,
     Element: b.Element,
     Dir: g.Players[player]!.Dir,
@@ -259,6 +260,7 @@ export function updateEffects(g: GameState) {
         if (e.Age % 12 === 0 && e.Age <= 72 && !e.Spread)
           spawned.push({
             ...effect(),
+            ...(e.Owner!==undefined?{Owner:e.Owner}:{}),
             X: e.X,
             Y: e.Y,
             VX: e.VX,
@@ -282,6 +284,7 @@ export function updateEffects(g: GameState) {
               for (const dir of [-1, 1])
                 spawned.push({
                   ...effect(e.X + dir * 28, e.Y),
+                  ...(e.Owner!==undefined?{Owner:e.Owner}:{}),
                   Element: "fire",
                   Dir: dir,
                   Life: 300,
@@ -313,7 +316,7 @@ export function hitWithElement(
         e.State = EnemyState.Carried;
         e.CarriedBy = effect.ID;
         e.CarryTicks = 0;
-      } else if (effect.Element !== "water") defeat(g, e, 2);
+      } else if (effect.Element !== "water") defeat(g, e, 2,effect.Owner);
     }
 }
 export function carryOnWater(g: GameState, effect: Effect) {
@@ -328,7 +331,7 @@ export function carryOnWater(g: GameState, effect: Effect) {
         e.CarryTicks >= 3 * TPS ||
         e.Y > arenaHeight(g) - ActorSize
       )
-        defeat(g, e, 2);
+        defeat(g, e, 2,effect.Owner);
     }
   for (const p of g.Players)
     if (

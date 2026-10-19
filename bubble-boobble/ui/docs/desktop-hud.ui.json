@@ -27,7 +27,8 @@
         "dh_top",
         "dh_bottom",
         "dh_banner",
-        "dh_freeze"
+        "dh_freeze",
+        "dh_start"
       ]
     },
     "dh_top": {
@@ -333,6 +334,70 @@
         "color": "#a8c5df"
       },
       "point": "party-detail"
+    },
+    "dh_start": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "dh_start_text",
+        "dh_start_hint"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0.5
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 552,
+        "h": 132
+      },
+      "show": "showStartCue",
+      "point": "start-cue"
+    },
+    "dh_start_text": {
+      "type": "label",
+      "name": "Label",
+      "text": "{startCue}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "fontSize": 72,
+        "w": 552,
+        "textAlign": "center",
+        "color": "#ffdc6a"
+      }
+    },
+    "dh_start_hint": {
+      "type": "label",
+      "name": "Label",
+      "text": "{startHint}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          96
+        ],
+        "fontSize": 12,
+        "w": 552,
+        "textAlign": "center",
+        "color": "#ebf5ff"
+      }
     }
   },
   "view": {
@@ -555,6 +620,120 @@
     "detail": {
       "type": "text",
       "default": ""
+    },
+    "startCue": {
+      "type": "text",
+      "default": ""
+    },
+    "startHint": {
+      "type": "text",
+      "default": ""
+    },
+    "showStartCue": {
+      "type": "yesno",
+      "default": false
+    },
+    "startGo": {
+      "type": "yesno",
+      "default": false,
+      "poses": {
+        "yes": {
+          "set": {
+            "dh_start_text": {
+              "color": "#73f5aa"
+            }
+          }
+        }
+      }
+    },
+    "celebrationColor": {
+      "type": "enum",
+      "values": [
+        "none",
+        "green",
+        "blue",
+        "red",
+        "yellow",
+        "purple",
+        "orange",
+        "cyan",
+        "pink",
+        "ivory",
+        "slate"
+      ],
+      "default": "none",
+      "poses": {
+        "green": {
+          "set": {
+            "dh_banner_title": {
+              "color": "#00ff00"
+            }
+          }
+        },
+        "blue": {
+          "set": {
+            "dh_banner_title": {
+              "color": "#00aaff"
+            }
+          }
+        },
+        "red": {
+          "set": {
+            "dh_banner_title": {
+              "color": "#ff0000"
+            }
+          }
+        },
+        "yellow": {
+          "set": {
+            "dh_banner_title": {
+              "color": "#ffdc00"
+            }
+          }
+        },
+        "purple": {
+          "set": {
+            "dh_banner_title": {
+              "color": "#b45aff"
+            }
+          }
+        },
+        "orange": {
+          "set": {
+            "dh_banner_title": {
+              "color": "#ff8700"
+            }
+          }
+        },
+        "cyan": {
+          "set": {
+            "dh_banner_title": {
+              "color": "#00f0d7"
+            }
+          }
+        },
+        "pink": {
+          "set": {
+            "dh_banner_title": {
+              "color": "#ff69be"
+            }
+          }
+        },
+        "ivory": {
+          "set": {
+            "dh_banner_title": {
+              "color": "#f5ebc8"
+            }
+          }
+        },
+        "slate": {
+          "set": {
+            "dh_banner_title": {
+              "color": "#6e87a5"
+            }
+          }
+        }
+      }
     }
   },
   "transition": {

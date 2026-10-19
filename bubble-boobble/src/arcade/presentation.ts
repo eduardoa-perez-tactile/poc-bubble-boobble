@@ -4,7 +4,7 @@ import { arenaBackdrop, bubblePose, dragonPose, dragonShadow, dragonBadges, rect
 import { ArcadeFeel, ArcadeAudio } from '../schema.gen';
 import campaignPreviews from '../../data/levels.json';
 import { partyCardRect } from '../desktop/layout';
-import { partyColors, partyNames, partyPrepareTicks } from './party-config';
+import { partyColors, partyNames, partyPrepareTicks, partyStartGraceTicks } from './party-config';
 // Presentation follows pinned internal/app/render.go. It never changes match state.
 import {
   defineSystem,
@@ -249,7 +249,8 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
       continue;
     }
     if (p.Lives === 0 && p.Dead === 0) continue;
-    const blinking = p.Invincible !== 0 && p.Invincible % 12 >= 6 && (!g.Party || g.Party.Phase==='combat' || g.Party.Phase==='boss');
+    const waveGrace=!!g.Party&&['combat','boss'].includes(g.Party.Phase)&&g.LevelTicks<partyStartGraceTicks;
+    const blinking = !waveGrace && p.Invincible !== 0 && p.Invincible % 12 >= 6 && (!g.Party || g.Party.Phase==='combat' || g.Party.Phase==='boss');
     if(blinking&&!g.Party)continue;
     let state = "walk",
       tick = p.WalkFrame;

@@ -22,7 +22,7 @@ worldTest('party waves six spawn areas and safe preparation',()=>{
  for(const e of g.Enemies)expect(blocked(g,e.X,e.Y,44)).toBe(false);
  for(let i=0;i<179;i++)stepGame(g,[{Move:1,Jump:true,Fire:true}]);
  expect(g.Party!.Phase).toBe('prepare');expect(g.Enemies.map(e=>[e.X,e.Y,e.Age])).toEqual(formation);expect(g.Bubbles.length).toBeGreaterThan(0);expect(g.Enemies.every(e=>e.State===EnemyState.Active)).toBe(true);
- expect(g.Players[0]!.X).toBeGreaterThan(72);expect(g.Players[0]!.Lives).toBe(1);
+ expect(g.Players[0]!.X).toBe(72);expect(g.Players[0]!.Lives).toBe(1);
  stepGame(g,idle);expect(g.Party!.Phase).toBe('combat');expect(g.Party!.ToSpawn).toBe(0);
  stepGame(g,idle);expect(g.Enemies.some((e,i)=>e.X!==formation[i]![0]||e.Y!==formation[i]![1])).toBe(true);
  expect(partyWaveBudget(2,6)).toBeGreaterThan(partyWaveBudget(1,6));

@@ -42,10 +42,10 @@ worldTest('party polish HUD explains rest arrival positioning and go',()=>{
  g.Party!.Timer=60;expect(hudModel(g,initialDesktopSave).banner).toBe('WAVE 2 IN 1S');
  g.Party!.Wave++;preparePartyWave(g);hud=hudModel(g,initialDesktopSave);expect(hud.banner).toBe('WAVE 2 IN 3S');expect(hud.hint).toBe('ENEMIES ARRIVING');
  for(let tick=0;tick<100;tick++)stepGame(g,idle);
- expect(hudModel(g,initialDesktopSave).hint).toBe('GET INTO POSITION');
+ expect(hudModel(g,initialDesktopSave).hint).toBe('WAIT FOR GO!');
  for(let tick=0;tick<80;tick++)stepGame(g,idle);
  expect(hudModel(g,initialDesktopSave).banner).toBe('WAVE 2 - GO!');
- for(let tick=0;tick<60;tick++)stepGame(g,idle);
+ for(let tick=0;tick<120;tick++)stepGame(g,idle);
  expect(hudModel(g,initialDesktopSave).showBanner).toBe(false);
 });
 

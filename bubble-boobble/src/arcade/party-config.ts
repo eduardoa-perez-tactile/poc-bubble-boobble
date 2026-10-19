@@ -14,3 +14,15 @@ export const partyBreakTicks = 300;
 export function partySurvivorCount(g:GameState):number {
   return g.Players.reduce((count,dragon,index)=>count+(g.Party!.Slots[index]!=='empty'&&alive(dragon)?1:0),0);
 }
+
+export const partyStartGraceTicks=120;
+export const partyLastKillTicks=120;
+export function recordPartyLastKill(g:GameState,slot:number|undefined) {
+ const p=g.Party;
+ if(!p||!['combat','boss'].includes(p.Phase)||slot===undefined||!Number.isInteger(slot)||slot<0||slot>=p.Slots.length||p.Slots[slot]==='empty'||p.LastKill?.Wave===p.Wave)return;
+ p.LastKill={Slot:slot,Wave:p.Wave,Tick:g.Tick};
+}
+export function partyFinisher(g:GameState):number|undefined {
+ const last=g.Party?.LastKill;
+ return last&&last.Wave===g.Party!.Wave&&(g.Tick-last.Tick<partyLastKillTicks||g.State===4)?last.Slot:undefined;
+}

@@ -25,6 +25,24 @@ The lobby uses five columns and two rows. The gameplay footer uses five entries
 on each of two rows inside the existing footer band. Ten simultaneous badges are
 tested for separation. Original campaign menu portraits retain their layout.
 
+## Wave signals and finishers
+
+Dragons wait through a centered 3–2–1 countdown. Human practice shots remain
+available, but movement and jumping unlock at GO; AI dragons also wait for GO.
+The large green GO cue lasts one second, and the top wave-start banner lasts
+two seconds. The existing two-second start protection remains, with solid,
+visible dragons throughout that grace period instead of blinking. Later rescue
+protection can still blink normally.
+
+The final enemy kill earns a two-second LAST KILL celebration in the finisher's
+own color, both in the top banner and as plain text above that dragon. The
+actual popper owns chained bubble kills; released fire, water and thunder retain
+the releasing dragon, and dynamite credits its collector. The dragon that pops
+the captured boss gets the award on the victory screen. Credit is recorded once
+per wave, copied with snapshots, and reset for the next countdown. There is no
+new score bonus or change to shared scoring. Normal name labels still disappear
+at GO, and the finishing label stays clear of floating score text.
+
 ## Enemy placement
 
 Wave previews use type-aware placement on the existing arena geometry. Zenchan,
@@ -129,8 +147,8 @@ OS input/display, device GPU/thermal or human group playtest was performed.
 
 ### Dragon Courtyard validation — October 19, 2026
 
-Validation passes: **254 V8 logic cases, 43 desktop render cases and
-30 independently verified replays**, plus typechecking, validation, desktop cook,
+Validation passes: **259 V8 logic cases, 44 desktop render cases and
+31 independently verified replays**, plus typechecking, validation, desktop cook,
 600-step cooked smoke and original-asset provenance. Six courtyard-specific cases
 and the ten-dragon cases pass on the mobile tier with phone-low memory tracking.
 Native/wide/tall/ultrawide wall probes, full-board captures, crown-jump framing,
@@ -163,11 +181,11 @@ and unavailable Hermes verification remain as described above.
 
 ## Final mobile snapshot refresh
 
-The full 43-case mobile render run with phone-low memory tracking passes 37 cases,
+The full 44-case mobile render run with phone-low memory tracking passes 38 cases,
 including the ten-dragon lobby, courtyard, palette and firing/rescue scenarios.
 Six general render tests fail exact color or draw-count assertions on this GPU
 tier: encoded overlays, title animation, palette source-over, party countdown,
 six-dragon HUD and the exact-texel prototype. These are not counted as passing
-mobile coverage. Desktop render checks, all 30 recorded replays and the cooked
+mobile coverage. Desktop render checks, all 31 recorded replays and the cooked
 build check pass. Successful mobile captures have been refreshed for the final
 names, character-colored text and temporary overhead labels.

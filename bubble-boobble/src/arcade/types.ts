@@ -116,6 +116,7 @@ export interface Projectile extends Body {
   Removed: boolean;
 }
 export interface Effect extends Body {
+  Owner?: number;
   ID: number;
   Element: string;
   Dir: number;
@@ -151,6 +152,7 @@ export interface PartyBoss {
   VX:number; VY:number; Dir:number; Mode:'moving'|'windup'|'captured'; Timer:number;
 }
 export interface PartyState {
+  LastKill?: {Slot:number;Wave:number;Tick:number};
   Wave:number;
   BossWave:number;
   Phase:'prepare'|'combat'|'rest'|'boss';

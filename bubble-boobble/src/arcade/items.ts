@@ -195,7 +195,7 @@ export function applyPower(g: GameState, power: string, player: number) {
       break;
     case "dynamite":
       points = 200;
-      for (const e of g.Enemies) defeat(g, e, 2);
+      for (const e of g.Enemies) defeat(g, e, 2,player);
       for (const b of g.Bubbles) if (b.EnemyID !== 0) b.Removed = true;
       g.Projectiles = [];
       g.Sounds.push("explosion");

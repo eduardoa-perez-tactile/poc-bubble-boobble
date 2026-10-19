@@ -35,7 +35,7 @@ worldTest('party last standing only shows defeat when the final bot falls throug
 renderTest('party last standing remaining dragon gets a clear HUD notice before defeat',async({cheat,step,input,render})=>{
  input.view(768,720,1);await step(3);await cheat(PartyReset,{wave:1,humans:6});await step(2);
  for(let slot=0;slot<5;slot++)await cheat(PartyHit,{slot});
- await step(66);const hud=hudModel(session.get().game!,initialDesktopSave);
+ await step(126);const hud=hudModel(session.get().game!,initialDesktopSave);
  expect(hud.highTitle).toBe('LAST DRAGON');expect(hud.high).toBe('1 / 6');expect(hud.freeze).toBe('LAST DRAGON STANDING');
  render.expectDrawCalls('<=',14,{width:768,height:720});render.expectScreenshot('last_dragon_standing',{width:768,height:720});
  await cheat(PartyHit,{slot:5});expect(desktopState.get().screen).toBe('result');render.expectScreenshot('team_defeat',{width:768,height:720});

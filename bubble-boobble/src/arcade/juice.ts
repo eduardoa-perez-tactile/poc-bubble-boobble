@@ -1,4 +1,4 @@
-import { partyNames } from './party-config';
+import { partyNames, partyFinisher } from './party-config';
 import { goSin } from './trig';
 import { arenaWidth, arenaHeight, arenaRows, arenaColumns, ActorSize, Tile, type GameState, type Player, type Bubble } from './types';
 import type { PixelQuad } from './pixel-renderer/types';
@@ -62,10 +62,11 @@ export function dragonBadges(g:GameState,readability=1):DragonBadge[]{
     const p=g.Players[slot]!;
     if(p.Lives<=0&&!p.Downed)continue;
     const ai=!!g.Companions?.[slot],help=!!p.Downed;
-    if(!help&&g.Party?.Phase!=='prepare')continue;
-    const text=partyNames[slot]!+(help?' HELP':ai?' AI':'');
+    const winner=partyFinisher(g)===slot;
+    if(!help&&g.Party?.Phase!=='prepare'&&!winner)continue;
+    const text=partyNames[slot]!+(help?' HELP':winner?' LAST KILL!':ai?' AI':'');
     const w=text.length*10*readability,h=12*readability,x=Math.max(50,Math.min(arenaWidth(g)-50-w,p.X+24-w/2));
-    const initial=Math.max(64,Math.min(arenaHeight(g)+14,p.Y+26));
+    const initial=Math.max(64,Math.min(arenaHeight(g)+14,p.Y+(winner?-10:26)));
     let y=initial;
     for(let attempt=0;attempt<28;attempt++){
       const candidate=initial-attempt*22*readability;

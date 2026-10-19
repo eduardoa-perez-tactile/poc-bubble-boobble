@@ -5,7 +5,7 @@ import { bubble } from './bubbles';
 import { body, EnemyState } from './types';
 export const FeelShowcase=defineCheat({id:'party.feel-showcase',group:'Party',title:'Inspect bubble captures chains and rescue readability',run(){
  const s=session.get();if(!s.game?.Party)return;const g=copyGame(s.game);
- g.Party!.Phase='combat';g.Party!.Timer=0;g.State=1;g.Enemies=g.Enemies.slice(0,4);g.Bubbles=[];
+ g.Party!.Phase='combat';g.Party!.Timer=0;g.LevelTicks=120;g.State=1;g.Enemies=g.Enemies.slice(0,4);g.Bubbles=[];
  for(let i=0;i<g.Enemies.length;i++){
   const e=g.Enemies[i]!;Object.assign(e,{X:200+i*90,Y:260,State:EnemyState.Trapped});
   g.Bubbles.push({...bubble(e.X,e.Y),ID:100+i,Age:60,EnemyID:e.ID,CapturedAge:i===0?3:100,Floating:true,Shooter:i});

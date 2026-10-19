@@ -159,6 +159,7 @@ async function openEditor() {
 }
 // The installed replay CLI drops the test's recorded scene. Supply it to the host.
 const replays = [
+  {path:'tests/replays/party_feedback_ready_go_and_last_kill_fit_every_window.greplay',scene:'scenes/arcade.scene.json',filter:'party feedback ready GO and last kill fit every window',tier:'t1'},
   {path:'tests/replays/courtyard_full_arena_and_ten_identities_fit_native_wide_tall_and_ultrawide_windows.greplay',scene:'scenes/arcade.scene.json',filter:'courtyard full arena and ten identities fit native wide tall and ultrawide windows',tier:'t1'},
   {path:'tests/replays/ten_named_actions_reject_malformed_suffixes_and_pad_ten_stays_isolated.greplay',scene:'scenes/arcade.scene.json',filter:'ten named actions reject malformed suffixes and pad ten stays isolated'},
   {path:'tests/replays/ten_dragons_firing_and_rescue_remain_bounded_on_phone_low.greplay',scene:'scenes/arcade.scene.json',filter:'ten dragons firing and rescue remain bounded on phone low',tier:'t1'},

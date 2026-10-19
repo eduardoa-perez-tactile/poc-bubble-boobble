@@ -80,6 +80,7 @@ worldTest('feedback clustered badges stay legible separate and inside the arena'
 });
 renderTest('feedback jump dust grounded shadows nameplates and guarded results remain readable',async({step,cheat,input,render,world,ui})=>{
  input.view(768,720,1);await step(5);await cheat(PartyReset,{humans:6,countdown:180});await step(3);
+ await step(session.get().game!.Party!.Timer);
  input.action('partyJump1',1);await step(1);
  let f=JSON.parse(world.resource(ArcadeFeel).data);
  expect(f.cues.some((c:{kind:string})=>c.kind==='jump')).toBe(true);render.expectScreenshot('takeoff',{width:768,height:720});

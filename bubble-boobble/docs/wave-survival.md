@@ -31,7 +31,7 @@ below describes the earlier checkpoints.
 |---|---|---|
 | Six-dragon foundation | Six slots, floor spawn areas, purple/orange skins, matching shots, player numbers and six-slot footer | Palette CPU/GPU probes, actual arena goldens, slot tests |
 | Local input and bots | Independent recorded input for six pad indices; per-bot memory with shared immutable navigation graphs | Raw engine-input integration, independent snapshot tests, legacy companion regressions |
-| Wave survival | Whole-wave formations, movable preparation countdown, escalating enemy counts and mixed types, safe rest periods | Wave boundary/placement/variety tests, full natural bot wave clear with damage disabled, recorded transition replay |
+| Wave survival | Whole-wave formations, held preparation countdown, escalating enemy counts and mixed types, safe rest periods | Wave boundary/placement/variety tests, full natural bot wave clear with damage disabled, recorded transition replay |
 | Recovery and boss | Contact rescue, automatic rest recovery, persistent survivor upgrades, boss windup/vulnerability/attacks/summons, victory/results/restart | Rescue/wipe tests, real bot boss damage, ordinary bubble boss kill, result replay and visual captures |
 
 ## First balance values
@@ -39,17 +39,19 @@ below describes the earlier checkpoints.
 - The complete break between waves is five seconds: two seconds to rest and
   collect rewards, followed by the next formation's three-second entrance.
   The HUD counts down continuously from five to GO. The initial wave also has a
-  three-second entrance. Dragons can move, jump and shoot throughout the break.
+  three-second entrance with a centered 3–2–1. Dragons can move, jump and shoot
+  during the two-second rest, then wait for GO during preparation. Human practice
+  shots remain available while waiting; AI dragons wait without moving or firing.
 - Arriving enemies cannot be trapped or hit by elemental effects, and cannot
-  attack or inflict contact damage. Protection ends when combat begins and the
-  enemies start moving. Dynamite and clock pickups wait on the ground during
+  attack or inflict contact damage. Enemies begin moving at GO; dragons retain
+  a two-second start grace period, without sprite blinking. Dynamite and clock pickups wait on the ground during
   the break so their effects become usable when combat resumes.
-- Enemies descend from above the arena over the first 1.5 seconds, then animate
-  in place until release. This is a visual entrance; their simulation formation
+- Flying enemies descend from above over the first 1.5 seconds. Ground enemies
+  stay on their supported platforms and animate in place until release. This is a visual entrance; their simulation formation
   stays fixed throughout preparation. Dragons have no decorative spawn bubbles.
 - An opaque panel above the formation shows the next wave and seconds remaining,
-  distinguishes resting, enemy arrival and positioning, and flashes **GO!** at
-  the start of combat. It stays clear of the top row once enemies have landed.
+  distinguishes resting, enemy arrival and waiting for GO. A large green **GO!**
+  appears for one second at combat start, with two seconds of top-banner guidance. It stays clear of the top row once enemies have landed.
 - Six spawn areas: tile columns 3, 8, 13, 18, 23, 28, floor row 25.
 - Enemy budget: `min(32, 3 + wave * 2 + (occupied slots - 1) * 2)`.
   Six occupied slots face 15 enemies together on wave one, rising by two per

@@ -170,14 +170,19 @@ declare module '@gameengine/ui' {
      *   - `party`: yesno, default false
      *   - `highTitle`: text, default "HIGH SCORE"
      *   - `detail`: text, default ""
+     *   - `startCue`: text, default ""
+     *   - `startHint`: text, default ""
+     *   - `showStartCue`: yesno, default false
+     *   - `startGo`: yesno, default false
+     *   - `celebrationColor`: enum none | green | blue | red | yellow | purple | orange | cyan | pink | ivory | slate, default "none"
      * Events: none
      * Code areas: none
-     * Refs: `banner`, `banner-title`, `banner-hint`, `party-detail`
+     * Refs: `banner`, `banner-title`, `banner-hint`, `party-detail`, `start-cue`
      */
     'desktop-hud': {
-      props: { name: string | { loc: string } | LocText; score: string | { loc: string } | LocText; round: string | { loc: string } | LocText; high: string | { loc: string } | LocText; lives: string | { loc: string } | LocText; enemies: string | { loc: string } | LocText; banner: string | { loc: string } | LocText; hint: string | { loc: string } | LocText; showBanner: boolean; clear: boolean; freeze: string | { loc: string } | LocText; shade: 'normal' | 'pause' | 'result'; party: boolean; highTitle: string | { loc: string } | LocText; detail: string | { loc: string } | LocText };
+      props: { name: string | { loc: string } | LocText; score: string | { loc: string } | LocText; round: string | { loc: string } | LocText; high: string | { loc: string } | LocText; lives: string | { loc: string } | LocText; enemies: string | { loc: string } | LocText; banner: string | { loc: string } | LocText; hint: string | { loc: string } | LocText; showBanner: boolean; clear: boolean; freeze: string | { loc: string } | LocText; shade: 'normal' | 'pause' | 'result'; party: boolean; highTitle: string | { loc: string } | LocText; detail: string | { loc: string } | LocText; startCue: string | { loc: string } | LocText; startHint: string | { loc: string } | LocText; showStartCue: boolean; startGo: boolean; celebrationColor: 'none' | 'green' | 'blue' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'pink' | 'ivory' | 'slate' };
       areas: never;
-      refs: 'banner' | 'banner-title' | 'banner-hint' | 'party-detail';
+      refs: 'banner' | 'banner-title' | 'banner-hint' | 'party-detail' | 'start-cue';
     };
     /**
      * Desktop key button: a widget, button (ui/docs/desktop-key-button.ui.json)

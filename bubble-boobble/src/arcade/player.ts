@@ -10,7 +10,7 @@ import {
   intersects,
   powers,
 } from "./types";
-import { movePlayer, spawnPosition, startPlayerJump } from "./physics";
+import { blocked, movePlayer, spawnPosition, startPlayerJump } from "./physics";
 import { addScore } from "./game";
 import { productionPlayerBalance } from './balance';
 import { shootBubble } from "./bubbles";
@@ -36,13 +36,14 @@ export function respawn(g: GameState, index: number) {
     Power: powers(),
   };
 }
-export function updatePlayer(g: GameState, index: number, input: Input) {
+export function updatePlayer(g: GameState, index: number, input: Input, canMove=true) {
   const p = g.Players[index]!,
     i = { ...input },
     balance = g.PlayerBalance ?? productionPlayerBalance;
   if (p.Invincible > 0) p.Invincible--;
   if (p.Shoot > 0) p.Shoot--;
   if (p.Cooldown > 0) p.Cooldown--;
+  if(canMove){
   if (i.Jump && !p.LastJump) p.JumpBuffer = 8;
   p.LastJump = i.Jump;
   if (p.JumpBuffer > 0) p.JumpBuffer--;
@@ -73,6 +74,7 @@ export function updatePlayer(g: GameState, index: number, input: Input) {
       p.Power.WalkPoints -= 8;
     }
   }
+  }else{p.JumpBuffer=0;p.Coyote=0;p.LastJump=false;p.Ground=blocked(g,p.X,p.Y+1,ActorSize);}
   if (i.Fire && p.Cooldown === 0) {
     shootBubble(g, index);
     p.Cooldown = p.Power.Yellow ? balance.YellowFireCooldown : balance.FireCooldown;

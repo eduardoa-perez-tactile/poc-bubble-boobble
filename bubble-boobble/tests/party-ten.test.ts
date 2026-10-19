@@ -106,6 +106,7 @@ worldTest('ten named actions reject malformed suffixes and pad ten stays isolate
  inject([{type:'gamepadButton',pad:9,button:6,down:true}]);await step(1);
  expect(desktopState.get().partySlots[9]).toBe('human');
  input.emit(DesktopIntent,{action:'start-party'});await step(2);
+ await step(session.get().game!.Party!.Timer);
  const before=session.get().game!.Players.map(p=>p.X);
  inject([{type:'gamepadAxis',pad:9,axis:0,value:-1},{type:'gamepadButton',pad:9,button:2,down:true}]);await step(3);
  expect(session.get().game!.Players[9]!.X).toBeLessThan(before[9]!);

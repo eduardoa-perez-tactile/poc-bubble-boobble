@@ -1,3 +1,4 @@
+import { recordPartyLastKill } from './party-config';
 import { arenaWidth, arenaHeight, levelWidth, type Level } from './types';
 import { ActorSize, Tile, State, alive, body, intersects, type GameState, type PartyBoss } from './types';
 import { partySpawns } from './party-config';
@@ -53,7 +54,9 @@ export function stepBoss(g:GameState) {
     // Settle within reach of the floor. No timed escape/restart in the co-op adaptation.
     b.Y=Math.min(arenaHeight(g)-Tile-bossSize,b.Y+1.5);
     if(b.Timer<30)return;
-    if(g.Players.some(p=>alive(p)&&intersects(p.X,p.Y,ActorSize,ActorSize,b.X,b.Y,bossSize,bossSize))) {
+    const finisher=g.Players.findIndex(p=>alive(p)&&intersects(p.X,p.Y,ActorSize,ActorSize,b.X,b.Y,bossSize,bossSize));
+    if(finisher>=0) {
+      recordPartyLastKill(g,finisher);
       addScore(g,5000,b.X,b.Y);g.State=State.Won;g.Bubbles=[];g.Effects=[];g.Sounds.push('opening');
     }
     return;

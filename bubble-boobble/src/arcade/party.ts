@@ -9,7 +9,7 @@ import { updateBubbles, updateEffects } from './bubbles';
 import { updateItems, checkPowerSpawns, spawnFood } from './items';
 import { arenaWidth, body, alive, EnemyState, State, type GameState, type Input, type Level, type PartySlot } from './types';
 
-import { partyColors, defaultPartySlots, partyPrepareTicks, partyBreakTicks, partySurvivorCount } from './party-config';
+import { partyColors, defaultPartySlots, partyPrepareTicks, partyBreakTicks, partySurvivorCount, partyStartGraceTicks } from './party-config';
 export { partyColors, partySpawnColumns, defaultPartySlots } from './party-config';
 const idle: Input = Object.freeze({Move:0,Jump:false,Fire:false});
 const kinds = ['zenchan','monsta','banebou','mighta','pulpul','invader'];
@@ -33,7 +33,7 @@ export function createPartyGame(levels:Level[], seed:number, slots:PartySlot[]=d
 }
 export function copyParty(g:GameState) {
   const p=g.Party;
-  return p?{...p,Slots:p.Slots.slice(),Telegraphs:p.Telegraphs.map(t=>({...t})),...(p.Boss?{Boss:{...p.Boss}}:{})}:undefined;
+  return p?{...p,Slots:p.Slots.slice(),Telegraphs:p.Telegraphs.map(t=>({...t})),...(p.Boss?{Boss:{...p.Boss}}:{}),...(p.LastKill?{LastKill:{...p.LastKill}}:{})}:undefined;
 }
 const occupied=(g:GameState)=>g.Party!.Slots.reduce((n,s)=>n+(s!=='empty'?1:0),0);
 export function partyWaveBudget(wave:number,team:number) { return Math.min(32,3+wave*2+Math.max(0,Math.min(team,6)-1)*2 + Math.ceil(Math.max(0,team-6)/2)); }
@@ -42,7 +42,7 @@ export function preparePartyWave(g:GameState) {
   const p=g.Party!;
   g.State=State.Playing;g.LevelTicks=0;g.Hurry=false;g.Freeze=0;g.Bubbles=[];g.Projectiles=[];g.Effects=[];g.Enemies=[];
   p.Phase='prepare';p.Timer=partyPrepareTicks;g.Countdown=p.Timer;p.Spawned=0;p.Telegraphs=[];p.SpawnTick=0;p.ToSpawn=0;
-  delete p.Boss;
+  delete p.Boss;delete p.LastKill;
   if(p.Wave===p.BossWave) {
     p.Boss=createBoss(occupied(g),g.Level);
     g.Items=[];ensureThunderPickups(g);
@@ -62,7 +62,7 @@ export function preparePartyWave(g:GameState) {
 function beginWave(g:GameState) {
   const p=g.Party!;
   p.Timer=0;p.Phase=p.Boss?'boss':'combat';
-  for(const dragon of g.Players) if(alive(dragon))dragon.Invincible=120;
+  for(const dragon of g.Players) if(alive(dragon))dragon.Invincible=partyStartGraceTicks;
 }
 function spawnTelegraphs(g:GameState) {
   const p=g.Party!;
@@ -117,8 +117,9 @@ export function stepParty(g:GameState,inputs:Input[]) {
   const ins=inputs.slice();
   for(let i=0;i<g.Players.length;i++) {
     if(p.Slots[i]==='empty')continue;
-    if(p.Slots[i]==='ai')ins[i]=companionInput(g,i);
-    if(alive(g.Players[i]!))updatePlayer(g,i,ins[i]??idle);
+    if(p.Slots[i]==='ai')ins[i]=p.Phase==='prepare'?idle:companionInput(g,i);
+    if(p.Phase==='prepare')ins[i]={Move:0,Jump:false,Fire:!!ins[i]?.Fire};
+    if(alive(g.Players[i]!))updatePlayer(g,i,ins[i]??idle,p.Phase!=='prepare');
   }
   if(p.Phase==='prepare') {
     updateBubbles(g,ins);updateEffects(g);updateItems(g);

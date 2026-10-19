@@ -6,12 +6,12 @@ The modern presentation applies to Bubble Madness / Wave Survival. Classic keeps
 
 - Traveling bubbles stretch on emission, settle into a floating wobble, and have a small glint and short ownership-colored trail. Capture compresses the bubble vertically and adds a ring. Trapped, elemental and rescue bubbles have different visual treatments; dragon names and HELP labels supplement color.
 - Pops expand into pixel rings and a few droplets. Rendering caps simultaneous pop effects at 18. Existing score particles receive stronger typography for larger awards, with a compact burst/chain announcement.
-- Dragons stretch in the air, recoil when firing, compress on landing, and briefly narrow on turns. Contact shadows and persistent identity markers keep them grounded and identifiable during invulnerability blinking.
+- Dragons stretch in the air, recoil when firing, compress on landing, and briefly narrow on turns. Contact shadows keep them grounded; brief color-matched names identify them during preparation. Wave-start protection keeps their sprites visible.
 - Three coordinated arena palettes advance every three waves. Quiet masonry, highlighted platform tops, distant arches and sparse motes replace the party arena's bright stripes. Connected tile runs share primitives rather than adding an object per tile.
 - Rescues produce a rising ring, sparkles, SAVED label and distinct ascending cue. Boss windups compress the sprite; a hit holds its animation pose, recoils and produces an impact ring. Its original dedicated boss frames remain intact. Capture and major team moments use short, bounded camera impulses.
-- Wave banners ease into place. Results use a score-panel pop and a short UI confetti burst for a team victory. Gameplay instructions disappear on the result screen.
+- Wave banners ease into place. Results use a score-panel pop and a short UI confetti burst for a team victory. Gameplay instructions disappear on the result screen; the final boss finisher retains their credit.
 
-These are cosmetic changes. Collision boxes, input handling, enemy rules, boss damage, rescue distance and score multipliers are unchanged. The existing player controller already supplies coyote time and jump buffering.
+Presentation changes preserve collision boxes, enemy rules, boss damage, rescue distance and score multipliers. Countdown input gating is an intentional gameplay change. The existing player controller already supplies coyote time and jump buffering.
 
 ## Sound and reduced effects
 
@@ -65,3 +65,9 @@ Takeoff and landing generate four and six small dust puffs respectively. They st
 Regression coverage in `tests/multiplayer-feedback.test.ts` reproduces the shooting-Space restart bug, checks held controller confirmation, verifies projected shadows and badge separation, and captures actual takeoff, airborne, landing, mixed-team labels and guarded defeat states through the engine.
 
 The follow-up passes all 279 desktop regression cases and all 27 saved replays, plus the focused phone-low/mobile render scenario. The updated 262-frame pipeline route peaks at 12 / 10 / 10 draw calls on desktop / mobile / compat, within the 14-call budget. Typechecking, validation and cooked startup checks pass.
+
+Wave starts hold all dragons through a large 3–2–1 cue, then show green GO text.
+Start protection lasts two seconds without hiding dragon sprites. Human practice
+shots remain available during the countdown. Each wave's final kill gets a
+brief character-colored LAST KILL banner and plain-text marker above its finisher;
+bubble chains credit the popper, and elemental effects retain their owner.

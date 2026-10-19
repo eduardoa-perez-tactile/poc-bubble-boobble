@@ -1,3 +1,4 @@
+import { bubble } from './bubbles';
 import { captureBoss } from './boss';
 import { defineCheat } from '@gameengine/runtime/cheats';
 import { write } from '@gameengine/runtime';
@@ -33,4 +34,14 @@ export const PartyProtect=defineCheat({id:'party.protect-team',group:'Party',tit
  const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);
  for(const p of g.Players)p.Invincible=3600;
  session.set({...current,game:g});
+}});
+
+export const PartyFinalPop=defineCheat({id:'party.final-pop',group:'Party',title:'Place the last trapped enemy beside a chosen finisher',params:{slot:{type:'int',min:0,max:9,default:0}},run(_ctx,{slot}){
+ const current=session.get();if(!current.game?.Party)return;
+ const g=copyGame(current.game),p=g.Players[slot],enemy=g.Enemies[0];
+ if(!p||!enemy||p.Lives<=0||p.Downed)return;
+ g.Party!.Phase='combat';g.Party!.Timer=0;g.Party!.ToSpawn=0;g.Party!.Telegraphs=[];g.LevelTicks=120;
+ Object.assign(enemy,{X:p.X,Y:p.Y,State:EnemyState.Trapped});g.Enemies=[enemy];
+ g.NextID++;g.Bubbles=[{...bubble(p.X,p.Y),ID:g.NextID,EnemyID:enemy.ID,Age:30,Floating:true,Shooter:(slot+1)%g.Players.length}];
+ g.Effects=[];g.Projectiles=[];session.set({...current,game:g});
 }});
