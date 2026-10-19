@@ -16,3 +16,9 @@ export const FeelShowcase=defineCheat({id:'party.feel-showcase',group:'Party',ti
  g.Particles.push({...body(320,420),Text:'800',Life:44});
  session.set({...s,game:g});
 }});
+export const FeedbackCluster=defineCheat({id:'party.feedback-cluster',group:'Party',title:'Inspect overlapping player and AI badges',run(){
+ const s=session.get();if(!s.game?.Party)return;const g=copyGame(s.game);
+ for(const p of g.Players)Object.assign(p,{X:340,Y:400,Ground:false,VY:0,Invincible:120,Downed:false,Lives:1,Shoot:0});
+ g.Bubbles=[];g.Particles=[];g.Party!.Phase='prepare';g.Party!.Timer=180;
+ session.set({...s,game:g});
+}});

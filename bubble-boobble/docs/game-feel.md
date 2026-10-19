@@ -33,9 +33,9 @@ Engine-only tests cover effect purity and lifetime, pause, sRGB composition, aud
 
 Measured on macOS / Apple M2 Max, native Metal / V8:
 
-- Final regression suite: all 271 cases pass; all 24 saved replays verify.
+- Final regression suite: all 279 cases pass; all 27 saved replays verify.
 - Six-player showcase: peak 8 draw calls; six-player firing boss sample: peak 8, with 67 shots, up to 7 bottles and 12 lightning effects over 300 steps.
-- Expanded complete presentation route: 262 explicitly rendered frames per tier; peaks 11 / 9 / 9 draws on desktop / mobile / compat, below the existing 14-call ceiling.
+- Expanded complete presentation route: 262 explicitly rendered frames per tier; peaks 12 / 10 / 10 draws on desktop / mobile / compat, below the existing 14-call ceiling.
 - A 600-step wave-nine headless sample: simulation p95 0.887 ms, maximum 1.423 ms, zero hitch steps; sampled presentation p95 1.202 ms; process memory 195.09 MiB. Its requested final frame used 10 draws.
 - New focused phone-low/mobile tests pass. The UI confetti resolves to 18 particles on phone-low.
 
@@ -53,3 +53,15 @@ Headless CPU and structural checks do not establish device GPU frame time, therm
 - [Game Accessibility Guidelines](https://gameaccessibilityguidelines.com/full-list/): redundant identity cues and reduced background movement.
 
 The final typecheck, validation, desktop cook and cooked smoke pass. Hermes cross-engine verification is unavailable because its host binary is not installed. Pipeline capture completes on all three tiers; the installed host still emits the pre-existing built-in Standard program hash warning (`7946469ed20397e0`) in the packaged CLI metadata. The game-owned pixel material is recognized; no warning was suppressed or raw pipeline record deleted.
+
+## Multiplayer playtest follow-up
+
+The result screen now has a 45-step (0.75-second) input guard. It waits for confirmation, shooting and controller buttons to be released, then accepts a fresh Enter / pad A press or a deliberate button click. Space remains a shooting key and does not confirm results. A dimmed action panel and a release-controls hint show the guard; the hint changes once confirmation is ready. The keyboard latch still handles short Enter taps and suppresses key repeats.
+
+Dragon shadows are small stepped ovals on the nearest supporting platform, rather than bars attached to the sprite. Height reduces their width and contrast; they disappear above the useful projection range. The search reads existing tiles and does not affect physics. Player badges use `P1` / `AI 2`, a dark backplate and a colored border; HELP is explicit, and up to six nearby badges stack without overlap.
+
+Takeoff and landing generate four and six small dust puffs respectively. They start near the feet, spread out slightly and finish in 14 / 18 steps. No burst is emitted merely because a dragon initially spawns on a platform. The arcade jump's zero-displacement apex can settle on a platform, so its jump phase is also considered when detecting a real landing. Reduced effects omit the dust.
+
+Regression coverage in `tests/multiplayer-feedback.test.ts` reproduces the shooting-Space restart bug, checks held controller confirmation, verifies projected shadows and badge separation, and captures actual takeoff, airborne, landing, mixed-team labels and guarded defeat states through the engine.
+
+The follow-up passes all 279 desktop regression cases and all 27 saved replays, plus the focused phone-low/mobile render scenario. The updated 262-frame pipeline route peaks at 12 / 10 / 10 draw calls on desktop / mobile / compat, within the 14-call budget. Typechecking, validation and cooked startup checks pass.

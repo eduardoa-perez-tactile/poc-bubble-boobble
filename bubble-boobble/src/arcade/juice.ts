@@ -1,5 +1,5 @@
 import { goSin } from './trig';
-import type { GameState, Player, Bubble } from './types';
+import { ActorSize, Tile, Rows, type GameState, type Player, type Bubble } from './types';
 import type { PixelQuad } from './pixel-renderer/types';
 
 // Opaque pixel primitives join the existing ordered batch: no extra texture,
@@ -32,6 +32,48 @@ export function dragonPose(p:Player,tick:number,landAge=99,turnAge=99) {
   if(turnAge<6)sx-=.12*(1-turnAge/6);
   return {x:p.X+24-24*sx+dx,y:p.Y+96-48*sy,w:48*sx,h:48*sy};
 }
+/** Project onto supporting scenery; altitude changes size and contrast, never the actor's pose. */
+export function dragonShadow(g:GameState,p:Player):PixelQuad[] {
+  const out:PixelQuad[]=[];
+  if(p.Downed||p.Lives<=0||p.Dead>0)return out;
+  const feet=p.Y+ActorSize;
+  for(let row=Math.max(0,Math.ceil((feet-.01)/Tile));row<Rows;row++){
+    const height=row*Tile-feet;
+    if(height>144)break;
+    let left=Infinity,right=-Infinity;
+    for(let col=Math.max(2,Math.floor((p.X+8)/Tile));col<=Math.min(29,Math.floor((p.X+36)/Tile));col++){
+      if(g.Level.tiles[row]?.[col]){left=Math.min(left,col*Tile);right=Math.max(right,(col+1)*Tile);}
+    }
+    if(!Number.isFinite(left))continue;
+    const w=Math.min(right-left-2,30-18*Math.min(1,height/144));
+    const x=Math.max(left+1,Math.min(right-w-1,p.X+24-w/2)),y=row*Tile+50;
+    const color=height<24?'#102531':height<72?'#193747':'#203e50';
+    rect(out,color,x+3,y,w-6,1);rect(out,color,x,y+1,w,2);rect(out,color,x+3,y+3,w-6,1);
+    return out;
+  }
+  return out;
+}
+export interface DragonBadge {slot:number;text:string;x:number;y:number;w:number;h:number;help:boolean}
+/** Six badges at most; stack colliding nameplates while preserving their horizontal anchor. */
+export function dragonBadges(g:GameState):DragonBadge[]{
+  const out:DragonBadge[]=[];
+  for(let slot=0;slot<g.Players.length;slot++){
+    const p=g.Players[slot]!;
+    if(p.Lives<=0&&!p.Downed)continue;
+    const ai=!!g.Companions?.[slot],help=!!p.Downed;
+    const text=(ai?`AI ${slot+1}`:`P${slot+1}`)+(help?' HELP':'');
+    const w=Math.max(32,text.length*10+12),h=18,x=Math.max(50,Math.min(718-w,p.X+24-w/2));
+    const initial=Math.max(64,Math.min(638,p.Y+26));
+    let y=initial;
+    for(let attempt=0;attempt<12;attempt++){
+      const candidate=initial-attempt*22;
+      y=candidate>=64?candidate:Math.min(638,initial+(attempt-Math.floor((initial-64)/22))*22);
+      if(!out.some(b=>x<b.x+b.w+3&&x+w+3>b.x&&y<b.y+b.h+3&&y+h+3>b.y))break;
+    }
+    out.push({slot,text,x,y,w,h,help});
+  }
+  return out;
+}
 const themes=[
   ['#0c152b','#12223a','#192f48','#28465c'],
   ['#1b1530','#281e40','#362b50','#574365'],
@@ -56,8 +98,8 @@ export function arenaBackdrop(g:GameState,reduced=false):PixelQuad[] {
   }
   return out;
 }
-export type FeelCue={kind:'land'|'turn'|'rescue'|'boss-hit'|'clear'|'victory'|'capture';x:number;y:number;at:number;slot:number;};
-type Snapshot={tick:number;wave:number;phase:string;state:number;hp:number;bossMode:string;players:{x:number;y:number;ground:boolean;dir:number;downed:boolean;lives:number}[]};
+export type FeelCue={kind:'jump'|'land'|'turn'|'rescue'|'boss-hit'|'clear'|'victory'|'capture';x:number;y:number;at:number;slot:number;strength?:number;};
+type Snapshot={tick:number;wave:number;phase:string;state:number;hp:number;bossMode:string;players:{x:number;y:number;ground:boolean;vy:number;jumping:boolean;dir:number;downed:boolean;lives:number}[]};
 export type FeelState={clock:number;step:number;previous:Snapshot|null;cues:FeelCue[];};
 export const emptyFeel=():FeelState=>({clock:0,step:0,previous:null,cues:[]});
 /** Bounded presentation history; persisted in a sim:false resource, never in match state. */
@@ -65,13 +107,14 @@ export function advanceFeel(old:FeelState,g:GameState,step:number):FeelState {
   const previous=old.previous,reset=!previous||g.Tick<previous.tick||g.Party!.Wave<previous.wave;
   const clock=reset?0:old.clock+(g.Paused?0:Math.max(0,step-old.step));
   const cues=reset?[]:old.cues.filter(c=>clock-c.at<75);
-  const add=(kind:FeelCue['kind'],x:number,y:number,slot=0)=>cues.push({kind,x,y,slot,at:clock});
+  const add=(kind:FeelCue['kind'],x:number,y:number,slot=0,strength=1)=>cues.push({kind,x,y,slot,at:clock,strength});
   if(!reset&&g.Tick!==previous.tick){
     for(let i=0;i<g.Players.length;i++){
       const p=g.Players[i]!,before=previous.players[i];
       if(!before||p.Downed||p.Lives===0)continue;
       if(before.downed)add('rescue',p.X+24,p.Y+72,i);
-      else if(p.Ground&&!before.ground&&Math.abs(p.Y-before.y)<80)add('land',p.X+24,p.Y+96,i);
+      else if(p.Ground&&!before.ground&&((before.vy??0)>0||before.jumping)&&Math.abs(p.Y-before.y)<80)add('land',p.X+24,p.Y+92,i,Math.max(.4,Math.min(1,before.vy/10)));
+      if(before.ground&&!p.Ground&&p.VY<0&&Math.abs(p.Y-before.y)<80)add('jump',before.x+24,before.y+92,i);
       if(before.dir!==p.Dir)add('turn',p.X+24,p.Y+96,i);
     }
     const b=g.Party!.Boss;
@@ -80,13 +123,24 @@ export function advanceFeel(old:FeelState,g:GameState,step:number):FeelState {
     if(g.Party!.Phase==='rest'&&previous.phase!=='rest')add('clear',384,175);
     if(g.State===4&&previous.state!==4)add('victory',384,230);
   }
-  return {clock,step,cues:cues.slice(-32),previous:{tick:g.Tick,wave:g.Party!.Wave,phase:g.Party!.Phase,state:g.State,hp:g.Party!.Boss?.HP??0,bossMode:g.Party!.Boss?.Mode??'',players:g.Players.map(p=>({x:p.X,y:p.Y,ground:p.Ground,dir:p.Dir,downed:!!p.Downed,lives:p.Lives}))}};
+  return {clock,step,cues:cues.slice(-32),previous:{tick:g.Tick,wave:g.Party!.Wave,phase:g.Party!.Phase,state:g.State,hp:g.Party!.Boss?.HP??0,bossMode:g.Party!.Boss?.Mode??'',players:g.Players.map(p=>({x:p.X,y:p.Y,ground:p.Ground,vy:p.VY,jumping:p.JumpStep!==undefined,dir:p.Dir,downed:!!p.Downed,lives:p.Lives}))}};
 }
 export function cueQuads(state:FeelState,reduced=false):PixelQuad[] {
   const out:PixelQuad[]=[];
   for(const c of state.cues){
     const age=state.clock-c.at,color=feelColors[c.slot%6]!;
-    if(c.kind==='land'||c.kind==='turn'){
+    if(c.kind==='jump'||c.kind==='land'){
+      const landing=c.kind==='land',life=landing?18:14;
+      if(age>=life||reduced)continue;
+      const strength=c.strength??1,count=landing?3:2;
+      for(const dir of [-1,1])for(let i=0;i<count;i++){
+        const t=age/life,radius=Math.max(1,Math.round((landing?3:2)*(1-t)));
+        const x=c.x+dir*(16+i*5+age*(.55+i*.2)*strength);
+        const y=Math.min(c.y-1,c.y-2-age*(.45+i*.1)+.025*age*age);
+        rect(out,t<.55?'#8297a2':'#526c7c',x-radius,y-radius,radius*2+1,radius+1);
+        rect(out,t<.55?'#b4c3c7':'#718995',x-radius+1,y-radius-1,Math.max(1,radius*2-1),1);
+      }
+    }else if(c.kind==='turn'){
       if(age>=12||reduced)continue;
       for(const dir of [-1,1])rect(out,'#94aabc',c.x+dir*(8+age*1.5),c.y-2-age*.3,Math.max(1,5-age*.35),2);
     }else if(c.kind==='rescue'){

@@ -818,7 +818,8 @@
       "children": [
         "ds_result_score",
         "ds_result_stats",
-        "ds_celebration"
+        "ds_celebration",
+        "ds_result_hint"
       ],
       "style": {
         "pad": 0,
@@ -893,6 +894,26 @@
           210
         ],
         "h": 300
+      }
+    },
+    "ds_result_hint": {
+      "type": "label",
+      "name": "Label",
+      "text": "",
+      "property": "resultHint",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          410
+        ],
+        "fontSize": 10,
+        "color": "#a8c5df",
+        "textAlign": "center"
       }
     }
   },
@@ -1182,6 +1203,30 @@
     },
     "celebration": {
       "type": "trigger"
+    },
+    "resultReady": {
+      "type": "yesno",
+      "default": true,
+      "poses": {
+        "no": {
+          "set": {
+            "ds_actions": {
+              "opacity": 0.45
+            }
+          }
+        },
+        "yes": {
+          "set": {
+            "ds_actions": {
+              "opacity": 1
+            }
+          }
+        }
+      }
+    },
+    "resultHint": {
+      "type": "text",
+      "default": ""
     }
   },
   "transition": {

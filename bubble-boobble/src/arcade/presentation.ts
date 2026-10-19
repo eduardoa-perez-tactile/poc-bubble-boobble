@@ -1,4 +1,4 @@
-import { arenaBackdrop, bubblePose, dragonPose, rect, ring, sparkle, popQuads, advanceFeel, emptyFeel, cueQuads, feelColors, type FeelState } from './juice';
+import { arenaBackdrop, bubblePose, dragonPose, dragonShadow, dragonBadges, rect, ring, sparkle, popQuads, advanceFeel, emptyFeel, cueQuads, feelColors, type FeelState } from './juice';
 import { ArcadeFeel, ArcadeAudio } from '../schema.gen';
 import campaignPreviews from '../../data/levels.json';
 import { partyCardRect } from '../desktop/layout';
@@ -126,6 +126,7 @@ const label = (text: string, x: number, y: number, size: number, color?: readonl
 });
 export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState, reduced = false): Draw[] {
   const out: Draw[] = [];
+  const badges=g.Party?dragonBadges(g):[];
   const skinAt = (index: number) => g.Party
     ? (isDragonSkin(g.Players[index]?.Skin) ? g.Players[index]!.Skin! : dragonSkins[index % dragonSkins.length]!)
     : index === 1 ? 'blue' : avatar;
@@ -150,6 +151,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
     }
   }
   const accents: PixelQuad[] = [];
+  if(g.Party)for(const p of g.Players)out.push(...dragonShadow(g,p).map(q=>({...q,flip:false,text:'',size:0})));
   for (const i of g.Items) {
     if (i.Power!=='thunder_potion' && i.Age > 600 && i.Age % 12 < 6) continue;
     if(g.Party && i.Power) {
@@ -241,7 +243,6 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
       out.push(image(`${skinAt(index)}/bubble`, 30, p.X - 6, p.Y + 42, 60));
       out.push(image(`${skinAt(index)}/dead`, 0, p.X + 6, p.Y + 54, 36, 36, p.Dir));
       if(!reduced)ring(accents,p.X+24,p.Y+72,30+2*goSin(g.Tick*.12),feelColors[index%6]!);
-      out.push(label(`${index + 1} HELP`, Math.max(8, Math.min(680, p.X - 8)), Math.max(66, Math.min(650, p.Y + 36)), 10, dragonIndicatorColors[skinAt(index)]));
       continue;
     }
     if (p.Lives === 0 && p.Dead === 0) continue;
@@ -273,13 +274,16 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
     if(g.Party&&p.Dead===0){
       const age=(kind:string)=>{const cue=feel?.cues.slice().reverse().find(c=>c.kind===kind&&c.slot===index);return cue?feel!.clock-cue.at:99;};
       Object.assign(dragonDraw,dragonPose(p,g.Tick,age('land'),age('turn')));
-      rect(accents,'#071322',p.X+9,p.Y+95,30,3);
-      // Identity marker stays visible while the invulnerable artwork blinks.
-      rect(accents,feelColors[index%6]!,p.X+18,p.Y+35,12,2);
+
     }
     if(!blinking)out.push(dragonDraw);
-    if (g.Party)
-      out.push(label(`${index + 1}${g.Companions?.[index] ? ' AI' : ''}`, Math.max(8, Math.min(712, p.X + 8)), Math.max(66, Math.min(650, p.Y + 40)), 10, dragonIndicatorColors[skinAt(index)]));
+
+  }
+  if(g.Party)for(const b of badges){
+    // The complete badge is separated from the sprite, and remains during blinking.
+    rect(accents,feelColors[b.slot%6]!,b.x,b.y,b.w,b.h);
+    rect(accents,'#0b1424',b.x+1,b.y+1,b.w-2,b.h-2);
+    out.push(label(b.text,b.x+6,b.y+14,10,b.help?[255,225,124]:[235,245,255]));
   }
   for (const p of g.Particles) {
     if(g.Party&&!p.Text)continue;
@@ -295,7 +299,17 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
     out.push(...quads.map(q=>({...q,flip:false,text:'',size:0})));
     const chain=g.Particles.filter(p=>!p.Text&&p.Life>=7).length;
     if(chain>=3)out.push(label(`${chain} CHAIN!`,Math.max(48,Math.min(600,g.Particles.find(p=>!p.Text)!.X)),Math.max(135,Math.min(610,g.Particles.find(p=>!p.Text)!.Y+10)),15,[255,240,170]));
-    if(feel)for(const c of feel.cues)if(c.kind==='rescue'&&feel.clock-c.at<40)out.push(label('SAVED!',Math.max(30,Math.min(650,c.x-28)),Math.max(130,c.y-45-(feel.clock-c.at)*.4),10,[115,245,170]));
+    if(feel)for(const c of feel.cues)if(c.kind==='rescue'&&feel.clock-c.at<40){
+      const x=Math.max(50,Math.min(650,c.x-28));
+      let y=Math.max(64,c.y-45-(feel.clock-c.at)*.4);
+      // Keep the rescue celebration above every nameplate in the local cluster.
+      for(let pass=0;pass<badges.length;pass++){
+        const overlap=badges.find(b=>x<b.x+b.w&&x+70>b.x&&y-10<b.y+b.h&&y>b.y);
+        if(!overlap)break;
+        y=Math.max(60,overlap.y-4);
+      }
+      out.push(label('SAVED!',x,y,10,[115,245,170]));
+    }
   }
   if (g.Party) {
     for (let index = 0; index < 6; index++) {

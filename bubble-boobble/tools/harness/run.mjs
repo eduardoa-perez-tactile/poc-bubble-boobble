@@ -159,6 +159,9 @@ async function openEditor() {
 }
 // The installed replay CLI drops the test's recorded scene. Supply it to the host.
 const replays = [
+  {path:'tests/replays/feedback_shooting_space_cannot_restart_a_defeated_boss_run.greplay',scene:'scenes/arcade.scene.json',filter:'feedback shooting Space cannot restart a defeated boss run'},
+  {path:'tests/replays/feedback_results_require_release_and_a_fresh_controller_confirmation_after_the_guard.greplay',scene:'scenes/arcade.scene.json',filter:'feedback results require release and a fresh controller confirmation after the guard'},
+  {path:'tests/replays/feedback_jump_dust_grounded_shadows_nameplates_and_guarded_results_remain_readable.greplay',scene:'scenes/arcade.scene.json',filter:'feedback jump dust grounded shadows nameplates and guarded results remain readable',tier:'t1'},
   {path:'tests/replays/feel_six_player_capture_chain_rescue_boss_and_results_fit_every_aspect.greplay',scene:'scenes/arcade.scene.json',filter:'feel six player capture chain rescue boss and results fit every aspect',tier:'t1'},
   {path:'tests/replays/party_boss_recorded_thunder_shot_capture_and_finishing_pop.greplay',scene:'scenes/arcade.scene.json',filter:'party boss recorded thunder shot capture and finishing pop'},
   {path:'tests/replays/party_last_standing_only_shows_defeat_when_the_final_bot_falls_through_recorded_engine_inputs.greplay',scene:'scenes/arcade.scene.json',filter:'party last standing only shows defeat when the final bot falls through recorded engine inputs'},

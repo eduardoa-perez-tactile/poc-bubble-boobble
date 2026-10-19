@@ -34,7 +34,7 @@ worldTest('feel bubble deformation preserves center and never changes match geom
 });
 worldTest('feel landing rescue and boss transitions are bounded expire and freeze on pause',()=>{
  const g=createPartyGame(campaign,42,Array.from({length:6},()=> 'human'));
- g.Players[0]!.Ground=false;g.Players[1]!.Downed=true;let f=advanceFeel(emptyFeel(),g,1);
+ g.Players[0]!.Ground=false;g.Players[0]!.VY=8;g.Players[1]!.Downed=true;let f=advanceFeel(emptyFeel(),g,1);
  g.Tick++;g.Players[0]!.Ground=true;g.Players[1]!.Downed=false;f=advanceFeel(f,g,2);
  expect(f.cues.map(c=>c.kind)).toEqual(['land','rescue']);
  const before=JSON.stringify(g),clock=f.clock;g.Paused=true;f=advanceFeel(f,g,40);expect(f.clock).toBe(clock);
