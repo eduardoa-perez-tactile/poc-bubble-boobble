@@ -42,7 +42,7 @@
    "r": "3d",
    "key": {
     "Forward": {
-     "program": "5fca457a7499478d",
+     "program": "07dc748779860e78",
      "alpha": 1,
      "double_sided": true,
      "prepassed": false,
@@ -72,7 +72,7 @@
    "r": "3d",
    "key": {
     "Shadow": {
-     "program": "5fca457a7499478d",
+     "program": "07dc748779860e78",
      "alpha": 1,
      "double_sided": true,
      "skinned": false
@@ -142,7 +142,7 @@
    "r": "3d",
    "key": {
     "Forward": {
-     "program": "5fca457a7499478d",
+     "program": "07dc748779860e78",
      "alpha": 1,
      "double_sided": true,
      "prepassed": true,
@@ -158,7 +158,7 @@
    "r": "3d",
    "key": {
     "Forward": {
-     "program": "5fca457a7499478d",
+     "program": "07dc748779860e78",
      "alpha": 1,
      "double_sided": true,
      "prepassed": true,
@@ -204,7 +204,7 @@
    "r": "3d",
    "key": {
     "Prepass": {
-     "program": "5fca457a7499478d",
+     "program": "07dc748779860e78",
      "alpha": 1,
      "double_sided": true,
      "samples": 4,
@@ -218,7 +218,7 @@
    "r": "3d",
    "key": {
     "Prepass": {
-     "program": "5fca457a7499478d",
+     "program": "07dc748779860e78",
      "alpha": 1,
      "double_sided": true,
      "samples": 4,
@@ -258,7 +258,7 @@
    "r": "3d",
    "key": {
     "Shadow": {
-     "program": "5fca457a7499478d",
+     "program": "07dc748779860e78",
      "alpha": 1,
      "double_sided": true,
      "skinned": false
@@ -328,7 +328,7 @@
    "r": "3d",
    "key": {
     "Forward": {
-     "program": "5fca457a7499478d",
+     "program": "07dc748779860e78",
      "alpha": 1,
      "double_sided": true,
      "prepassed": false,
@@ -358,7 +358,7 @@
    "r": "3d",
    "key": {
     "Shadow": {
-     "program": "5fca457a7499478d",
+     "program": "07dc748779860e78",
      "alpha": 1,
      "double_sided": true,
      "skinned": false

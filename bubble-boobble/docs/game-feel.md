@@ -4,7 +4,7 @@ The modern presentation applies to Bubble Madness / Wave Survival. Classic keeps
 
 ## Presentation
 
-- Traveling bubbles stretch on emission, settle into a floating wobble, and have a small glint and short ownership-colored trail. Capture compresses the bubble vertically and adds a ring. Trapped, elemental and rescue bubbles have different visual treatments; player numbers and HELP labels supplement color.
+- Traveling bubbles stretch on emission, settle into a floating wobble, and have a small glint and short ownership-colored trail. Capture compresses the bubble vertically and adds a ring. Trapped, elemental and rescue bubbles have different visual treatments; dragon names and HELP labels supplement color.
 - Pops expand into pixel rings and a few droplets. Rendering caps simultaneous pop effects at 18. Existing score particles receive stronger typography for larger awards, with a compact burst/chain announcement.
 - Dragons stretch in the air, recoil when firing, compress on landing, and briefly narrow on turns. Contact shadows and persistent identity markers keep them grounded and identifiable during invulnerability blinking.
 - Three coordinated arena palettes advance every three waves. Quiet masonry, highlighted platform tops, distant arches and sparse motes replace the party arena's bright stripes. Connected tile runs share primitives rather than adding an object per tile.
@@ -21,7 +21,7 @@ Reduced effects disable camera shake, trails, ambient motes, landing dust, decor
 
 ## Architecture and limits
 
-`src/arcade/juice.ts` owns pure geometry and bounded cosmetic history. `ArcadeFeel` is a presentation-only resource with a six-player snapshot and at most 32 short-lived cues. Pause holds its clock. The simulation never reads it.
+`src/arcade/juice.ts` owns pure geometry and bounded cosmetic history. `ArcadeFeel` is a presentation-only resource with a ten-player snapshot and at most 32 short-lived cues. Pause holds its clock. The simulation never reads it.
 
 Opaque color primitives use the existing ordered pixel material, including exact encoded-RGB composition behind partially transparent original artwork. The party visual pool reserves 512 extra pixel slots and 36 text slots for transient cues; simulation owns allocation and LateUpdate only changes visual fields. Pool population and intentional audio-event changes require refreshed replay hashes, even though match mechanics are unchanged.
 
@@ -58,7 +58,7 @@ The final typecheck, validation, desktop cook and cooked smoke pass. Hermes cros
 
 The result screen now has a 45-step (0.75-second) input guard. It waits for confirmation, shooting and controller buttons to be released, then accepts a fresh Enter / pad A press or a deliberate button click. Space remains a shooting key and does not confirm results. A dimmed action panel and a release-controls hint show the guard; the hint changes once confirmation is ready. The keyboard latch still handles short Enter taps and suppresses key repeats.
 
-Dragon shadows are small stepped ovals on the nearest supporting platform, rather than bars attached to the sprite. Height reduces their width and contrast; they disappear above the useful projection range. The search reads existing tiles and does not affect physics. Player badges use `P1` / `AI 2`, a dark backplate and a colored border; HELP is explicit, and up to six nearby badges stack without overlap.
+Dragon shadows are small stepped ovals on the nearest supporting platform, rather than bars attached to the sprite. Height reduces their width and contrast; they disappear above the useful projection range. The search reads existing tiles and does not affect physics. Dragon labels match their character’s color, including HELP. They use plain text such as `BUB` / `BOB AI`, with no backplate or border. Names show during each three-second preparation countdown and disappear when combat begins; HELP stays only while downed. Up to ten nearby labels stack without overlap.
 
 Takeoff and landing generate four and six small dust puffs respectively. They start near the feet, spread out slightly and finish in 14 / 18 steps. No burst is emitted merely because a dragon initially spawns on a platform. The arcade jump's zero-displacement apex can settle on a platform, so its jump phase is also considered when detecting a real landing. Reduced effects omit the dust.
 

@@ -1,18 +1,16 @@
+import { arenaWidth, arenaHeight, arenaRows, arenaColumns } from './types';
 import {
   ActorSize,
   type Body,
   type Cell,
   type Enemy,
   type GameState,
-  Height,
-  Rows,
   Tile,
-  Width,
   position,
 } from "./types";
 export function solid(g: GameState, col: number, row: number): boolean {
-  if (col < 2 || col >= 30) return true;
-  if (row < 0 || row >= Rows) return false;
+  if (col < 2 || col >= arenaColumns(g)-2) return true;
+  if (row < 0 || row >= arenaRows(g)) return false;
   return g.Level.tiles[row]![col] !== 0;
 }
 export function blocked(
@@ -35,13 +33,13 @@ export function blocked(
   return false;
 }
 export function spawnPosition(g: GameState, c: Cell): [number, number] {
-  const [x, y] = position(c, ActorSize);
+  const [x, y] = position(c, ActorSize, g.Level);
   if (!blocked(g, x, y, ActorSize)) return [x, y];
   let best = Number.MAX_VALUE,
     bx = x,
     by = y;
-  for (let row = 1; row < Rows - 2; row++)
-    for (let col = 2; col < 29; col++) {
+  for (let row = 1; row < arenaRows(g) - 2; row++)
+    for (let col = 2; col < arenaColumns(g)-3; col++) {
       const xx = col * Tile,
         yy = row * Tile,
         d = Math.abs(xx - x) + Math.abs(yy - y);
@@ -59,7 +57,7 @@ function advanceActor(g: GameState, b: Body, dx: number, gravity: boolean, first
   for (let i = 0; i < steps; i++) {
     const x = Math.max(
       2 * Tile,
-      Math.min(Width - 2 * Tile - ActorSize, b.X + dx / steps),
+      Math.min(arenaWidth(g) - 2 * Tile - ActorSize, b.X + dx / steps),
     );
     if (b.VY >= 0 && !inside && blocked(g, x + 2, b.Y + 2, ActorSize - 4))
       break;
@@ -100,10 +98,10 @@ export function moveActor(g: GameState, b: Body, dx: number, gravity: boolean) {
     b.Y = Tile;
     b.VY = Math.max(0, b.VY);
   }
-  wrapBottom(b);
+  wrapBottom(g,b);
 }
-function wrapBottom(b: Body) {
-  if (b.Y > Height) {
+function wrapBottom(g:GameState,b: Body) {
+  if (b.Y > arenaHeight(g)) {
     b.Y = Tile;
     b.VY = 2;
   }
@@ -114,7 +112,7 @@ function matchingVerticalOpening(g: GameState, b: Body): boolean {
   const first = Math.floor(b.X / Tile),
     last = Math.floor((b.X + ActorSize - 0.01) / Tile);
   for (let col = first; col <= last; col++)
-    if (solid(g, col, 0) || solid(g, col, Rows - 1)) return false;
+    if (solid(g, col, 0) || solid(g, col, arenaRows(g) - 1)) return false;
   return true;
 }
 // Arcade-derived motion data: BubNext 47ad995, game.asm data_4AED,
@@ -161,9 +159,9 @@ export function movePlayer(g: GameState, b: Body, dx: number, shoes = false) {
   if (b.Ground) delete b.JumpStep;
   // Preserve the requested paired-opening upward wrap and one-way platforms.
   if (b.VY < 0 && b.Y + ActorSize < 0 && matchingVerticalOpening(g, b))
-    b.Y += Height + ActorSize;
-  if (arcade) { if (b.Y > Height) b.Y = Tile; }
-  else wrapBottom(b);
+    b.Y += arenaHeight(g) + ActorSize;
+  if (arcade) { if (b.Y > arenaHeight(g)) b.Y = Tile; }
+  else wrapBottom(g,b);
 }
 export function moveFlying(g: GameState, e: Enemy, dx: number, dy: number) {
   const steps = Math.max(1, Math.ceil(Math.max(Math.abs(dx), Math.abs(dy))));
@@ -179,7 +177,7 @@ export function moveFlying(g: GameState, e: Enemy, dx: number, dy: number) {
     const y = e.Y + dy / steps;
     if (
       y < Tile ||
-      y > Height - ActorSize ||
+      y > arenaHeight(g) - ActorSize ||
       blocked(g, e.X + 3, y + 3, ActorSize - 6)
     ) {
       e.Vertical *= -1;

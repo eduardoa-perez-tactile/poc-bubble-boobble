@@ -1,10 +1,11 @@
+import { partyNames } from './party-config';
 import { goSin } from './trig';
-import { ActorSize, Tile, Rows, type GameState, type Player, type Bubble } from './types';
+import { arenaWidth, arenaHeight, arenaRows, arenaColumns, ActorSize, Tile, type GameState, type Player, type Bubble } from './types';
 import type { PixelQuad } from './pixel-renderer/types';
 
 // Opaque pixel primitives join the existing ordered batch: no extra texture,
 // blend pass, particle entity or unbounded effect pool.
-export const feelColors = ['#73f5aa','#63caff','#ff7a99','#ffe17c','#c9a0ff','#ffb16a'] as const;
+export const feelColors = ['#73f5aa','#63caff','#ff7a99','#ffe17c','#c9a0ff','#ffb16a','#42f0d7','#ff91ce','#f5ebc8','#9fbbdc'] as const;
 export function rect(out:PixelQuad[],color:string,x:number,y:number,w:number,h:number) {
   if(w>0&&h>0)out.push({image:`solid/${color}`,x:Math.round(x),y:Math.round(y),w:Math.max(1,Math.round(w)),h:Math.max(1,Math.round(h))});
 }
@@ -37,11 +38,11 @@ export function dragonShadow(g:GameState,p:Player):PixelQuad[] {
   const out:PixelQuad[]=[];
   if(p.Downed||p.Lives<=0||p.Dead>0)return out;
   const feet=p.Y+ActorSize;
-  for(let row=Math.max(0,Math.ceil((feet-.01)/Tile));row<Rows;row++){
+  for(let row=Math.max(0,Math.ceil((feet-.01)/Tile));row<arenaRows(g);row++){
     const height=row*Tile-feet;
     if(height>144)break;
     let left=Infinity,right=-Infinity;
-    for(let col=Math.max(2,Math.floor((p.X+8)/Tile));col<=Math.min(29,Math.floor((p.X+36)/Tile));col++){
+    for(let col=Math.max(2,Math.floor((p.X+8)/Tile));col<=Math.min(arenaColumns(g)-3,Math.floor((p.X+36)/Tile));col++){
       if(g.Level.tiles[row]?.[col]){left=Math.min(left,col*Tile);right=Math.max(right,(col+1)*Tile);}
     }
     if(!Number.isFinite(left))continue;
@@ -54,20 +55,21 @@ export function dragonShadow(g:GameState,p:Player):PixelQuad[] {
   return out;
 }
 export interface DragonBadge {slot:number;text:string;x:number;y:number;w:number;h:number;help:boolean}
-/** Six badges at most; stack colliding nameplates while preserving their horizontal anchor. */
-export function dragonBadges(g:GameState):DragonBadge[]{
+/** Names introduce each wave during preparation; only rescue calls remain in combat. */
+export function dragonBadges(g:GameState,readability=1):DragonBadge[]{
   const out:DragonBadge[]=[];
   for(let slot=0;slot<g.Players.length;slot++){
     const p=g.Players[slot]!;
     if(p.Lives<=0&&!p.Downed)continue;
     const ai=!!g.Companions?.[slot],help=!!p.Downed;
-    const text=(ai?`AI ${slot+1}`:`P${slot+1}`)+(help?' HELP':'');
-    const w=Math.max(32,text.length*10+12),h=18,x=Math.max(50,Math.min(718-w,p.X+24-w/2));
-    const initial=Math.max(64,Math.min(638,p.Y+26));
+    if(!help&&g.Party?.Phase!=='prepare')continue;
+    const text=partyNames[slot]!+(help?' HELP':ai?' AI':'');
+    const w=text.length*10*readability,h=12*readability,x=Math.max(50,Math.min(arenaWidth(g)-50-w,p.X+24-w/2));
+    const initial=Math.max(64,Math.min(arenaHeight(g)+14,p.Y+26));
     let y=initial;
-    for(let attempt=0;attempt<12;attempt++){
-      const candidate=initial-attempt*22;
-      y=candidate>=64?candidate:Math.min(638,initial+(attempt-Math.floor((initial-64)/22))*22);
+    for(let attempt=0;attempt<28;attempt++){
+      const candidate=initial-attempt*22*readability;
+      y=candidate>=64?candidate:Math.min(arenaHeight(g)+14,initial+(attempt-Math.floor((initial-64)/(22*readability)))*22*readability);
       if(!out.some(b=>x<b.x+b.w+3&&x+w+3>b.x&&y<b.y+b.h+3&&y+h+3>b.y))break;
     }
     out.push({slot,text,x,y,w,h,help});
@@ -81,20 +83,21 @@ const themes=[
 ] as const;
 export function arenaBackdrop(g:GameState,reduced=false):PixelQuad[] {
   const out:PixelQuad[]=[],c=themes[Math.floor((g.Party!.Wave-1)/3)%themes.length]!;
-  rect(out,c[0],24,72,720,576);
+  const width=arenaWidth(g),height=arenaHeight(g),dx=width-768,dy=height-624;
+  rect(out,c[0],24,72,width-48,height-48);
   // Distant arches and staggered masonry give the stationary arena depth.
   for(let i=0;i<8;i++){
-    const x=50+i*94,height=130+(i*73%170);
-    rect(out,c[1],x,648-height,60,height);rect(out,c[2],x+8,648-height,44,3);
-    rect(out,c[0],x+17,664-height,26,height-16);
+    const x=50+i*(94+dx/8),height=130+(i*73%170);
+    rect(out,c[1],x,648+dy-height,60,height);rect(out,c[2],x+8,648+dy-height,44,3);
+    rect(out,c[0],x+17,664+dy-height,26,height-16);
   }
   for(let i=0;i<14;i++){
-    const x=58+(i*157%650),y=110+(i*83%480);
+    const x=58+(i*157%(650+dx)),y=110+(i*83%(480+dy));
     rect(out,c[1],x,y,34,2);
   }
   if(!reduced)for(let i=0;i<10;i++){
-    const phase=(g.Tick+i*37)%240,y=620-phase*2;
-    sparkle(out,60+(i*163%648),y,c[3],phase%60<10?2:1);
+    const phase=(g.Tick+i*37)%240,y=620+dy-phase*2;
+    sparkle(out,60+(i*163%(648+dx)),y,c[3],phase%60<10?2:1);
   }
   return out;
 }
@@ -128,7 +131,7 @@ export function advanceFeel(old:FeelState,g:GameState,step:number):FeelState {
 export function cueQuads(state:FeelState,reduced=false):PixelQuad[] {
   const out:PixelQuad[]=[];
   for(const c of state.cues){
-    const age=state.clock-c.at,color=feelColors[c.slot%6]!;
+    const age=state.clock-c.at,color=feelColors[c.slot%feelColors.length]!;
     if(c.kind==='jump'||c.kind==='land'){
       const landing=c.kind==='land',life=landing?18:14;
       if(age>=life||reduced)continue;
@@ -154,7 +157,7 @@ export function cueQuads(state:FeelState,reduced=false):PixelQuad[] {
       const count=c.kind==='victory'?36:18;
       for(let i=0;i<count;i++){
         const vx=((i*17%23)-11)*.48,vy=-2.5-(i%7)*.6;
-        rect(out,feelColors[i%6]!,c.x+vx*age,c.y+vy*age+.055*age*age,age>45?2:3,age>45?2:5);
+        rect(out,feelColors[i%feelColors.length]!,c.x+vx*age,c.y+vy*age+.055*age*age,age>45?2:3,age>45?2:5);
       }
     }
   }
@@ -168,7 +171,7 @@ export function popQuads(g:GameState,reduced=false):PixelQuad[]{
     ring(out,cx,cy,7+age*1.8,age<4?'#fff3c4':'#85cfe0',age);
     if(!reduced)for(let i=0;i<4;i++){
       const a=i*Math.PI/2+.6,r=10+age*2.2;
-      rect(out,feelColors[i%6]!,cx+goSin(a)*r,cy+goSin(a+Math.PI/2)*r+age*.4,age<7?3:2,age<7?3:2);
+      rect(out,feelColors[i%feelColors.length]!,cx+goSin(a)*r,cy+goSin(a+Math.PI/2)*r+age*.4,age<7?3:2,age<7?3:2);
     }
   }
   return out;

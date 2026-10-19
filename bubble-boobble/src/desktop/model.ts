@@ -1,4 +1,4 @@
-import { partyColors, defaultPartySlots } from '../arcade/party-config';
+import { partyNames, defaultPartySlots } from '../arcade/party-config';
 import type { DesktopState } from './state.ts';
 import { leaderboard, type DesktopSave } from './save.ts';
 import { editorTools } from './editor.ts';
@@ -9,7 +9,7 @@ export function getDesktopButtons(s:DesktopState,p:DesktopSave):DesktopButton[]{
  case 'title':return [button('menu','PRESS ENTER TO START')];
  case 'menu':return [button('choose-mode','START GAME'),button('settings','SETTINGS'),...(s.developmentMenu?[button('profiles','PROFILES'),button('scores','HIGH SCORES'),button('editor','LEVEL EDITOR'),button('help','HOW TO PLAY'),button('credits','CREDITS'),button('quit','QUIT')]:[])];
  case 'modes':return [button('classic-mode','CLASSIC MODE'),button('madness-mode','BUBBLE MADNESS'),button('mode-back','BACK')];
- case 'party':return [...(s.partySlots??defaultPartySlots).map((slot,i)=>button(`party-slot:${i}`,`${i+1} ${partyColors[i]!.toUpperCase()} / ${slot==='human'?`HUMAN - PAD ${i+1}`:slot.toUpperCase()}`)),button('start-party',s.partyEditing?'RESUME SURVIVAL':'START SURVIVAL'),button('menu','BACK')];
+ case 'party':return [...(s.partySlots??defaultPartySlots).map((slot,i)=>button(`party-slot:${i}`,`${partyNames[i]} / ${slot==='human'?`HUMAN - PAD ${i+1}`:slot.toUpperCase()}`)),button('start-party',s.partyEditing?'RESUME SURVIVAL':'START SURVIVAL'),button('menu','BACK')];
  case 'profiles':return [...p.profiles.map((v,i)=>button(`profile:${i}`,`${i===p.active?'* ':''}${v.name}`)),button('new-profile','NEW PROFILE'),button('menu','BACK')];
  case 'new-profile':return [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('').map(c=>button(`char:${c}`,c)),button('char: ','SPACE'),button('delete-char','DEL'),button('create-profile','CREATE PROFILE'),button('profiles','CANCEL')];
  case 'settings':return [button('avatar',`DRAGON: ${p.profiles[p.active]!.avatar.toUpperCase()}`),button('music',`MUSIC: ${p.settings.music}%`),button('sound',`SOUND: ${p.settings.sound}%`),button('fullscreen',`FULLSCREEN: ${p.settings.fullscreen?'ON':'OFF'}`),button('play-mode',`MODE: ${s.playMode==='ai'?'AI CO-OP':s.playMode==='human'?'HUMAN CO-OP':'SOLO'}`),button('effects',`EFFECTS: ${p.settings.reducedEffects?'REDUCED':'FULL'}`),button('menu','BACK')];

@@ -1,13 +1,11 @@
+import { arenaWidth, arenaHeight, arenaRows, arenaColumns } from './types';
 import {
   ActorSize,
   EnemyState,
   type GameState,
-  Height,
   type Item,
   TPS,
   Tile,
-  Width,
-  Rows,
   alive,
   body,
   intersects,
@@ -32,16 +30,16 @@ export const item = (X: number, Y: number): Item => ({
 export function spawnFood(g: GameState, x: number, y: number) {
   g.Items.push({
     ...item(
-      Math.max(2 * Tile, Math.min(Width - 2 * Tile - 32, x)),
-      Math.max(Tile, Math.min(Height - 2 * Tile, y)),
+      Math.max(2 * Tile, Math.min(arenaWidth(g) - 2 * Tile - 32, x)),
+      Math.max(Tile, Math.min(arenaHeight(g) - 2 * Tile, y)),
     ),
     Food: g.Level.number,
   });
 }
 function partyPowerLocation(g: GameState): [number, number] | undefined {
   const locations: [number, number][] = [];
-  for (let row = 2; row < Rows; row++) {
-    for (let col = 2; col < 29; col++) {
+  for (let row = 2; row < arenaRows(g); row++) {
+    for (let col = 2; col < arenaColumns(g)-3; col++) {
       const x = col * Tile, y = row * Tile - 32;
       if (blocked(g, x, y, 32) || !solid(g, col, row) || !solid(g, Math.floor((x + 31) / Tile), row)) continue;
       if (g.Players.some(p => alive(p) && intersects(p.X, p.Y, ActorSize, ActorSize, x, y, 32, 32))) continue;
@@ -91,7 +89,7 @@ export function checkPowerSpawns(g: GameState) {
     g.WaterStage = 0;
   }
   if (g.Pending.length === 0 || g.Items.some((i) => i.Power !== "")) return;
-  const location = g.Party ? partyPowerLocation(g) : position(g.Level.power_spawn, 32);
+  const location = g.Party ? partyPowerLocation(g) : position(g.Level.power_spawn, 32, g.Level);
   if (!location) return;
   const [x, y] = location;
   g.Items.push({ ...item(x, y), Power: g.Pending.shift()! });
@@ -120,8 +118,8 @@ export function updateItems(g: GameState) {
         it.Y = row * Tile - 32;
         it.VY = 0;
       } else it.Y += it.VY;
-      if (it.Y > Height) {
-        [it.X, it.Y] = position(g.Level.food_spawn, 32);
+      if (it.Y > arenaHeight(g)) {
+        [it.X, it.Y] = position(g.Level.food_spawn, 32, g.Level);
         it.VY = 0;
       }
     }

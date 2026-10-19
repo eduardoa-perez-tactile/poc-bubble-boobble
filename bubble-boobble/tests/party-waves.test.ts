@@ -71,7 +71,7 @@ worldTest('party waves snapshot isolation includes boss slots telegraphs and bot
 });
 worldTest('party waves lobby starts restarts and leaves through engine intents',async({input,step})=>{
  await step(3);input.emit(DesktopIntent,{action:'party'});await step(1);expect(desktopState.get().screen).toBe('party');
- input.emit(DesktopIntent,{action:'start-party'});await step(1);expect(session.get().game!.Players.length).toBe(6);expect(session.get().game!.Party!.Slots.filter(s=>s==='ai').length).toBe(5);
+ input.emit(DesktopIntent,{action:'start-party'});await step(1);expect(session.get().game!.Players.length).toBe(10);expect(session.get().game!.Party!.Slots.filter(s=>s==='ai').length).toBe(9);
  input.emit(DesktopIntent,{action:'pause'});await step(1);const tick=session.get().game!.Tick;await step(10);expect(session.get().game!.Tick).toBe(tick);
  input.emit(DesktopIntent,{action:'restart'});await step(1);expect(session.get().game!.Party!.Wave).toBe(1);expect(session.get().game!.Paused).toBe(false);
  input.emit(DesktopIntent,{action:'leave'});await step(1);expect(session.get().active).toBe(false);expect(desktopState.get().screen).toBe('menu');
@@ -85,7 +85,7 @@ worldTest('party recorded wave clear rest boss and results',async({cheat,step})=
 },{scene:'scenes/arcade.scene.json'});
 renderTest('party wave lobby buttons fit desktop extremes and launch actual game',async({input,step,render,ui})=>{
  await step(3);input.emit(DesktopIntent,{action:'party'});await step(1);
- for(const [w,h] of [[768,720],[1680,720],[640,960]]){input.view(w!,h!,1);await step(1);render.stats({width:w!,height:h!});const buttons=ui.interactables();expect(buttons.length).toBe(8);for(const b of buttons){expect(b.rect.x>=0&&b.rect.y>=0&&b.rect.x+b.rect.width<=w!&&b.rect.y+b.rect.height<=h!).toBe(true);}}
+ for(const [w,h] of [[768,720],[1680,720],[640,960]]){input.view(w!,h!,1);await step(1);render.stats({width:w!,height:h!});const buttons=ui.interactables();expect(buttons.length).toBe(12);for(const b of buttons){expect(b.rect.x>=0&&b.rect.y>=0&&b.rect.x+b.rect.width<=w!&&b.rect.y+b.rect.height<=h!).toBe(true);}}
  input.view(768,720,1);await step(1);render.stats({width:768,height:720});render.expectDrawCalls('<=',14,{width:768,height:720});render.expectScreenshot('lobby',{width:768,height:720});
  const start=ui.interactables().find(b=>b.label==='START SURVIVAL')!;await ui.press(start.id!);await step(2);expect(session.get().game!.Party!.Wave).toBe(1);
 },{scene:'scenes/arcade.scene.json'});
@@ -149,31 +149,31 @@ worldTest('party five bots naturally clear a complete wave before the rest',()=>
 worldTest('party dragon grid navigates rows and columns before configuring and starting',async({input,step})=>{
  await step(3);input.emit(DesktopIntent,{action:'party'});await step(1);expect(desktopState.get().selected).toBe(0);
  input.action('menuX',1);await step(1);expect(desktopState.get().selected).toBe(1);
- input.action('menuX',0);await step(1);input.action('menuY',1);await step(1);expect(desktopState.get().selected).toBe(4);
- input.action('menuY',0);input.action('confirm',1);await step(1);expect(desktopState.get().partySlots[4]).toBe('empty');
- input.action('confirm',0);await step(1);input.action('menuY',1);await step(1);expect(desktopState.get().selected).toBe(6);
- input.action('menuY',0);input.action('confirm',1);await step(1);expect(session.get().game!.Party!.Slots[4]).toBe('empty');expect(desktopState.get().screen).toBe('play');
+ input.action('menuX',0);await step(1);input.action('menuY',1);await step(1);expect(desktopState.get().selected).toBe(6);
+ input.action('menuY',0);input.action('confirm',1);await step(1);expect(desktopState.get().partySlots[6]).toBe('empty');
+ input.action('confirm',0);await step(1);input.action('menuY',1);await step(1);expect(desktopState.get().selected).toBe(11);
+ input.action('menuY',0);input.action('menuX',1);await step(1);input.action('menuX',0);input.action('confirm',1);await step(1);expect(session.get().game!.Party!.Slots[6]).toBe('empty');expect(desktopState.get().screen).toBe('play');
 },{scene:'scenes/arcade.scene.json'});
 
 renderTest('party dragon cards change their own slot through real pointer presses',async({input,step,ui,render})=>{
  input.view(768,720,1);await step(3);input.emit(DesktopIntent,{action:'party'});await step(2);render.stats({width:768,height:720});
  const cards=ui.interactables().filter(b=>b.rect.height===214);
- expect(cards.length).toBe(6);
- for(let i=0;i<6;i++){
-   const card=cards.find(b=>Math.abs(b.rect.x-(48+i%3*228))<1&&Math.abs(b.rect.y-(132+Math.floor(i/3)*230))<1)!;
+ expect(cards.length).toBe(10);
+ for(let i=0;i<10;i++){
+   const card=cards.find(b=>Math.abs(b.rect.x-(24+i%5*146))<1&&Math.abs(b.rect.y-(132+Math.floor(i/5)*230))<1)!;
    expect(!!card).toBe(true);await ui.press(card.id!);await step(1);render.stats({width:768,height:720});
    expect(desktopState.get().partySlots[i]).toBe(i===0?'ai':'empty');
  }
  render.expectScreenshot('open_slots',{width:768,height:720});
 },{scene:'scenes/arcade.scene.json'});
 
-worldTest('party dragon grid accepts a controller selecting the orange dragon',async({input,step})=>{
+worldTest('party dragon grid accepts a controller selecting the pink dragon',async({input,step})=>{
  await step(3);input.emit(DesktopIntent,{action:'party'});await step(1);
  const pad=(events:unknown[])=>__gameengine_host('test.input',JSON.stringify(events));
  pad([{type:'gamepadAxis',pad:5,axis:0,value:1}]);await step(1);
  pad([{type:'gamepadAxis',pad:5,axis:0,value:0},{type:'gamepadAxis',pad:5,axis:1,value:1}]);await step(1);
  pad([{type:'gamepadAxis',pad:5,axis:1,value:0},{type:'gamepadAxis',pad:5,axis:0,value:1}]);await step(1);
- expect(desktopState.get().selected).toBe(5);
+ expect(desktopState.get().selected).toBe(7);
  pad([{type:'gamepadAxis',pad:5,axis:0,value:0},{type:'gamepadButton',pad:5,button:0,down:true}]);await step(1);
- expect(desktopState.get().partySlots[5]).toBe('empty');expect(desktopState.get().partySlots[4]).toBe('ai');
+ expect(desktopState.get().partySlots[7]).toBe('empty');expect(desktopState.get().partySlots[4]).toBe('ai');
 },{scene:'scenes/arcade.scene.json'});

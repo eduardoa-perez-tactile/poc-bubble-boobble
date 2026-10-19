@@ -52,7 +52,7 @@ worldTest('party last standing a surviving AI continues after the only human fal
 worldTest('party last standing a full wipe ends the run during preparation or rest as well as combat',()=>{
  for(const phase of ['prepare','rest','combat'] as const){
   const g=createPartyGame(campaign,42);g.Party!.Phase=phase;g.Party!.Timer=300;
-  for(let i=0;i<6;i++){g.Players[i]!.Invincible=0;hurtPlayer(g,i);}
+  for(let i=0;i<g.Players.length;i++){g.Players[i]!.Invincible=0;hurtPlayer(g,i);}
   stepGame(g,idle);expect(g.State).toBe(State.GameOver);
  }
 });

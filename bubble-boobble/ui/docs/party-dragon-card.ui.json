@@ -14,7 +14,7 @@
         "pad": 0,
         "align": "center",
         "radius": 12,
-        "w": 216,
+        "w": 136,
         "h": 214
       },
       "children": [
@@ -23,7 +23,6 @@
         "pc_right",
         "pc_bottom",
         "pc_footer",
-        "pc_focus",
         "pc_selected_left",
         "pc_selected_right",
         "pc_selected_bottom",
@@ -47,7 +46,7 @@
           0,
           0
         ],
-        "w": 216,
+        "w": 136,
         "h": 30,
         "bg": "#70f089"
       }
@@ -102,7 +101,7 @@
           0
         ],
         "offset": [
-          213,
+          133,
           30
         ],
         "w": 3,
@@ -125,7 +124,7 @@
           0,
           211
         ],
-        "w": 216,
+        "w": 136,
         "h": 3,
         "bg": "#70f089"
       }
@@ -148,7 +147,7 @@
           3,
           164
         ],
-        "w": 210,
+        "w": 130,
         "h": 47,
         "bg": "#131d31"
       }
@@ -167,8 +166,11 @@
           0,
           8
         ],
-        "fontSize": 12,
-        "color": "#ebf5ff"
+        "fontSize": 10,
+        "color": "#ebf5ff",
+        "w": 130,
+        "fitMin": 8,
+        "textAlign": "center"
       }
     },
     "pc_hint": {
@@ -185,28 +187,9 @@
           0,
           29
         ],
-        "fontSize": 8,
+        "fontSize": 7,
         "color": "#829fb1"
       }
-    },
-    "pc_focus": {
-      "type": "label",
-      "name": "Label",
-      "text": ">",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0,
-          0
-        ],
-        "offset": [
-          9,
-          9
-        ],
-        "fontSize": 12,
-        "color": "#080c1b"
-      },
-      "show": "selected"
     },
     "pc_selected_left": {
       "type": "element",
@@ -241,7 +224,7 @@
           0
         ],
         "offset": [
-          213,
+          133,
           30
         ],
         "w": 3,
@@ -265,7 +248,7 @@
           0,
           211
         ],
-        "w": 216,
+        "w": 136,
         "h": 3,
         "bg": "#ffffff"
       },
@@ -286,7 +269,7 @@
           0,
           0
         ],
-        "w": 216,
+        "w": 136,
         "h": 3,
         "bg": "#ffffff"
       },
@@ -298,10 +281,6 @@
     "type": "instant"
   },
   "properties": {
-    "label": {
-      "type": "text",
-      "default": "1UP GREEN"
-    },
     "modeLabel": {
       "type": "text",
       "default": "HUMAN / PAD 1"
@@ -336,7 +315,11 @@
         "red",
         "yellow",
         "purple",
-        "orange"
+        "orange",
+        "cyan",
+        "pink",
+        "ivory",
+        "slate"
       ],
       "default": "green",
       "poses": {
@@ -435,8 +418,76 @@
               "bg": "#ff8700"
             }
           }
+        },
+        "cyan": {
+          "set": {
+            "pc_header": {
+              "bg": "#00f0d7"
+            },
+            "pc_left": {
+              "bg": "#00f0d7"
+            },
+            "pc_right": {
+              "bg": "#00f0d7"
+            },
+            "pc_bottom": {
+              "bg": "#00f0d7"
+            }
+          }
+        },
+        "pink": {
+          "set": {
+            "pc_header": {
+              "bg": "#ff69be"
+            },
+            "pc_left": {
+              "bg": "#ff69be"
+            },
+            "pc_right": {
+              "bg": "#ff69be"
+            },
+            "pc_bottom": {
+              "bg": "#ff69be"
+            }
+          }
+        },
+        "ivory": {
+          "set": {
+            "pc_header": {
+              "bg": "#f5ebc8"
+            },
+            "pc_left": {
+              "bg": "#f5ebc8"
+            },
+            "pc_right": {
+              "bg": "#f5ebc8"
+            },
+            "pc_bottom": {
+              "bg": "#f5ebc8"
+            }
+          }
+        },
+        "slate": {
+          "set": {
+            "pc_header": {
+              "bg": "#9fbbdc"
+            },
+            "pc_left": {
+              "bg": "#9fbbdc"
+            },
+            "pc_right": {
+              "bg": "#9fbbdc"
+            },
+            "pc_bottom": {
+              "bg": "#9fbbdc"
+            }
+          }
         }
       }
+    },
+    "label": {
+      "type": "text",
+      "default": "BUB"
     }
   },
   "states": {

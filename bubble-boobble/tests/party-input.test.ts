@@ -19,11 +19,11 @@ worldTest('party recorded raw events support all six pad indices',async({world,s
 },{scene:'scenes/arcade.scene.json'});
 worldTest('party six pad isolation held input and edge controls',async()=>{
  let frame=reducePartyPadInput(createPartyPads(),Array.from({length:6},(_,pad)=>({type:'gamepadButton',pad,button:0,down:true})));
- expect(frame.inputs.map(p=>p.Jump)).toEqual([true,true,true,true,true,true]);
+ expect(frame.inputs.slice(0,6).map(p=>p.Jump)).toEqual([true,true,true,true,true,true]);
  frame=reducePartyPadInput(frame.pads,[{type:'gamepadAxis',pad:5,axis:0,value:-0.8},{type:'gamepadButton',pad:4,button:2,down:true},{type:'gamepadButton',pad:5,button:6,down:true},{type:'gamepadButton',pad:2,button:0,down:false}]);
- expect(frame.inputs.map(p=>p.Move)).toEqual([0,0,0,0,0,-0.8]);
- expect(frame.inputs.map(p=>p.Fire)).toEqual([false,false,false,false,true,false]);
- expect(frame.inputs.map(p=>p.Jump)).toEqual([true,true,false,true,true,true]);
+ expect(frame.inputs.slice(0,6).map(p=>p.Move)).toEqual([0,0,0,0,0,-0.8]);
+ expect(frame.inputs.slice(0,6).map(p=>p.Fire)).toEqual([false,false,false,false,true,false]);
+ expect(frame.inputs.slice(0,6).map(p=>p.Jump)).toEqual([true,true,false,true,true,true]);
  expect(frame.joinedSlots).toEqual([5]);expect(frame.pause).toBe(true);
  frame=reducePartyPadInput(frame.pads,[]);
  expect(frame.inputs[5]!.Move).toBe(-0.8);expect(frame.inputs[4]!.Fire).toBe(true);
@@ -35,7 +35,7 @@ worldTest('party six pad isolation held input and edge controls',async()=>{
 });
 worldTest('party dpad deadzone and invalid pad safety',async()=>{
  const original=createPartyPads();
- const frame=reducePartyPadInput(original,[{type:'gamepadAxis',pad:0,axis:0,value:0.2},{type:'gamepadButton',pad:1,button:13,down:true},{type:'gamepadButton',pad:6,button:0,down:true},{type:'gamepadButton',pad:-1,button:0,down:true},{type:'gamepadAxis',pad:3,axis:0,value:NaN}]);
+ const frame=reducePartyPadInput(original,[{type:'gamepadAxis',pad:0,axis:0,value:0.2},{type:'gamepadButton',pad:1,button:13,down:true},{type:'gamepadButton',pad:10,button:0,down:true},{type:'gamepadButton',pad:-1,button:0,down:true},{type:'gamepadAxis',pad:3,axis:0,value:NaN}]);
  expect(frame.inputs[0]!.Move).toBe(0);expect(frame.inputs[1]!.Move).toBe(-1);
  expect(frame.inputs[3]!.Move).toBe(0);expect(original[1]!.left).toBe(false);
 });
@@ -45,7 +45,7 @@ worldTest('party named actions preserve keyboard and combine with pad',async()=>
   if(action)applyPartyAction(inputs,action);
  }
  expect(inputs[0]).toEqual({Move:1,Jump:true,Fire:false});expect(inputs[5]!.Fire).toBe(true);
- for(const name of ['move','partyMove0','partyMove7','partyMove01','partyFire1extra','partyUnknown1'])expect(readPartyAction(name,1,true,true)).toBe(null);
+ for(const name of ['move','partyMove0','partyMove11','partyMove01','partyFire1extra','partyUnknown1'])expect(readPartyAction(name,1,true,true)).toBe(null);
 });
 worldTest('party menus accept recorded controller input and keyboard fallback',async({world,step,input})=>{
  inject([{type:'gamepadAxis',pad:5,axis:1,value:1},{type:'gamepadButton',pad:5,button:1,down:true}]);

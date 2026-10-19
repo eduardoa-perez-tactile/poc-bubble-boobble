@@ -159,6 +159,9 @@ async function openEditor() {
 }
 // The installed replay CLI drops the test's recorded scene. Supply it to the host.
 const replays = [
+  {path:'tests/replays/courtyard_full_arena_and_ten_identities_fit_native_wide_tall_and_ultrawide_windows.greplay',scene:'scenes/arcade.scene.json',filter:'courtyard full arena and ten identities fit native wide tall and ultrawide windows',tier:'t1'},
+  {path:'tests/replays/ten_named_actions_reject_malformed_suffixes_and_pad_ten_stays_isolated.greplay',scene:'scenes/arcade.scene.json',filter:'ten named actions reject malformed suffixes and pad ten stays isolated'},
+  {path:'tests/replays/ten_dragons_firing_and_rescue_remain_bounded_on_phone_low.greplay',scene:'scenes/arcade.scene.json',filter:'ten dragons firing and rescue remain bounded on phone low',tier:'t1'},
   {path:'tests/replays/feedback_shooting_space_cannot_restart_a_defeated_boss_run.greplay',scene:'scenes/arcade.scene.json',filter:'feedback shooting Space cannot restart a defeated boss run'},
   {path:'tests/replays/feedback_results_require_release_and_a_fresh_controller_confirmation_after_the_guard.greplay',scene:'scenes/arcade.scene.json',filter:'feedback results require release and a fresh controller confirmation after the guard'},
   {path:'tests/replays/feedback_jump_dust_grounded_shadows_nameplates_and_guarded_results_remain_readable.greplay',scene:'scenes/arcade.scene.json',filter:'feedback jump dust grounded shadows nameplates and guarded results remain readable',tier:'t1'},

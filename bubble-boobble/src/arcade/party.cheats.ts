@@ -10,8 +10,8 @@ import { desktopGameRequest, desktopAction } from '../desktop/state';
 import { EnemyState, State } from './types';
 import { checkPowerSpawns } from './items';
 import { hurtPlayer } from './player';
-export const PartyReset=defineCheat({id:'party.reset',group:'Party',title:'Inspect wave survival',params:{countdown:{type:'int',min:1,max:180,default:1},wave:{type:'int',min:1,max:10,default:1},humans:{type:'int',min:1,max:6,default:1}},resources:[write(ArcadeControl)],run(ctx,{wave,humans,countdown}){
-  const g=createPartyGame(campaign,42,Array.from({length:6},(_,i)=>i<humans?'human':'ai'));
+export const PartyReset=defineCheat({id:'party.reset',group:'Party',title:'Inspect wave survival',params:{team:{type:'int',min:6,max:10,default:6},countdown:{type:'int',min:1,max:180,default:1},wave:{type:'int',min:1,max:10,default:1},humans:{type:'int',min:1,max:10,default:1}},resources:[write(ArcadeControl)],run(ctx,{wave,humans,countdown,team}){
+  const g=createPartyGame(campaign,42,Array.from({length:team===10?10:6},(_,i)=>i<humans?'human':'ai'));
   g.Party!.Wave=wave;preparePartyWave(g);g.Party!.Timer=countdown;
   desktopAction('party');desktopAction('start-party');
   session.set({active:true,mode:'party',game:g});ctx.setField(ArcadeControl,'skip',true);ctx.setField(ArcadeControl,'requestSequence',desktopGameRequest.get().sequence);
@@ -21,10 +21,16 @@ export const PartyRescue=defineCheat({id:'party.rescue-setup',group:'Party',titl
 export const PartyVictory=defineCheat({id:'party.finish-boss',group:'Party',title:'Inspect boss victory result',run(){const current=session.get();if(!current.game?.Party?.Boss)return;const g=copyGame(current.game);const b=g.Party!.Boss!;b.HP=0;b.Mode='captured';b.Timer=30;const p=g.Players.find(p=>p.Lives>0&&!p.Downed)!;p.X=b.X;p.Y=b.Y;p.VY=0;p.Invincible=120;g.State=State.Playing;session.set({...current,game:g});}});
 export const PartyPower=defineCheat({id:'party.powerup',group:'Party',title:'Inspect a randomized powerup',run(){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Pending.push('pink_candy');checkPowerSpawns(g);session.set({...current,game:g});}});
 export const PartyLastEnemy=defineCheat({id:'party.last-enemy',group:'Party',title:'Inspect the last angry enemy',run(){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);for(let i=1;i<g.Enemies.length;i++){g.Enemies[i]!.State=EnemyState.Defeated;g.Enemies[i]!.DeadTicks=0;}session.set({...current,game:g});}});
-export const PartyHit=defineCheat({id:'party.hit-dragon',group:'Party',title:'Inspect a dragon elimination',params:{slot:{type:'int',min:0,max:5,default:0}},run(_ctx,{slot}){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Players[slot]!.Invincible=0;hurtPlayer(g,slot);session.set({...current,game:g});}});
+export const PartyHit=defineCheat({id:'party.hit-dragon',group:'Party',title:'Inspect a dragon elimination',params:{slot:{type:'int',min:0,max:9,default:0}},run(_ctx,{slot}){const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);g.Players[slot]!.Invincible=0;hurtPlayer(g,slot);session.set({...current,game:g});}});
 export const PartyBossDuel=defineCheat({id:'party.boss-duel',group:'Party',title:'Inspect thunder shot and boss capture',params:{captured:{type:'bool',default:false}},run(_ctx,{captured}){
  const current=session.get();if(!current.game?.Party?.Boss)return;const g=copyGame(current.game),b=g.Party!.Boss!;
  Object.assign(b,{X:420,Y:500,VX:0,VY:0,HP:1,Mode:'moving',Timer:600});
  Object.assign(g.Players[0]!,{X:250,Y:556,Dir:1,Ground:true,Invincible:600,Cooldown:0,Lives:1,Downed:false,Dead:0});g.Players[0]!.Power.Thunder=true;
  g.Bubbles=[];g.Projectiles=[];g.Effects=[];g.Items=[];if(captured)captureBoss(g);session.set({...current,game:g});
+}});
+
+export const PartyProtect=defineCheat({id:'party.protect-team',group:'Party',title:'Keep the full team firing during a stress capture',run(){
+ const current=session.get();if(!current.game?.Party)return;const g=copyGame(current.game);
+ for(const p of g.Players)p.Invincible=3600;
+ session.set({...current,game:g});
 }});

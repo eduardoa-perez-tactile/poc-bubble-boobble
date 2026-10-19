@@ -136,7 +136,7 @@
       "props": {
         "label": "BUBBLE MADNESS",
         "description": "WAVES / RESCUES / FINAL BOSS",
-        "players": "1-6 DRAGONS",
+        "players": "1-10 DRAGONS",
         "selected": {
           "property": "madnessSelected"
         }

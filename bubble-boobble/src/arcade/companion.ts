@@ -1,9 +1,10 @@
-import { ActorSize, EnemyState, Rows, State, Tile, Width, alive, body, type GameState, type Input } from './types';
+import { arenaWidth, arenaRows } from './types';
+import { ActorSize, EnemyState, State, Tile, alive, body, type GameState, type Input } from './types';
 import { blocked, movePlayer, solid, startPlayerJump } from './physics';
 
 interface Link { To: number; Move: number; Jump: boolean; Ticks: number; Turn: number; After: number }
 interface Node { X: number; Y: number; Links: Link[] }
-interface Graph { Nodes: Node[]; LevelIndex: number; Speed: number; Shoes: boolean; ArcadeMotion: boolean }
+interface Graph { BuildIndex?:number; Nodes: Node[]; LevelIndex: number; Speed: number; Shoes: boolean; ArcadeMotion: boolean }
 interface Goal { Kind: 'enemy' | 'bubble' | 'item' | 'follow' | 'rescue' | 'boss'; ID: number; X: number; Y: number }
 /** All controller memory belongs to the game document; graph content is immutable after construction. */
 export interface CompanionState {
@@ -21,7 +22,7 @@ export interface CompanionState {
 /** Party slots are indexed exactly like Players. The original two-player API remains supported. */
 export function enableCompanion(g: GameState, index = 1) {
   const p = g.Players[index];
-  if (!p || index < 0 || index >= 6 || !Number.isInteger(index)) throw new Error('AI requires a valid player slot (0–5)');
+  if (!p || index < 0 || index >= g.Players.length || !Number.isInteger(index)) throw new Error('AI requires a valid player slot in Players');
   const ai: CompanionState = { Graph: null, Goal: null, NextThink: 0, Move: 0, TurnIn: -1, After: 0, Remaining: 0, LastX: p.X, LastY: p.Y, Stuck: 0 };
   if (g.Companions || g.Players.length !== 2 || index !== 1) {
     if (!g.Companions) {
@@ -49,21 +50,26 @@ function nearest(nodes: Node[], x: number, y: number, sameSurface = false): numb
   return best;
 }
 /** Sample standing positions, then validate graph edges with the authoritative one-way/wrap physics. */
-export function buildCompanionGraph(g: GameState, speed: number, index = 1): Graph {
+function createCompanionGraph(g: GameState, speed: number, index = 1): Graph {
   const nodes: Node[] = [];
   const shoes = g.Players[index]?.Power.Shoes ?? false;
-  for (let row = 1; row < Rows; row++) {
+  for (let row = 1; row < arenaRows(g); row++) {
     const y = row * Tile - ActorSize;
-    const stands = (x: number) => x >= 2 * Tile && x <= Width - 2 * Tile - ActorSize &&
+    const stands = (x: number) => x >= 2 * Tile && x <= arenaWidth(g) - 2 * Tile - ActorSize &&
       !blocked(g, x + 2, y + 2, ActorSize - 4) &&
       (solid(g, Math.floor((x + 4) / Tile), row) || solid(g, Math.floor((x + ActorSize - 4) / Tile), row));
-    for (let x = 2 * Tile; x <= Width - 2 * Tile - ActorSize; x += Tile)
+    for (let x = 2 * Tile; x <= arenaWidth(g) - 2 * Tile - ActorSize; x += Tile)
       if (stands(x) && (x % (2 * Tile) === 0 || !stands(x - Tile) || !stands(x + Tile))) nodes.push({ X: x, Y: y, Links: [] });
-    const right = Width - 2 * Tile - ActorSize;
+    const right = arenaWidth(g) - 2 * Tile - ActorSize;
     if (stands(right)) nodes.push({ X: right, Y: y, Links: [] });
   }
-  for (let from = 0; from < nodes.length; from++) {
-    const n = nodes[from]!;
+  return { Nodes: nodes, LevelIndex: g.LevelIndex, Speed: speed, Shoes: shoes, ArcadeMotion: g.PlayerBalance.ArcadeMotion !== false };
+}
+function linkCompanionNodes(g:GameState,graph:Graph,start:number,count:number) {
+  const nodes=graph.Nodes,speed=graph.Speed,shoes=graph.Shoes;
+  for (let from = start; from < Math.min(nodes.length,start+count); from++) {
+    const n:Node = {...nodes[from]!,Links:[]};
+    nodes[from]=n;
     for (const jump of [false, true]) for (const move of [-1, 0, 1]) {
       if (!jump && move === 0) continue;
       // Braking/reversing in the air reaches ledges that constant-direction jumps miss.
@@ -88,8 +94,45 @@ export function buildCompanionGraph(g: GameState, speed: number, index = 1): Gra
       }
     }
   }
-  return { Nodes: nodes, LevelIndex: g.LevelIndex, Speed: speed, Shoes: shoes, ArcadeMotion: g.PlayerBalance.ArcadeMotion !== false };
 }
+/** Synchronous oracle for Classic, tests and offline inspection. */
+export function buildCompanionGraph(g:GameState,speed:number,index=1):Graph {
+  const graph=createCompanionGraph(g,speed,index);
+  linkCompanionNodes(g,graph,0,graph.Nodes.length);
+  return graph;
+}
+function graphMatches(g:GameState,graph:Graph|null,index:number):graph is Graph {
+  const p=g.Players[index]!;
+  return !!graph&&graph.LevelIndex===g.LevelIndex&&graph.Speed===(p.Power.Shoes?g.PlayerBalance.ShoesSpeed:g.PlayerBalance.MoveSpeed)&&graph.Shoes===p.Power.Shoes&&graph.ArcadeMotion===(g.PlayerBalance.ArcadeMotion!==false);
+}
+/** Bound first-use work to four nodes per movement profile per tick. Each published
+ * graph is immutable: snapshots share finished nodes; only newly built nodes get
+ * fresh links. All equivalent bots share the same in-progress or ready graph. */
+export function warmPartyNavigation(g:GameState):void {
+  if(g.Level.arena!=='courtyard'||!g.Companions)return;
+  if(g.Companions.every((ai,index)=>!ai||!alive(g.Players[index]!)||graphMatches(g,ai.Graph,index)&&ai.Graph.BuildIndex===undefined))return;
+  for(const shoes of [false,true]){
+    const indices=g.Companions.flatMap((ai,index)=>ai&&alive(g.Players[index]!)&&g.Players[index]!.Power.Shoes===shoes?[index]:[]);
+    if(!indices.length)continue;
+    const first=indices[0]!,speed=shoes?g.PlayerBalance.ShoesSpeed:g.PlayerBalance.MoveSpeed;
+    const candidates=indices.map(i=>g.Companions![i]!.Graph).filter((graph):graph is Graph=>graphMatches(g,graph,first));
+    const shared=candidates.find(graph=>graph.BuildIndex===undefined)??candidates.reduce<Graph|undefined>((best,graph)=>!best||(graph.BuildIndex??0)>(best.BuildIndex??0)?graph:best,undefined);
+    let graph=shared??{...createCompanionGraph(g,speed,first),BuildIndex:0};
+    if(graph.BuildIndex!==undefined){
+      const start=graph.BuildIndex;
+      graph={...graph,Nodes:graph.Nodes.slice()};
+      linkCompanionNodes(g,graph,start,4);
+      if(start+4>=graph.Nodes.length)delete graph.BuildIndex;
+      else graph.BuildIndex=start+4;
+    }
+    for(const i of indices){
+      const ai=g.Companions[i]!;
+      if(!graphMatches(g,ai.Graph,i)){ai.Remaining=0;ai.NextThink=0;ai.Goal=null;ai.Stuck=0;}
+      ai.Graph=graph;
+    }
+  }
+}
+
 function chooseGoal(g: GameState, ai: CompanionState, index: number): Goal {
   const p = g.Players[index]!;
   // Idle bots follow the closest active human; an all-bot party follows its closest teammate.
@@ -128,7 +171,7 @@ function chooseGoal(g: GameState, ai: CompanionState, index: number): Goal {
   if (boss && (boss.HP > 0 || boss.Mode==='captured')) {
     const center = boss.X + 48, side = p.X + ActorSize / 2 <= center ? -1 : 1;
     const captured=boss.Mode==='captured';
-    offer({ Kind: 'boss', ID: -1, X: captured?boss.X:Math.max(2*Tile,Math.min(Width-2*Tile-ActorSize,center+side*160)), Y:boss.Y+46 }, captured?2000:p.Power.Thunder?560:0, center, boss.Y+46);
+    offer({ Kind: 'boss', ID: -1, X: captured?boss.X:Math.max(2*Tile,Math.min(arenaWidth(g)-2*Tile-ActorSize,center+side*160)), Y:boss.Y+46 }, captured?2000:p.Power.Thunder?560:0, center, boss.Y+46);
     // Pop reachable thunder bubbles rather than firing forever from a safe ledge.
     if(p.Power.Thunder&&!captured)for(const bubble of g.Bubbles)
       if(bubble.ThunderShot&&!bubble.Removed&&bubble.Age>20&&Math.abs(bubble.Y-p.Y)<170)
@@ -140,7 +183,7 @@ function chooseGoal(g: GameState, ai: CompanionState, index: number): Goal {
   for (const e of g.Enemies) if (e.State === EnemyState.Active) {
     // Approach a firing position, rather than walking directly into an enemy.
     const side = p.X <= e.X ? -1 : 1;
-    offer({ Kind: 'enemy', ID: e.ID, X: Math.max(2 * Tile, Math.min(Width - 2 * Tile - ActorSize, e.X + side * 72)), Y: e.Y }, 430, e.X, e.Y);
+    offer({ Kind: 'enemy', ID: e.ID, X: Math.max(2 * Tile, Math.min(arenaWidth(g) - 2 * Tile - ActorSize, e.X + side * 72)), Y: e.Y }, 430, e.X, e.Y);
   }
   for (let i = 0; i < g.Items.length; i++) {
     const item = g.Items[i]!;
@@ -195,7 +238,8 @@ export function companionInput(g: GameState, index = 1): Input {
     if (p.Ground && ai.Remaining < 5) ai.Remaining = 0;
   } else {
     input.Move = Math.abs(dx) > 8 ? Math.sign(dx) : 0;
-    if (p.Ground && (Math.abs(goal.Y - p.Y) > Tile || Math.abs(dx) > 2 * Tile)) {
+    // Local movement, firing and avoidance remain responsive while routes warm.
+    if (ai.Graph.BuildIndex===undefined && p.Ground && (Math.abs(goal.Y - p.Y) > Tile || Math.abs(dx) > 2 * Tile)) {
       const start = nearest(ai.Graph.Nodes, p.X, p.Y, true);
       if (start >= 0) {
         const link = route(ai.Graph, start, goal), node = ai.Graph.Nodes[start]!;
@@ -213,7 +257,7 @@ export function companionInput(g: GameState, index = 1): Input {
     }
   }
   if (ai.Stuck >= 60) {
-    input.Move = p.X > Width / 2 ? -1 : 1; input.Jump = p.Ground && !p.LastJump;
+    input.Move = p.X > arenaWidth(g) / 2 ? -1 : 1; input.Jump = p.Ground && !p.LastJump;
     ai.Move = input.Move; ai.Remaining = 36; ai.TurnIn = -1; ai.NextThink = g.Tick + 12; ai.Stuck = 0;
     input.Fire = goal.Y < p.Y - Tile;
   }

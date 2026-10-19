@@ -2,15 +2,18 @@ import { defineDoc } from '@gameengine/runtime';
 import type { DocHandle, DocValue } from '@gameengine/runtime';
 import type { Input } from './types';
 
-export const PARTY_INPUT_SLOTS = 6;
+import { partySize } from './party-config';
+export const PARTY_INPUT_SLOTS = partySize;
 export type PartyActionKind = 'Move' | 'Jump' | 'Fire' | 'Join' | 'Pause';
 export interface PartyAction { slot:number; kind:PartyActionKind; value:number; pressed:boolean; justPressed:boolean }
-/** Slot is zero-based. Only exact names party{Kind}{1..6} are accepted. */
+/** Slot is zero-based. Only exact names party{Kind}{1..10} are accepted. */
 export function readPartyAction(name:string,value:number,pressed:boolean,justPressed:boolean):PartyAction|null {
   for(const kind of ['Move','Jump','Fire','Join','Pause'] as const){
     const prefix=`party${kind}`;
-    if(name.length!==prefix.length+1||!name.startsWith(prefix))continue;
-    const slot=Number(name.slice(prefix.length))-1;
+    if(!name.startsWith(prefix))continue;
+    const suffix=name.slice(prefix.length);
+    if(!/^(?:[1-9]|10)$/.test(suffix))continue;
+    const slot=Number(suffix)-1;
     if(slot>=0&&slot<PARTY_INPUT_SLOTS)return {slot,kind,value,pressed,justPressed};
   }
   return null;

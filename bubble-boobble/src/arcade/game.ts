@@ -1,3 +1,4 @@
+import { arenaWidth, levelColumns, levelRows } from './types';
 import { stepParty, copyParty } from './party';
 import { companionInput } from './companion';
 import {
@@ -8,7 +9,6 @@ import {
   type Level,
   State,
   TPS,
-  Width,
   alive,
   body,
   direction,
@@ -26,7 +26,7 @@ export function createGame(
   seed: number,
   count = 1,
 ): GameState {
-  if (!Number.isInteger(count) || count < 1 || count > 6) throw new Error("expected one to six players");
+  if (!Number.isInteger(count) || count < 1 || count > 10) throw new Error("expected one to ten players");
   if (!levels.length) throw new Error("no levels supplied");
   for (const level of levels) validateLevel(level);
   const g: GameState = {
@@ -207,7 +207,7 @@ export function defeat(g: GameState, e: Enemy, multiplier: number) {
   if (e.State === EnemyState.Defeated) return;
   e.State = EnemyState.Defeated;
   e.DeadTicks = 50;
-  e.VX = direction(e.X - Width / 2) * 4;
+  e.VX = direction(e.X - arenaWidth(g) / 2) * 4;
   e.VY = -8;
   addScore(g, 100 * multiplier, e.X, e.Y);
 }
@@ -324,19 +324,21 @@ export function validateLevel(l: Level) {
   };
   if (l.number < 1 || l.number > 25)
     fail("tile theme must be between 1 and 25");
-  if (l.tiles.length !== 26) fail("expected 26 rows");
+  if(l.arena!==undefined&&l.arena!=='courtyard')fail('unknown arena');
+  const rows=levelRows(l),columns=levelColumns(l);
+  if (l.tiles.length !== rows) fail(`expected ${rows} rows`);
   for (const row of l.tiles) {
-    if (row.length !== 32) fail("expected 32 columns");
-    for (let col = 0; col < 32; col++) {
+    if (row.length !== columns) fail(`expected ${columns} columns`);
+    for (let col = 0; col < columns; col++) {
       if (row[col]! < 0 || row[col]! > 25) fail("invalid tile");
-      if ((col < 2 || col >= 30) && row[col]! === 0)
+      if ((col < 2 || col >= columns-2) && row[col]! === 0)
         fail("side walls must remain closed");
     }
   }
   if (!l.enemies.length || l.enemies.length > 32)
     fail("place between 1 and 32 enemies");
   const valid = (c: { col: number; row: number }) =>
-    c.col >= 2 && c.col < 30 && c.row >= 1 && c.row < 26;
+    c.col >= 2 && c.col < columns-2 && c.row >= 1 && c.row < rows;
   for (const e of l.enemies) {
     if (
       !["zenchan", "monsta", "mighta", "pulpul", "banebou", "invader"].includes(
@@ -353,8 +355,8 @@ export function validateLevel(l: Level) {
   if (l.special_count < 0 || l.special_count > 100)
     fail("invalid special bubble count");
   let space = false;
-  for (let row = 1; row < 24; row++)
-    for (let col = 2; col < 29; col++)
+  for (let row = 1; row < rows-2; row++)
+    for (let col = 2; col < columns-3; col++)
       if (
         l.tiles[row]![col]! === 0 &&
         l.tiles[row]![col + 1]! === 0 &&

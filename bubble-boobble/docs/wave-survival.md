@@ -2,13 +2,13 @@
 
 ## Direction and scope
 
-A shared-screen cooperative run for one to six human players, with optional AI
+A shared-screen cooperative run for one to ten human players, with optional AI
 filling the remaining dragon slots. The first prototype uses the campaign's
 level-one geometry, nine enemy waves and a boss on wave ten. Victory ends the
 run; an optional post-boss endless mode remains a future extension.
 
-Open **START GAME → BUBBLE MADNESS** from the main menu. The default team is one human and five
-bots. The selection screen presents six color-framed dragon portraits in a three-column,
+Open **START GAME → BUBBLE MADNESS** from the main menu. The default team is one human and nine
+bots. The selection screen presents ten color-framed dragon portraits in a five-column,
 two-row grid inspired by an arcade character-select screen. Select each card to
 cycle Human → AI → Empty. Arrow keys or a controller navigate spatially; confirm
 changes the highlighted slot. Start and Back remain separate from the cards. At least one human is
@@ -20,6 +20,10 @@ During a run, pause → **TEAM SETUP** changes Human/AI/Empty assignments withou
 restarting the wave. Resuming applies those assignments and clears recorded pad
 holds, providing a manual recovery path after a disconnected controller. The
 host exposes no recorded disconnect event, so automatic takeover is deferred.
+
+For the ten-dragon arena, identity system, current balance and the larger Dragon Courtyard arena,
+see [Ten-dragon prototype](ten-dragon-prototype.md). Historical six-player validation
+below describes the earlier checkpoints.
 
 ## Implemented increments
 

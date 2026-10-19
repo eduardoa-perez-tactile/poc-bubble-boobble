@@ -36,7 +36,11 @@
         "pl_card4",
         "pl_card5",
         "pl_start",
-        "pl_back"
+        "pl_back",
+        "pl_card6",
+        "pl_card7",
+        "pl_card8",
+        "pl_card9"
       ]
     },
     "pl_title": {
@@ -61,7 +65,7 @@
     "pl_hint": {
       "type": "label",
       "name": "Label",
-      "text": "10 WAVES / TEAM RESCUES / FINAL BOSS",
+      "text": "10 DRAGONS / 10 WAVES / TEAM RESCUES / FINAL BOSS",
       "style": {
         "position": "anchored",
         "anchor": [
@@ -79,7 +83,7 @@
     "pl_controls": {
       "type": "label",
       "name": "Label",
-      "text": "SELECT A SLOT TO CYCLE HUMAN / AI / EMPTY\nPAD START JOINS ITS SLOT / A CONFIRMS / B BACK\nP1: ARROWS + SPACE / P2: J L + I K",
+      "text": "SELECT A SLOT TO CYCLE HUMAN / AI / EMPTY\nPAD START JOINS ITS SLOT / A CONFIRMS / B BACK\nBUB: ARROWS + SPACE / BOB: J L + I K",
       "style": {
         "position": "anchored",
         "anchor": [
@@ -124,21 +128,21 @@
           0
         ],
         "offset": [
-          48,
+          24,
           132
         ],
-        "w": 216,
+        "w": 136,
         "h": 214
       },
       "props": {
-        "label": "1UP  GREEN",
-        "color": "green",
         "modeLabel": {
           "property": "mode0"
         },
         "selected": {
           "property": "sel0"
-        }
+        },
+        "color": "green",
+        "label": "BUB"
       }
     },
     "pl_card1": {
@@ -152,21 +156,21 @@
           0
         ],
         "offset": [
-          276,
+          170,
           132
         ],
-        "w": 216,
+        "w": 136,
         "h": 214
       },
       "props": {
-        "label": "2UP  BLUE",
-        "color": "blue",
         "modeLabel": {
           "property": "mode1"
         },
         "selected": {
           "property": "sel1"
-        }
+        },
+        "color": "blue",
+        "label": "BOB"
       }
     },
     "pl_card2": {
@@ -180,21 +184,21 @@
           0
         ],
         "offset": [
-          504,
+          316,
           132
         ],
-        "w": 216,
+        "w": 136,
         "h": 214
       },
       "props": {
-        "label": "3UP  RED",
-        "color": "red",
         "modeLabel": {
           "property": "mode2"
         },
         "selected": {
           "property": "sel2"
-        }
+        },
+        "color": "red",
+        "label": "EMBER"
       }
     },
     "pl_card3": {
@@ -208,21 +212,21 @@
           0
         ],
         "offset": [
-          48,
-          362
+          462,
+          132
         ],
-        "w": 216,
+        "w": 136,
         "h": 214
       },
       "props": {
-        "label": "4UP  YELLOW",
-        "color": "yellow",
         "modeLabel": {
           "property": "mode3"
         },
         "selected": {
           "property": "sel3"
-        }
+        },
+        "color": "yellow",
+        "label": "SUNNY"
       }
     },
     "pl_card4": {
@@ -236,21 +240,21 @@
           0
         ],
         "offset": [
-          276,
-          362
+          608,
+          132
         ],
-        "w": 216,
+        "w": 136,
         "h": 214
       },
       "props": {
-        "label": "5UP  PURPLE",
-        "color": "purple",
         "modeLabel": {
           "property": "mode4"
         },
         "selected": {
           "property": "sel4"
-        }
+        },
+        "color": "purple",
+        "label": "PLUM"
       }
     },
     "pl_card5": {
@@ -264,21 +268,21 @@
           0
         ],
         "offset": [
-          504,
+          24,
           362
         ],
-        "w": 216,
+        "w": 136,
         "h": 214
       },
       "props": {
-        "label": "6UP  ORANGE",
-        "color": "orange",
         "modeLabel": {
           "property": "mode5"
         },
         "selected": {
           "property": "sel5"
-        }
+        },
+        "color": "orange",
+        "label": "TANGO"
       }
     },
     "pl_start": {
@@ -329,6 +333,118 @@
         "selected": {
           "property": "backSelected"
         }
+      }
+    },
+    "pl_card6": {
+      "type": "use",
+      "doc": "party-dragon-card",
+      "key": "dragon-6",
+      "props": {
+        "color": "cyan",
+        "modeLabel": {
+          "property": "mode6"
+        },
+        "selected": {
+          "property": "sel6"
+        },
+        "label": "MIST"
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          170,
+          362
+        ],
+        "w": 136,
+        "h": 214
+      }
+    },
+    "pl_card7": {
+      "type": "use",
+      "doc": "party-dragon-card",
+      "key": "dragon-7",
+      "props": {
+        "color": "pink",
+        "modeLabel": {
+          "property": "mode7"
+        },
+        "selected": {
+          "property": "sel7"
+        },
+        "label": "ROSIE"
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          316,
+          362
+        ],
+        "w": 136,
+        "h": 214
+      }
+    },
+    "pl_card8": {
+      "type": "use",
+      "doc": "party-dragon-card",
+      "key": "dragon-8",
+      "props": {
+        "color": "ivory",
+        "modeLabel": {
+          "property": "mode8"
+        },
+        "selected": {
+          "property": "sel8"
+        },
+        "label": "PEARL"
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          462,
+          362
+        ],
+        "w": 136,
+        "h": 214
+      }
+    },
+    "pl_card9": {
+      "type": "use",
+      "doc": "party-dragon-card",
+      "key": "dragon-9",
+      "props": {
+        "color": "slate",
+        "modeLabel": {
+          "property": "mode9"
+        },
+        "selected": {
+          "property": "sel9"
+        },
+        "label": "FLINT"
+      },
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          608,
+          362
+        ],
+        "w": 136,
+        "h": 214
       }
     }
   },
@@ -406,6 +522,44 @@
     "startLabel": {
       "type": "text",
       "default": "START SURVIVAL"
+    },
+    "mode6": {
+      "type": "text",
+      "default": "AI TEAMMATE"
+    },
+    "sel6": {
+      "type": "yesno",
+      "default": false
+    },
+    "mode7": {
+      "type": "text",
+      "default": "AI TEAMMATE"
+    },
+    "sel7": {
+      "type": "yesno",
+      "default": false
+    },
+    "mode8": {
+      "type": "text",
+      "default": "AI TEAMMATE"
+    },
+    "sel8": {
+      "type": "yesno",
+      "default": false
+    },
+    "mode9": {
+      "type": "text",
+      "default": "AI TEAMMATE"
+    },
+    "sel9": {
+      "type": "yesno",
+      "default": false
+    }
+  },
+  "samples": {
+    "tenDragons": {
+      "mode0": "HUMAN / PAD 1",
+      "sel0": true
     }
   }
 }

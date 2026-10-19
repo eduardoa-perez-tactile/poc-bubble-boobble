@@ -1,3 +1,4 @@
+import { arenaWidth, arenaHeight } from './types';
 import { hitBossWithThunder } from './boss';
 import { startPlayerJump } from './physics';
 import {
@@ -6,11 +7,9 @@ import {
   type Effect,
   EnemyState,
   type GameState,
-  Height,
   type Input,
   TPS,
   Tile,
-  Width,
   alive,
   body,
   intersects,
@@ -99,7 +98,7 @@ export function updateBubbles(g: GameState, inputs: Input[]) {
       else b.Y = goFMA(goSin(b.Age / 28), 4, ceiling);
       b.X = goFMA(goSin(goFMA(b.ID, 1.7, b.Age / 60)), 0.2, b.X);
     }
-    b.X = Math.max(2 * Tile, Math.min(Width - 2 * Tile - 40, b.X));
+    b.X = Math.max(2 * Tile, Math.min(arenaWidth(g) - 2 * Tile - 40, b.X));
     if (b.EnemyID !== 0) {
       b.CapturedAge++;
       const e = enemy(g, b.EnemyID);
@@ -158,7 +157,7 @@ export function popBubble(g: GameState, index: number, player: number) {
     if (e && e.State === EnemyState.Trapped) {
       combo++;
       defeat(g, e, 1 << Math.min(combo - 1, 5));
-      const [x, y] = position(g.Level.food_spawn, 32);
+      const [x, y] = position(g.Level.food_spawn, 32, g.Level);
       g.Items.push({ ...item(x, y), Food: g.Level.number, Stationary: true });
     }
     // Empty ordinary bubbles score once each, including every bubble in a chain.
@@ -204,7 +203,7 @@ export function moveSpecialBubble(g: GameState, b: Bubble) {
     if (blocked(g, next + 4, b.Y + 4, 32)) b.Dir *= -1;
     else b.X = next;
   }
-  if (b.Y > Height) b.Y = Tile;
+  if (b.Y > arenaHeight(g)) b.Y = Tile;
 }
 export function releaseElement(g: GameState, b: Bubble, player: number) {
   g.NextID++;
@@ -248,7 +247,7 @@ export function updateEffects(g: GameState) {
           }
           hitWithElement(g, e, 40, 24);
         }
-        if (e.X < 2 * Tile || e.X > Width - 2 * Tile) e.Life = 0;
+        if (e.X < 2 * Tile || e.X > arenaWidth(g) - 2 * Tile) e.Life = 0;
         break;
       case "water":
         if (!blocked(g, e.X + 3, e.Y + 6, 26)) e.Y += 3;
@@ -270,7 +269,7 @@ export function updateEffects(g: GameState) {
             Life: 150,
             Spread: true,
           });
-        if (e.Y > Height) e.Life = 0;
+        if (e.Y > arenaHeight(g)) e.Life = 0;
         hitWithElement(g, e, 32, 32);
         carryOnWater(g, e);
         break;
@@ -290,7 +289,7 @@ export function updateEffects(g: GameState) {
                 });
           }
         }
-        if (e.Y > Height) e.Life = 0;
+        if (e.Y > arenaHeight(g)) e.Life = 0;
         hitWithElement(g, e, 32, 32);
         break;
     }
@@ -327,7 +326,7 @@ export function carryOnWater(g: GameState, effect: Effect) {
       if (
         effect.Life <= 0 ||
         e.CarryTicks >= 3 * TPS ||
-        e.Y > Height - ActorSize
+        e.Y > arenaHeight(g) - ActorSize
       )
         defeat(g, e, 2);
     }

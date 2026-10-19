@@ -1,15 +1,15 @@
 # Dragon skins
 
-Settings → DRAGON cycles **green → blue → red → yellow → purple → orange**. Clicking or confirming
+Settings → DRAGON cycles **green → blue → red → yellow → purple → orange → cyan → pink → ivory → slate**. Clicking or confirming
 advances; keyboard Left reverses and Right advances. The preview and label update
 immediately. The choice belongs to the active profile and survives saving/reload;
 existing version-1 green/blue profiles keep their settings and statistics.
 
 The selected dragon appears in the profile list, settings preview, level editor,
 gameplay and life icon. Player one keeps the selected skin in solo and co-op;
-player two retains the existing blue dragon. Party mode assigns each dragon its own skin; the six player numbers and AI markers
+player two retains the existing blue dragon. Party mode assigns each dragon its own skin; the ten dragon names and AI markers
 identify teammates above their actors and in the footer. Downed dragons appear
-inside matching rescue bubbles. Prepare/rest phases mark the six starting areas.
+inside matching rescue bubbles. Prepare/rest phases mark the ten starting areas.
 
 Skins are cosmetic and do not alter
 collision dimensions, movement, combat or scoring.
@@ -42,7 +42,9 @@ the selected labels and actual body-color pixels on every recorded GPU tier.
 
 Purple uses `[180,90,255]`; orange uses `[255,135,0]` with pale orange spines.
 Both reuse the original geometry and have matching two-shade bubble palettes.
-The six-color engine GPU probe checks rendered body pixels and matching shots.
+The ten-color engine GPU probe checks rendered body pixels and matching shots.
+
+The four added skins reuse the same virtual palette path. See [Ten-dragon prototype](ten-dragon-prototype.md) for identity cues, layout, arena and the larger Dragon Courtyard arena. Earlier six-color measurements below remain historical checkpoints.
 
 ## Matching shot colors
 

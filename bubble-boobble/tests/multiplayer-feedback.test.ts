@@ -30,7 +30,7 @@ worldTest('feedback airborne dragons do not carry a fixed black line beneath the
 worldTest('feedback overhead badges explicitly distinguish players and AI',()=>{
  const g=createPartyGame(campaign,42);
  const labels=arcadeDrawPlan(g).filter(d=>d.text&&!d.footer).map(d=>d.text);
- expect(labels.includes('P1')).toBe(true);expect(labels.includes('AI 2')).toBe(true);
+ expect(labels.includes('BUB')).toBe(true);expect(labels.includes('BOB AI')).toBe(true);
 });
 worldTest('feedback jumping and landing produce small short lived dust bursts',()=>{
  const g=createPartyGame(campaign,42,Array.from({length:6},()=> 'human')),p=g.Players[0]!;
@@ -69,7 +69,7 @@ worldTest('feedback shadows stay on supporting platforms and shrink with altitud
 worldTest('feedback clustered badges stay legible separate and inside the arena',()=>{
  const g=createPartyGame(campaign,42);
  for(const p of g.Players){p.X=340;p.Y=400;p.Downed=false;p.Lives=1;}
- const badges=dragonBadges(g);expect(badges.length).toBe(6);
+ const badges=dragonBadges(g);expect(badges.length).toBe(10);
  for(let i=0;i<badges.length;i++){
   const a=badges[i]!;expect(a.x>=48&&a.y>=64&&a.x+a.w<=720&&a.y+a.h<=656).toBe(true);
   for(const b of badges.slice(i+1))expect(a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y).toBe(false);

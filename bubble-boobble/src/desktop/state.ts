@@ -1,5 +1,5 @@
 import { updatePartyPads } from '../arcade/party-input';
-import { defaultPartySlots } from '../arcade/party-config';
+import { defaultPartySlots, partySize } from '../arcade/party-config';
 import type { PartySlot } from '../arcade/types';
 import { defineDoc, defineSystem, query, read, ActionState, TextInput, PointerHover, PointerDown, KeyEvent } from '@gameengine/runtime';
 import type { DocHandle, DocValue } from '@gameengine/runtime';
@@ -39,8 +39,8 @@ export function desktopAction(action:string,value='',index=0,x=0,y=0,now=0){
  if(action==='play-mode'){const modes:PlayMode[]=['solo','ai','human'];patch({playMode:modes[(modes.indexOf(s.playMode??'solo')+(index===-1?2:1))%3]!});return;}
  if(action==='party'){patch({screen:'party',partyEditing:s.screen==='pause'&&s.partyRun,selected:0,status:''});return;}
  if(action==='menu'&&s.screen==='party'&&s.partyEditing){patch({screen:'pause',partyEditing:false,selected:0,status:''});return;}
- if(action.startsWith('party-slot:')){const slot=Number(action.slice(11));if(!Number.isInteger(slot)||slot<0||slot>=6)return;const slots=(s.partySlots??defaultPartySlots).slice();const options:PartySlot[]=['human','ai','empty'];slots[slot]=options[(options.indexOf(slots[slot]!)+1)%3]!;patch({partySlots:slots});return;}
- if(action==='party-join'){if(index<0||index>=6)return;const slots=(s.partySlots??defaultPartySlots).slice();slots[index]='human';patch({partySlots:slots});return;}
+ if(action.startsWith('party-slot:')){const slot=Number(action.slice(11));if(!Number.isInteger(slot)||slot<0||slot>=partySize)return;const slots=(s.partySlots??defaultPartySlots).slice();const options:PartySlot[]=['human','ai','empty'];slots[slot]=options[(options.indexOf(slots[slot]!)+1)%3]!;patch({partySlots:slots});return;}
+ if(action==='party-join'){if(index<0||index>=partySize)return;const slots=(s.partySlots??defaultPartySlots).slice();slots[index]='human';patch({partySlots:slots});return;}
  if(action==='start-party'){if(!(s.partySlots??defaultPartySlots).includes('human')){patch({status:'SELECT AT LEAST ONE HUMAN'});return;}request(s.partyEditing?'party-controls':'party');patch({screen:'play',partyEditing:false,partyRun:true,custom:false,recorded:false,score:0,round:1,selected:0});return;}
  if(action==='name'){patch({name:value.slice(0,16)});return;}
  if(action==='space')action='char: ';
@@ -112,7 +112,7 @@ export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(Ar
    let heldAction=false;
    for(const c of q.chunks())for(let i=0;i<c.length;i++){
      const name=c.get(ActionState,i).name;
-     if(c.col(ActionState).pressed[i]&&(/^(confirm|profileConfirm|fire|fire2|jump|jump2)$/.test(name)||/^party(Fire|Jump)[1-6]$/.test(name)))heldAction=true;
+     if(c.col(ActionState).pressed[i]&&(/^(confirm|profileConfirm|fire|fire2|jump|jump2)$/.test(name)||/^party(Fire|Jump)([1-9]|10)$/.test(name)))heldAction=true;
    }
    const neutral=held===0&&!heldAction&&!pads.pads.some(p=>p.jump||p.fire||p.start);
    if(!s.resultReady&&ctx.step-s.resultStartedStep!>=RESULT_INPUT_DELAY&&neutral){s={...s,resultReady:true};desktopState.set(s);}

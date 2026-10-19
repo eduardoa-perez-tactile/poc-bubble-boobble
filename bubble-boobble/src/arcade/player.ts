@@ -1,4 +1,4 @@
-import { partySpawnColumns } from './party-config';
+import { partySpawn } from './party-config';
 import {
   ActorSize,
   EnemyState,
@@ -15,7 +15,7 @@ import { addScore } from "./game";
 import { productionPlayerBalance } from './balance';
 import { shootBubble } from "./bubbles";
 export function respawn(g: GameState, index: number) {
-  const c = g.Party ? {col:partySpawnColumns[index]!,row:25} : { ...g.Level.player };
+  const c = g.Party ? partySpawn(index,g.Players.length) : { ...g.Level.player };
   if (!g.Party && index === 1) c.col = 28 - c.col;
   const [x, y] = spawnPosition(g, c),
     lives = g.Players[index]!.Lives;

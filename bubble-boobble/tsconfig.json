@@ -98,7 +98,15 @@
       ],
       "@gameengine/pulse/*": [
         "./.gameengine/engine/packages/pulse/src/*"
-      ]
+      ],
+      "@gameengine/di": ["./.gameengine/engine/packages/di/src/index.ts"],
+      "@gameengine/di/*": ["./.gameengine/engine/packages/di/src/*"],
+      "@gameengine/embrace": ["./.gameengine/engine/packages/embrace/src/index.ts"],
+      "@gameengine/embrace/*": ["./.gameengine/engine/packages/embrace/src/*"],
+      "@gameengine/gws": ["./.gameengine/engine/packages/gws/src/index.ts"],
+      "@gameengine/gws/*": ["./.gameengine/engine/packages/gws/src/*"],
+      "@gameengine/playwright": ["./.gameengine/engine/packages/playwright/src/index.ts"],
+      "@gameengine/playwright/*": ["./.gameengine/engine/packages/playwright/src/*"]
     }
   },
   "include": [

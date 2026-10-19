@@ -1,11 +1,13 @@
+import { createPartyArena } from './party-arena';
+import { blocked } from './physics';
 import { createBoss, ensureThunderPickups, stepBoss } from './boss';
 import { createGame, remainingEnemies } from './game';
-import { enableCompanion, companionInput } from './companion';
+import { enableCompanion, companionInput, warmPartyNavigation } from './companion';
 import { respawn, updatePlayer, checkPlayerHit } from './player';
 import { updateEnemies, updateProjectiles, updateDefeated } from './enemies';
 import { updateBubbles, updateEffects } from './bubbles';
 import { updateItems, checkPowerSpawns, spawnFood } from './items';
-import { body, alive, EnemyState, State, Tile, ActorSize, type GameState, type Input, type Level, type PartySlot } from './types';
+import { arenaWidth, body, alive, EnemyState, State, Tile, ActorSize, type GameState, type Input, type Level, type PartySlot } from './types';
 
 import { partyColors, defaultPartySlots, partyPrepareTicks, partyBreakTicks, partySurvivorCount } from './party-config';
 export { partyColors, partySpawnColumns, defaultPartySlots } from './party-config';
@@ -14,12 +16,13 @@ const kinds = ['zenchan','monsta','banebou','mighta','pulpul','invader'];
 
 /** One authoritative party document; the campaign's arena is copied, never modified. */
 export function createPartyGame(levels:Level[], seed:number, slots:PartySlot[]=defaultPartySlots, bossWave=10):GameState {
-  if (slots.length!==6 || !slots.includes('human') || slots.some(s=>!['human','ai','empty'].includes(s))) throw new Error('Choose six slots with at least one human');
+  if (![6,10].includes(slots.length) || !slots.includes('human') || slots.some(s=>!['human','ai','empty'].includes(s))) throw new Error('Choose six or ten slots with at least one human');
   if (!Number.isInteger(bossWave)||bossWave<2||bossWave>100) throw new Error('Invalid boss wave');
-  const g=createGame(levels.slice(0,1),seed,6);
+  if(!levels.length)throw new Error('no levels supplied');
+  const g=createGame(slots.length>6?[createPartyArena(levels[0]!)]:levels.slice(0,1),seed,slots.length);
   g.Party={Wave:1,BossWave:bossWave,Phase:'prepare',Timer:partyPrepareTicks,Slots:slots.slice(),ToSpawn:0,SpawnTick:0,Spawned:0,Telegraphs:[]};
-  g.Enemies=[];g.Companions=Array.from({length:6},()=>null);
-  for(let i=0;i<6;i++) {
+  g.Enemies=[];g.Companions=Array.from({length:slots.length},()=>null);
+  for(let i=0;i<g.Players.length;i++) {
     g.Players[i]!.Skin=partyColors[i];
     g.Players[i]!.Lives=slots[i]==='empty'?0:1;
     respawn(g,i);
@@ -33,7 +36,7 @@ export function copyParty(g:GameState) {
   return p?{...p,Slots:p.Slots.slice(),Telegraphs:p.Telegraphs.map(t=>({...t})),...(p.Boss?{Boss:{...p.Boss}}:{})}:undefined;
 }
 const occupied=(g:GameState)=>g.Party!.Slots.reduce((n,s)=>n+(s!=='empty'?1:0),0);
-export function partyWaveBudget(wave:number,team:number) { return Math.min(32,3+wave*2+Math.max(0,team-1)*2); }
+export function partyWaveBudget(wave:number,team:number) { return Math.min(32,3+wave*2+Math.max(0,Math.min(team,6)-1)*2 + Math.ceil(Math.max(0,team-6)/2)); }
 /** Show the whole formation before releasing it, just like a campaign round. */
 export function preparePartyWave(g:GameState) {
   const p=g.Party!;
@@ -41,7 +44,7 @@ export function preparePartyWave(g:GameState) {
   p.Phase='prepare';p.Timer=partyPrepareTicks;g.Countdown=p.Timer;p.Spawned=0;p.Telegraphs=[];p.SpawnTick=0;p.ToSpawn=0;
   delete p.Boss;
   if(p.Wave===p.BossWave) {
-    p.Boss=createBoss(occupied(g));
+    p.Boss=createBoss(occupied(g),g.Level);
     g.Items=[];ensureThunderPickups(g);
     return;
   }
@@ -51,12 +54,22 @@ export function preparePartyWave(g:GameState) {
   // Fill all heights evenly; alternate the columns' direction between waves.
   const rows=[20,10,15,5];
   const columns=[0,7,3,4,1,6,2,5];
+  const positions:{x:number;y:number}[]=[];
+  if(g.Players.length>6)for(const row of [9,14,19,22])for(let col=3;col<=39;col+=4) {
+    const x=col*Tile,y=row*Tile-ActorSize;
+    if(!blocked(g,x,y,ActorSize))positions.push({x,y});
+  }
   for(let index=0;index<count;index++) {
     const column=columns[Math.floor(index/rows.length)]!;
-    const x=(8+(p.Wave%2?column:7-column)*2)*Tile;
-    const y=rows[index%rows.length]!*Tile-ActorSize;
+    let x=(8+(p.Wave%2?column:7-column)*2)*Tile;
+    let y=rows[index%rows.length]!*Tile-ActorSize;
+    if(positions.length) {
+      const offset=(index*7)%positions.length;
+      const pos=positions[p.Wave%2?offset:positions.length-1-offset]!;
+      x=pos.x;y=pos.y;
+    }
     g.NextID++;
-    g.Enemies.push({...body(x,y),ID:g.NextID,Kind:kinds[(index+p.Wave-1)%variety]!,State:EnemyState.Active,Dir:x<384?1:-1,Vertical:index%2?1:-1,Angry:false,Age:0,Cooldown:120,Shoot:0,DeadTicks:0,Phase:index*.6,CarriedBy:0,CarryTicks:0});
+    g.Enemies.push({...body(x,y),ID:g.NextID,Kind:kinds[(index+p.Wave-1)%variety]!,State:EnemyState.Active,Dir:x<arenaWidth(g)/2?1:-1,Vertical:index%2?1:-1,Angry:false,Age:0,Cooldown:120,Shoot:0,DeadTicks:0,Phase:index*.6,CarriedBy:0,CarryTicks:0});
   }
   p.Spawned=count;
 }
@@ -72,7 +85,7 @@ function spawnTelegraphs(g:GameState) {
   for(const t of ready) {
     g.NextID++;
     const variety=Math.min(kinds.length,p.Wave+1);
-    g.Enemies.push({...body(t.X,t.Y),ID:g.NextID,Kind:kinds[(g.NextID-1)%variety]!,State:EnemyState.Active,Dir:t.X<384?1:-1,Vertical:1,Angry:false,Age:0,Cooldown:120,Shoot:0,DeadTicks:0,Phase:0,CarriedBy:0,CarryTicks:0});
+    g.Enemies.push({...body(t.X,t.Y),ID:g.NextID,Kind:kinds[(g.NextID-1)%variety]!,State:EnemyState.Active,Dir:t.X<arenaWidth(g)/2?1:-1,Vertical:1,Angry:false,Age:0,Cooldown:120,Shoot:0,DeadTicks:0,Phase:0,CarriedBy:0,CarryTicks:0});
   }
 }
 function revive(g:GameState,index:number) {
@@ -114,8 +127,9 @@ export function stepParty(g:GameState,inputs:Input[]) {
   // Every occupied slot counts, including AI teammates and the final dragon.
   // Check before phase handling so a wiped team cannot enter another wave.
   if(partySurvivorCount(g)===0){g.State=State.GameOver;return;}
+  warmPartyNavigation(g);
   const ins=inputs.slice();
-  for(let i=0;i<6;i++) {
+  for(let i=0;i<g.Players.length;i++) {
     if(p.Slots[i]==='empty')continue;
     if(p.Slots[i]==='ai')ins[i]=companionInput(g,i);
     if(alive(g.Players[i]!))updatePlayer(g,i,ins[i]??idle);
@@ -143,7 +157,7 @@ export function stepParty(g:GameState,inputs:Input[]) {
   enrageLastEnemy(g);
   if(p.Phase==='boss')stepBoss(g);
   if(g.State===State.Won)return;
-  for(let i=0;i<6;i++)checkPlayerHit(g,i);
+  for(let i=0;i<g.Players.length;i++)checkPlayerHit(g,i);
   if(partySurvivorCount(g)===0){g.State=State.GameOver;return;}
   if(p.Phase==='combat'&&p.ToSpawn===0&&p.Telegraphs.length===0&&remainingEnemies(g)===0)rest(g);
   g.Particles=g.Particles.filter(v=>{v.Y-=.6;return --v.Life>0;});

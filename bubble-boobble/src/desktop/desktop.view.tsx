@@ -28,10 +28,18 @@ export const DesktopAccountView=defineView<DesktopModel>({
 export const DesktopPartyView=defineView<DesktopModel>({
  name:'PartyLobby',samples:{team:desktopModel({...initialDesktopState,screen:'party',selected:0},initialDesktopSave)},
  render:(model,{intent})=><Screen safeArea class="desktop-screen"><Widget doc="party-lobby" id="party-lobby" class="desktop-party"
- props={{heading:()=>model().buttons[6]?.label==='RESUME SURVIVAL'?'YOUR DRAGON TEAM':'CHOOSE YOUR DRAGONS',status:()=>model().status,
- mode0:()=>model().partyModes[0]??'OPEN SLOT',mode1:()=>model().partyModes[1]??'OPEN SLOT',mode2:()=>model().partyModes[2]??'OPEN SLOT',mode3:()=>model().partyModes[3]??'OPEN SLOT',mode4:()=>model().partyModes[4]??'OPEN SLOT',mode5:()=>model().partyModes[5]??'OPEN SLOT',
- sel0:()=>model().selected===0,sel1:()=>model().selected===1,sel2:()=>model().selected===2,sel3:()=>model().selected===3,sel4:()=>model().selected===4,sel5:()=>model().selected===5,
- startSelected:()=>model().selected===6,backSelected:()=>model().selected===7,startLabel:()=>model().buttons[6]?.label??'START SURVIVAL'}}
+ props={{heading:()=>model().buttons[10]?.label==='RESUME SURVIVAL'?'YOUR DRAGON TEAM':'CHOOSE YOUR DRAGONS',status:()=>model().status,
+ mode0:()=>model().partyModes[0]??'OPEN SLOT',sel0:()=>model().selected===0,
+ mode1:()=>model().partyModes[1]??'OPEN SLOT',sel1:()=>model().selected===1,
+ mode2:()=>model().partyModes[2]??'OPEN SLOT',sel2:()=>model().selected===2,
+ mode3:()=>model().partyModes[3]??'OPEN SLOT',sel3:()=>model().selected===3,
+ mode4:()=>model().partyModes[4]??'OPEN SLOT',sel4:()=>model().selected===4,
+ mode5:()=>model().partyModes[5]??'OPEN SLOT',sel5:()=>model().selected===5,
+ mode6:()=>model().partyModes[6]??'OPEN SLOT',sel6:()=>model().selected===6,
+ mode7:()=>model().partyModes[7]??'OPEN SLOT',sel7:()=>model().selected===7,
+ mode8:()=>model().partyModes[8]??'OPEN SLOT',sel8:()=>model().selected===8,
+ mode9:()=>model().partyModes[9]??'OPEN SLOT',sel9:()=>model().selected===9,
+ startSelected:()=>model().selected===10,backSelected:()=>model().selected===11,startLabel:()=>model().buttons[10]?.label??'START SURVIVAL'}}
  onIntent={(_,e)=>{const key=e.path.at(-1)!;intent(key.startsWith('dragon-')?`party-slot:${key.slice(7)}`:key);}}/></Screen>,
 });
 

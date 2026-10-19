@@ -26,8 +26,8 @@ export const ArcadeStep=defineSystem({
         if(!game.Party&&request.mode==='ai')enableCompanion(game);
         game.Custom=!!custom;current={active:true,mode:request.action==='party'?'party':custom?'custom':'campaign',game};session.set(current);
       } else if(request.action==='party-controls'&&current.game?.Party){
-        const game=copyGame(current.game),slots=request.partySlots!;
-        for(let i=0;i<6;i++){
+        const game=copyGame(current.game),slots=request.partySlots!.slice(0,game.Players.length);
+        for(let i=0;i<game.Players.length;i++){
           const previous=game.Party!.Slots[i];
           if(slots[i]==='empty'){game.Players[i]!.Lives=0;game.Players[i]!.Downed=false;}
           else if(previous==='empty'){game.Players[i]!.Lives=1;respawn(game,i);}

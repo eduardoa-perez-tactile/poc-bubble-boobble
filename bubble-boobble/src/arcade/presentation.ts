@@ -1,8 +1,9 @@
+import { arenaLayout } from './arena-layout';
 import { arenaBackdrop, bubblePose, dragonPose, dragonShadow, dragonBadges, rect, ring, sparkle, popQuads, advanceFeel, emptyFeel, cueQuads, feelColors, type FeelState } from './juice';
 import { ArcadeFeel, ArcadeAudio } from '../schema.gen';
 import campaignPreviews from '../../data/levels.json';
 import { partyCardRect } from '../desktop/layout';
-import { partyColors, partyPrepareTicks } from './party-config';
+import { partyColors, partyNames, partyPrepareTicks } from './party-config';
 // Presentation follows pinned internal/app/render.go. It never changes match state.
 import {
   defineSystem,
@@ -19,6 +20,7 @@ import {
   MaterialParams,
   Time,
   WorldView,
+  ViewInfo,
   CameraShake,
   shakeCamera,
   audio,
@@ -33,7 +35,7 @@ import { session } from "./session.ts";
 import { orderedArrays, orderedCapacity } from "./pixel-renderer/ordered.ts";
 import type { PixelQuad } from "./pixel-renderer/types.ts";
 import { goSin } from "./trig";
-import { EnemyState, position } from "./types.ts";
+import { arenaWidth, arenaHeight, levelColumns, levelRows, levelWidth, levelHeight, EnemyState, position } from "./types.ts";
 import type { GameState, Level } from "./types.ts";
 
 // Pixel instances and pooled text have disjoint slots; never grow text to this base.
@@ -50,7 +52,7 @@ export function referenceFrame(name: string, tick: number): string {
   if (name === 'green/bubble') name = 'bubble';
   const prefix = name.split('/')[0]!;
   const bubbleSkin = isDragonSkin(prefix) && name === `${prefix}/bubble` ? prefix : '';
-  const skin = ['red', 'yellow', 'purple', 'orange'].includes(prefix) ? prefix : '';
+  const skin = isDragonSkin(prefix) && prefix!=='green' && prefix!=='blue' ? prefix : '';
   const paths = animations[bubbleSkin ? 'bubble' : skin ? 'green/' + name.slice(skin.length + 1) : name];
   const path = paths?.[Math.floor(Math.max(0, tick) / 10) % paths.length];
   const frame = path
@@ -73,7 +75,7 @@ interface Draw {
 }
 const dragonIndicatorColors: Readonly<Record<string, readonly [number, number, number]>> = {
   green: [0,255,0], blue: [0,170,255], red: [255,0,0],
-  yellow: [255,220,0], purple: [180,90,255], orange: [255,135,0],
+  yellow: [255,220,0], purple: [180,90,255], orange: [255,135,0], cyan:[0,240,215], pink:[255,105,190], ivory:[245,235,200], slate:[110,135,165],
 };
 const powerupTags: Readonly<Record<string, string>> = {
   thunder_potion:'THR', pink_candy: 'RNG', blue_candy: 'SPD', yellow_candy: 'RAP', shoes: 'RUN',
@@ -124,9 +126,9 @@ const label = (text: string, x: number, y: number, size: number, color?: readonl
   size,
   color,
 });
-export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState, reduced = false): Draw[] {
+export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState, reduced = false, identityScale=1): Draw[] {
   const out: Draw[] = [];
-  const badges=g.Party?dragonBadges(g):[];
+  const badges=g.Party?dragonBadges(g,identityScale):[];
   const skinAt = (index: number) => g.Party
     ? (isDragonSkin(g.Players[index]?.Skin) ? g.Players[index]!.Skin! : dragonSkins[index % dragonSkins.length]!)
     : index === 1 ? 'blue' : avatar;
@@ -161,7 +163,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
     }
     out.push(fittedItemImage((i.Power==='thunder_potion'?'thunder-bubble':i.Power) || `food/${i.Food}`, 0, i.X, i.Y + 48, 32));
     if (g.Party && i.Power)
-      out.push(label(powerupTags[i.Power] ?? 'PWR', Math.max(8, Math.min(728, i.X + 1)), Math.max(66, i.Y + 34), 10, [100,255,130]));
+      out.push(label(powerupTags[i.Power] ?? 'PWR', Math.max(8, Math.min(arenaWidth(g)-40, i.X + 1)), Math.max(66, i.Y + 34), 10, [100,255,130]));
   }
   for (let index = 0; index < g.Enemies.length; index++) {
     const e = g.Enemies[index]!;
@@ -210,7 +212,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
       if(b.EnemyID&&b.CapturedAge>=12)ring(accents,b.X+22,b.Y+70,22,b.CapturedAge>1000?'#ffb16a':'#94dfea',20);
       if(b.EnemyID&&b.CapturedAge<12)ring(accents,b.X+22,b.Y+70,22+b.CapturedAge*.8,'#ffe8a3',b.CapturedAge);
       if(b.Element) {sparkle(accents,b.X+37,b.Y+59,b.Element==='fire'?'#ffb16a':b.Element==='thunder'?'#ffe17c':'#63caff',3);}
-      if(!reduced&&!b.Floating&&b.Age>3&&b.Age<18)rect(accents,feelColors[(b.Shooter??0)%6]!,b.X+22-b.Dir*25,b.Y+71,5,2);
+      if(!reduced&&!b.Floating&&b.Age>3&&b.Age<18)rect(accents,feelColors[(b.Shooter??0)%feelColors.length]!,b.X+22-b.Dir*25,b.Y+71,5,2);
     }
     out.push(draw);
   }
@@ -242,7 +244,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
     if (g.Party && p.Downed) {
       out.push(image(`${skinAt(index)}/bubble`, 30, p.X - 6, p.Y + 42, 60));
       out.push(image(`${skinAt(index)}/dead`, 0, p.X + 6, p.Y + 54, 36, 36, p.Dir));
-      if(!reduced)ring(accents,p.X+24,p.Y+72,30+2*goSin(g.Tick*.12),feelColors[index%6]!);
+      if(!reduced)ring(accents,p.X+24,p.Y+72,30+2*goSin(g.Tick*.12),feelColors[index%feelColors.length]!);
       continue;
     }
     if (p.Lives === 0 && p.Dead === 0) continue;
@@ -280,10 +282,7 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
 
   }
   if(g.Party)for(const b of badges){
-    // The complete badge is separated from the sprite, and remains during blinking.
-    rect(accents,feelColors[b.slot%6]!,b.x,b.y,b.w,b.h);
-    rect(accents,'#0b1424',b.x+1,b.y+1,b.w-2,b.h-2);
-    out.push(label(b.text,b.x+6,b.y+14,10,b.help?[255,225,124]:[235,245,255]));
+    out.push(label(b.text,b.x,b.y+11*identityScale,10*identityScale,dragonIndicatorColors[skinAt(b.slot)]));
   }
   for (const p of g.Particles) {
     if(g.Party&&!p.Text)continue;
@@ -298,9 +297,9 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
     const quads=[...accents,...popQuads(g,reduced),...(feel?cueQuads(feel,reduced):[])];
     out.push(...quads.map(q=>({...q,flip:false,text:'',size:0})));
     const chain=g.Particles.filter(p=>!p.Text&&p.Life>=7).length;
-    if(chain>=3)out.push(label(`${chain} CHAIN!`,Math.max(48,Math.min(600,g.Particles.find(p=>!p.Text)!.X)),Math.max(135,Math.min(610,g.Particles.find(p=>!p.Text)!.Y+10)),15,[255,240,170]));
+    if(chain>=3)out.push(label(`${chain} CHAIN!`,Math.max(48,Math.min(arenaWidth(g)-168,g.Particles.find(p=>!p.Text)!.X)),Math.max(135,Math.min(arenaHeight(g)-14,g.Particles.find(p=>!p.Text)!.Y+10)),15,[255,240,170]));
     if(feel)for(const c of feel.cues)if(c.kind==='rescue'&&feel.clock-c.at<40){
-      const x=Math.max(50,Math.min(650,c.x-28));
+      const x=Math.max(50,Math.min(arenaWidth(g)-118,c.x-28));
       let y=Math.max(64,c.y-45-(feel.clock-c.at)*.4);
       // Keep the rescue celebration above every nameplate in the local cluster.
       for(let pass=0;pass<badges.length;pass++){
@@ -312,11 +311,13 @@ export function arcadeDrawPlan(g: GameState, avatar = "green", feel?: FeelState,
     }
   }
   if (g.Party) {
-    for (let index = 0; index < 6; index++) {
-      const p = g.Party.Slots[index] === 'empty' ? undefined : g.Players[index], x = 12 + index * 126;
-      if (p) out.push({ ...image(`${skinAt(index)}/walk`, 0, x, 680, 28), footer: true });
-      out.push({ ...label(p ? `${index + 1}${g.Companions?.[index] ? ' AI' : ''}` : `${index + 1} --`, x + 34, 684, 11, dragonIndicatorColors[skinAt(index)]), footer: true });
-      if (p) out.push({ ...label(p.Downed ? 'HELP' : 'READY', x + 34, 702, 8, dragonIndicatorColors[skinAt(index)]), footer: true });
+    const count=g.Party.Slots.length, compact=count>6;
+    for (let index = 0; index < count; index++) {
+      const p = g.Party.Slots[index] === 'empty' ? undefined : g.Players[index];
+      const x=compact?12+index%5*152:12+index*126,y=compact?675+Math.floor(index/5)*22:680;
+      if(p)out.push({...image(`${skinAt(index)}/walk`,0,x,y,compact?20:28),footer:true});
+      out.push({...label(`${partyNames[index]}${!p?' OPEN':p.Downed?' HELP':g.Companions?.[index]?' AI':''}`,x+(compact?24:34),y+12,compact?10:11,dragonIndicatorColors[skinAt(index)]),footer:true});
+      if(p&&!compact)out.push({...label(p.Downed?'HELP':'READY',x+34,702,8,dragonIndicatorColors[skinAt(index)]),footer:true});
     }
     return out;
   }
@@ -382,11 +383,11 @@ export const ArcadePool = defineSystem({
   name: "ArcadePool",
   after: ["ArcadeStep"],
   query: query(read(ArcadeVisual)),
-  resources: [read(ArcadeControl)],
+  resources: [read(ArcadeControl), read(ViewInfo)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
   run(ctx, q) {
-    const plan = sceneDraws(ctx.step), party=!!session.get().game?.Party;
-    const needed = plan.texts.length + 1 + (party?36:0), pixelCount = orderedCapacity(plan.images)+(party?512:0);
+    const plan = sceneDraws(ctx.step,undefined,ctx.get(ViewInfo)), party=!!session.get().game?.Party;
+    const needed = plan.texts.length + 1 + (party?36:0), pixelCount = orderedCapacity(plan.images,plan.clip)+(party?512:0);
     let count = 0, pixels = 0;
     for (const c of q.chunks()) for (let i = 0; i < c.length; i++) {
       const slot = c.col(ArcadeVisual).slot[i]!;
@@ -408,13 +409,14 @@ export const ArcadePool = defineSystem({
     });
   },
 });
-export function sceneDraws(tick: number, feel?:FeelState) {
+export function sceneDraws(tick: number, feel?:FeelState, view?:{width:number;height:number;safeArea:ArrayLike<number>}) {
   const ui = desktopState.get(),
     s = session.get(),
     save = desktopSaveState.get(),
     avatar = save.profiles[save.active]?.avatar ?? "green";
   const images: PixelQuad[] = [],
     texts: Draw[] = [];
+  let clip={left:0,top:0,right:768,bottom:720};
   const push = (d: Draw) => {
     if (d.text) texts.push(d);
     else if (d.image) images.push(d);
@@ -429,16 +431,21 @@ export function sceneDraws(tick: number, feel?:FeelState) {
         : null,
     level = editor ? ui.level : g?.Level;
   if (level) {
+    const layout=arenaLayout(level,view);
+    if(level.arena==='courtyard')clip={left:layout.viewportLeft,top:layout.viewportTop,right:layout.viewportRight,bottom:layout.viewportBottom};
+    if(level.arena==='courtyard')images[0]={image:'solid/ink',x:-2000,y:-2000,w:4768,h:4720};
+    const boardStart=images.length;
+    const layoutDraw=(d:Draw):Draw=>({...d,x:layout.x+d.x*layout.scale,y:layout.y+(d.y-48)*layout.scale,w:d.w*layout.scale,h:d.h*layout.scale,size:d.size*layout.scale});
     solid(
       editor ? "panel" : "black",
       editor ? 24 : 0,
       editor ? 146 : 48,
-      editor ? 512 : 768,
-      editor ? 416 : 624,
+      editor ? 512 : levelWidth(level),
+      editor ? 416 : levelHeight(level),
     );
     if(g?.Party)images.push(...arenaBackdrop(g,!!save.settings.reducedEffects));
-    for (let row = 0; row < 26; row++)
-      for (let col = 0; col < 32; col++) {
+    for (let row = 0; row < levelRows(level); row++)
+      for (let col = 0; col < levelColumns(level); col++) {
         const tile = level.tiles[row]?.[col] ?? 0,
           size = editor ? 16 : 24,
           x = (editor ? 24 : 0) + col * size,
@@ -447,7 +454,7 @@ export function sceneDraws(tick: number, feel?:FeelState) {
           // Draw connected runs once. Quiet bevelled masonry replaces the
           // high-contrast reference stripes only in the modern party mode.
           if(col===0||!level.tiles[row]?.[col-1]){
-            let end=col+1;while(end<32&&level.tiles[row]?.[end])end++;
+            let end=col+1;while(end<levelColumns(level)&&level.tiles[row]?.[end])end++;
             const w=(end-col)*size,theme=Math.floor((g.Party.Wave-1)/3)%3;
             const base=['#244357','#3c3158','#214e54'][theme]!,edge=['#639ba9','#9b82b5','#70a99c'][theme]!;
             rect(images,base,x,y,w,size);
@@ -460,8 +467,14 @@ export function sceneDraws(tick: number, feel?:FeelState) {
       }
     if (editor) editorDrawPlan(ui.level, avatar, tick).forEach(push);
     else if (g) {
-      const actors = arcadeDrawPlan(g, avatar, feel, !!save.settings.reducedEffects);
+      const actors = arcadeDrawPlan(g, avatar, feel, !!save.settings.reducedEffects,1/layout.scale);
       actors.filter((d) => !d.footer).forEach(push);
+      if(level.arena==='courtyard'){
+        for(let i=boardStart;i<images.length;i++){
+          const d=images[i]!;images[i]={...d,x:layout.x+d.x*layout.scale,y:layout.y+(d.y-48)*layout.scale,w:d.w*layout.scale,h:d.h*layout.scale};
+        }
+        for(let i=0;i<texts.length;i++)texts[i]=layoutDraw(texts[i]!);
+      }
       solid("ink", 0, 0, 768, 48);
       solid("ink", 0, 672, 768, 48);
       actors.filter((d) => d.footer).forEach(push);
@@ -482,11 +495,11 @@ export function sceneDraws(tick: number, feel?:FeelState) {
       }
     }
   } else if (ui.screen === 'party') {
-    for(let index=0;index<6;index++) {
+    for(let index=0;index<partyColors.length;index++) {
       const r=partyCardRect(index);
       solid('panel',r.x+3,r.y+30,r.width-6,134);
       const pose=ui.selected===index&&tick%180<35?tick%180:0;
-      push(image(`${partyColors[index]}/walk`,pose,r.x+56,r.y+42,104,104,1));
+      push(image(`${partyColors[index]}/walk`,pose,r.x+(r.width-88)/2,r.y+46,88,88,1));
     }
   } else if (ui.screen === "title" || ui.screen === "menu") {
     // Source rings are isolated on ink, never overlap, and precede the logo.
@@ -504,7 +517,7 @@ export function sceneDraws(tick: number, feel?:FeelState) {
       });
     }
     // The current title logo is a UI icon; original atlas texels remain reference evidence.
-    for (let index = 0; index < partyColors.length; index++) {
+    for (let index = 0; index < 6; index++) {
       push(image(`${partyColors[index]}/walk`, tick, 88 + index * 104, 600, 72, 72, index < 3 ? 1 : -1));
     }
   } else if (ui.screen === "profiles")
@@ -522,7 +535,7 @@ export function sceneDraws(tick: number, feel?:FeelState) {
       );
   else if (ui.screen === "settings")
     push(image(avatar + "/walk", tick, 354, 514, 60));
-  return { images, texts };
+  return { images, texts, clip };
 }
 export const ArcadeFeelSystem=defineSystem({
   name:'ArcadeFeelSystem',stage:'LateUpdate',before:['ArcadePresentation'],
@@ -563,11 +576,11 @@ export const ArcadePresentation = defineSystem({
     ),
     mesh: query(read(ArcadeVisual), write(MeshRenderer), write(VisualOffset), write(MaterialParams)),
   },
-  resources: [read(ArcadeControl), read(Time), read(ArcadeFeel), write(MaterialGlobals)],
+  resources: [read(ArcadeControl), read(Time), read(ArcadeFeel), read(ViewInfo), write(MaterialGlobals)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
   run(ctx, q) {
     const data=ctx.get(ArcadeFeel).data;
-    const plan = sceneDraws(ctx.get(Time).step,data?JSON.parse(data):undefined),
+    const plan = sceneDraws(ctx.get(Time).step,data?JSON.parse(data):undefined,ctx.get(ViewInfo)),
       ui = desktopState.get(),
       g = session.get().game;
     const fade =
@@ -588,7 +601,7 @@ export const ArcadePresentation = defineSystem({
     // File meshes upload on the cold live viewport path; dynamic meshes in this
     // installed runtime upload only after an offscreen screenshot. One static
     // unit quad is instanced, with the same ordered positions and source pixels.
-    const geometry = orderedArrays(plan.images), arrays = geometry.arrays;
+    const geometry = orderedArrays(plan.images,1,0,0,plan.clip), arrays = geometry.arrays;
     for (const c of q.mesh.chunks()) {
       const slots = c.col(ArcadeVisual).slot;
       const offsets = c.col(VisualOffset);

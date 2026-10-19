@@ -6,10 +6,10 @@ import { desktopModel } from '../src/desktop/model.ts';
 import { dragonSkins, cycleDragonSkin, isDragonSkin } from '../src/desktop/skins.ts';
 const scene = 'scenes/arcade.scene.json';
 
-worldTest('desktop skins cycle six saved names in both directions and label the active dragon', () => {
-  expect(dragonSkins).toEqual(['green','blue','red','yellow','purple','orange']);
+worldTest('desktop skins cycle ten saved names in both directions and label the active dragon', () => {
+  expect(dragonSkins).toEqual(['green','blue','red','yellow','purple','orange','cyan','pink','ivory','slate']);
   let state = initialDesktopSave;
-  for (const avatar of ['blue','red','yellow','purple','orange','green']) {
+  for (const avatar of ['blue','red','yellow','purple','orange','cyan','pink','ivory','slate','green']) {
     const result = desktopSave.apply(state,'setting',{action:'avatar',delta:25});
     expect(result.ok).toBe(true); if (!result.ok) return;
     state = result.state;
@@ -18,14 +18,14 @@ worldTest('desktop skins cycle six saved names in both directions and label the 
     expect(model.avatar).toBe(avatar);
     expect(model.buttons[0]!.label).toBe(`DRAGON: ${avatar.toUpperCase()}`);
   }
-  for (const avatar of ['orange','purple','yellow','red','blue','green']) {
+  for (const avatar of ['slate','ivory','pink','cyan','orange','purple','yellow','red','blue','green']) {
     const result = desktopSave.apply(state,'setting',{action:'avatar',delta:-25});
     expect(result.ok).toBe(true); if (!result.ok) return;
     state = result.state;
     expect(state.profiles[0]!.avatar).toBe(avatar);
   }
-  expect(cycleDragonSkin('orange')).toBe('green');
-  expect(cycleDragonSkin('green',-1)).toBe('orange');
+  expect(cycleDragonSkin('slate')).toBe('green');
+  expect(cycleDragonSkin('green',-1)).toBe('slate');
 }, {scene});
 
 worldTest('desktop skins preserve v1 green and blue saves and per-profile red yellow choices on reload', () => {
@@ -56,7 +56,7 @@ worldTest('desktop skins preserve v1 green and blue saves and per-profile red ye
 }, {scene});
 
 worldTest('desktop skins reject unknown saved avatars without silently replacing profiles', () => {
-  for (const value of ['', 'cyan', 'RED', 'yellow/walk', null, 7]) {
+  for (const value of ['', 'teal', 'RED', 'yellow/walk', null, 7]) {
     expect(isDragonSkin(value)).toBe(false);
     const state = JSON.parse(JSON.stringify(initialDesktopSave));
     state.profiles[0].avatar=value;
@@ -82,8 +82,8 @@ worldTest('desktop skins physical settings arrows wrap reverse and persist disti
   await key(51); expect(desktopSaveState.get().profiles[0]!.avatar).toBe('yellow');
   await key(51); expect(desktopSaveState.get().profiles[0]!.avatar).toBe('purple');
   await key(51); expect(desktopSaveState.get().profiles[0]!.avatar).toBe('orange');
-  await key(51); expect(desktopSaveState.get().profiles[0]!.avatar).toBe('green');
-  await key(50); expect(desktopSaveState.get().profiles[0]!.avatar).toBe('orange');
+  for(const avatar of ['cyan','pink','ivory','slate','green']){await key(51);expect(desktopSaveState.get().profiles[0]!.avatar).toBe(avatar);}
+  await key(50); expect(desktopSaveState.get().profiles[0]!.avatar).toBe('slate');
   input.action('confirm',1); await step(1); input.action('confirm',0); await step(1);
   expect(desktopSaveState.get().profiles[0]!.avatar).toBe('green');
   await key(51); await key(51);
@@ -92,7 +92,7 @@ worldTest('desktop skins physical settings arrows wrap reverse and persist disti
   input.emit(DesktopIntent,{action:'create-profile'}); await step(1);
   expect(desktopSaveState.get().profiles[1]!.avatar).toBe('green');
   input.emit(DesktopIntent,{action:'settings'}); await step(1);
-  await key(50); await key(50); await key(50);
+  for(let i=0;i<7;i++)await key(50);
   expect(desktopSaveState.get().profiles.map(p=>p.avatar)).toEqual(['red','yellow']);
   app.background(); await step(2);
   const writes=services.calls('storage.write').filter(call=>call.params.name==='meta-bubblebobble-desktop');

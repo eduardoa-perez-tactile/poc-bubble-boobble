@@ -17,10 +17,12 @@ const partialTexels: Readonly<Record<string, number>> = Object.fromEntries(
     name, s.pixels.reduce((n, alpha, index) => n + (index % 4 === 3 && alpha > 0 && alpha < 255 ? 1 : 0), 0),
   ]),
 );
-export function orderedCapacity(draws: readonly PixelQuad[]): number {
+export interface PixelClip {left:number;top:number;right:number;bottom:number}
+const canvasClip:PixelClip={left:0,top:0,right:768,bottom:720};
+export function orderedCapacity(draws: readonly PixelQuad[],clip:PixelClip=canvasClip): number {
   let count = 0;
   for (const q of draws) {
-    if (!q.image || q.w <= 0 || q.h <= 0 || q.x >= 768 || q.y >= 720 || q.x + q.w <= 0 || q.y + q.h <= 0) continue;
+    if (!q.image || q.w <= 0 || q.h <= 0 || q.x >= clip.right || q.y >= clip.bottom || q.x + q.w <= clip.left || q.y + q.h <= clip.top) continue;
     count++;
     const key = sourceFrame(q.image), partial = partialTexels[key];
     if (partial) {
@@ -101,6 +103,7 @@ export function orderedArrays(
   scale = 1,
   originX = 0,
   originY = 0,
+  clip:PixelClip=canvasClip,
 ) {
   let vertex = 0,
     indexCount = 0,
@@ -114,10 +117,10 @@ export function orderedArrays(
     rect: readonly number[],
     color = 0xffffffff,
   ) => {
-    const x0 = Math.max(0, x),
-      y0 = Math.max(0, y),
-      x1 = Math.min(768, x + w),
-      y1 = Math.min(720, y + h);
+    const x0 = Math.max(clip.left, x),
+      y0 = Math.max(clip.top, y),
+      x1 = Math.min(clip.right, x + w),
+      y1 = Math.min(clip.bottom, y + h);
     if (x0 >= x1 || y0 >= y1) return;
     if (rect.length && (x0 !== x || y0 !== y || x1 !== x + w || y1 !== y + h))
       rect = [
@@ -178,10 +181,10 @@ export function orderedArrays(
     const solid = solidColor(q.image);
     quad(q.x, q.y, q.w, q.h, z, solid === undefined ? rect : [], solid);
     if (!sources[sourceFrame(q.image)]?.partial) continue;
-    const x0 = Math.max(0, Math.ceil(q.x - 0.5)),
-      x1 = Math.min(768, Math.ceil(q.x + q.w - 0.5)),
-      y0 = Math.max(0, Math.ceil(q.y - 0.5)),
-      y1 = Math.min(720, Math.ceil(q.y + q.h - 0.5));
+    const x0 = Math.max(Math.ceil(clip.left), Math.ceil(q.x - 0.5)),
+      x1 = Math.min(Math.ceil(clip.right), Math.ceil(q.x + q.w - 0.5)),
+      y0 = Math.max(Math.ceil(clip.top), Math.ceil(q.y - 0.5)),
+      y1 = Math.min(Math.ceil(clip.bottom), Math.ceil(q.y + q.h - 0.5));
     for (let y = y0; y < y1; y++) {
       let start = -1,
         last = 0;

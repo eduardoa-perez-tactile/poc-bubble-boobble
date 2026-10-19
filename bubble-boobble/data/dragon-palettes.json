@@ -1,11 +1,19 @@
 {
-  "red": {"id": 1, "sourceAnimation": "green", "targetAnimation": "red", "swaps": [{"from": [0, 255, 0], "to": [255, 0, 0]}]},
-  "yellow": {"id": 2, "sourceAnimation": "green", "targetAnimation": "yellow", "swaps": [{"from": [0, 255, 0], "to": [255, 220, 0]}, {"from": [255, 255, 0], "to": [255, 119, 0]}]},
-  "bubbleBlue": {"id": 3, "sourceAnimation": "bubble", "targetAnimation": "blue/bubble", "swaps": [{"from": [0, 255, 0], "to": [0, 170, 255]}, {"from": [0, 187, 0], "to": [0, 125, 187]}]},
-  "bubbleRed": {"id": 4, "sourceAnimation": "bubble", "targetAnimation": "red/bubble", "swaps": [{"from": [0, 255, 0], "to": [255, 0, 0]}, {"from": [0, 187, 0], "to": [187, 0, 0]}]},
-  "bubbleYellow": {"id": 5, "sourceAnimation": "bubble", "targetAnimation": "yellow/bubble", "swaps": [{"from": [0, 255, 0], "to": [255, 220, 0]}, {"from": [0, 187, 0], "to": [187, 161, 0]}]},
-  "purple": {"id": 6, "sourceAnimation": "green", "targetAnimation": "purple", "swaps": [{"from": [0, 255, 0], "to": [180, 90, 255]}]},
-  "orange": {"id": 7, "sourceAnimation": "green", "targetAnimation": "orange", "swaps": [{"from": [0, 255, 0], "to": [255, 135, 0]}, {"from": [255, 255, 0], "to": [255, 220, 110]}]},
-  "bubblePurple": {"id": 8, "sourceAnimation": "bubble", "targetAnimation": "purple/bubble", "swaps": [{"from": [0, 255, 0], "to": [180, 90, 255]}, {"from": [0, 187, 0], "to": [132, 66, 187]}]},
-  "bubbleOrange": {"id": 9, "sourceAnimation": "bubble", "targetAnimation": "orange/bubble", "swaps": [{"from": [0, 255, 0], "to": [255, 135, 0]}, {"from": [0, 187, 0], "to": [187, 99, 0]}]}
+  "red": {"id": 1,"sourceAnimation": "green","targetAnimation": "red","swaps": [{"from": [0,255,0],"to": [255,0,0]}]},
+  "yellow": {"id": 2,"sourceAnimation": "green","targetAnimation": "yellow","swaps": [{"from": [0,255,0],"to": [255,220,0]},{"from": [255,255,0],"to": [255,119,0]}]},
+  "bubbleBlue": {"id": 3,"sourceAnimation": "bubble","targetAnimation": "blue/bubble","swaps": [{"from": [0,255,0],"to": [0,170,255]},{"from": [0,187,0],"to": [0,125,187]}]},
+  "bubbleRed": {"id": 4,"sourceAnimation": "bubble","targetAnimation": "red/bubble","swaps": [{"from": [0,255,0],"to": [255,0,0]},{"from": [0,187,0],"to": [187,0,0]}]},
+  "bubbleYellow": {"id": 5,"sourceAnimation": "bubble","targetAnimation": "yellow/bubble","swaps": [{"from": [0,255,0],"to": [255,220,0]},{"from": [0,187,0],"to": [187,161,0]}]},
+  "purple": {"id": 6,"sourceAnimation": "green","targetAnimation": "purple","swaps": [{"from": [0,255,0],"to": [180,90,255]}]},
+  "orange": {"id": 7,"sourceAnimation": "green","targetAnimation": "orange","swaps": [{"from": [0,255,0],"to": [255,135,0]},{"from": [255,255,0],"to": [255,220,110]}]},
+  "bubblePurple": {"id": 8,"sourceAnimation": "bubble","targetAnimation": "purple/bubble","swaps": [{"from": [0,255,0],"to": [180,90,255]},{"from": [0,187,0],"to": [132,66,187]}]},
+  "bubbleOrange": {"id": 9,"sourceAnimation": "bubble","targetAnimation": "orange/bubble","swaps": [{"from": [0,255,0],"to": [255,135,0]},{"from": [0,187,0],"to": [187,99,0]}]},
+  "cyan": {"id": 10,"sourceAnimation": "green","targetAnimation": "cyan","swaps": [{"from": [0,255,0],"to": [0,240,215]},{"from": [255,255,0],"to": [0,122,130]}]},
+  "bubbleCyan": {"id": 11,"sourceAnimation": "bubble","targetAnimation": "cyan/bubble","swaps": [{"from": [0,255,0],"to": [0,240,215]},{"from": [0,187,0],"to": [0,176,157]}]},
+  "pink": {"id": 12,"sourceAnimation": "green","targetAnimation": "pink","swaps": [{"from": [0,255,0],"to": [255,105,190]},{"from": [255,255,0],"to": [150,30,100]}]},
+  "bubblePink": {"id": 13,"sourceAnimation": "bubble","targetAnimation": "pink/bubble","swaps": [{"from": [0,255,0],"to": [255,105,190]},{"from": [0,187,0],"to": [187,77,139]}]},
+  "ivory": {"id": 14,"sourceAnimation": "green","targetAnimation": "ivory","swaps": [{"from": [0,255,0],"to": [245,235,200]},{"from": [255,255,0],"to": [110,90,65]}]},
+  "bubbleIvory": {"id": 15,"sourceAnimation": "bubble","targetAnimation": "ivory/bubble","swaps": [{"from": [0,255,0],"to": [245,235,200]},{"from": [0,187,0],"to": [179,172,146]}]},
+  "slate": {"id": 16,"sourceAnimation": "green","targetAnimation": "slate","swaps": [{"from": [0,255,0],"to": [110,135,165]},{"from": [255,255,0],"to": [220,235,255]}]},
+  "bubbleSlate": {"id": 17,"sourceAnimation": "bubble","targetAnimation": "slate/bubble","swaps": [{"from": [0,255,0],"to": [110,135,165]},{"from": [0,187,0],"to": [80,99,121]}]}
 }

@@ -350,16 +350,16 @@ declare module '@gameengine/ui' {
      * Party dragon card: a widget, button (ui/docs/party-dragon-card.ui.json)
      *
      * Properties:
-     *   - `label`: text, default "1UP GREEN"
      *   - `modeLabel`: text, default "HUMAN / PAD 1"
      *   - `selected`: yesno, default false
-     *   - `color`: enum green | blue | red | yellow | purple | orange, default "green"
+     *   - `color`: enum green | blue | red | yellow | purple | orange | cyan | pink | ivory | slate, default "green"
+     *   - `label`: text, default "BUB"
      * Events: `<id>`
      * Code areas: none
      * Refs: none
      */
     'party-dragon-card': {
-      props: { label: string | { loc: string } | LocText; modeLabel: string | { loc: string } | LocText; selected: boolean; color: 'green' | 'blue' | 'red' | 'yellow' | 'purple' | 'orange' };
+      props: { modeLabel: string | { loc: string } | LocText; selected: boolean; color: 'green' | 'blue' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'pink' | 'ivory' | 'slate'; label: string | { loc: string } | LocText };
       areas: never;
       refs: never;
     };
@@ -384,14 +384,23 @@ declare module '@gameengine/ui' {
      *   - `startSelected`: yesno, default false
      *   - `backSelected`: yesno, default false
      *   - `startLabel`: text, default "START SURVIVAL"
-     * Events: `dragon-0`, `dragon-1`, `dragon-2`, `dragon-3`, `dragon-4`, `dragon-5`, `start-party`, `menu`
+     *   - `mode6`: text, default "AI TEAMMATE"
+     *   - `sel6`: yesno, default false
+     *   - `mode7`: text, default "AI TEAMMATE"
+     *   - `sel7`: yesno, default false
+     *   - `mode8`: text, default "AI TEAMMATE"
+     *   - `sel8`: yesno, default false
+     *   - `mode9`: text, default "AI TEAMMATE"
+     *   - `sel9`: yesno, default false
+     * Events: `dragon-0`, `dragon-1`, `dragon-2`, `dragon-3`, `dragon-4`, `dragon-5`, `start-party`, `menu`, `dragon-6`, `dragon-7`, `dragon-8`, `dragon-9`
      * Code areas: none
-     * Refs: `dragon-0`, `dragon-1`, `dragon-2`, `dragon-3`, `dragon-4`, `dragon-5`, `start-party`, `menu`
+     * Refs: `dragon-0`, `dragon-1`, `dragon-2`, `dragon-3`, `dragon-4`, `dragon-5`, `start-party`, `menu`, `dragon-6`, `dragon-7`, `dragon-8`, `dragon-9`
+     * Samples (`view render doc:party-lobby --sample …`): `tenDragons`
      */
     'party-lobby': {
-      props: { status: string | { loc: string } | LocText; heading: string | { loc: string } | LocText; mode0: string | { loc: string } | LocText; sel0: boolean; mode1: string | { loc: string } | LocText; sel1: boolean; mode2: string | { loc: string } | LocText; sel2: boolean; mode3: string | { loc: string } | LocText; sel3: boolean; mode4: string | { loc: string } | LocText; sel4: boolean; mode5: string | { loc: string } | LocText; sel5: boolean; startSelected: boolean; backSelected: boolean; startLabel: string | { loc: string } | LocText };
+      props: { status: string | { loc: string } | LocText; heading: string | { loc: string } | LocText; mode0: string | { loc: string } | LocText; sel0: boolean; mode1: string | { loc: string } | LocText; sel1: boolean; mode2: string | { loc: string } | LocText; sel2: boolean; mode3: string | { loc: string } | LocText; sel3: boolean; mode4: string | { loc: string } | LocText; sel4: boolean; mode5: string | { loc: string } | LocText; sel5: boolean; startSelected: boolean; backSelected: boolean; startLabel: string | { loc: string } | LocText; mode6: string | { loc: string } | LocText; sel6: boolean; mode7: string | { loc: string } | LocText; sel7: boolean; mode8: string | { loc: string } | LocText; sel8: boolean; mode9: string | { loc: string } | LocText; sel9: boolean };
       areas: never;
-      refs: 'dragon-0' | 'dragon-1' | 'dragon-2' | 'dragon-3' | 'dragon-4' | 'dragon-5' | 'start-party' | 'menu';
+      refs: 'dragon-0' | 'dragon-1' | 'dragon-2' | 'dragon-3' | 'dragon-4' | 'dragon-5' | 'start-party' | 'menu' | 'dragon-6' | 'dragon-7' | 'dragon-8' | 'dragon-9';
     };
   }
 }
