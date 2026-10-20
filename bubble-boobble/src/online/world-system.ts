@@ -2,12 +2,14 @@ import { ActionState, defineDoc, defineSystem, query, read, WorldView, write, ty
 import { ArcadeControl, OnlineLocalControls, OnlineWorldInput, OnlineWorldSnapshot } from '../schema.gen';
 import campaign from '../../data/levels.json';
 import { session } from '../arcade/session';
+import { captureWorldMotion, emptyWorldMotion, type WorldMotion } from './world-motion';
 import type { Level } from '../arcade/types';
 import { advanceWorld, createWorldState, type WorldState } from './world-rules';
 import { hydratePublicGame, isPublicWorld, projectWorld, type PublicWorld } from './world-public';
 
 export const authoritativeWorld = defineDoc('online.world.private', {started:false,state:createWorldState()} as unknown as DocValue) as unknown as DocHandle<{started:boolean;state:WorldState}>;
 export const publicWorld = defineDoc('online.world.public', {version:1,tick:0,rooms:[],peers:[]} as unknown as DocValue) as unknown as DocHandle<PublicWorld>;
+export const worldMotion = defineDoc('online.world.motion', emptyWorldMotion() as unknown as DocValue) as unknown as DocHandle<WorldMotion>;
 export interface ClientWorldView {player:number;room:string|null;tick:number}
 export const clientWorldView = defineDoc('online.world.client', {player:-1,room:null,tick:-1} as unknown as DocValue) as unknown as DocHandle<ClientWorldView>;
 
@@ -31,12 +33,16 @@ export const OnlineWorldClient = defineSystem({name:'OnlineWorldClient',after:['
   const selected=room?.id??null;
   clientWorldView.set({player:packet.player,room:selected,tick:data.tick});
   if(room?.game){
-   session.set({active:true,mode:'online',game:hydratePublicGame(room.game)});
+   const next=hydratePublicGame(room.game),current=session.get();
+   worldMotion.set(captureWorldMotion(current.active&&current.mode==='online'?current.game:null,next,worldMotion.get(),room.id,packet.player,data.tick,ctx.step,!!packet.reset));
+   session.set({active:true,mode:'online',game:next});
    ctx.setField(ArcadeControl,'active',true);
    ctx.set(WorldView,{center:[384,360],orthoSize:360,designAspect:768/720,fit:'Contain'});
   }else if(!room){
+   worldMotion.set(emptyWorldMotion());
    const current=session.get();if(current.mode==='online'&&current.active)session.set({...current,active:false});
   }else if(previous.room!==selected){
+   worldMotion.set(emptyWorldMotion());
    // A room omitted by packet pacing must not show the previous room's arena.
    const current=session.get();if(current.mode==='online'&&current.active)session.set({...current,active:false});
   }

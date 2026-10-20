@@ -8,6 +8,24 @@ import { orderedCapacity } from '../src/arcade/pixel-renderer/ordered';
 import { advanceFeel, emptyFeel } from '../src/arcade/juice';
 import { PartyReset } from '../src/arcade/party.cheats';
 import { session } from '../src/arcade/session';
+import { ArcadeVisual, OnlineWorldSnapshot } from '../src/schema.gen';
+import { applyWorldEvents, createWorldState } from '../src/online/world-rules';
+import { projectWorld } from '../src/online/world-public';
+
+worldTest('online solo reserves only its occupied dragon and actual pop effects', async ({ input, step, world }) => {
+  const state = applyWorldEvents(createWorldState(), [{ kind: 'join', player: 7, name: 'PLAYER' }, { kind: 'input', player: 7, data: { action: 'create' } }], campaign);
+  const solo = state.rooms[0]!.game;
+  const initial = onlineVisualBudget(solo);
+  const ten = createOnlineWaveGame(campaign, { players: 10, mode: 'realtime', seed: '1' });
+  expect(initial.pixels).toBeLessThan(onlineVisualBudget(ten).pixels);
+  input.emit(OnlineWorldSnapshot, { $data: JSON.stringify({ player: 7, document: projectWorld(state), playing: true, reset: true }) });
+  await step(3);
+  const meshes = world.entities(ArcadeVisual).filter(entity => world.get(entity, ArcadeVisual).slot >= 65536);
+  expect(meshes.length).toBeGreaterThan(0);
+  expect(meshes.length).toBeLessThanOrEqual(1600);
+  solo.Particles = Array.from({ length: 30 }, () => ({ ...solo.Players[0]!, Text: '', Life: 14 }));
+  expect(onlineVisualBudget(solo).pixels - initial.pixels).toBe(18 * 16);
+}, { scene: 'scenes/arcade.scene.json' });
 
 worldTest('online visual capacity covers ten dragons combat boss and bounded celebrations', () => {
   for (const humans of [2, 10]) {

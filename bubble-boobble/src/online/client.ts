@@ -13,6 +13,7 @@ import { officeArcadeSocket } from './room';
 import { OnlineBarView, OnlineRoomView, type OnlineRoomModel, type OnlineBarModel } from './room.view';
 import { browserWorldControls, openWorldTransport, neutralWorldControls, type WorldTransport } from './world-transport';
 import { isPublicWorld, type PublicWorld } from './world-public';
+import { worldClientPayload } from './world-client-payload';
 
 /** Connection and menu state remain local; the server owns discovery, slots and gameplay. */
 const controller=defineUI({name:'OnlineUI',root(){
@@ -26,7 +27,7 @@ const controller=defineUI({name:'OnlineUI',root(){
  let lobby:ViewHandle<OnlineRoomModel>|undefined,bar:ViewHandle<OnlineBarModel>|undefined,hud:ViewHandle<HudModel>|undefined,result:ViewHandle<DesktopModel>|undefined;
  let lobbyStamp='',barStamp='',hudStamp='',resultStamp='';
  const release=()=>transport?.releaseNeutral();
- const apply=()=>{if(player>=0)emitInputData(OnlineWorldSnapshot,JSON.stringify({player,document:data,playing:playing&&!!selectedRoom()}));};
+ const apply=()=>{if(player>=0){const room=selectedRoom(),activePlaying=playing&&!!room;emitInputData(OnlineWorldSnapshot,JSON.stringify({player,document:worldClientPayload(data,player,room?.id??null,activePlaying),playing:activePlaying}));}};
  const closeViews=()=>{lobby?.close({immediate:true});bar?.close({immediate:true});hud?.close({immediate:true});result?.close({immediate:true});lobby=undefined;bar=undefined;hud=undefined;result=undefined;lobbyStamp=barStamp=hudStamp=resultStamp='';};
  const disconnect=()=>{epoch++;transport?.close();transport=undefined;connecting=false;player=-1;requested=undefined;applied=false;assignedRoom=null;selection=null;};
  void services.system.launchLink().then(link=>{if(disposed)return;server=officeArcadeSocket(link.url??'')??server;linkReady=true;}).catch(()=>{linkReady=true;});

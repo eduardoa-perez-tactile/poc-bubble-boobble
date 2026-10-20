@@ -1,4 +1,5 @@
-import { authoritativeWorld } from '../online/world-system';
+import { sampleWorldMotion } from '../online/world-motion';
+import { authoritativeWorld, worldMotion } from '../online/world-system';
 import { menuBubble, menuDragon } from '../desktop/animation';
 import { arenaLayout } from './arena-layout';
 import { arenaBackdrop, bubblePose, dragonPose, dragonShadow, dragonBadges, rect, ring, sparkle, popQuads, advanceFeel, emptyFeel, cueQuads, packFeel, unpackFeel, feelColors, type FeelState } from './juice';
@@ -22,6 +23,7 @@ import {
   MaterialGlobals,
   MaterialParams,
   Time,
+  RenderTime,
   WorldView,
   ViewInfo,
   CameraShake,
@@ -434,7 +436,7 @@ export const ArcadePool = defineSystem({
 });
 const onlinePoolCapacity=defineDoc('online.visual-capacity',{texts:0,pixels:0});
 /** Conservative bounds from the compositor: 12-segment rings, 32 cues (36 quads max),
- * 18 pops (16 quads max), 32 quads per dragon, and 24 per decorated bubble.
+ * up to 18 current pops (16 quads max), 32 per visible dragon, and 24 per decorated bubble.
  * Courtyard layout is always downscaled; unscaled item alpha bounds cover every viewport. */
 export function onlineVisualBudget(g:GameState){
   let board=64;
@@ -448,10 +450,12 @@ export function onlineVisualBudget(g:GameState){
     const draw=fittedItemImage((item.Power==='thunder_potion'?'thunder-bubble':item.Power)||`food/${item.Food}`,0,0,0,32);
     itemPixels+=orderedCapacity([draw])+3;
   }
+  const dragons=g.Players.filter(player=>player.Downed||player.Lives!==0||player.Dead!==0).length;
+  const pops=Math.min(18,g.Particles.filter(particle=>!particle.Text).length);
   return {texts:64+g.Particles.length+g.Items.length+(g.Party?.Telegraphs.length??0),
-    pixels:Math.min(65536,board+32*36+18*16+g.Players.length*32+g.Bubbles.length*24+itemPixels+g.Enemies.length+g.Projectiles.length+g.Effects.length+(g.Party?.Telegraphs.length??0)+1)};
+    pixels:Math.min(65536,board+32*36+pops*16+dragons*32+g.Bubbles.length*24+itemPixels+g.Enemies.length+g.Projectiles.length+g.Effects.length+(g.Party?.Telegraphs.length??0)+1)};
 }
-export function sceneDraws(tick: number, feel?:FeelState, view?:{width:number;height:number;safeArea:ArrayLike<number>}) {
+export function sceneDraws(tick: number, feel?:FeelState, view?:{width:number;height:number;safeArea:ArrayLike<number>},displayGame?:GameState) {
   const s = session.get(),
     online = s.active && s.mode === 'online',
     ui = online ? {...initialDesktopState, screen: 'play' as const} : desktopState.get(),
@@ -470,7 +474,7 @@ export function sceneDraws(tick: number, feel?:FeelState, view?:{width:number;he
   const editor = ui.screen === "editor",
     g =
       s.active && ["play", "pause", "result"].includes(ui.screen)
-        ? s.game
+        ? displayGame??s.game
         : null,
     level = editor ? ui.level : g?.Level;
   if (level) {
@@ -620,12 +624,13 @@ export const ArcadePresentation = defineSystem({
     ),
     mesh: query(read(ArcadeVisual), write(MeshRenderer), write(VisualOffset), write(MaterialParams)),
   },
-  resources: [read(ArcadeControl), read(Time), read(ArcadeFeel), read(ViewInfo), write(MaterialGlobals)],
+  resources: [read(ArcadeControl), read(Time), read(RenderTime), read(ArcadeFeel), read(ViewInfo), write(MaterialGlobals)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
   run(ctx, q) {
     if(authoritativeWorld.get().started)return;
     const feel=unpackFeel(ctx.get(ArcadeFeel));
-    const plan = sceneDraws(ctx.get(Time).step,feel,ctx.get(ViewInfo)),
+    const current=session.get(),display=current.active&&current.mode==='online'&&current.game?sampleWorldMotion(current.game,worldMotion.get(),ctx.get(Time).step,ctx.get(RenderTime).alpha):undefined;
+    const plan = sceneDraws(ctx.get(Time).step,feel,ctx.get(ViewInfo),display),
       ui = desktopState.get(),
       g = session.get().game;
     const fade =
