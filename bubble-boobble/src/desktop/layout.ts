@@ -14,7 +14,7 @@ export function desktopButtonRect(s:DesktopState,p:DesktopSave,index:number):Des
  case 'settings':return index<7?rect(164,154+index*50,440):null;
  case 'scores':case 'help':case 'credits':return index===0?rect(264,624,240):null;
  case 'pause':return index<(s.partyRun?4:3)?rect(164,320+index*50,440):null;
- case 'result':return index<2?rect(164,450+index*50,440):null;
+ case 'result':return index>=0&&index<2?rect(80+index*312,617,296,44):null;
  case 'editor':if(index<5){const x=[24,76,336,388,468][index]!,w=[40,248,40,68,68][index]!;return rect(x,91,w,30);}if(index<16)return rect(554,146+(index-5)*35,190,30);if(index<20)return rect([24,156,288,452][index-16]!,594,[116,116,148,84][index-16]!,30);return index===20?rect(24,642,304,30):index===21?rect(344,642,192,30):null;
  default:return null;
  }

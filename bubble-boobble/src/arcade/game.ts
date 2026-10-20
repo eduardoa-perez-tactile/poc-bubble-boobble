@@ -1,4 +1,4 @@
-import { recordPartyLastKill } from './party-config';
+import { recordPartyKill, recordPartyLastKill } from './party-config';
 import { arenaWidth, levelColumns, levelRows } from './types';
 import { stepParty, copyParty } from './party';
 import { companionInput } from './companion';
@@ -207,6 +207,7 @@ export const enemy = (g: GameState, id: number) =>
 export function defeat(g: GameState, e: Enemy, multiplier: number, player?:number) {
   if (e.State === EnemyState.Defeated) return;
   e.State = EnemyState.Defeated;
+  recordPartyKill(g,player);
   if(g.Party&&g.Party.ToSpawn===0&&g.Party.Telegraphs.length===0&&remainingEnemies(g)===0)recordPartyLastKill(g,player);
   e.DeadTicks = 50;
   e.VX = direction(e.X - arenaWidth(g) / 2) * 4;

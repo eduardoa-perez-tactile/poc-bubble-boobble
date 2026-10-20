@@ -26,3 +26,15 @@ export function partyFinisher(g:GameState):number|undefined {
  const last=g.Party?.LastKill;
  return last&&last.Wave===g.Party!.Wave&&(g.Tick-last.Tick<partyLastKillTicks||g.State===4)?last.Slot:undefined;
 }
+
+/** Credit the dragon that finishes the enemy, including elemental and boss kills. */
+export function recordPartyKill(g:GameState,slot:number|undefined) {
+ const p=g.Party;
+ if(!p||slot===undefined||!Number.isInteger(slot)||slot<0||slot>=p.Slots.length||p.Slots[slot]==='empty')return;
+ p.Kills??=p.Slots.map(()=>0);
+ p.Kills[slot]=(p.Kills[slot]??0)+1;
+}
+export interface DragonResult {slot:number;kills:number;mode?:'human'|'ai'}
+export function partyRanking(g:GameState):DragonResult[] {
+ return g.Party?g.Party.Slots.flatMap((mode,slot)=>mode==='empty'?[]:[{slot,kills:g.Party!.Kills?.[slot]??0,mode}]).sort((a,b)=>b.kills-a.kills||a.slot-b.slot):[];
+}

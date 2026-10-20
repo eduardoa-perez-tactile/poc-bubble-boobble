@@ -44,3 +44,12 @@ export const DesktopPartyView=defineView<DesktopModel>({
 });
 
 export const DesktopModeView=defineView<DesktopModel>({name:'GameModes',samples:{classic:desktopModel({...initialDesktopState,screen:'modes',selected:0},initialDesktopSave),madness:desktopModel({...initialDesktopState,screen:'modes',selected:1},initialDesktopSave)},render:(model,{intent})=><Screen safeArea class="desktop-screen"><Widget doc="mode-select" id="mode-select" class="desktop-modes" props={{classicSelected:()=>model().selected===0,madnessSelected:()=>model().selected===1,backSelected:()=>model().selected===2}} onIntent={(_,e)=>intent(e.path.at(-1)!)}/></Screen>});
+
+const resultSample=(won:boolean,count=10)=>desktopModel({...initialDesktopState,screen:'result',partyRun:true,won,score:58200,round:10,resultReady:true,dragonResults:Array.from({length:count},(_,slot)=>({slot,kills:30-slot*3}))},initialDesktopSave);
+export const DesktopResultsView=defineView<DesktopModel>({
+ name:'DragonResults',samples:{victory:resultSample(true),defeat:resultSample(false),sixDragons:resultSample(false,6),soloDragon:resultSample(true,1),twoDragons:resultSample(false,2),classic:desktopModel({...initialDesktopState,screen:'result',resultReady:true},initialDesktopSave)},
+ render:(model,{intent})=><Screen safeArea class="desktop-screen desktop-results-screen"><Widget doc="run-results" id="run-results" class="desktop-results"
+ props={{eyebrow:()=>model().resultEyebrow,title:()=>model().resultTitle,subtitle:()=>model().resultSubtitle,score:()=>model().resultScore,champion:()=>model().resultChampion,stats:()=>model().resultStats,hint:()=>model().resultHint,won:()=>model().resultWon,party:()=>model().resultParty,moreRanks:()=>model().resultList.length>0,ready:()=>model().resultReady,showStats:()=>model().showResultStats,ranking:()=>model().resultList,podium:()=>model().podium,buttons:()=>model().buttons}}
+ codeAreas={{confetti:()=>Particles({effect:'fx/team-victory.vfx.json',emitting:()=>model().celebrate,restart:()=>model().celebrate?1:0,seed:42,style:{width:'672px',height:'193px'}})}}
+ onIntent={(_,e)=>intent(e.item??e.path.at(-1)!)}/></Screen>,
+});

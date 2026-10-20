@@ -152,6 +152,7 @@ export interface PartyBoss {
   VX:number; VY:number; Dir:number; Mode:'moving'|'windup'|'captured'; Timer:number;
 }
 export interface PartyState {
+  Kills?: number[];
   LastKill?: {Slot:number;Wave:number;Tick:number};
   Wave:number;
   BossWave:number;

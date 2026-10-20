@@ -1,0 +1,269 @@
+{
+  "$schemaVersion": 1,
+  "guid": "59122b83-bbd5-43ed-b07a-0e1e877b2139",
+  "name": "dragon-result-row",
+  "title": "Dragon result row",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Dragon result row",
+      "style": {
+        "dir": "row",
+        "pad": 0,
+        "align": "center",
+        "radius": 0,
+        "w": 608,
+        "h": 21
+      },
+      "children": [
+        "dr_rank",
+        "dr_name",
+        "dr_mode",
+        "dr_kills",
+        "dr_stripe",
+        "dr_portrait"
+      ]
+    },
+    "dr_rank": {
+      "type": "label",
+      "name": "Label",
+      "text": "{rank}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          12,
+          5
+        ],
+        "w": 32,
+        "fontSize": 10,
+        "color": "#829fb1"
+      }
+    },
+    "dr_name": {
+      "type": "label",
+      "name": "Label",
+      "text": "{name}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          70,
+          5
+        ],
+        "w": 150,
+        "fontSize": 10,
+        "color": "#ebf5ff"
+      }
+    },
+    "dr_mode": {
+      "type": "label",
+      "name": "Label",
+      "text": "{mode}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          270,
+          5
+        ],
+        "w": 170,
+        "fontSize": 10,
+        "color": "#829fb1"
+      }
+    },
+    "dr_kills": {
+      "type": "label",
+      "name": "Label",
+      "text": "{kills}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          510,
+          5
+        ],
+        "w": 80,
+        "fontSize": 10,
+        "color": "#ffdc6a"
+      }
+    },
+    "dr_stripe": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": 4,
+        "h": 21,
+        "bg": "#70f089"
+      }
+    },
+    "dr_portrait": {
+      "type": "icon",
+      "name": "Icon",
+      "image": "ui/sprites/star",
+      "style": {
+        "size": 32,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          42,
+          1
+        ],
+        "w": 19,
+        "h": 19
+      },
+      "property": "image"
+    }
+  },
+  "properties": {
+    "rank": {
+      "type": "text",
+      "default": ""
+    },
+    "name": {
+      "type": "text",
+      "default": ""
+    },
+    "mode": {
+      "type": "text",
+      "default": ""
+    },
+    "kills": {
+      "type": "text",
+      "default": ""
+    },
+    "leader": {
+      "type": "yesno",
+      "default": false,
+      "poses": {
+        "yes": {
+          "set": {
+            "dr_name": {
+              "color": "#ffdc6a"
+            }
+          }
+        }
+      }
+    },
+    "color": {
+      "type": "enum",
+      "values": [
+        "green",
+        "blue",
+        "red",
+        "yellow",
+        "purple",
+        "orange",
+        "cyan",
+        "pink",
+        "ivory",
+        "slate"
+      ],
+      "default": "green",
+      "poses": {
+        "green": {
+          "set": {
+            "dr_stripe": {
+              "bg": "#70f089"
+            }
+          }
+        },
+        "blue": {
+          "set": {
+            "dr_stripe": {
+              "bg": "#00aaff"
+            }
+          }
+        },
+        "red": {
+          "set": {
+            "dr_stripe": {
+              "bg": "#ff5555"
+            }
+          }
+        },
+        "yellow": {
+          "set": {
+            "dr_stripe": {
+              "bg": "#ffdc00"
+            }
+          }
+        },
+        "purple": {
+          "set": {
+            "dr_stripe": {
+              "bg": "#b45aff"
+            }
+          }
+        },
+        "orange": {
+          "set": {
+            "dr_stripe": {
+              "bg": "#ff8700"
+            }
+          }
+        },
+        "cyan": {
+          "set": {
+            "dr_stripe": {
+              "bg": "#00f0d7"
+            }
+          }
+        },
+        "pink": {
+          "set": {
+            "dr_stripe": {
+              "bg": "#ff69be"
+            }
+          }
+        },
+        "ivory": {
+          "set": {
+            "dr_stripe": {
+              "bg": "#f5ebc8"
+            }
+          }
+        },
+        "slate": {
+          "set": {
+            "dr_stripe": {
+              "bg": "#9fbbdc"
+            }
+          }
+        }
+      }
+    },
+    "image": {
+      "type": "image",
+      "default": "ui/sprites/star"
+    }
+  }
+}
