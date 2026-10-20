@@ -1,6 +1,6 @@
 # Office Arcade release
 
-The current feature is [Dynamic online Wave Survival](multiplayer-dynamic-worlds.md), using authoritative worlds with immediate start and joining during combat. The live URL and `cd5516d` ZIP recorded below are the **previous fixed-match implementation**. They have not been updated with the dynamic-world rework; do not use that old ZIP as the new feature release. The new verified pair is recorded below and is ready for explicit publication to a new address.
+The current [Dynamic online Wave Survival](multiplayer-dynamic-worlds.md) build is live at [Play Bubble Madness](https://webgames.tactilews.com/bubble-madness-mp-989dd47-20261020t150140-1341/). It uses authoritative worlds with immediate start and joining during combat. The historical `cd5516d` URL and ZIP below remain the previous fixed-match implementation.
 
 This game uses Trond's [live Office Arcade guide](https://webgames.tactilews.com/agents/), re-read on 20 October 2026. Office Arcade runs the exported authoritative engine server directly; the client connects to the same publication's secure `/socket` endpoint. There is no project-owned Node server or health wrapper.
 
@@ -47,7 +47,7 @@ Clean game revision `989dd4747d5b442ee0c87080fefba2f931791b57` now has a matchin
 | ZIP SHA-256 | `0b838e58cfeebc870c9675bcfe32b5d3fb8b2b143e3dc7ff19c5874d8c670f3c` |
 | Exact cooked script SHA-256 | `f9be30be853702c08032d5e2ac076ae0613d3a2b5bdcc7653d787683f732c302` |
 
-This package has not been published. The deployment command above uses this dynamic-world ZIP. Later documentation-only commits preserve its original built source identity. Native cooked-authority gameplay evidence is separate in [the dynamic-world specification](multiplayer-dynamic-worlds.md); actual browser acceptance remains unverified.
+This package was published on 20 October 2026 at [Play Bubble Madness](https://webgames.tactilews.com/bubble-madness-mp-989dd47-20261020t150140-1341/). Office Arcade reached `published`; entry/linked-file checks and an independent hosted secure WebSocket upgrade passed. Browser gameplay remains unverified. The deployment command above uses this dynamic-world ZIP. Later documentation-only commits preserve its original built source identity. Native cooked-authority gameplay evidence is separate in [the dynamic-world specification](multiplayer-dynamic-worlds.md); actual browser acceptance remains unverified.
 
 ## Previous fixed-match release artifact
 
