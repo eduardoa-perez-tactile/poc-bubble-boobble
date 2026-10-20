@@ -31,6 +31,11 @@ export const EditorPointer = resource('EditorPointer', { drawing: bool(), erasin
 
 export const ArcadePlatformState = resource('ArcadePlatformState', { exitSequence:u32() }, { sim:false });
 
+// Playback cursor is local presentation state: rollback cannot replay a heard shot.
+export const OnlineAudioState = resource('OnlineAudioState', {
+  tick: i32({default:-1}), wave:i32(), state:i32({default:-1}), downed:i32(), bossHP:i32({default:-1}),
+}, {sim:false});
+
 // Bounded cosmetic history is never read by simulation or included in replay hashes.
 export const ArcadeFeel = resource('ArcadeFeel', {
  // clock, step, initialized, prior tick/wave/phase/state/HP/mode, player/cue counts.

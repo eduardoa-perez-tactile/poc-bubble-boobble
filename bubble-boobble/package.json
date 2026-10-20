@@ -37,7 +37,20 @@
     "web:preview-splash": "node tools/web/splash-preview.mjs",
     "web:publish": "node tools/web/publish.mjs",
     "web:verify": "node tools/web/verify.mjs",
-    "web:test-controls": "node --test tools/web/controls.test.mjs"
+    "web:test-controls": "node --test tools/web/controls.test.mjs",
+    "arcade:list": "node tools/arcade/run.mjs list",
+    "arcade:status": "node tools/arcade/run.mjs status",
+    "arcade:check": "node tools/arcade/run.mjs check",
+    "arcade:build-web": "node tools/arcade/run.mjs build-web",
+    "arcade:build-server": "node tools/arcade/run.mjs build-server",
+    "arcade:verify": "node tools/arcade/run.mjs verify",
+    "arcade:package": "node tools/arcade/run.mjs package",
+    "arcade:publish": "node tools/arcade/run.mjs publish",
+    "arcade:test": "node --test tools/arcade/*.test.mjs",
+    "arcade:fetch-runtime": "node tools/arcade/prebuilt-server.mjs fetch",
+    "arcade:build-prebuilt-server": "node tools/arcade/prebuilt-server.mjs build",
+    "arcade:smoke-server": "node tools/arcade/smoke-server.mjs",
+    "multiplayer:test": "node tools/multiplayer/test.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.62.1"

@@ -9,7 +9,7 @@ export function getDesktopButtons(s:DesktopState,p:DesktopSave):DesktopButton[]{
  switch(s.screen){
  case 'title':return [button('menu','PRESS ENTER TO START')];
  case 'menu':return [button('choose-mode','START GAME'),button('settings','SETTINGS'),WEB_BUILD?button('help','HOW TO PLAY'):button('quit','QUIT')];
- case 'modes':return [button('classic-mode','CLASSIC MODE'),button('madness-mode','BUBBLE MADNESS'),button('mode-back','BACK')];
+ case 'modes':return [button('classic-mode','CLASSIC MODE'),button('madness-mode','BUBBLE MADNESS'),button('online-mode','ONLINE WAVE SURVIVAL'),button('mode-back','BACK')];
  case 'party':return [...(s.partySlots??defaultPartySlots).map((slot,i)=>button(`party-slot:${i}`,`${partyNames[i]} / ${slot==='human'?`HUMAN - PAD ${i+1}`:slot.toUpperCase()}`)),button('start-party',s.partyEditing?'RESUME SURVIVAL':'START SURVIVAL'),button('menu','BACK')];
  case 'profiles':return [...p.profiles.map((v,i)=>button(`profile:${i}`,`${i===p.active?'* ':''}${v.name}`)),button('new-profile','NEW PROFILE'),button('menu','BACK')];
  case 'new-profile':return [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('').map(c=>button(`char:${c}`,c)),button('char: ','SPACE'),button('delete-char','DEL'),button('create-profile','CREATE PROFILE'),button('profiles','CANCEL')];

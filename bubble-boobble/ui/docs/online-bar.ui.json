@@ -1,0 +1,87 @@
+{
+  "$schemaVersion": 1,
+  "guid": "4b5726b5-2875-470d-b824-4f7d77c3b74e",
+  "name": "online-bar",
+  "title": "Online bar",
+  "kind": "view",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Online bar",
+      "style": {
+        "w": 768,
+        "h": 720,
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0.5
+        ],
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "children": [
+        "ob_identity",
+        "ob_menu"
+      ]
+    },
+    "ob_identity": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "identity",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          24,
+          688
+        ],
+        "w": "70%",
+        "h": 24,
+        "fontSize": 12,
+        "fitMin": 9,
+        "color": "#ffdc6a"
+      }
+    },
+    "ob_menu": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "menu",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          1,
+          0
+        ],
+        "offset": [
+          -24,
+          676
+        ],
+        "w": 124,
+        "h": 36
+      },
+      "props": {
+        "label": "MENU"
+      }
+    }
+  },
+  "view": {
+    "behaviour": "screen"
+  },
+  "transition": {
+    "type": "instant"
+  },
+  "properties": {
+    "identity": {
+      "type": "text",
+      "default": "ONLINE"
+    }
+  }
+}

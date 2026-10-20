@@ -15,7 +15,7 @@ const idle: Input = Object.freeze({Move:0,Jump:false,Fire:false});
 const kinds = ['zenchan','monsta','banebou','mighta','pulpul','invader'];
 
 /** One authoritative party document; the campaign's arena is copied, never modified. */
-export function createPartyGame(levels:Level[], seed:number, slots:PartySlot[]=defaultPartySlots, bossWave=10):GameState {
+export function createPartyGame(levels:Level[], seed:number|bigint, slots:PartySlot[]=defaultPartySlots, bossWave=10):GameState {
   if (![6,10].includes(slots.length) || !slots.includes('human') || slots.some(s=>!['human','ai','empty'].includes(s))) throw new Error('Choose six or ten slots with at least one human');
   if (!Number.isInteger(bossWave)||bossWave<2||bossWave>100) throw new Error('Invalid boss wave');
   if(!levels.length)throw new Error('no levels supplied');

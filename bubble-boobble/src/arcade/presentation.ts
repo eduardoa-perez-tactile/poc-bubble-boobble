@@ -8,6 +8,7 @@ import { partyColors, partyNames, partyPrepareTicks, partyStartGraceTicks } from
 // Presentation follows pinned internal/app/render.go. It never changes match state.
 import {
   defineSystem,
+  defineDoc,
   query,
   read,
   write,
@@ -28,8 +29,8 @@ import {
 } from "@gameengine/runtime";
 import { ArcadeControl, ArcadeVisual } from "../schema.gen.ts";
 import { dragonSkins, isDragonSkin } from "../desktop/skins.ts";
-import { desktopState } from "../desktop/state.ts";
-import { desktopSaveState } from "../desktop/save.ts";
+import { desktopState, initialDesktopState } from "../desktop/state.ts";
+import { desktopSaveState, initialDesktopSave } from "../desktop/save.ts";
 import manifest from "../../data/sprites.json";
 import atlas from "../../assets/pixel-renderer/atlas-layout.json";
 import { session } from "./session.ts";
@@ -391,13 +392,22 @@ export const ArcadeBoot = defineSystem({
 });
 export const ArcadePool = defineSystem({
   name: "ArcadePool",
-  after: ["ArcadeStep"],
+  after: ["ArcadeStep", "OnlineWaveStep"],
   query: query(read(ArcadeVisual)),
   resources: [read(ArcadeControl), read(ViewInfo)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
   run(ctx, q) {
-    const plan = sceneDraws(ctx.step,undefined,ctx.get(ViewInfo)), party=!!session.get().game?.Party;
-    const needed = plan.texts.length + 1 + (party?36:0), pixelCount = orderedCapacity(plan.images,plan.clip)+(party?512:0);
+    const current=session.get(), online=current.active&&current.mode==='online'&&current.game?.Party;
+    let needed:number,pixelCount:number;
+    if(online){
+      const budget=onlineVisualBudget(current.game!),old=onlinePoolCapacity.get();
+      needed=budget.texts;pixelCount=budget.pixels;
+      // Capacity is monotonic shared state. Idle capacity costs no draw-plan build or query scan.
+      if(old.texts>=needed&&old.pixels>=pixelCount)return;
+    }else{
+      const plan=sceneDraws(ctx.step,undefined,ctx.get(ViewInfo)),party=!!current.game?.Party;
+      needed=plan.texts.length+1+(party?36:0);pixelCount=orderedCapacity(plan.images,plan.clip)+(party?512:0);
+    }
     let count = 0, pixels = 0;
     for (const c of q.chunks()) for (let i = 0; i < c.length; i++) {
       const slot = c.col(ArcadeVisual).slot[i]!;
@@ -417,12 +427,33 @@ export const ArcadePool = defineSystem({
         castShadows: false, receiveShadows: false,
       },
     });
+    if(online)onlinePoolCapacity.set({texts:Math.max(count,needed),pixels:Math.max(pixels,pixelCount)});
   },
 });
+const onlinePoolCapacity=defineDoc('online.visual-capacity',{texts:0,pixels:0});
+/** Conservative bounds from the compositor: 12-segment rings, 32 cues (36 quads max),
+ * 18 pops (16 quads max), 32 quads per dragon, and 24 per decorated bubble.
+ * Courtyard layout is always downscaled; unscaled item alpha bounds cover every viewport. */
+export function onlineVisualBudget(g:GameState){
+  let board=64;
+  for(const row of g.Level.tiles)for(let col=0;col<row.length;col++){
+    if(!row[col])continue;
+    const start=col;while(col+1<row.length&&row[col+1])col++;
+    board+=3+Math.floor((col-start)/2);
+  }
+  let itemPixels=0;
+  for(const item of g.Items){
+    const draw=fittedItemImage((item.Power==='thunder_potion'?'thunder-bubble':item.Power)||`food/${item.Food}`,0,0,0,32);
+    itemPixels+=orderedCapacity([draw])+3;
+  }
+  return {texts:64+g.Particles.length+g.Items.length+(g.Party?.Telegraphs.length??0),
+    pixels:Math.min(65536,board+32*36+18*16+g.Players.length*32+g.Bubbles.length*24+itemPixels+g.Enemies.length+g.Projectiles.length+g.Effects.length+(g.Party?.Telegraphs.length??0)+1)};
+}
 export function sceneDraws(tick: number, feel?:FeelState, view?:{width:number;height:number;safeArea:ArrayLike<number>}) {
-  const ui = desktopState.get(),
-    s = session.get(),
-    save = desktopSaveState.get(),
+  const s = session.get(),
+    online = s.active && s.mode === 'online',
+    ui = online ? {...initialDesktopState, screen: 'play' as const} : desktopState.get(),
+    save = online ? initialDesktopSave : desktopSaveState.get(),
     avatar = save.profiles[save.active]?.avatar ?? "green";
   const images: PixelQuad[] = [],
     texts: Draw[] = [];
@@ -556,7 +587,7 @@ export const ArcadeFeelSystem=defineSystem({
     const next=advanceFeel(old,g,ctx.get(Time).step);
     const reduced=!!desktopSaveState.get().settings.reducedEffects;
     const fresh=next.cues.filter(c=>!old.cues.some(o=>o.kind===c.kind&&o.at===c.at&&o.slot===c.slot));
-    if(!ctx.get(ArcadeAudio).muted&&!g.Paused){
+    if(current.mode!=='online'&&!ctx.get(ArcadeAudio).muted&&!g.Paused){
       const volume=desktopSaveState.get().settings.sound/100;
       for(const cue of fresh){
         const sound=cue.kind==='rescue'?'rescue':cue.kind==='boss-hit'?'boss-hit':cue.kind==='clear'?'wave-clear':cue.kind==='victory'?'victory':'';
@@ -592,7 +623,7 @@ export const ArcadePresentation = defineSystem({
       ui = desktopState.get(),
       g = session.get().game;
     const fade =
-      ui.screen === "pause"
+      session.get().mode === 'online' ? 0 : ui.screen === "pause"
         ? 195 / 255
         : ui.screen === "result"
           ? 220 / 255

@@ -121,3 +121,29 @@ test('touch overlay only captures gameplay, handles cancel and releases on scree
   fullscreen.open=true;doc.dispatchEvent(new Event('bubble-visibility'));assert.equal(panel.hidden,true);
  }finally{for(const [name,descriptor] of originals){if(descriptor)Object.defineProperty(globalThis,name,descriptor);else delete globalThis[name];}}
 });
+
+import { OnlineControlGate } from '../../web/controls.mjs';
+test('online local menu clears mapped controls and blocks held keys until release',()=>{
+ let resets=0;const gate=new OnlineControlGate(()=>resets++);
+ assert.equal(gate.key('ArrowDown',true),false); // Offline menu navigation remains available.
+ gate.set(true,true);assert.equal(gate.key('Space',true),false);
+ gate.set(true,false);assert.equal(resets,1);assert.equal(gate.key('Space',true),true);
+ assert.equal(gate.key('KeyA',true),true);assert.equal(gate.key('F11',true),false);
+ gate.set(true,true);assert.equal(gate.key('Space',true),true);assert.equal(gate.key('KeyA',true),true);
+ gate.key('Space',false);assert.equal(gate.key('Space',true),false);
+ gate.set(false,false);assert.equal(gate.key('ArrowDown',true),false);assert.equal(gate.key('KeyA',true),false);
+});
+test('online menu requires neutral controller before restoring input after resume',()=>{
+ const gate=new OnlineControlGate(()=>{});const events=[];const bridge=new GamepadBridge(e=>events.push(e));
+ gate.set(true,true);bridge.poll([pad(0,[0,2],[1,0])],gate.padsAllowed([pad(0,[0,2],[1,0])]));
+ events.length=0;gate.set(true,false);bridge.poll([pad(0,[0,2],[1,0])],gate.padsAllowed([pad(0,[0,2],[1,0])]));
+ assert.equal(events.filter(e=>e[0]===5&&e[7]===0).length,2);assert.ok(events.some(e=>e[0]===6&&e[3]===0));
+ gate.set(true,true);assert.equal(gate.padsAllowed([pad(0,[0])]),false);
+ assert.equal(gate.padsAllowed([pad(0,[],[0,0])]),true);assert.equal(gate.padsAllowed([pad(0,[0])]),true);
+});
+test('standard controller d-pad feeds the same engine stick used by online movement',()=>{
+ const events=[];const bridge=new GamepadBridge(e=>events.push(e));
+ bridge.poll([pad(0,[14])]);assert.ok(events.some(e=>e[0]===6&&e[1]===0&&e[5]===0&&e[3]===-1));
+ events.length=0;bridge.poll([pad(0,[15])]);assert.ok(events.some(e=>e[0]===6&&e[5]===0&&e[3]===1));
+ events.length=0;bridge.poll([pad(0,[])]);assert.ok(events.some(e=>e[0]===6&&e[5]===0&&e[3]===0));
+});

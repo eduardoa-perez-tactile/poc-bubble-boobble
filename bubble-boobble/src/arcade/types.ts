@@ -169,6 +169,9 @@ export interface GameState {
   Party?: PartyState;
   Companion?: CompanionState;
   Companions?: (CompanionState | null)[];
+  /** Online documents store each immutable navigation graph once, with a per-slot reference. */
+  OnlineNavigationGraphs?: NonNullable<CompanionState['Graph']>[];
+  OnlineNavigationGraphIndices?: number[];
   PlayerBalance: PlayerBalance;
   // Authoritative locomotion tuning; angry enemies retain their original speed.
   NormalEnemySpeedScale: number;

@@ -1,0 +1,593 @@
+{
+  "$schemaVersion": 1,
+  "guid": "8a718296-3e62-4dc6-a593-465a6d14a681",
+  "name": "online-room",
+  "title": "Online room",
+  "kind": "view",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Online room",
+      "style": {
+        "w": 768,
+        "h": 720,
+        "pad": 0,
+        "bg": "#080c1bf5",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0.5
+        ],
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "children": [
+        "or_title",
+        "or_subtitle",
+        "or_room",
+        "or_humans",
+        "or_status",
+        "or_detail",
+        "or_primary",
+        "or_secondary",
+        "or_less",
+        "or_more",
+        "or_digit_0",
+        "or_digit_1",
+        "or_digit_2",
+        "or_digit_3",
+        "or_digit_4",
+        "or_digit_5",
+        "or_digit_6",
+        "or_digit_7",
+        "or_digit_8",
+        "or_digit_9",
+        "or_delete",
+        "or_new_code"
+      ]
+    },
+    "or_title": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "title",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          50
+        ],
+        "w": "90%",
+        "h": 48,
+        "fontSize": 28,
+        "fitMin": 10,
+        "textAlign": "center",
+        "color": "#ffdc6a"
+      }
+    },
+    "or_subtitle": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "subtitle",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          108
+        ],
+        "w": "90%",
+        "h": 44,
+        "fontSize": 14,
+        "fitMin": 10,
+        "textAlign": "center",
+        "color": "#80dadd"
+      }
+    },
+    "or_room": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "room",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          170
+        ],
+        "w": "90%",
+        "h": 52,
+        "fontSize": 22,
+        "fitMin": 10,
+        "textAlign": "center",
+        "color": "#ffffff"
+      }
+    },
+    "or_humans": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "humans",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          234
+        ],
+        "w": 490,
+        "h": 40,
+        "fontSize": 16,
+        "fitMin": 10,
+        "textAlign": "center",
+        "color": "#ffffff"
+      }
+    },
+    "or_status": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "status",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          530
+        ],
+        "w": "90%",
+        "h": 58,
+        "fontSize": 14,
+        "fitMin": 10,
+        "textAlign": "center",
+        "color": "#ffdc6a"
+      }
+    },
+    "or_detail": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "detail",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          286
+        ],
+        "w": "90%",
+        "h": 54,
+        "fontSize": 12,
+        "fitMin": 10,
+        "textAlign": "center",
+        "color": "#a3b3ce"
+      }
+    },
+    "or_less": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "less",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          40,
+          230
+        ],
+        "w": 68,
+        "h": 44
+      },
+      "props": {
+        "label": "-"
+      },
+      "show": "setup"
+    },
+    "or_more": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "more",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          1,
+          0
+        ],
+        "offset": [
+          -40,
+          230
+        ],
+        "w": 68,
+        "h": 44
+      },
+      "props": {
+        "label": "+"
+      },
+      "show": "setup"
+    },
+    "or_digit_0": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "digit-0",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          -224,
+          350
+        ],
+        "w": 104,
+        "h": 44
+      },
+      "props": {
+        "label": 0
+      },
+      "show": "setup"
+    },
+    "or_digit_1": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "digit-1",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          -112,
+          350
+        ],
+        "w": 104,
+        "h": 44
+      },
+      "props": {
+        "label": 1
+      },
+      "show": "setup"
+    },
+    "or_digit_2": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "digit-2",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          350
+        ],
+        "w": 104,
+        "h": 44
+      },
+      "props": {
+        "label": 2
+      },
+      "show": "setup"
+    },
+    "or_digit_3": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "digit-3",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          112,
+          350
+        ],
+        "w": 104,
+        "h": 44
+      },
+      "props": {
+        "label": 3
+      },
+      "show": "setup"
+    },
+    "or_digit_4": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "digit-4",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          224,
+          350
+        ],
+        "w": 104,
+        "h": 44
+      },
+      "props": {
+        "label": 4
+      },
+      "show": "setup"
+    },
+    "or_digit_5": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "digit-5",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          -224,
+          412
+        ],
+        "w": 104,
+        "h": 44
+      },
+      "props": {
+        "label": 5
+      },
+      "show": "setup"
+    },
+    "or_digit_6": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "digit-6",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          -112,
+          412
+        ],
+        "w": 104,
+        "h": 44
+      },
+      "props": {
+        "label": 6
+      },
+      "show": "setup"
+    },
+    "or_digit_7": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "digit-7",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          412
+        ],
+        "w": 104,
+        "h": 44
+      },
+      "props": {
+        "label": 7
+      },
+      "show": "setup"
+    },
+    "or_digit_8": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "digit-8",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          112,
+          412
+        ],
+        "w": 104,
+        "h": 44
+      },
+      "props": {
+        "label": 8
+      },
+      "show": "setup"
+    },
+    "or_digit_9": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "digit-9",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          224,
+          412
+        ],
+        "w": 104,
+        "h": 44
+      },
+      "props": {
+        "label": 9
+      },
+      "show": "setup"
+    },
+    "or_delete": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "delete",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          -168,
+          480
+        ],
+        "w": 216,
+        "h": 44
+      },
+      "props": {
+        "label": "DELETE"
+      },
+      "show": "setup"
+    },
+    "or_new_code": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "new-code",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          168,
+          480
+        ],
+        "w": 216,
+        "h": 44
+      },
+      "props": {
+        "label": "NEW CODE"
+      },
+      "show": "setup"
+    },
+    "or_primary": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "connect",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          -144,
+          618
+        ],
+        "w": 264,
+        "h": 44
+      },
+      "props": {
+        "label": {
+          "property": "primary"
+        }
+      }
+    },
+    "or_secondary": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "back",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          144,
+          618
+        ],
+        "w": 264,
+        "h": 44
+      },
+      "props": {
+        "label": {
+          "property": "secondary"
+        }
+      }
+    }
+  },
+  "view": {
+    "behaviour": "screen"
+  },
+  "properties": {
+    "title": {
+      "type": "text",
+      "default": ""
+    },
+    "subtitle": {
+      "type": "text",
+      "default": ""
+    },
+    "room": {
+      "type": "text",
+      "default": ""
+    },
+    "humans": {
+      "type": "text",
+      "default": ""
+    },
+    "status": {
+      "type": "text",
+      "default": ""
+    },
+    "detail": {
+      "type": "text",
+      "default": ""
+    },
+    "primary": {
+      "type": "text",
+      "default": ""
+    },
+    "secondary": {
+      "type": "text",
+      "default": ""
+    },
+    "setup": {
+      "type": "yesno",
+      "default": true
+    },
+    "showMenu": {
+      "type": "yesno",
+      "default": false
+    }
+  },
+  "transition": {
+    "type": "instant"
+  }
+}

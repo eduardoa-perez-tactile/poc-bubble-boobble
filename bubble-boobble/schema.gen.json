@@ -397,6 +397,47 @@
       "package": "Bubble Madness"
     },
     {
+      "name": "OnlineAudioState",
+      "kind": "resource",
+      "sim": false,
+      "fields": [
+        {
+          "name": "tick",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "wave",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "state",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "downed",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "bossHP",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        }
+      ],
+      "package": "Bubble Madness"
+    },
+    {
       "name": "PortInput",
       "kind": "resource",
       "sim": true,

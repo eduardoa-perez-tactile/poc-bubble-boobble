@@ -8,7 +8,7 @@ export function desktopButtonRect(s:DesktopState,p:DesktopSave,index:number):Des
  switch(s.screen){
  case 'party':return index<partySize?partyCardRect(index):index===partySize?rect(242,612,284,44):index===partySize+1?rect(48,612,152,44):null;
  case 'menu':return index>=0&&index<3?rect(218,328+index*60,332,44):null;
- case 'modes':return index===0?rect(100,168,272,380):index===1?rect(396,168,272,380):index===2?rect(264,606,240,44):null;
+ case 'modes':return index===0?rect(100,168,272,380):index===1?rect(396,168,272,380):index===2?rect(164,562,440,44):index===3?rect(264,624,240,44):null;
  case 'profiles':if(index<p.profiles.length)return rect(164,132+index*46,440,36);return index===p.profiles.length?rect(164,532,440):index===p.profiles.length+1?rect(264,594,240):null;
  case 'new-profile':if(index<36)return rect(104+(index%10)*56,252+Math.floor(index/10)*48,48);return [rect(440,396,104),rect(552,396,104),rect(164,520,440),rect(164,570,440)][index-36]??null;
  case 'settings':return index<7?rect(164,154+index*50,440):null;
@@ -37,7 +37,7 @@ export function partyGridSelection(selected:number,x:number,y:number):number {
 /** Mode cards navigate horizontally; the lower Back button is reachable vertically. */
 export function modeGridSelection(selected:number,x:number,y:number):number {
  if(x&&selected<2)return selected===0?1:0;
- if(y>0&&selected<2)return 2;
- if(y<0&&selected===2)return 0;
+ if(y>0)return selected<2?2:selected===2?3:3;
+ if(y<0)return selected===3?2:selected===2?0:selected;
  return selected;
 }

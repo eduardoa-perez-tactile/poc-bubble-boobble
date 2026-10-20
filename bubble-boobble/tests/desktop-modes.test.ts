@@ -22,7 +22,7 @@ worldTest('desktop main menu has only start settings and quit in every build',as
 worldTest('desktop mode chooser records classic and madness requests and returns to menu',async({input,step})=>{
  await step(5);input.emit(DesktopIntent,{action:'choose-mode'});await step(1);
  expect(desktopState.get().screen).toBe('modes');
- expect(getDesktopButtons(desktopState.get(),initialDesktopSave).map(b=>b.key)).toEqual(['classic-mode','madness-mode','mode-back']);
+ expect(getDesktopButtons(desktopState.get(),initialDesktopSave).map(b=>b.key)).toEqual(['classic-mode','madness-mode','online-mode','mode-back']);
  input.emit(DesktopIntent,{action:'mode-back'});await step(1);expect(desktopState.get().screen).toBe('menu');
  input.emit(DesktopIntent,{action:'choose-mode'});await step(1);
  input.emit(DesktopIntent,{action:'classic-mode'});await step(1);expect(desktopGameRequest.get().action).toBe('start');expect(desktopState.get().screen).toBe('play');

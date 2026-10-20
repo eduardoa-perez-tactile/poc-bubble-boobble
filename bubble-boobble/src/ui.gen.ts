@@ -374,14 +374,52 @@ declare module '@gameengine/ui' {
      *   - `classicSelected`: yesno, default false
      *   - `madnessSelected`: yesno, default false
      *   - `backSelected`: yesno, default false
-     * Events: `classic-mode`, `madness-mode`, `mode-back`
+     *   - `onlineSelected`: yesno, default false
+     * Events: `classic-mode`, `madness-mode`, `mode-back`, `online-mode`
      * Code areas: none
-     * Refs: `classic-mode`, `madness-mode`, `mode-back`
+     * Refs: `classic-mode`, `madness-mode`, `mode-back`, `online-mode`
      */
     'mode-select': {
-      props: { classicSelected: boolean; madnessSelected: boolean; backSelected: boolean };
+      props: { classicSelected: boolean; madnessSelected: boolean; backSelected: boolean; onlineSelected: boolean };
       areas: never;
-      refs: 'classic-mode' | 'madness-mode' | 'mode-back';
+      refs: 'classic-mode' | 'madness-mode' | 'mode-back' | 'online-mode';
+    };
+    /**
+     * Online bar: a view, screen (ui/docs/online-bar.ui.json)
+     *
+     * Properties:
+     *   - `identity`: text, default "ONLINE"
+     * Events: `menu`
+     * Code areas: none
+     * Refs: `menu`
+     */
+    'online-bar': {
+      props: { identity: string | { loc: string } | LocText };
+      areas: never;
+      refs: 'menu';
+    };
+    /**
+     * Online room: a view, screen (ui/docs/online-room.ui.json)
+     *
+     * Properties:
+     *   - `title`: text, default ""
+     *   - `subtitle`: text, default ""
+     *   - `room`: text, default ""
+     *   - `humans`: text, default ""
+     *   - `status`: text, default ""
+     *   - `detail`: text, default ""
+     *   - `primary`: text, default ""
+     *   - `secondary`: text, default ""
+     *   - `setup`: yesno, default true
+     *   - `showMenu`: yesno, default false
+     * Events: `connect`, `back`, `less`, `more`, `digit-0`, `digit-1`, `digit-2`, `digit-3`, `digit-4`, `digit-5`, `digit-6`, `digit-7`, `digit-8`, `digit-9`, `delete`, `new-code`
+     * Code areas: none
+     * Refs: `connect`, `back`, `less`, `more`, `digit-0`, `digit-1`, `digit-2`, `digit-3`, `digit-4`, `digit-5`, `digit-6`, `digit-7`, `digit-8`, `digit-9`, `delete`, `new-code`
+     */
+    'online-room': {
+      props: { title: string | { loc: string } | LocText; subtitle: string | { loc: string } | LocText; room: string | { loc: string } | LocText; humans: string | { loc: string } | LocText; status: string | { loc: string } | LocText; detail: string | { loc: string } | LocText; primary: string | { loc: string } | LocText; secondary: string | { loc: string } | LocText; setup: boolean; showMenu: boolean };
+      areas: never;
+      refs: 'connect' | 'back' | 'less' | 'more' | 'digit-0' | 'digit-1' | 'digit-2' | 'digit-3' | 'digit-4' | 'digit-5' | 'digit-6' | 'digit-7' | 'digit-8' | 'digit-9' | 'delete' | 'new-code';
     };
     /**
      * Party dragon card: a widget, button (ui/docs/party-dragon-card.ui.json)

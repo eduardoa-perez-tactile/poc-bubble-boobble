@@ -21,12 +21,29 @@
   "render": {
     "defaultTier": "auto",
     "tiers": {
-      "mobile": { "msaa": 1, "hdr": false },
-      "compat": { "msaa": 1, "hdr": false },
-      "desktop": { "features": { "spotShadows": true } }
+      "mobile": {
+        "msaa": 1,
+        "hdr": false
+      },
+      "compat": {
+        "msaa": 1,
+        "hdr": false
+      },
+      "desktop": {
+        "features": {
+          "spotShadows": true
+        }
+      }
     },
-    "clearColor": [0, 0, 0, 1],
-    "sortingLayers": ["Default"],
+    "clearColor": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "sortingLayers": [
+      "Default"
+    ],
     "pixelsPerUnit": 100
   },
   "ui": {
@@ -61,5 +78,56 @@
     ],
     "maxVoices": 24,
     "normalize": false
+  },
+  "plugins": [
+    "system"
+  ],
+  "multiplayer": {
+    "mode": "realtime",
+    "players": 10,
+    "authority": "server",
+    "sync": "input",
+    "port": 8787,
+    "window": 12,
+    "buttons": {
+      "jump": [
+        {
+          "key": "ArrowUp"
+        },
+        {
+          "key": "KeyW"
+        },
+        {
+          "button": 0
+        }
+      ],
+      "fire": [
+        {
+          "key": "Space"
+        },
+        {
+          "key": "KeyJ"
+        },
+        {
+          "button": 2
+        }
+      ]
+    },
+    "stick": {
+      "x": [
+        {
+          "negative": "ArrowLeft",
+          "positive": "ArrowRight"
+        },
+        {
+          "negative": "KeyA",
+          "positive": "KeyD"
+        },
+        {
+          "axis": 0
+        }
+      ]
+    },
+    "server": "ws://127.0.0.1:8787"
   }
 }
