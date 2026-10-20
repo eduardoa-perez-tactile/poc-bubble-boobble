@@ -4,7 +4,7 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { zstdCompressSync } from 'node:zlib';
-import { checkElf, command, digest, engineIdentity, files, packageExports, readPak, stampName, verifyExports, withBrowserReleaseFlags, webEngineRoot } from './release.mjs';
+import { arcadeBuildEnvironment, checkElf, command, digest, engineIdentity, files, packageExports, readPak, stampName, verifyExports, withBrowserReleaseFlags, webEngineRoot } from './release.mjs';
 import { decodeRpc, publish, rpc, validSlug } from './client.mjs';
 function pak(entries) {
   let size = 0;
@@ -154,4 +154,19 @@ test('engine source release tag controls identity when staged version metadata l
   assert.equal(identity.engineRevision, git(['rev-parse', 'HEAD']));
   put(engine, 'engine-version.json', JSON.stringify({ version: '0.1.15' }));
   assert.throws(() => engineIdentity(engine), /tracked modifications/);
+});
+
+test('all arcade builds force identical stock TypeScript flags over inherited and caller settings', () => {
+  const inherited = { GAMEENGINE_NATIVE_SYSTEMS: 'on', GAMEENGINE_TRANSPILE: '1', KEEP_SETTING: 'preserved' };
+  const web = arcadeBuildEnvironment({ WEB_CONFIG: 'release', GAMEENGINE_TRANSPILE: 'on' }, inherited);
+  const server = arcadeBuildEnvironment({ GAMEENGINE_REPO: '/pinned/runtime', GAMEENGINE_NATIVE_SYSTEMS: 'on' }, inherited);
+  for (const env of [web, server]) {
+    assert.equal(env.GAMEENGINE_NATIVE_SYSTEMS, 'off');
+    assert.equal(env.GAMEENGINE_TRANSPILE, 'off');
+    assert.equal(env.KEEP_SETTING, 'preserved');
+  }
+  assert.equal(web.WEB_CONFIG, 'release');
+  assert.equal(server.GAMEENGINE_REPO, '/pinned/runtime');
+  assert.equal(inherited.GAMEENGINE_NATIVE_SYSTEMS, 'on');
+  assert.equal(inherited.GAMEENGINE_TRANSPILE, '1');
 });

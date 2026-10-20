@@ -7,7 +7,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import { checkElf, command, digest, files, json, sourceIdentity, stampName, withBrowserReleaseFlags } from './release.mjs';
+import { arcadeBuildEnvironment, checkElf, command, digest, files, json, sourceIdentity, stampName, withBrowserReleaseFlags } from './release.mjs';
 
 export const project = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 export const pins = json(join(project, 'tools/arcade/runtime-pins.json'));
@@ -57,7 +57,7 @@ export function assemblePrebuiltServer({ runtimeRoot, out, gameProject = project
   else if (realpathSync(link) !== realpathSync(runtimeRoot)) throw new Error('Project engine link points elsewhere; use a fresh CI checkout.');
   mkdirSync(out, { recursive: true });
   const game = join(out, 'game');
-  const env = { ...process.env, GAMEENGINE_REPO: runtimeRoot, GAMEENGINE_NATIVE_SYSTEMS: 'off', GAMEENGINE_NODE: process.execPath };
+  const env = arcadeBuildEnvironment({ GAMEENGINE_REPO: runtimeRoot, GAMEENGINE_NODE: process.execPath });
   const reportText = withBrowserReleaseFlags(gameProject, () => command(join(runtimeRoot, 'bin/gameengine'), ['cook', '--project', gameProject, '--platform', 'desktop', '--release', '--out', game, '--json'], { cwd: gameProject, env, maxBuffer: 64 * 1024 * 1024 }));
   const report = JSON.parse(reportText);
   if (!report.ok || !existsSync(join(game, 'code.gpak')) || !existsSync(join(game, 'manifest.json'))) throw new Error('Engine release cook did not produce a complete game export.');

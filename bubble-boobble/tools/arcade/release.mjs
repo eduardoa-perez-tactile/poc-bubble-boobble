@@ -6,6 +6,11 @@ import { zstdDecompressSync } from 'node:zlib';
 
 export const manifest = { version: 1, server: { runtime: 'gameengine', target: 'linux-x64', entry: 'server/gameengine-server' } };
 export const stampName = 'arcade-build.json';
+/** Both hosts ship stock TypeScript; also suppress source-only transpiler hash metadata. */
+export function arcadeBuildEnvironment(extra = {}, parent = process.env) {
+  return { ...parent, ...extra, GAMEENGINE_NATIVE_SYSTEMS: 'off', GAMEENGINE_TRANSPILE: 'off' };
+}
+
 const fail = message => { throw new Error(message); };
 export const digest = bytes => createHash('sha256').update(bytes).digest('hex');
 export const json = path => JSON.parse(readFileSync(path, 'utf8'));
