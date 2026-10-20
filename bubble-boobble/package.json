@@ -28,6 +28,17 @@
     "harness:pipeline-check": "node tools/harness/record-pipelines.mjs --check",
     "harness:perf-combat": "node tools/harness/perf-combat.mjs",
     "harness:verify-full": "node tools/harness/run.mjs verify-full",
-    "desktop:transport-probe": "node tools/desktop/transport-probe.mjs"
+    "desktop:transport-probe": "node tools/desktop/transport-probe.mjs",
+    "web:inspect": "node tools/web/toolchain.mjs inspect",
+    "web:parity": "node tools/web/toolchain.mjs parity",
+    "web:build": "node tools/web/toolchain.mjs export",
+    "web:serve": "node tools/web/toolchain.mjs serve",
+    "web:test": "node tools/web/smoke.mjs",
+    "web:publish": "node tools/web/publish.mjs",
+    "web:verify": "node tools/web/verify.mjs",
+    "web:test-controls": "node --test tools/web/controls.test.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
   }
 }

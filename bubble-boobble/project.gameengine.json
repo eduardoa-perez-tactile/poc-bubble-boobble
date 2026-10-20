@@ -3,7 +3,8 @@
   "name": "Bubble Madness",
   "bundleId": {
     "ios": "com.example.bubbleboobble",
-    "android": "com.example.bubbleboobble"
+    "android": "com.example.bubbleboobble",
+    "web": "com.tactile.prototypes.bubblemadness"
   },
   "version": "0.1.0",
   "sim": {
@@ -61,7 +62,8 @@
     "android"
   ],
   "platforms": [
-    "desktop"
+    "desktop",
+    "web"
   ],
   "startScene": "scenes/arcade.scene.json",
   "audio": {

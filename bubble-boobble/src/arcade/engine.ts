@@ -45,7 +45,7 @@ export const ArcadeStep=defineSystem({
     }
     if(control.skip){ctx.setField(ArcadeControl,'skip',false);return;}
     if(!current.active||!current.game)return;
-    const inputs:Input[]=current.game.Party?reducePartyPadInput(partyPads.get().pads,[]).inputs:Array.from({length:current.game.Players.length},()=>({Move:0,Jump:false,Fire:false}));
+    const inputs:Input[]=reducePartyPadInput(partyPads.get().pads,[]).inputs.slice(0,current.game.Players.length);
     let pause=false;
     for(const c of q.chunks())for(let i=0;i<c.length;i++){
       const a=c.col(ActionState);
@@ -55,13 +55,13 @@ export const ArcadeStep=defineSystem({
         if(c.is(ActionState,i,'name','pause'))pause=!!a.justPressed[i];
         continue;
       }
-      if(c.is(ActionState,i,'name','move'))inputs[0]!.Move=a.value[i]!;
-      if(c.is(ActionState,i,'name','jump'))inputs[0]!.Jump=a.pressed[i]!==0;
-      if(c.is(ActionState,i,'name','fire'))inputs[0]!.Fire=a.pressed[i]!==0;
+      if(c.is(ActionState,i,'name','move')&&a.value[i]!==0)inputs[0]!.Move=a.value[i]!;
+      if(c.is(ActionState,i,'name','jump'))inputs[0]!.Jump ||= a.pressed[i]!==0;
+      if(c.is(ActionState,i,'name','fire'))inputs[0]!.Fire ||= a.pressed[i]!==0;
       if(c.is(ActionState,i,'name','pause'))pause=!!a.justPressed[i];
-      if(c.is(ActionState,i,'name','move2')&&inputs[1])inputs[1].Move=a.value[i]!;
-      if(c.is(ActionState,i,'name','jump2')&&inputs[1])inputs[1].Jump=a.pressed[i]!==0;
-      if(c.is(ActionState,i,'name','fire2')&&inputs[1])inputs[1].Fire=a.pressed[i]!==0;
+      if(c.is(ActionState,i,'name','move2')&&inputs[1]&&a.value[i]!==0)inputs[1].Move=a.value[i]!;
+      if(c.is(ActionState,i,'name','jump2')&&inputs[1])inputs[1].Jump ||= a.pressed[i]!==0;
+      if(c.is(ActionState,i,'name','fire2')&&inputs[1])inputs[1].Fire ||= a.pressed[i]!==0;
     }
     if(!pause && ctx.events.count(ArcadeInput)===0 && current.game.Sounds.length===0 && (current.game.Paused||current.game.State===3||current.game.State===4))return;
     const game=copyGame(current.game);

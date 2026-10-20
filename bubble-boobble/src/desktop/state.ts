@@ -80,7 +80,7 @@ export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(Ar
  const pads=updatePartyPads(ctx.input);
  const padScreen=desktopState.get().screen;
  if(padScreen==='party')for(const slot of pads.joinedSlots)desktopAction('party-join','',slot);
- else if(pads.pause&&desktopState.get().partyRun&&(padScreen==='play'||padScreen==='pause'))desktopAction(padScreen==='pause'?'resume':'pause');
+ else if(pads.pause&&(padScreen==='play'||padScreen==='pause'))desktopAction(padScreen==='pause'?'resume':'pause');
  const status=desktopState.get();if(status.status){if(status.statusStartedStep<0)desktopState.set({...status,statusStartedStep:ctx.step});else if(ctx.step-status.statusStartedStep>=300)desktopState.set({...status,status:'',statusStartedStep:-1});}
  if(desktopState.get().screen==='title'&&ctx.events.count(PointerDown))desktopAction('menu');
  for(const pointer of ctx.events.read(PointerHover)){const s=desktopState.get(),p=desktopSaveState.get(),buttons=getDesktopButtons(s,p);for(let i=0;i<buttons.length;i++){const r=desktopButtonRect(s,p,i);if(r&&pointer.world[0]>=r.x&&pointer.world[0]<r.x+r.width&&720-pointer.world[1]>=r.y&&720-pointer.world[1]<r.y+r.height&&s.selected!==i){desktopAction('select','',i);break;}}}
