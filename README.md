@@ -17,3 +17,5 @@ npm run harness:verify
 ```
 
 See the [harness guide](bubble-boobble/docs/harness.md), [strict-port contract](bubble-boobble/docs/port-harness.md), and [Git workflow](bubble-boobble/docs/git-workflow.md).
+
+Browser builds and sharing: see [the web guide](bubble-boobble/docs/web.md).

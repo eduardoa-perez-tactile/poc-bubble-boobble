@@ -1,0 +1,41 @@
+name: Publish Bubble Madness web playtest
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release with the verified bubble-madness-web.tar.gz artifact
+        required: true
+        type: string
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download verified game
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          mkdir site
+          gh release download "$RELEASE_TAG" --repo "$REPOSITORY" --pattern bubble-madness-web.tar.gz
+          tar -xzf bubble-madness-web.tar.gz -C site
+          test -s site/index.html
+          test -s site/gameengine_web_player.wasm
+          test -s site/playtest-build.json
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
