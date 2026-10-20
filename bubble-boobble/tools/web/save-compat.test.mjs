@@ -13,3 +13,7 @@ test('browser file flush stays synchronous and preserves filesystem errors',()=>
 test('unknown loader refuses the compatibility patch',()=>{
  assert.throws(()=>browserSaveCompatibility('new loader'),/changed/);
 });
+test('current SDK keeps engine-owned browser persistence untouched',()=>{
+ const source='var _fd_sync=function(fd){return Asyncify.handleAsync(innerFunc)};_fd_sync.isAsync=true;';
+ for(const version of ['0.1.14','0.1.15'])assert.equal(browserSaveCompatibility(source,version),source);
+});

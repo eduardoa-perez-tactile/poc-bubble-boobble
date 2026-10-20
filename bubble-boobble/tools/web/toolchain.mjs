@@ -22,7 +22,7 @@ function localPath(value, fallback) {
 }
 function toolchain() {
   const configPath = join(project, '.gameengine/web-toolchain.json');
-  requireFile(configPath, 'Create this ignored local JSON file with engineRoot (pinned v0.1.13 full source checkout), cargoHome, rustupHome, emsdkRoot, and rustToolchain. Paths may be relative to the project. Install Emscripten 6.0.10 and Rust 1.94.1 with wasm32-unknown-emscripten; build tools/wasm/build.mjs --host in that checkout.');
+  requireFile(configPath, 'Create this ignored local JSON file with engineRoot (full source checkout matching the installed SDK), cargoHome, rustupHome, emsdkRoot, and rustToolchain. Paths may be relative to the project. Install Emscripten 6.0.10 and Rust 1.94.1 with wasm32-unknown-emscripten; build tools/wasm/build.mjs --host in that checkout.');
   const config = JSON.parse(readFileSync(configPath, 'utf8'));
   const engineRoot = realpathSync(localPath(config.engineRoot));
   const sdk = realpathSync(join(project, '.gameengine/engine'));
@@ -35,11 +35,13 @@ function toolchain() {
   const nativeHost = requireFile(join(sdk, 'target/release/gameengine-host'), 'Run npm run setup with the installed engine.');
   const cook = requireFile(join(sdk, 'target/release/gameengine-cook'), 'Install the engine SDK cooker.');
   requireFile(join(engineRoot, 'Cargo.toml'), 'engineRoot must point to full pinned engine sources, not the desktop SDK.');
-  requireFile(join(engineRoot, 'platform/web/player.ts'), 'Use a full v0.1.13 source checkout.');
+  requireFile(join(engineRoot, 'platform/web/player.ts'), 'Use a full source checkout matching the installed SDK.');
   const sdkVersion = JSON.parse(readFileSync(requireFile(join(sdk, 'engine-version.json'), 'Install a versioned engine SDK.'), 'utf8')).version;
   const sourceTag = spawnSync('git', ['-C', engineRoot, 'describe', '--tags', '--exact-match', 'HEAD'], { encoding: 'utf8' });
   if (sourceTag.status !== 0 || sourceTag.stdout.trim() !== `v${sdkVersion}`) throw new Error(`engineRoot must be checked out at v${sdkVersion}, matching the installed SDK; rebuild the wasm host/player after changing versions.`);
-  const cli = requireFile(join(sdk, 'tools/cli/bin/gameengine.mjs'), 'Run npm run setup.');
+  // Export with the matching source CLI so source-only web dependencies resolve
+  // there, rather than in the installed editor's reduced SDK dependency set.
+  const cli = requireFile(join(action === 'export' ? engineRoot : sdk, 'tools/cli/bin/gameengine.mjs'), 'Install the matching engine CLI and its dependencies.');
   requireFile(host, 'Build the real wasm host: node tools/wasm/build.mjs --host in engineRoot with the scoped Rust/Emscripten environment.');
   requireFile(join(dirname(host), 'gameengine_host.wasm'), 'Rebuild the wasm test host; its .js loader alone is insufficient.');
   requireFile(join(cargoHome, 'bin/cargo'), 'Install Rust into the configured scoped cargoHome/rustupHome.');

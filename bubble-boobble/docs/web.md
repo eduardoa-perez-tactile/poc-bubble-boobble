@@ -24,12 +24,14 @@ paths live only in ignored `.gameengine/web-toolchain.json`:
 }
 ```
 
-For SDK 0.1.13, use source tag v0.1.13, Emscripten 6.0.10 and Rust 1.94.1 with
+For SDK 0.1.15, use source tag v0.1.15, Emscripten 6.0.10 and Rust 1.94.1 with
 wasm32-unknown-emscripten. Build the wasm test host using the engine's
 `node tools/wasm/build.mjs --host` with that scoped toolchain. An existing matching setup,
 such as Street Fighter's, can be reused by pointing these ignored paths at it.
 `npm run web:inspect` verifies the required files and matching source tag. Never commit the
-engine, toolchains, generated exports or save data.
+engine, toolchains, generated exports or save data. Export runs the source checkout's CLI;
+install its dependencies, including `es6-promise`, there. The installed editor's reduced SDK
+dependency set does not include that browser runtime package.
 
 ## Build and verify
 
@@ -90,7 +92,9 @@ that dialog. The level editor/generator is not exposed from the public menu.
 
 ## Browser save compatibility
 
-Emscripten 6.0.10 implements `fd_sync` using Asyncify. Saving from a nested
+Engine 0.1.14 and later own browser persistence and flush completion. Their exported
+loaders are kept unchanged. For engine 0.1.13 only, Emscripten 6.0.10 implements `fd_sync`
+using Asyncify. Saving from a nested
 wasm → game JavaScript → wasm service call crashes that path. The export applies a checked,
 project-local loader patch: the file flush is synchronous in memory, while the existing IDBFS
 autoPersist writes asynchronously to IndexedDB. The engine shell also flushes on backgrounding.
