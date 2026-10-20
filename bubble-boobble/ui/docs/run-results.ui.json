@@ -32,7 +32,8 @@
         "rr_stats",
         "rr_actions",
         "rr_hint",
-        "rr_podium"
+        "rr_podium",
+        "rr_confetti"
       ]
     },
     "rr_top": {
@@ -63,7 +64,6 @@
         "rr_title",
         "rr_subtitle",
         "rr_score",
-        "rr_confetti",
         "rr_bub",
         "rr_bob"
       ],
@@ -354,8 +354,8 @@
           0
         ],
         "offset": [
-          0,
-          0
+          48,
+          30
         ]
       }
     },
