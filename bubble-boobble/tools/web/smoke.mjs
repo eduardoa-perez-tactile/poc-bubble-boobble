@@ -7,11 +7,12 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import assert from 'node:assert/strict';
+import { webContentTypes } from './content-types.mjs';
 const root=fileURLToPath(new URL('../..',import.meta.url));
 const site=resolve(root,'build/web/site'),out=resolve(root,'build/web-qa');mkdirSync(out,{recursive:true});
 const report={ok:false,started:new Date().toISOString(),build:JSON.parse(readFileSync(resolve(site,'playtest-build.json'))),checks:[],errors:[],screenshots:[],audio:[]};
 const server=createServer((req,res)=>{
- try{const file=resolve(site,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname).replace(/\/$/,'/index.html'));if(relative(site,file).startsWith('..')){res.writeHead(403).end();return;}if(!statSync(file).isFile())throw Error('file');res.setHeader('Content-Type',({'.html':'text/html','.js':'text/javascript','.wasm':'application/wasm','.json':'application/json'})[extname(file)]??'application/octet-stream');res.end(readFileSync(file));}catch{res.writeHead(404).end();}
+ try{const file=resolve(site,'.'+decodeURIComponent(new URL(req.url,'http://localhost').pathname).replace(/\/$/,'/index.html'));if(relative(site,file).startsWith('..')){res.writeHead(403).end();return;}if(!statSync(file).isFile())throw Error('file');res.setHeader('Content-Type',webContentTypes[extname(file)]??'application/octet-stream');res.end(readFileSync(file));}catch{res.writeHead(404).end();}
 });
 let browser,page,chrome,profile;
 const check=(name,detail)=>report.checks.push({name,detail});

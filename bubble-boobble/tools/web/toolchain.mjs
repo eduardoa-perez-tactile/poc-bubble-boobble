@@ -7,6 +7,7 @@ import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node
 import { fileURLToPath } from 'node:url';
 import { createServer } from 'node:http';
 import { extendWebShell } from './extend-shell.mjs';
+import { webContentTypes } from './content-types.mjs';
 
 const project = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const action = process.argv[2];
@@ -90,7 +91,6 @@ function serve() {
   requireFile(join(site, 'index.html'), 'Run npm run web:build to create the browser build first.');
   const port = Number(process.env.PORT ?? 8080);
   if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('PORT must be an integer from 1 to 65535.');
-  const types = { '.html': 'text/html', '.js': 'text/javascript', '.wasm': 'application/wasm', '.json': 'application/json' };
   const server = createServer((request, response) => {
     try {
       const pathname = decodeURIComponent(new URL(request.url, 'http://localhost').pathname);
@@ -98,7 +98,7 @@ function serve() {
       const rel = relative(site, path);
       if (rel.startsWith(`..${sep}`) || rel === '..' || isAbsolute(rel)) { response.writeHead(403).end(); return; }
       if (!existsSync(path) || !statSync(path).isFile()) { response.writeHead(404).end(); return; }
-      response.writeHead(200, { 'Content-Type': types[extname(path)] ?? 'application/octet-stream', 'Cache-Control': 'no-store' });
+      response.writeHead(200, { 'Content-Type': webContentTypes[extname(path)] ?? 'application/octet-stream', 'Cache-Control': 'no-store' });
       response.end(readFileSync(path));
     } catch { response.writeHead(400).end(); }
   });
