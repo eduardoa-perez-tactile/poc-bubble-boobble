@@ -49,11 +49,13 @@ export function webEngineRoot(project, requested) {
   return actual;
 }
 export function engineIdentity(engineRoot) {
-  const engineVersion = json(join(engineRoot, 'engine-version.json')).version;
   const tag = command('git', ['-C', engineRoot, 'describe', '--tags', '--exact-match', 'HEAD']);
-  if (tag !== `v${engineVersion}`) fail('Engine source must be checked out at its exact release tag.');
+  const release = /^v(\d+\.\d+\.\d+)$/.exec(tag);
+  if (!release) fail('Engine source must be checked out at an exact vX.Y.Z release tag.');
   if (command('git', ['-C', engineRoot, 'status', '--porcelain', '--untracked-files=no'])) fail('Engine source has tracked modifications.');
-  return { engineVersion, engineRevision: command('git', ['-C', engineRoot, 'rev-parse', 'HEAD']) };
+  // Distribution staging rewrites engine-version.json; its tracked source value can lag
+  // the actual release. The exact clean source tag is authoritative for source identity.
+  return { engineVersion: release[1], engineSourceMetadataVersion: json(join(engineRoot, 'engine-version.json')).version, engineRevision: command('git', ['-C', engineRoot, 'rev-parse', 'HEAD']) };
 }
 /** The server cooks the exact browser release script; WEB_BUILD affects presentation only. */
 export function withBrowserReleaseFlags(project, build) {

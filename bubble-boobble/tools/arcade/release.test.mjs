@@ -4,7 +4,7 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { zstdCompressSync } from 'node:zlib';
-import { checkElf, digest, files, packageExports, readPak, stampName, verifyExports, withBrowserReleaseFlags, webEngineRoot } from './release.mjs';
+import { checkElf, command, digest, engineIdentity, files, packageExports, readPak, stampName, verifyExports, withBrowserReleaseFlags, webEngineRoot } from './release.mjs';
 import { decodeRpc, publish, rpc, validSlug } from './client.mjs';
 function pak(entries) {
   let size = 0;
@@ -138,4 +138,20 @@ test('publication uses the exact guide engine prepare_publish arguments', async 
   const result = await publish({ slug: 'bubble-test', zip, fetcher });
   assert.deepEqual(calls[1], { name: 'prepare_publish', arguments: { slug: 'bubble-test', multiplayer: true } });
   assert.equal(result.state, 'queued');
+});
+
+test('engine source release tag controls identity when staged version metadata lags', t => {
+  const { root } = fixture(t), engine = join(root, 'tagged-source'); mkdirSync(engine);
+  const git = args => command('git', ['-C', engine, ...args]);
+  git(['init', '--quiet', '--initial-branch=main']);
+  put(engine, 'engine-version.json', JSON.stringify({ version: '0.1.9' }));
+  git(['add', 'engine-version.json']);
+  git(['-c', 'user.name=Release test', '-c', 'user.email=release-test@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '--quiet', '-m', 'source release fixture']);
+  git(['tag', 'v0.1.15']);
+  const identity = engineIdentity(engine);
+  assert.equal(identity.engineVersion, '0.1.15');
+  assert.equal(identity.engineSourceMetadataVersion, '0.1.9');
+  assert.equal(identity.engineRevision, git(['rev-parse', 'HEAD']));
+  put(engine, 'engine-version.json', JSON.stringify({ version: '0.1.15' }));
+  assert.throws(() => engineIdentity(engine), /tracked modifications/);
 });

@@ -1,6 +1,6 @@
 # Bubble Madness multiplayer implementation plan
 
-Status: implementation authorized and in progress, 20 October 2026. Publication remains a separate action. See [release instructions](multiplayer-release.md) and [the implementation experience log](multiplayer-experience-log.md) for verification evidence and remaining limits.
+Status: implementation completed, 20 October 2026; release artifact verification is in progress. Actual browser acceptance remains deferred under PROJECT.md, and publication remains a separate action. See [release instructions](multiplayer-release.md) and [the implementation experience log](multiplayer-experience-log.md) for verification evidence and remaining limits.
 
 Build browser multiplayer for ten-dragon Wave Survival and publish it to Trond's Office Arcade. A match contains one to ten human-controlled dragons, with deterministic AI filling all remaining slots. The first networking milestone must support ten connected clients; fewer-human playtests are additional coverage.
 
