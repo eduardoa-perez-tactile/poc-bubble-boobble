@@ -1,10 +1,12 @@
 # Office Arcade release
 
+The current feature is [Dynamic online Wave Survival](multiplayer-dynamic-worlds.md), using authoritative worlds with immediate start and joining during combat. The live URL and `cd5516d` ZIP recorded below are the **previous fixed-match implementation**. They have not been updated with the dynamic-world rework; do not use that old ZIP as the new feature release. Build and verify a fresh matching world-enabled browser/Linux pair before publishing a new address.
+
 This game uses Trond's [live Office Arcade guide](https://webgames.tactilews.com/agents/), re-read on 20 October 2026. Office Arcade runs the exported authoritative engine server directly; the client connects to the same publication's secure `/socket` endpoint. There is no project-owned Node server or health wrapper.
 
 ## One-command deployment and updates
 
-The first publication is live at [Bubble Madness multiplayer](https://webgames.tactilews.com/bubble-madness-mp-cd5516d-20261020t141208-1fa6/) (20 October 2026, publication ID `f3a94c84-7c08-420e-994b-2019e3031296`, built code revision `cd5516d`). Office Arcade reported `published`; `check_game` returned HTTP 200 with no missing linked files. A separate secure WebSocket upgrade to the hosted `/socket` succeeded. These checks do not establish browser gameplay.
+The previous fixed-match publication is live at [Bubble Madness multiplayer](https://webgames.tactilews.com/bubble-madness-mp-cd5516d-20261020t141208-1fa6/) (20 October 2026, publication ID `f3a94c84-7c08-420e-994b-2019e3031296`, built code revision `cd5516d`). Office Arcade reported `published`; `check_game` returned HTTP 200 with no missing linked files. A separate secure WebSocket upgrade to the hosted `/socket` succeeded. These checks do not establish browser gameplay.
 
 From this project directory, on the office network/VPN:
 
@@ -30,7 +32,7 @@ npm run arcade:deploy -- --resume bubble-madness-mp-cd5516d-20261020t141208-1fa6
 
 Resume never prepares or uploads another release. The initial receipt is preserved, with a separate resume receipt. Failure exits nonzero and never reports queued as published. Unknown server states and HTTP/tool errors stop the command for inspection. It does not install a recurring job or automatically publish on Git pushes. Browser acceptance remains governed by `PROJECT.md`.
 
-## Verified release artifact
+## Previous fixed-match release artifact
 
 The actual browser and authoritative Linux exports from clean game revision `cd5516d91da52dc1d6fa96c7663c00ef126177a3` passed `arcade:verify` and were packaged successfully. The final [Ubuntu24.04 CI run 39435591999](https://github.com/eduardoa-perez-tactile/poc-bubble-boobble/actions/runs/39435591999) passed all 15 tooling tests, the real release cook, production authoritative game load, shared-library checks and WebSocket upgrade. The full-source release check, including the pipeline gate, typecheck, cook and 600-frame cooked smoke, also passed without a bypass.
 
@@ -82,6 +84,8 @@ npm run arcade:smoke-server -- --server build/arcade/server-linux-x64
 
 The checked-in `tools/arcade/runtime-pins.json` records the engine version, source release commit, official archive URL and SHA-256. Updating it requires inspecting and verifying a new engine release; do not silently select latest. The fetch step extracts into a dedicated location and writes download/binary checksums. Assembly requires a clean game revision, refuses existing output and points a fresh checkout's ignored `.gameengine/engine` link at that runtime; it refuses to replace an established different link. It restores generated browser release flags even when cook fails. All arcade exporters force both `GAMEENGINE_NATIVE_SYSTEMS=off` and `GAMEENGINE_TRANSPILE=off` through one shared environment helper, so browser and server use stock TypeScript with identical transpiler metadata settings. The helper overrides inherited/caller values. Disabling native acceleration alone is insufficient: the source checkout automatically adds system-source metadata when its engine crates are present, while the installed Linux runtime omits that map without a ready native SDK; those script differences change the engine match identity. No proprietary game/engine binary is compiled in this route.
 
+The release helpers also support the current `multiplayer.world` configuration. The prebuilt exporter mirrors the engine builder's world contract in `server.json`: `authority: "server"`, `target: "linux-x64"`, port 8787, `world: true` and `players: null`. The cooked project declares its world input marker, public document and send cadence. The verifier requires matching world configuration on both targets and rejects inconsistent server metadata; the production smoke checker requires a world-ready record (`world: true`) rather than accepting a fixed-match startup. Exact cooked-script/config/input equality and clean provenance remain mandatory. These helper tests do not establish a new compiled dynamic-world release by themselves.
+
 The smoke result proves target library resolution, authoritative cooked-game loading and an RFC6455 WebSocket upgrade. It does not join players, run a browser or prove shared gameplay/reconnect. The workflow's artifact includes both the complete server directory and that separate startup report. Fetch and unpack it locally with `gh run download` and `tar`, preserving the server directory unchanged, then combine it with the matching release web export using the verification/package commands below.
 
 ## Build matching exports
@@ -119,7 +123,7 @@ The ZIP has `arcade.json`, the complete `site/`, the complete `server/` and `rel
 
 These are static artifact checks. They do not prove glibc or shared-library compatibility, successful startup, socket upgrade, ten-client capacity, browser rendering or reconnect. Those remain separate acceptance gates.
 
-## Completed verification and current limits
+## Previous fixed-match verification and limits
 
 The authoritative harness passed four active ten-dragon matches: ten humans for 1,200 frames at 4/2-frame latency/jitter, two humans/eight AI for 900 frames at 10/6, and five/five plus one/nine for 600 frames each at 4/2. Every case executed its active-gameplay/roster assertion and passed hash agreement without divergence or desync. The final summary is `.gameengine/multiplayer-evidence/summary.json`; timings and stall counts are recorded in the experience log. Server timings ranged from 2.56 to 6.14 ms/tick and exceeded the roughly 2 ms rollback guidance, so smooth internet play is not established by those passes.
 
@@ -157,6 +161,6 @@ The authorized first deployment used `prepare_publish`, uploaded this verified Z
 
 ## Acceptance still required
 
-Linux dependency resolution, authoritative cooked-game startup and WebSocket-upgrade acceptance are complete for the final matching revision in CI run 39435591999. Remaining deployed gameplay acceptance requires the eventual published URL: verify two separate browser contexts share movement, jump, fire, capture/rescue and match outcome, collect console/request failures and screenshots, and exercise disconnect/rejoin according to the verified engine policy. Additionally test ten actual browser clients and mixed human/AI rooms. Record source/build identity and distinguish engine network harness results, static checks and browser observations.
+For the previous fixed-match release, Linux dependency resolution, authoritative cooked-game startup and WebSocket upgrade passed in CI run 39435591999. The dynamic implementation has separate local native-world/socket evidence in [its specification](multiplayer-dynamic-worlds.md); it still needs matching release exports and new deployment evidence. Browser gameplay acceptance for the dynamic release then requires its new published URL: verify two separate browser contexts share movement, jump, fire, capture/rescue and match outcome, collect console/request failures and screenshots, and exercise disconnect/rejoin according to the verified engine policy. Additionally test ten actual browser clients and mixed human/AI rooms. Record source/build identity and distinguish engine network harness results, static checks and browser observations.
 
 `PROJECT.md` restricts playtesting to engine APIs and specifically requires an explicit user request for browser automation. Browser acceptance remains deferred under that rule; a socket upgrade or static check cannot substitute for it. Draft findings for Trond in the experience log. Sending messages to Slack requires a user request.

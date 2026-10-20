@@ -389,12 +389,14 @@ declare module '@gameengine/ui' {
      *
      * Properties:
      *   - `identity`: text, default "ONLINE"
+     *   - `notice`: text, default ""
+     *   - `showNotice`: yesno, default false
      * Events: `menu`
      * Code areas: none
      * Refs: `menu`
      */
     'online-bar': {
-      props: { identity: string | { loc: string } | LocText };
+      props: { identity: string | { loc: string } | LocText; notice: string | { loc: string } | LocText; showNotice: boolean };
       areas: never;
       refs: 'menu';
     };
@@ -404,22 +406,38 @@ declare module '@gameengine/ui' {
      * Properties:
      *   - `title`: text, default ""
      *   - `subtitle`: text, default ""
-     *   - `room`: text, default ""
-     *   - `humans`: text, default ""
      *   - `status`: text, default ""
      *   - `detail`: text, default ""
      *   - `primary`: text, default ""
      *   - `secondary`: text, default ""
      *   - `setup`: yesno, default true
-     *   - `showMenu`: yesno, default false
-     * Events: `connect`, `back`, `less`, `more`, `digit-0`, `digit-1`, `digit-2`, `digit-3`, `digit-4`, `digit-5`, `digit-6`, `digit-7`, `digit-8`, `digit-9`, `delete`, `new-code`
+     *   - `rooms`: list of online-room-row
+     *   - `showRooms`: yesno, default false
+     * Events: `press (<item>)`, `connect`, `back`
      * Code areas: none
-     * Refs: `connect`, `back`, `less`, `more`, `digit-0`, `digit-1`, `digit-2`, `digit-3`, `digit-4`, `digit-5`, `digit-6`, `digit-7`, `digit-8`, `digit-9`, `delete`, `new-code`
+     * Refs: `connect`, `back`
      */
     'online-room': {
-      props: { title: string | { loc: string } | LocText; subtitle: string | { loc: string } | LocText; room: string | { loc: string } | LocText; humans: string | { loc: string } | LocText; status: string | { loc: string } | LocText; detail: string | { loc: string } | LocText; primary: string | { loc: string } | LocText; secondary: string | { loc: string } | LocText; setup: boolean; showMenu: boolean };
+      props: { title: string | { loc: string } | LocText; subtitle: string | { loc: string } | LocText; status: string | { loc: string } | LocText; detail: string | { loc: string } | LocText; primary: string | { loc: string } | LocText; secondary: string | { loc: string } | LocText; setup: boolean; rooms: readonly { key: string; title?: string | { loc: string } | LocText; detail?: string | { loc: string } | LocText; label?: string | { loc: string } | LocText; disabled?: boolean }[]; showRooms: boolean };
       areas: never;
-      refs: 'connect' | 'back' | 'less' | 'more' | 'digit-0' | 'digit-1' | 'digit-2' | 'digit-3' | 'digit-4' | 'digit-5' | 'digit-6' | 'digit-7' | 'digit-8' | 'digit-9' | 'delete' | 'new-code';
+      refs: 'connect' | 'back';
+    };
+    /**
+     * Online room row: a widget, button (ui/docs/online-room-row.ui.json)
+     *
+     * Properties:
+     *   - `title`: text, default ""
+     *   - `detail`: text, default ""
+     *   - `label`: text, default ""
+     *   - `disabled`: yesno, default false
+     * Events: `<id>`
+     * Code areas: none
+     * Refs: none
+     */
+    'online-room-row': {
+      props: { title: string | { loc: string } | LocText; detail: string | { loc: string } | LocText; label: string | { loc: string } | LocText; disabled: boolean };
+      areas: never;
+      refs: never;
     };
     /**
      * Party dragon card: a widget, button (ui/docs/party-dragon-card.ui.json)

@@ -128,6 +128,11 @@
         }
       ]
     },
-    "server": "ws://127.0.0.1:8787"
+    "server": "ws://127.0.0.1:8787",
+    "world": {
+      "inputEvent": "OnlineWorldInput",
+      "document": "online.world.public",
+      "sendEvery": 3
+    }
   }
 }

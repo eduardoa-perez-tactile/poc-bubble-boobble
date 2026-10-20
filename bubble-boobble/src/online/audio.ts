@@ -1,5 +1,6 @@
 import { audio, defineSystem, read, write, Time } from '@gameengine/runtime';
 import { OnlineAudioState } from '../schema.gen';
+import { clientWorldView } from './world-system';
 import { session } from '../arcade/session';
 import { desktopSaveState } from '../desktop/save';
 
@@ -11,8 +12,9 @@ export const OnlineAudioPresentation = defineSystem({
   run(ctx) {
     const current = session.get(), game = current.game;
     if (!current.active || current.mode !== 'online' || !game?.Party) return;
-    const old = ctx.get(OnlineAudioState);
-    if (game.Tick <= old.tick) return;
+    const old = ctx.get(OnlineAudioState), room=clientWorldView.get().room??'fixed';
+    const sameRoom=room===old.room;
+    if (sameRoom&&game.Tick <= old.tick) return;
     const party = game.Party, hp = party.Boss?.HP ?? -1;
     const downed = game.Players.filter(player => player.Downed).length;
     const gain = desktopSaveState.get().settings.sound / 100;
@@ -26,12 +28,12 @@ export const OnlineAudioPresentation = defineSystem({
     for (const sound of ['death', 'item', 'laser', 'fire', 'water', 'jump']) {
       if (game.Sounds.includes(sound)) play(`reference/audio/${sound}`, sound === 'jump' ? .3 : .6, sound === 'death' ? 100 : 25, 1, 3);
     }
-    if (old.tick >= 0) {
+    if (sameRoom&&old.tick >= 0) {
       if (downed < old.downed) play('audio/rescue', .7, 90);
       if (hp >= 0 && old.bossHP > hp) play('audio/boss-hit', .7, 75);
       if (party.Wave > old.wave) play('audio/wave-clear', .7, 75);
       if (game.State === 4 && old.state !== 4) play('audio/victory', .7, 90);
     }
-    ctx.set(OnlineAudioState, { tick: game.Tick, wave: party.Wave, state: game.State, downed, bossHP: hp });
+    ctx.set(OnlineAudioState, { tick: game.Tick, wave: party.Wave, state: game.State, downed, bossHP: hp, room });
   },
 });

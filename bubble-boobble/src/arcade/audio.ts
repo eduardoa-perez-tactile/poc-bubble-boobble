@@ -1,3 +1,4 @@
+import { authoritativeWorld } from '../online/world-system';
 import { ActionState, multiplayer, app, defineSystem, query, read, write, PlayMusic, StopMusic, SetBusVolume, PlaySound, LoadSoundBank, UnloadSoundBank } from '@gameengine/runtime';
 import { ArcadeAudio, ArcadeControl, ArcadePlatformState, DesktopIntent } from '../schema.gen.ts';
 import { session } from './session.ts';
@@ -7,8 +8,9 @@ export const ArcadeAudioSystem=defineSystem({
  name:'ArcadeAudioSystem',after:['ArcadeStep'],query:query(read(ActionState)),resources:[read(ArcadeControl),write(ArcadeAudio)],events:[DesktopIntent],
  runIf:{resource:ArcadeControl,field:'active',value:true},
  run(ctx,q){
+  if(authoritativeWorld.get().started)return;
   const old=ctx.get(ArcadeAudio),s=session.get();
-  if(multiplayer.match()){
+  if(multiplayer.match()||(s.active&&s.mode==='online')){
    // The host drains audio after rollback and the mixer deduplicates a playing track.
    // Reassert current music so catch-up cannot skip a transition; SFX play in presentation.
    const g=s.active?s.game:null,track=!g?'menu':g.State===4?'win':g.State===3?'gameover':g.Hurry?'hurry':'theme';

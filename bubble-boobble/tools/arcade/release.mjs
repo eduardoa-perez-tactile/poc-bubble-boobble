@@ -134,6 +134,8 @@ export function verifyExports({ web, server }) {
   for (const field of ['name', 'version', 'multiplayer']) if (JSON.stringify(clientProject[field]) !== JSON.stringify(serverProject[field])) fail(`Cooked ${field} mismatch.`);
   if (!clientProject.multiplayer || clientProject.multiplayer.authority !== 'server') fail('Cooked project needs multiplayer.authority=server.');
   if (!c('gameengine/input.json').equals(s('gameengine/input.json'))) fail('Cooked input mappings differ.');
+  if (clientProject.multiplayer.world && (config.world !== true || config.players !== null)) fail('World export must declare server.json world=true and players=null.');
+  if (!clientProject.multiplayer.world && config.world === true) fail('Fixed match export cannot declare a world server.');
   const scriptSha256 = digest(c('gameengine/bundle.js'));
   if (scriptSha256 !== digest(s('gameengine/bundle.js'))) fail('Cooked scripts differ: actual engine match build identities will differ. Rebuild matching exports; never override the identity.');
   // Resolve all manifest-listed bundles, not just the scripts.
@@ -141,7 +143,7 @@ export function verifyExports({ web, server }) {
     const content = json(join(game, 'manifest.json'));
     for (const entry of content.entries) if (entry.bundle && !existsSync(join(game, `${entry.bundle}.gpak`))) fail(`Missing cooked bundle ${entry.bundle} in ${game}`);
   }
-  return { ok: true, revision: client.revision, sourceSha256: client.sourceSha256, engineVersion: client.engineVersion, engineRevision: client.engineRevision, config: 'release', game: clientProject.name, version: clientProject.version, scriptSha256, limits: ['Static artifact verification only; does not prove Linux runtime dependencies, WebSocket handshake, browser gameplay or reconnect.'] };
+  return { ok: true, revision: client.revision, sourceSha256: client.sourceSha256, engineVersion: client.engineVersion, engineRevision: client.engineRevision, config: 'release', game: clientProject.name, version: clientProject.version, world: !!clientProject.multiplayer.world, scriptSha256, limits: ['Static artifact verification only; does not prove Linux runtime dependencies, WebSocket handshake, browser gameplay or reconnect.'] };
 }
 export function packageExports({ web, server, out }) {
   const evidence = verifyExports({ web, server });

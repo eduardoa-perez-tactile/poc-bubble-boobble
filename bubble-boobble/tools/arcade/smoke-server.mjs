@@ -8,6 +8,10 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkElf, command, json } from './release.mjs';
 
+export function validateServerReady(config, ready) {
+  if (ready.ok !== true || ready.authority !== 'server' || !ready.listening) throw new Error('Expected authoritative server ready record.');
+  if ((config.world === true) !== (ready.world === true)) throw new Error('Production server world/match mode differs from its export configuration.');
+}
 export async function smokeServer(server) {
   if (process.platform !== 'linux' || process.arch !== 'x64') throw new Error('Run production server startup verification on Linux x64.');
   const binary = join(server, 'gameengine-server'), config = json(join(server, 'server.json'));
@@ -30,6 +34,7 @@ export async function smokeServer(server) {
         for (const line of stdout.split('\n')) try { const value = JSON.parse(line); if (value.ok && value.listening && value.authority === 'server') done(null, value); } catch { /* Engine logs can precede its ready record. */ }
       });
     });
+    validateServerReady(config, ready);
     const endpoint = new URL(ready.listening);
     if (endpoint.protocol !== 'ws:' || endpoint.hostname !== '127.0.0.1') throw new Error('Unexpected production server listen address.');
     const key = randomBytes(16).toString('base64');
@@ -46,7 +51,7 @@ export async function smokeServer(server) {
       });
       req.end();
     });
-    return { ok: true, scope: 'Actual Linux production host startup + authoritative cooked game load + RFC6455 WebSocket upgrade', game: ready.game, rate: ready.rate, authority: ready.authority, dependencies, gpuDependencies, stderr, gameplayVerified: false, browserVerified: false, reconnectVerified: false };
+    return { ok: true, scope: 'Actual Linux production host startup + authoritative cooked game load + RFC6455 WebSocket upgrade', game: ready.game, world: ready.world === true, rate: ready.rate, authority: ready.authority, dependencies, gpuDependencies, stderr, gameplayVerified: false, browserVerified: false, reconnectVerified: false };
   } finally {
     if (child.exitCode === null) {
       child.kill('SIGTERM');

@@ -41,14 +41,19 @@ export async function fetchRuntime(out) {
   checkRuntime(out);
   return { ok: true, runtimeRoot: out, ...receipt };
 }
+export function serverConfiguration(config) {
+  const mp = config.multiplayer;
+  if (!mp || mp.authority !== 'server' || (mp.mode ?? 'realtime') !== 'realtime') throw new Error('This exporter requires an authoritative realtime project.');
+  return { game: config.name, target: 'linux-x64', authority: 'server', turnOrder: mp.turnOrder ?? 'roundRobin', port: 8787, mode: mp.mode ?? 'realtime', players: mp.world ? null : (mp.players ?? 2), ...(mp.world ? { world: true } : {}) };
+}
 export function assemblePrebuiltServer({ runtimeRoot, out, gameProject = project }) {
   if (process.platform !== 'linux' || process.arch !== 'x64') throw new Error('Cook and assemble the official Linux production host on Linux x64.');
   const runtime = checkRuntime(runtimeRoot);
   const source = sourceIdentity(gameProject);
   if (source.dirty) throw new Error('Prebuilt release assembly requires a clean committed source revision.');
   if (existsSync(out)) throw new Error(`Server export already exists: ${out}`);
-  const config = json(join(gameProject, 'project.gameengine.json')), mp = config.multiplayer;
-  if (!mp || mp.authority !== 'server' || mp.world || (mp.mode ?? 'realtime') !== 'realtime') throw new Error('This exporter requires an authoritative fixed realtime match project.');
+  const config = json(join(gameProject, 'project.gameengine.json'));
+  const server = serverConfiguration(config);
   // Resolve gameengine package imports against the official distribution. Never replace a
   // developer's established engine link silently.
   const link = join(gameProject, '.gameengine/engine');
@@ -64,7 +69,7 @@ export function assemblePrebuiltServer({ runtimeRoot, out, gameProject = project
   cpSync(join(runtimeRoot, 'target/player/release/gameengine-host'), join(out, 'gameengine-server'));
   cpSync(join(runtimeRoot, 'target/player/release/libgameengine_webgpu.so'), join(out, 'libgameengine_webgpu.so'));
   chmodSync(join(out, 'gameengine-server'), 0o755);
-  const server = { game: config.name, target: 'linux-x64', authority: 'server', turnOrder: mp.turnOrder ?? 'roundRobin', port: 8787, mode: mp.mode ?? 'realtime', players: mp.players ?? 2 };
+
   writeFileSync(join(out, 'server.json'), JSON.stringify(server, null, 2) + '\n');
   writeFileSync(join(out, 'prebuilt-runtime.json'), JSON.stringify({ ...runtime, engineRevision: pins.engineRevision, binary: 'target/player/release/gameengine-host', features: 'v8,desktop,shipped', protocol: false, method: 'Official production host + engine CLI release cook; workaround for build-server E_CHECKOUT in installed 0.1.15.' }, null, 2) + '\n');
   const after = sourceIdentity(gameProject);

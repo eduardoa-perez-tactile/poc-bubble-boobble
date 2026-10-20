@@ -1,3 +1,4 @@
+import { authoritativeWorld } from '../online/world-system';
 import { menuBubble, menuDragon } from '../desktop/animation';
 import { arenaLayout } from './arena-layout';
 import { arenaBackdrop, bubblePose, dragonPose, dragonShadow, dragonBadges, rect, ring, sparkle, popQuads, advanceFeel, emptyFeel, cueQuads, packFeel, unpackFeel, feelColors, type FeelState } from './juice';
@@ -392,11 +393,12 @@ export const ArcadeBoot = defineSystem({
 });
 export const ArcadePool = defineSystem({
   name: "ArcadePool",
-  after: ["ArcadeStep", "OnlineWaveStep"],
+  after: ["ArcadeStep", "OnlineWaveStep", "OnlineWorldClient"],
   query: query(read(ArcadeVisual)),
   resources: [read(ArcadeControl), read(ViewInfo)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
   run(ctx, q) {
+    if(authoritativeWorld.get().started)return;
     const current=session.get(), online=current.active&&current.mode==='online'&&current.game?.Party;
     let needed:number,pixelCount:number;
     if(online){
@@ -521,18 +523,21 @@ export function sceneDraws(tick: number, feel?:FeelState, view?:{width:number;he
       actors.filter((d) => d.footer).forEach(push);
     }
   } else if(ui.screen==='modes') {
-    for(let mode=0;mode<2;mode++) {
-      const x=mode===0?100:396,y=168,level=campaignPreviews[0]!;
-      solid('black',x+4,y+4,264,248);
-      for(let row=0;row<26;row++)for(let col=0;col<32;col++)if(level.tiles[row]![col])images.push({image:`reference/tiles/${mode===0?'01':'03'}`,x:x+24+col*7,y:y+34+row*7,w:7,h:7});
+    for(let mode=0;mode<3;mode++) {
+      const x=30+mode*240,y=168,level=campaignPreviews[0]!;
+      solid('black',x+4,y+4,220,248);
+      for(let row=0;row<26;row++)for(let col=0;col<32;col++)if(level.tiles[row]![col])images.push({image:`reference/tiles/${mode===0?'01':mode===1?'03':'05'}`,x:x+18+col*6,y:y+34+row*7,w:6,h:7});
       if(mode===0){
-        push(image('green/walk',0,x+40,y+184,40));push(image('blue/walk',0,x+192,y+184,40,40,1));
-        push(image('zenchan/walk',0,x+116,y+62,36));
-        push(image('bubble',30,x+98,y+122,32));push(image('bubble',30,x+154,y+100,24));
+        push(image('green/walk',0,x+26,y+184,34));push(image('blue/walk',0,x+164,y+184,34,34,1));
+        push(image('zenchan/walk',0,x+94,y+62,32));
+        push(image('bubble',30,x+74,y+122,28));push(image('bubble',30,x+142,y+100,24));
+      }else if(mode===1){
+        push(image('mighta/angry',0,x+78,y+58,72));
+        for(let i=0;i<6;i++)push(image(`${partyColors[i]}/walk`,0,x+18+i*32,y+188,28,28,i<3?1:-1));
+        push(image('fire-bubble',0,x+28,y+88,28));push(image('thunder-bubble',0,x+174,y+100,28));
       }else{
-        push(image('mighta/angry',0,x+92,y+58,88));
-        for(let i=0;i<6;i++)push(image(`${partyColors[i]}/walk`,0,x+28+i*36,y+188,32,32,i<3?1:-1));
-        push(image('fire-bubble',0,x+34,y+88,32));push(image('thunder-bubble',0,x+206,y+100,32));
+        for(let i=0;i<10;i++)push(image(`${partyColors[i]}/walk`,0,x+20+(i%5)*39,y+114+Math.floor(i/5)*64,30,30,i<5?1:-1));
+        push(image('bubble',30,x+46,y+60,30));push(image('thunder-bubble',0,x+154,y+64,30));
       }
     }
   } else if (ui.screen === 'party') {
@@ -618,6 +623,7 @@ export const ArcadePresentation = defineSystem({
   resources: [read(ArcadeControl), read(Time), read(ArcadeFeel), read(ViewInfo), write(MaterialGlobals)],
   runIf: { resource: ArcadeControl, field: "active", value: true },
   run(ctx, q) {
+    if(authoritativeWorld.get().started)return;
     const feel=unpackFeel(ctx.get(ArcadeFeel));
     const plan = sceneDraws(ctx.get(Time).step,feel,ctx.get(ViewInfo)),
       ui = desktopState.get(),

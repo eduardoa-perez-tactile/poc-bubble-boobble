@@ -78,3 +78,5 @@ export { DesktopPlatformBridge } from './desktop-platform/index.ts';
 export { OnlineWaveStep } from './online/sim.ts';
 export { OnlineAudioPresentation } from './online/audio.ts';
 export { OnlineUI } from './online/client.ts';
+
+export { OnlineWorldAuthority, OnlineWorldClient, OnlineWorldControls } from './online/world-system.ts';

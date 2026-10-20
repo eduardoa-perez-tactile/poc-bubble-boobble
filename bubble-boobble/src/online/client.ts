@@ -1,6 +1,6 @@
-import { app, multiplayer, services, type MatchStatus, type JoinOptions } from '@gameengine/runtime';
-import { defineUI, emit, onCleanup, onUiFrame, views, type ViewHandle } from '@gameengine/ui';
-import { DesktopIntent } from '../schema.gen';
+import { app, emitInputData, read, services } from '@gameengine/runtime';
+import { defineUI, emit, onCleanup, onUiFrame, useResource, views, type ViewHandle } from '@gameengine/ui';
+import { DesktopIntent, OnlineLocalControls, OnlineWorldSnapshot } from '../schema.gen';
 import { session } from '../arcade/session';
 import { partyNames, partyRanking } from '../arcade/party-config';
 import { initialDesktopState, desktopState } from '../desktop/state';
@@ -8,108 +8,109 @@ import { initialDesktopSave } from '../desktop/save';
 import { desktopModel, type DesktopModel } from '../desktop/model';
 import { DesktopResultsView } from '../desktop/desktop.view';
 import { DesktopHudView, hudModel, type HudModel } from '../desktop/hud.view';
-import { openBrowserInvitation, reportBrowserScreen } from '../desktop/browser';
-import { invitationLink, officeArcadeSocket, onlineError, parseInvitation, validHumans, validRoom } from './room';
-import { OnlineBarView, OnlineRoomView, type OnlineRoomModel } from './room.view';
+import { reportBrowserScreen } from '../desktop/browser';
+import { officeArcadeSocket } from './room';
+import { OnlineBarView, OnlineRoomView, type OnlineRoomModel, type OnlineBarModel } from './room.view';
+import { browserWorldControls, openWorldTransport, neutralWorldControls, type WorldTransport } from './world-transport';
+import { isPublicWorld, type PublicWorld } from './world-public';
 
-/** Connection state is presentation-only: none of it is written to a world document. */
-export const OnlineUI=defineUI({name:'OnlineUI',root(){
- let room=String(Math.floor(Math.random()*900000)+100000),humans=2,launch='',server:string|undefined;
- let reconnect:JoinOptions|undefined,disconnected=false;
- let open=false,localMenu=false,invitation=false,message='',joined=new Set<number>(),requested=false,disposed=false,wasOnline=false;
- let lobby:ViewHandle<OnlineRoomModel>|undefined,bar:ViewHandle<{identity:string}>|undefined,hud:ViewHandle<HudModel>|undefined,result:ViewHandle<DesktopModel>|undefined;
- let lobbyStamp='',barStamp='',hudStamp='',resultStamp='',reported='',lastDesktopScreen='';
- const release=()=>{try{multiplayer.setInput(0,[0,0]);}catch{/* No transport in isolated previews. */}};
+/** Connection and menu state remain local; the server owns discovery, slots and gameplay. */
+const controller=defineUI({name:'OnlineUI',root(){
+ const nativeControls=useResource(OnlineLocalControls);
+ let server='ws://127.0.0.1:8787',linkReady=false,disposed=false,connecting=false,failed=false;
+ let transport:WorldTransport|undefined,epoch=0,player=-1,data:PublicWorld={version:1,tick:0,rooms:[],peers:[]};
+ let open=false,playing=false,localMenu=false,panel:'setup'|'browse'='setup',message='',requested:unknown;
+ let lastScreen='',reported='',applied=false,awaitingRoom=false,assignedRoom:string|null=null;
+ let selection:{kind:'create';before:string|null}|{kind:'join';room:string}|null=null;
+ const selectedRoom=()=>{const room=data.rooms.find(room=>room.owners.includes(player));return room&&(!selection||(selection.kind==='join'?room.id===selection.room:room.id!==selection.before))?room:undefined;};
+ let lobby:ViewHandle<OnlineRoomModel>|undefined,bar:ViewHandle<OnlineBarModel>|undefined,hud:ViewHandle<HudModel>|undefined,result:ViewHandle<DesktopModel>|undefined;
+ let lobbyStamp='',barStamp='',hudStamp='',resultStamp='';
+ const release=()=>transport?.releaseNeutral();
+ const apply=()=>{if(player>=0)emitInputData(OnlineWorldSnapshot,JSON.stringify({player,document:data,playing:playing&&!!selectedRoom()}));};
  const closeViews=()=>{lobby?.close({immediate:true});bar?.close({immediate:true});hud?.close({immediate:true});result?.close({immediate:true});lobby=undefined;bar=undefined;hud=undefined;result=undefined;lobbyStamp=barStamp=hudStamp=resultStamp='';};
- void services.system.launchLink().then(value=>{if(disposed)return;launch=value.url??'';server=officeArcadeSocket(launch);const invite=parseInvitation(launch);if(invite){room=invite.room;humans=invite.humans;open=true;}}).catch(()=>{/* Native/dev can use configured multiplayer.server. */});
- function leave(toMenu=false){reconnect=undefined;disconnected=false;wasOnline=false;release();multiplayer.leave();emit(DesktopIntent,{action:'online-exit',index:toMenu?1:0});requested=false;localMenu=false;invitation=false;joined.clear();message='';open=!toMenu;closeViews();}
- function disconnect(status:MatchStatus){
-  if(disconnected)return;
-  // The engine retains match() after socket loss while ordinary steps resume. Clear it
-  // immediately; recovery is best effort and only the local credentials survive here.
-  reconnect=status.seat&&status.room?{server:status.server??server,room:status.room,players:status.players??humans,seat:status.seat,mode:'realtime',sync:'input'}:undefined;
-  disconnected=true;open=true;requested=false;wasOnline=false;localMenu=false;
-  release();multiplayer.leave();emit(DesktopIntent,{action:'online-exit'});
-  message=reconnect?'MATCH CONNECTION ENDED. TRY RECONNECTING WHILE OTHER PLAYERS REMAIN.':'MATCH CONNECTION ENDED. CREATE A NEW ROOM.';
+ const disconnect=()=>{epoch++;transport?.close();transport=undefined;connecting=false;player=-1;requested=undefined;applied=false;assignedRoom=null;selection=null;};
+ void services.system.launchLink().then(link=>{if(disposed)return;server=officeArcadeSocket(link.url??'')??server;linkReady=true;}).catch(()=>{linkReady=true;});
+ function connect(){
+  if(connecting||transport||!linkReady)return;
+  connecting=true;failed=false;const token=++epoch;message='CONNECTING TO THE LIVE GAME DIRECTORY';
+  void openWorldTransport({server,name:'DRAGON',onEvent:event=>{
+   if(disposed||epoch!==token)return;
+   if(event.kind==='welcome'){player=event.player;data={version:1,tick:0,rooms:[],peers:[]};message='';emitInputData(OnlineWorldSnapshot,JSON.stringify({player,document:data,playing:false,reset:true}));}
+   if(event.kind==='snapshot'){
+    if(!isPublicWorld(event.document)){message='INVALID GAME DIRECTORY RECEIVED';return;}
+    data=event.document;applied=true;
+   }
+   if(event.kind==='error'){playing=false;apply();disconnect();failed=true;message=event.error;panel='browse';}
+   if(event.kind==='closed'){
+    playing=false;apply();disconnect();failed=true;message='CONNECTION LOST. YOUR DRAGON IS NOW CONTROLLED BY AI.';localMenu=false;panel='browse';
+   }
+  }}).then(value=>{if(disposed||epoch!==token){value.close();return;}transport=value;connecting=false;}).catch(error=>{if(disposed||epoch!==token)return;connecting=false;failed=true;requested=undefined;message=String(error);});
+ }
+ function send(intent:unknown){try{transport?.send(intent);}catch(error){message=String(error);}}
+ function leave(toMenu=false){
+  release();send({action:'leave'});playing=false;awaitingRoom=false;assignedRoom=null;selection=null;localMenu=false;requested=undefined;panel='browse';apply();closeViews();
+  if(toMenu){open=false;disconnect();emit(DesktopIntent,{action:'online-exit',index:1});}
  }
  function intent(action:string){
-  const status=multiplayer.status(),running=!disconnected&&status.phase==='running',waiting=status.phase==='waiting'||status.phase==='connecting',closed=disconnected||status.phase==='closed';
   if(action==='menu'){localMenu=true;release();return;}
   if(action==='back'){
-   if(running||waiting||closed){leave();return;}
-   open=false;message='';emit(DesktopIntent,{action:'menu'});return;
+   if(playing){leave();return;}
+   if(panel==='setup'){panel='browse';message='';connect();return;}
+   open=false;disconnect();closeViews();emit(DesktopIntent,{action:'menu'});return;
   }
   if(action==='connect'){
-   if(running){localMenu=false;invitation=false;return;}
-   if(closed){
-    const options=reconnect??(status.seat&&status.room?{server:status.server??server,room:status.room,players:status.players??humans,seat:status.seat,mode:'realtime' as const,sync:'input' as const}:undefined);
-    if(options){release();message='RECONNECTING TO YOUR DRAGON';requested=true;disconnected=false;try{multiplayer.join(options);}catch(e){disconnected=true;message=e instanceof Error?e.message:String(e);}return;}
-    leave();room=String(Math.floor(Math.random()*900000)+100000);return;
-   }
-   if(waiting){invitation=!invitation;const link=invitationLink(launch,room,humans);if(link)openBrowserInvitation(link);return;}
-   if(!validRoom(room)||!validHumans(humans)){message='ENTER A SIX-DIGIT ROOM CODE AND 1–10 HUMANS';return;}
-   release();joined.clear();message='';requested=true;invitation=false;
-   try{multiplayer.join({...(server?{server}:{}),room:`wave-${room}`,players:humans,mode:'realtime',sync:'input'});}catch(e){requested=false;message=e instanceof Error?e.message:String(e);}
-   return;
+   if(playing){localMenu=false;message='';return;}
+   if(panel==='browse'){panel='setup';message='';return;}
+   failed=false;selection={kind:'create',before:data.rooms.find(room=>room.owners.includes(player))?.id??null};requested={action:'create'};awaitingRoom=true;playing=true;apply();message='STARTING YOUR GAME';connect();return;
   }
-  if(running||waiting)return;
-  if(action==='less')humans=Math.max(1,humans-1);
-  if(action==='more')humans=Math.min(10,humans+1);
-  if(action==='delete')room=room.slice(0,-1);
-  if(action==='new-code')room=String(Math.floor(Math.random()*900000)+100000);
-  if(/^digit-[0-9]$/.test(action))room=(room.length===6?'':room)+action.slice(-1);
-  message='';
+  if(action.startsWith('join:')){
+   const room=data.rooms.find(room=>room.id===action.slice(5));
+   if(!room||room.ended||room.humans>=10){message='THAT GAME IS FULL OR HAS FINISHED';return;}
+   failed=false;selection={kind:'join',room:room.id};requested={action:'join',room:room.id};awaitingRoom=true;playing=true;apply();message='JOINING THE NEXT AVAILABLE DRAGON';connect();
+  }
  }
- onCleanup(app.onLifecycle(phase=>{if(phase==='background'){release();if(multiplayer.status().phase==='running')localMenu=true;}}));
- onCleanup(()=>{disposed=true;release();closeViews();});
+ onCleanup(app.onLifecycle(phase=>{if(phase==='background'){release();if(playing)localMenu=true;}}));
+ onCleanup(()=>{disposed=true;playing=false;apply();disconnect();closeViews();});
  onCleanup(onUiFrame(()=>{
-  const status:MatchStatus=multiplayer.status();
-  const desktopScreen=desktopState.get().screen;if(desktopScreen==='online'&&lastDesktopScreen!=='online')open=true;lastDesktopScreen=desktopScreen;
-  for(const event of multiplayer.events()){
-   if(event.type==='welcome'){joined.add(event.player);requested=true;disconnected=false;reconnect=undefined;}
-   if(event.type==='joined'&&event.player!==null)joined.add(event.player);
-   if(event.type==='left'){if(event.player!==null)joined.delete(event.player);if(status.phase==='running')message='A PLAYER DISCONNECTED / THEIR LAST INPUT MAY CONTINUE';}
-   if(event.type==='error')message=onlineError(event.code,event.message);
-   if(event.type==='closed')disconnect(status);
-   if(event.type==='desync'){release();localMenu=true;message=`MATCH OUT OF SYNC AT FRAME ${event.frame}. LEAVE AND CREATE A NEW ROOM.`;}
-  }
-  if(status.phase==='closed')disconnect(status);
-  const running=!disconnected&&status.phase==='running',waiting=!disconnected&&(status.phase==='waiting'||status.phase==='connecting');
-  const current=session.get();
-  const g=running&&current.active&&current.mode==='online'?current.game:null;
-  if(status.error)message=onlineError(status.error.code,status.error.message);
-  if(running){open=true;wasOnline=true;humans=status.players??humans;const matchRoom=/^wave-([0-9]{6})(?:-|$)/.exec(status.room??'');if(matchRoom)room=matchRoom[1]!;}
-  // A rebuilt world starts its presentation afresh; running status restores the whole UI.
-  if(!running&&wasOnline&&status.phase==='idle'){open=true;wasOnline=false;localMenu=false;}
-  const closed=disconnected||status.phase==='closed';
-  const visible=open||waiting||running||requested||closed;
-  if(!visible){if(reported){reported='';reportBrowserScreen(desktopScreen);}closeViews();return;}
-  const gameEnded=running&&current.active&&!!g&&(g.State===3||g.State===4);
-  const playing=running&&!!g&&!gameEnded&&!localMenu;
-  const nextReported=playing?'play':'online';if(reported!==nextReported){reported=nextReported;reportBrowserScreen(nextReported,true);}
-  if(running&&g){
-   const model=hudModel(g,initialDesktopSave,gameEnded?'result':'normal');const stamp=JSON.stringify(model);
-   if(stamp!==hudStamp){hudStamp=stamp;if(hud)hud.update(model);else hud=views.push(DesktopHudView,model);}
-  }else{hud?.close({immediate:true});hud=undefined;hudStamp='';}
-  if(playing){
-   const index=status.player??0;const identity=`YOU: ${partyNames[index]??'DRAGON'} / P${index+1}  |  ROOM ${room}  |  ${humans} HUMANS + ${10-humans} AI`;
-   if(identity!==barStamp){barStamp=identity;if(bar)bar.update({identity});else bar=views.push(OnlineBarView,{identity},{onIntent:intent});}
+  const screen=desktopState.get().screen;
+  if(screen==='online'&&lastScreen!=='online'){open=true;panel='setup';failed=false;}
+  lastScreen=screen;
+  if(!open){if(reported){reportBrowserScreen(screen);reported='';}return;}
+  if(!transport&&!connecting&&!failed)connect();
+  if(transport&&player>=0&&requested){send(requested);requested=undefined;}
+  const fresh=applied;if(applied){applied=false;apply();}
+  const room=selectedRoom();
+  const peer=data.peers.find(peer=>peer.player===player);
+  if(fresh&&peer?.error){message=peer.error;playing=false;awaitingRoom=false;selection=null;assignedRoom=null;localMenu=false;panel='browse';apply();}
+  if(playing&&room){message='';awaitingRoom=false;assignedRoom=room.id;selection=null;}
+  // Room expiry/eviction returns a connected player to the discoverable game list.
+  if(fresh&&playing&&!awaitingRoom&&!room&&!requested&&assignedRoom&&!connecting){playing=false;assignedRoom=null;panel='browse';message='THAT GAME HAS FINISHED. JOIN ANOTHER OR START A NEW ONE.';apply();}
+  const current=session.get(),game=playing&&room&&current.active&&current.mode==='online'?current.game:null;
+  const ended=!!game&&(game.State===3||game.State===4),inGame=!!game&&!localMenu&&!ended;
+  const next=inGame?'play':'online';if(reported!==next){reported=next;reportBrowserScreen(next,true);}
+  if(inGame&&transport){const batch=browserWorldControls()??[nativeControls()??neutralWorldControls()];for(const controls of batch)transport.sendControls(controls);}
+  if(game){const model=hudModel(game,initialDesktopSave,ended?'result':'normal'),stamp=JSON.stringify(model);if(stamp!==hudStamp){hudStamp=stamp;if(hud)hud.update(model);else hud=views.push(DesktopHudView,model);}}
+  else{hud?.close({immediate:true});hud=undefined;hudStamp='';}
+  if(inGame&&room){
+   const slot=room.owners.indexOf(player),recent=room.notices.filter((notice,index,all)=>data.tick-notice.tick<180&&!all.slice(index+1).some(later=>later.slot===notice.slot));
+   const joins=recent.filter(notice=>notice.kind==='join').map(notice=>notice.label),leaves=recent.filter(notice=>notice.kind==='leave').map(notice=>notice.label);
+   const notice=[joins.length?`${joins.join(', ')} JOINED`:'',leaves.length?`${leaves.join(', ')} LEFT / AI TOOK OVER`:''].filter(Boolean).join('  |  ');
+   const model:OnlineBarModel={identity:`YOU: P${slot+1} ${partyNames[slot]} / ${room.humans} OF 10 PLAYERS / WAVE ${room.wave}`,notice};
+   const stamp=JSON.stringify(model);if(stamp!==barStamp){barStamp=stamp;if(bar)bar.update(model);else bar=views.push(OnlineBarView,model,{onIntent:intent});}
   }else{bar?.close({immediate:true});bar=undefined;barStamp='';}
-  if(gameEnded&&!localMenu){
+  if(ended&&!localMenu&&game){
    lobby?.close({immediate:true});lobby=undefined;lobbyStamp='';
-   const base=desktopModel({...initialDesktopState,screen:'result',partyRun:true,won:g!.State===4,score:g!.Score,round:g!.Party?.Wave??1,resultReady:true,dragonResults:partyRanking(g!),partySlots:g!.Party!.Slots},initialDesktopSave);
-   const model={...base,resultEyebrow:'ONLINE WAVE SURVIVAL / TEAM RESULTS',resultHint:'NEW MATCH REQUIRES A NEW ROOM',buttons:[{key:'online-again',label:'NEW ONLINE ROOM',selected:true},{key:'online-leave',label:'LEAVE MATCH',selected:false}]};
-   const stamp=JSON.stringify(model);if(stamp!==resultStamp){resultStamp=stamp;if(result)result.update(model);else result=views.push(DesktopResultsView,model,{onIntent:(action)=>{leave(action==='online-leave');room=String(Math.floor(Math.random()*900000)+100000);}});}
-   return;
+   const base=desktopModel({...initialDesktopState,screen:'result',partyRun:true,won:game.State===4,score:game.Score,round:game.Party?.Wave??1,resultReady:true,dragonResults:partyRanking(game),partySlots:game.Party!.Slots},initialDesktopSave);
+   const model={...base,resultEyebrow:'ONLINE WAVE SURVIVAL / TEAM RESULTS',resultHint:'START AGAIN OR JOIN ANOTHER GAME',buttons:[{key:'online-again',label:'NEW GAME',selected:true},{key:'online-leave',label:'BROWSE GAMES',selected:false}]};
+   const stamp=JSON.stringify(model);if(stamp!==resultStamp){resultStamp=stamp;if(result)result.update(model);else result=views.push(DesktopResultsView,model,{onIntent:action=>{leave();if(action==='online-again')panel='setup';}});}return;
   }
   result?.close({immediate:true});result=undefined;resultStamp='';
-  if(playing){lobby?.close({immediate:true});lobby=undefined;lobbyStamp='';return;}
-  const setup=!running&&!waiting&&!closed;
-  const link=invitationLink(launch,room,humans);
-  const model:OnlineRoomModel={title:running?'LOCAL MENU':closed?'MATCH ENDED':'ONLINE WAVE SURVIVAL',subtitle:running?'THE MATCH CONTINUES WHILE THIS MENU IS OPEN':'TEN DRAGONS / ONE SHARED ARENA',room:`ROOM ${room.padEnd(6,'_')}`,humans:`${humans} ${humans===1?'HUMAN':'HUMANS'} + ${10-humans} AI`,setup,
-   detail:running?'Leaving releases your seat. A dropped connection can reconnect.':invitation&&link?link:waiting?'Share this room code and human count with your friends.':'Choose humans first. Use the same room code and count on every device.',
-   status:message||(status.phase==='connecting'?'CONNECTING TO MATCH SERVER':waiting?`WAITING FOR ${humans} HUMANS / ${joined.size} CONNECTIONS OBSERVED`:closed?'CREATE A NEW ROOM TO PLAY AGAIN':server?'OFFICE ARCADE / READY TO CONNECT':'LOCAL SERVER / OPEN THE OFFICE ARCADE BUILD TO PLAY ONLINE'),primary:running?'RESUME':waiting?'INVITATION':closed?(reconnect||status.seat?'RECONNECT':'NEW ROOM'):'CREATE / JOIN',secondary:running?'LEAVE MATCH':waiting?'CANCEL':'BACK'};
+  if(inGame){lobby?.close({immediate:true});lobby=undefined;lobbyStamp='';return;}
+  const menu=!!game&&localMenu,browse=panel==='browse'&&!menu;
+  const rooms=data.rooms.map(room=>({key:`join:${room.id}`,title:`${room.title} / WAVE ${room.wave}`,detail:`${room.humans} / 10 PLAYERS / ${room.ended?'FINISHED':room.phase.toUpperCase()}`,label:room.ended?'FINISHED':room.humans>=10?'FULL':'JOIN GAME',disabled:room.ended||room.humans>=10}));
+  const model:OnlineRoomModel={title:menu?'LOCAL MENU':browse?'JOIN A GAME':'ONLINE WAVE SURVIVAL',subtitle:menu?'THE GAME CONTINUES WHILE THIS MENU IS OPEN':browse?'GAMES IN PROGRESS / JOIN DURING ANY BATTLE':'START SOLO. FRIENDS CAN JOIN ANY TIME.',detail:menu?'Leaving hands your dragon to AI. You can join again from the game list.':browse?'Pick a game with a free human slot. Your dragon joins immediately.':'Start as one dragon. There is no waiting room or required player count.',status:message||(browse?(rooms.length?'CHOOSE A GAME BELOW':'NO GAMES YET. START THE FIRST ONE.'):'UP TO TEN HUMAN DRAGONS / AI TAKES OVER WHEN YOU LEAVE'),primary:menu?'RESUME':browse?'NEW GAME':'START GAME NOW',secondary:menu?'LEAVE GAME':browse?'BACK':'BROWSE GAMES',setup:!browse&&!menu,rooms,showRooms:browse};
   const stamp=JSON.stringify(model);if(stamp!==lobbyStamp){lobbyStamp=stamp;if(lobby)lobby.update(model);else lobby=views.push(OnlineRoomView,model,{onIntent:intent});}
  }));
  return null;
 }});
+export const OnlineUI={...controller,resources:[...controller.resources,read(OnlineLocalControls)]};

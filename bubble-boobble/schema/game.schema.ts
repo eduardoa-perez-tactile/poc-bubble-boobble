@@ -26,6 +26,11 @@ export const ArcadeVisual = component('ArcadeVisual', { slot: u32() }, { sim: tr
 export const ArcadeControl = resource('ArcadeControl', { active: bool(), skip: bool(), requestSequence: u32() }, { sim: true });
 export const ArcadeInput = event('ArcadeInput', { player: u32(), move: i32(), jump: bool(), fire: bool(), paused: bool() }, { sim: true });
 
+// Transient recorded payloads: authority-stamped world input and client snapshot application.
+export const OnlineWorldInput = event('OnlineWorldInput', {}, {sim:true});
+export const OnlineWorldSnapshot = event('OnlineWorldSnapshot', {}, {sim:true});
+export const OnlineLocalControls = resource('OnlineLocalControls', {move:f32(),jump:bool(),fire:bool()}, {sim:false});
+
 export const ArcadeAudio = resource('ArcadeAudio', { track: string(), native: bool(), muted: bool(), music: i32({default:-1}), sound: i32({default:-1}), sfxPriority: i32({default:2147483647,doc:'Strictly descending SFX priorities preserve older voices at the 24-slot cap; mute safely resets after bank unload'}), paused: bool(), exitSequence: u32() }, { sim:true });
 export const EditorPointer = resource('EditorPointer', { drawing: bool(), erasing: bool(), col: i32({default:-1}), row: i32({default:-1}) }, { sim:true });
 
@@ -33,7 +38,7 @@ export const ArcadePlatformState = resource('ArcadePlatformState', { exitSequenc
 
 // Playback cursor is local presentation state: rollback cannot replay a heard shot.
 export const OnlineAudioState = resource('OnlineAudioState', {
-  tick: i32({default:-1}), wave:i32(), state:i32({default:-1}), downed:i32(), bossHP:i32({default:-1}),
+  tick: i32({default:-1}), wave:i32(), state:i32({default:-1}), downed:i32(), bossHP:i32({default:-1}), room:string(),
 }, {sim:false});
 
 // Bounded cosmetic history is never read by simulation or included in replay hashes.

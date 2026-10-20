@@ -147,3 +147,35 @@ test('standard controller d-pad feeds the same engine stick used by online movem
  events.length=0;bridge.poll([pad(0,[15])]);assert.ok(events.some(e=>e[0]===6&&e[5]===0&&e[3]===1));
  events.length=0;bridge.poll([pad(0,[])]);assert.ok(events.some(e=>e[0]===6&&e[5]===0&&e[3]===0));
 });
+
+import { WorldControlBuffer } from '../../web/controls.mjs';
+test('world controls preserve keyboard and short touch edges with only local intent fields',()=>{
+ const gate=new OnlineControlGate(()=>{}),world=new WorldControlBuffer(gate),virtual=new VirtualPad();gate.set(true,true);
+ gate.key('KeyD',true);world.sample([],virtual,true);
+ virtual.press(1,0);virtual.press(2,2);world.sample([],virtual,true);
+ virtual.reset();world.sample([],virtual,true);
+ assert.deepEqual(world.drain(),[{move:1,jump:false,fire:false},{move:1,jump:true,fire:true},{move:1,jump:false,fire:false}]);
+ assert.deepEqual(world.drain(),[{move:1,jump:false,fire:false}]); // Current state is available for heartbeat.
+ gate.key('KeyD',false);world.sample([],virtual,true);assert.equal(world.drain()[0].move,0);
+});
+test('world controls flush queued gameplay on menu and require fresh keyboard/pad input',()=>{
+ const gate=new OnlineControlGate(()=>{}),world=new WorldControlBuffer(gate);gate.set(true,true);
+ gate.key('Space',true);world.sample([pad(0,[0],[1,0])],null,true,true);
+ gate.set(true,false);world.sample([],null,false,false);
+ assert.deepEqual(world.drain(),[{move:0,jump:false,fire:false}]);
+ gate.set(true,true);const held=[pad(0,[0],[1,0])];world.sample(held,null,true,gate.padsAllowed(held));assert.deepEqual(world.drain(),[{move:0,jump:false,fire:false}]);
+ gate.key('Space',false);gate.key('Space',true);world.sample([],null,true,gate.padsAllowed([]));assert.equal(world.drain()[0].fire,true);
+});
+test('world primary standard controller is stable and merges strongest touch/keyboard input',()=>{
+ const gate=new OnlineControlGate(()=>{}),world=new WorldControlBuffer(gate),virtual=new VirtualPad();gate.set(true,true);
+ world.sample([pad(5,[0],[.5,0]),pad(9,[2],[-1,0])],null,true);assert.deepEqual(world.drain(),[{move:.5,jump:true,fire:false}]);
+ world.sample([pad(9,[2],[-1,0]),pad(5,[0],[.5,0])],null,true);assert.deepEqual(world.drain(),[{move:.5,jump:true,fire:false}]);
+ virtual.beginStick(1,100,100);virtual.moveStick(1,68,100);world.sample([pad(5,[0],[.5,0])],virtual,true);assert.equal(world.drain()[0].move,-1);
+ world.sample([pad(9,[2],[-1,0])],null,true);assert.deepEqual(world.drain(),[{move:-1,jump:false,fire:true}]);
+});
+test('world control queue is bounded and overflow suspends held controls to neutral',()=>{
+ const gate=new OnlineControlGate(()=>{}),world=new WorldControlBuffer(gate);gate.set(true,true);
+ for(let i=0;i<65;i++)world.sample([pad(0,i%2?[]:[0])],null,true);
+ assert.deepEqual(world.drain(),[{move:0,jump:false,fire:false}]);assert.equal(gate.padNeutral,true);
+ world.sample([],null,false);const copy=world.drain();copy[0].fire=true;assert.equal(world.drain()[0].fire,false);
+});

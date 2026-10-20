@@ -27,26 +27,14 @@
       "children": [
         "or_title",
         "or_subtitle",
-        "or_room",
-        "or_humans",
-        "or_status",
         "or_detail",
+        "or_status",
+        "or_rooms",
         "or_primary",
         "or_secondary",
-        "or_less",
-        "or_more",
-        "or_digit_0",
-        "or_digit_1",
-        "or_digit_2",
-        "or_digit_3",
-        "or_digit_4",
-        "or_digit_5",
-        "or_digit_6",
-        "or_digit_7",
-        "or_digit_8",
-        "or_digit_9",
-        "or_delete",
-        "or_new_code"
+        "or_ready",
+        "or_friends",
+        "or_capacity"
       ]
     },
     "or_title": {
@@ -67,7 +55,7 @@
         "w": "90%",
         "h": 48,
         "fontSize": 28,
-        "fitMin": 10,
+        "fitMin": 9,
         "textAlign": "center",
         "color": "#ffdc6a"
       }
@@ -88,80 +76,11 @@
           108
         ],
         "w": "90%",
-        "h": 44,
+        "h": 38,
         "fontSize": 14,
-        "fitMin": 10,
+        "fitMin": 9,
         "textAlign": "center",
         "color": "#80dadd"
-      }
-    },
-    "or_room": {
-      "type": "label",
-      "name": "Label",
-      "text": "Label",
-      "property": "room",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          0,
-          170
-        ],
-        "w": "90%",
-        "h": 52,
-        "fontSize": 22,
-        "fitMin": 10,
-        "textAlign": "center",
-        "color": "#ffffff"
-      }
-    },
-    "or_humans": {
-      "type": "label",
-      "name": "Label",
-      "text": "Label",
-      "property": "humans",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          0,
-          234
-        ],
-        "w": 490,
-        "h": 40,
-        "fontSize": 16,
-        "fitMin": 10,
-        "textAlign": "center",
-        "color": "#ffffff"
-      }
-    },
-    "or_status": {
-      "type": "label",
-      "name": "Label",
-      "text": "Label",
-      "property": "status",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          0,
-          530
-        ],
-        "w": "90%",
-        "h": 58,
-        "fontSize": 14,
-        "fitMin": 10,
-        "textAlign": "center",
-        "color": "#ffdc6a"
       }
     },
     "or_detail": {
@@ -177,108 +96,21 @@
         ],
         "offset": [
           0,
-          286
+          162
         ],
         "w": "90%",
-        "h": 54,
-        "fontSize": 12,
-        "fitMin": 10,
+        "h": 64,
+        "fontSize": 13,
+        "fitMin": 9,
         "textAlign": "center",
         "color": "#a3b3ce"
       }
     },
-    "or_less": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "less",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0,
-          0
-        ],
-        "offset": [
-          40,
-          230
-        ],
-        "w": 68,
-        "h": 44
-      },
-      "props": {
-        "label": "-"
-      },
-      "show": "setup"
-    },
-    "or_more": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "more",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          1,
-          0
-        ],
-        "offset": [
-          -40,
-          230
-        ],
-        "w": 68,
-        "h": 44
-      },
-      "props": {
-        "label": "+"
-      },
-      "show": "setup"
-    },
-    "or_digit_0": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "digit-0",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          -224,
-          350
-        ],
-        "w": 104,
-        "h": 44
-      },
-      "props": {
-        "label": 0
-      },
-      "show": "setup"
-    },
-    "or_digit_1": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "digit-1",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          -112,
-          350
-        ],
-        "w": 104,
-        "h": 44
-      },
-      "props": {
-        "label": 1
-      },
-      "show": "setup"
-    },
-    "or_digit_2": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "digit-2",
+    "or_status": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "status",
       "style": {
         "position": "anchored",
         "anchor": [
@@ -287,109 +119,24 @@
         ],
         "offset": [
           0,
-          350
+          568
         ],
-        "w": 104,
-        "h": 44
-      },
-      "props": {
-        "label": 2
-      },
-      "show": "setup"
+        "w": "90%",
+        "h": 36,
+        "fontSize": 12,
+        "fitMin": 9,
+        "textAlign": "center",
+        "color": "#ffdc6a"
+      }
     },
-    "or_digit_3": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "digit-3",
+    "or_rooms": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "or_rows"
+      ],
       "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          112,
-          350
-        ],
-        "w": 104,
-        "h": 44
-      },
-      "props": {
-        "label": 3
-      },
-      "show": "setup"
-    },
-    "or_digit_4": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "digit-4",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          224,
-          350
-        ],
-        "w": 104,
-        "h": 44
-      },
-      "props": {
-        "label": 4
-      },
-      "show": "setup"
-    },
-    "or_digit_5": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "digit-5",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          -224,
-          412
-        ],
-        "w": 104,
-        "h": 44
-      },
-      "props": {
-        "label": 5
-      },
-      "show": "setup"
-    },
-    "or_digit_6": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "digit-6",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          -112,
-          412
-        ],
-        "w": 104,
-        "h": 44
-      },
-      "props": {
-        "label": 6
-      },
-      "show": "setup"
-    },
-    "or_digit_7": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "digit-7",
-      "style": {
+        "pad": 0,
         "position": "anchored",
         "anchor": [
           0.5,
@@ -397,103 +144,27 @@
         ],
         "offset": [
           0,
-          412
+          244
         ],
-        "w": 104,
-        "h": 44
+        "w": "90%",
+        "h": 310
       },
-      "props": {
-        "label": 7
-      },
-      "show": "setup"
+      "show": "showRooms",
+      "scroll": {
+        "axis": "vertical",
+        "snap": "items",
+        "bounce": true
+      }
     },
-    "or_digit_8": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "digit-8",
+    "or_rows": {
+      "type": "repeat",
+      "doc": "online-room-row",
+      "property": "rooms",
       "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          112,
-          412
-        ],
-        "w": 104,
-        "h": 44
-      },
-      "props": {
-        "label": 8
-      },
-      "show": "setup"
-    },
-    "or_digit_9": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "digit-9",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          224,
-          412
-        ],
-        "w": 104,
-        "h": 44
-      },
-      "props": {
-        "label": 9
-      },
-      "show": "setup"
-    },
-    "or_delete": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "delete",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          -168,
-          480
-        ],
-        "w": 216,
-        "h": 44
-      },
-      "props": {
-        "label": "DELETE"
-      },
-      "show": "setup"
-    },
-    "or_new_code": {
-      "type": "use",
-      "doc": "desktop-button",
-      "key": "new-code",
-      "style": {
-        "position": "anchored",
-        "anchor": [
-          0.5,
-          0
-        ],
-        "offset": [
-          168,
-          480
-        ],
-        "w": 216,
-        "h": 44
-      },
-      "props": {
-        "label": "NEW CODE"
-      },
-      "show": "setup"
+        "gap": 12,
+        "w": "100%",
+        "dir": "column"
+      }
     },
     "or_primary": {
       "type": "use",
@@ -540,6 +211,75 @@
           "property": "secondary"
         }
       }
+    },
+    "or_ready": {
+      "type": "label",
+      "name": "Label",
+      "text": "JUMP STRAIGHT IN",
+      "show": "setup",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          300
+        ],
+        "w": "90%",
+        "h": 38,
+        "fontSize": 24,
+        "fitMin": 10,
+        "textAlign": "center",
+        "color": "#80dadd"
+      }
+    },
+    "or_friends": {
+      "type": "label",
+      "name": "Label",
+      "text": "FRIENDS CAN JOIN WHILE YOU PLAY",
+      "show": "setup",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          366
+        ],
+        "w": "90%",
+        "h": 38,
+        "fontSize": 14,
+        "fitMin": 10,
+        "textAlign": "center",
+        "color": "#ebf5ff"
+      }
+    },
+    "or_capacity": {
+      "type": "label",
+      "name": "Label",
+      "text": "ROOM FOR TEN DRAGONS",
+      "show": "setup",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          420
+        ],
+        "w": "90%",
+        "h": 38,
+        "fontSize": 16,
+        "fitMin": 10,
+        "textAlign": "center",
+        "color": "#ffdc6a"
+      }
     }
   },
   "view": {
@@ -551,14 +291,6 @@
       "default": ""
     },
     "subtitle": {
-      "type": "text",
-      "default": ""
-    },
-    "room": {
-      "type": "text",
-      "default": ""
-    },
-    "humans": {
       "type": "text",
       "default": ""
     },
@@ -582,7 +314,12 @@
       "type": "yesno",
       "default": true
     },
-    "showMenu": {
+    "rooms": {
+      "type": "list",
+      "of": "online-room-row",
+      "default": []
+    },
+    "showRooms": {
       "type": "yesno",
       "default": false
     }

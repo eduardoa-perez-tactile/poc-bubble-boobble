@@ -170,3 +170,21 @@ test('all arcade builds force identical stock TypeScript flags over inherited an
   assert.equal(inherited.GAMEENGINE_NATIVE_SYSTEMS, 'on');
   assert.equal(inherited.GAMEENGINE_TRANSPILE, '1');
 });
+
+test('world server metadata and cooked release verification require the real world contract', async t => {
+  const o=fixture(t);
+  const {serverConfiguration}=await import('./prebuilt-server.mjs');
+  const project={name:'Bubble',version:'1',multiplayer:{authority:'server',mode:'realtime',world:{inputEvent:'OnlineWorldInput',document:'online.world.public',sendEvery:3}}};
+  const server=serverConfiguration(project);
+  assert.equal(server.world,true);assert.equal(server.players,null);assert.equal(server.port,8787);
+  assert.equal(serverConfiguration({name:'Bubble',multiplayer:{authority:'server',players:10}}).players,10);
+  for(const root of [join(o.web,'site/game'),join(o.server,'game')])put(root,'code.gpak',pak({'gameengine/bundle.js':'world script','gameengine/input.json':'{}','gameengine/project.gameengine.json':JSON.stringify(project)}));
+  put(o.server,'server.json',JSON.stringify(server));stamp(o.web,'web');stamp(o.server,'linux-x64');
+  assert.equal(verifyExports(o).world,true);
+  put(o.server,'server.json',JSON.stringify({...server,players:10}));stamp(o.server,'linux-x64');assert.throws(()=>verifyExports(o),/world=true and players=null/);
+});
+test('production ready evidence distinguishes persistent world from fixed match mode', async()=>{
+  const {validateServerReady}=await import('./smoke-server.mjs');
+  assert.doesNotThrow(()=>validateServerReady({world:true},{ok:true,authority:'server',world:true,listening:'ws://127.0.0.1:8787'}));
+  assert.throws(()=>validateServerReady({world:true},{ok:true,authority:'server',listening:'ws://127.0.0.1:8787'}),/world\/match mode/);
+});

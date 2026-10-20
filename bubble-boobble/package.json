@@ -37,7 +37,7 @@
     "web:preview-splash": "node tools/web/splash-preview.mjs",
     "web:publish": "node tools/web/publish.mjs",
     "web:verify": "node tools/web/verify.mjs",
-    "web:test-controls": "node --test tools/web/controls.test.mjs",
+    "web:test-controls": "node --test tools/web/controls.test.mjs tools/web/world-transport.test.mjs",
     "arcade:list": "node tools/arcade/run.mjs list",
     "arcade:status": "node tools/arcade/run.mjs status",
     "arcade:check": "node tools/arcade/run.mjs check",
@@ -51,7 +51,8 @@
     "arcade:fetch-runtime": "node tools/arcade/prebuilt-server.mjs fetch",
     "arcade:build-prebuilt-server": "node tools/arcade/prebuilt-server.mjs build",
     "arcade:smoke-server": "node tools/arcade/smoke-server.mjs",
-    "multiplayer:test": "node tools/multiplayer/test.mjs"
+    "multiplayer:test": "node tools/multiplayer/world-test.mjs",
+    "multiplayer:world-test": "node tools/multiplayer/world-test.mjs"
   },
   "devDependencies": {
     "@playwright/test": "1.62.1"

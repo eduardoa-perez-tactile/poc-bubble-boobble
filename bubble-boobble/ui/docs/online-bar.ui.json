@@ -25,7 +25,8 @@
       },
       "children": [
         "ob_identity",
-        "ob_menu"
+        "ob_menu",
+        "ob_notice"
       ]
     },
     "ob_identity": {
@@ -41,11 +42,11 @@
         ],
         "offset": [
           24,
-          688
+          54
         ],
-        "w": "70%",
+        "w": "72%",
         "h": 24,
-        "fontSize": 12,
+        "fontSize": 10,
         "fitMin": 9,
         "color": "#ffdc6a"
       }
@@ -62,13 +63,38 @@
         ],
         "offset": [
           -24,
-          676
+          50
         ],
         "w": 124,
-        "h": 36
+        "h": 30
       },
       "props": {
         "label": "MENU"
+      }
+    },
+    "ob_notice": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "notice",
+      "show": "showNotice",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          92
+        ],
+        "w": "75%",
+        "h": 30,
+        "bg": "#080c1be8",
+        "fontSize": 13,
+        "fitMin": 9,
+        "textAlign": "center",
+        "color": "#ffdc6a"
       }
     }
   },
@@ -82,6 +108,14 @@
     "identity": {
       "type": "text",
       "default": "ONLINE"
+    },
+    "notice": {
+      "type": "text",
+      "default": ""
+    },
+    "showNotice": {
+      "type": "yesno",
+      "default": false
     }
   }
 }

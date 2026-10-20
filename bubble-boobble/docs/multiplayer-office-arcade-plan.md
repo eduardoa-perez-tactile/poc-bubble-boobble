@@ -1,6 +1,6 @@
 # Bubble Madness multiplayer implementation plan
 
-Status: implementation completed, 20 October 2026; matching browser/Linux exports and the Office Arcade ZIP have passed artifact verification. Actual browser acceptance remains deferred under PROJECT.md, and the first Office Arcade publication is live (see the release instructions). See [release instructions](multiplayer-release.md) and [the implementation experience log](multiplayer-experience-log.md) for verification evidence and remaining limits.
+Status: **superseded by [Dynamic online Wave Survival](multiplayer-dynamic-worlds.md)**. The plan below records the original fixed-size authoritative rollback implementation and its first published `cd5516d` release. It is historical, not the specification for the current start-immediately, browse, join-during-combat and AI-takeover feature. The dynamic-world document defines the current architecture, rules and evidence. Shared release packaging guidance remains in [release instructions](multiplayer-release.md), and the [experience log](multiplayer-experience-log.md) distinguishes the two implementations.
 
 Build browser multiplayer for ten-dragon Wave Survival and publish it to Trond's Office Arcade. A match contains one to ten human-controlled dragons, with deterministic AI filling all remaining slots. The first networking milestone must support ten connected clients; fewer-human playtests are additional coverage.
 
