@@ -1,6 +1,6 @@
 # Office Arcade release
 
-The current feature is [Dynamic online Wave Survival](multiplayer-dynamic-worlds.md), using authoritative worlds with immediate start and joining during combat. The live URL and `cd5516d` ZIP recorded below are the **previous fixed-match implementation**. They have not been updated with the dynamic-world rework; do not use that old ZIP as the new feature release. Build and verify a fresh matching world-enabled browser/Linux pair before publishing a new address.
+The current feature is [Dynamic online Wave Survival](multiplayer-dynamic-worlds.md), using authoritative worlds with immediate start and joining during combat. The live URL and `cd5516d` ZIP recorded below are the **previous fixed-match implementation**. They have not been updated with the dynamic-world rework; do not use that old ZIP as the new feature release. The new verified pair is recorded below and is ready for explicit publication to a new address.
 
 This game uses Trond's [live Office Arcade guide](https://webgames.tactilews.com/agents/), re-read on 20 October 2026. Office Arcade runs the exported authoritative engine server directly; the client connects to the same publication's secure `/socket` endpoint. There is no project-owned Node server or health wrapper.
 
@@ -11,7 +11,7 @@ The previous fixed-match publication is live at [Bubble Madness multiplayer](htt
 From this project directory, on the office network/VPN:
 
 ```sh
-npm run arcade:deploy -- --zip build/arcade/bubble-madness-multiplayer-cd5516d.zip
+npm run arcade:deploy -- --zip build/arcade/bubble-madness-dynamic-989dd47.zip
 ```
 
 For each update, first build fresh matching browser/Linux exports from the same clean code revision using the build instructions below. Then deploy them together in one command:
@@ -31,6 +31,23 @@ npm run arcade:deploy -- --resume bubble-madness-mp-cd5516d-20261020t141208-1fa6
 ```
 
 Resume never prepares or uploads another release. The initial receipt is preserved, with a separate resume receipt. Failure exits nonzero and never reports queued as published. Unknown server states and HTTP/tool errors stop the command for inspection. It does not install a recurring job or automatically publish on Git pushes. Browser acceptance remains governed by `PROJECT.md`.
+
+## Verified dynamic-world release artifact
+
+Clean game revision `989dd4747d5b442ee0c87080fefba2f931791b57` now has a matching release browser export and Linux authority. [Ubuntu 24.04 CI run 39444147208](https://github.com/eduardoa-perez-tactile/poc-bubble-boobble/actions/runs/39444147208) passed 23 tooling tests, the real release cook, production world startup, shared-library checks and WebSocket upgrade. Its ready metadata confirms `world: true`. Static pairing and packaging passed with byte-identical cooked scripts and matching world configuration/input.
+
+| Evidence | Project-relative path / value |
+|---|---|
+| Browser export | `build/arcade/web-989dd47/` |
+| Linux server export | `build/arcade/ci-989dd47/server-linux-x64/` |
+| Verified release ZIP | `build/arcade/bubble-madness-dynamic-989dd47.zip` |
+| ZIP receipt | `build/arcade/bubble-madness-dynamic-989dd47.zip.json` |
+| Pair / package reports | `.gameengine/dynamic-release-verify.json`, `.gameengine/dynamic-release-package.json` |
+| ZIP bytes | `56497160` |
+| ZIP SHA-256 | `0b838e58cfeebc870c9675bcfe32b5d3fb8b2b143e3dc7ff19c5874d8c670f3c` |
+| Exact cooked script SHA-256 | `f9be30be853702c08032d5e2ac076ae0613d3a2b5bdcc7653d787683f732c302` |
+
+This package has not been published. The deployment command above uses this dynamic-world ZIP. Later documentation-only commits preserve its original built source identity. Native cooked-authority gameplay evidence is separate in [the dynamic-world specification](multiplayer-dynamic-worlds.md); actual browser acceptance remains unverified.
 
 ## Previous fixed-match release artifact
 
@@ -161,6 +178,6 @@ The authorized first deployment used `prepare_publish`, uploaded this verified Z
 
 ## Acceptance still required
 
-For the previous fixed-match release, Linux dependency resolution, authoritative cooked-game startup and WebSocket upgrade passed in CI run 39435591999. The dynamic implementation has separate local native-world/socket evidence in [its specification](multiplayer-dynamic-worlds.md); it still needs matching release exports and new deployment evidence. Browser gameplay acceptance for the dynamic release then requires its new published URL: verify two separate browser contexts share movement, jump, fire, capture/rescue and match outcome, collect console/request failures and screenshots, and exercise disconnect/rejoin according to the verified engine policy. Additionally test ten actual browser clients and mixed human/AI rooms. Record source/build identity and distinguish engine network harness results, static checks and browser observations.
+For the previous fixed-match release, Linux dependency resolution, authoritative cooked-game startup and WebSocket upgrade passed in CI run 39435591999. The dynamic implementation has separate local native-world/socket evidence in [its specification](multiplayer-dynamic-worlds.md); its matching release exports passed the current artifact gate above, while new deployment evidence remains pending. Browser gameplay acceptance for the dynamic release then requires its new published URL: verify two separate browser contexts share movement, jump, fire, capture/rescue and match outcome, collect console/request failures and screenshots, and exercise disconnect/rejoin according to the verified engine policy. Additionally test ten actual browser clients and mixed human/AI rooms. Record source/build identity and distinguish engine network harness results, static checks and browser observations.
 
 `PROJECT.md` restricts playtesting to engine APIs and specifically requires an explicit user request for browser automation. Browser acceptance remains deferred under that rule; a socket upgrade or static check cannot substitute for it. Draft findings for Trond in the experience log. Sending messages to Slack requires a user request.
