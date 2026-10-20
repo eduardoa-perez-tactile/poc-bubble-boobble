@@ -74,3 +74,16 @@ worldTest('party menu confirm back edges isolate pads and short taps',async()=>{
  f=reducePartyPadInput(f.pads,[{type:'gamepadButton',pad:5,button:0,down:false},{type:'gamepadButton',pad:5,button:0,down:true},{type:'gamepadButton',pad:5,button:0,down:false}]);
  expect(f.menuConfirm).toBe(true);expect(f.inputs[5]!.Jump).toBe(false);
 });
+
+worldTest('virtual pad recorded dpad jump fire chord holds and releases independently',async({step})=>{
+ const button=(button:number,down:boolean)=>({type:'gamepadButton',pad:0,button,down});
+ inject([button(13,true),button(0,true),button(2,true)]);await step(1);
+ let p=partyPads.get().pads[0]!;
+ expect(p.left).toBe(true);expect(p.jump).toBe(true);expect(p.fire).toBe(true);
+ await step(3);p=partyPads.get().pads[0]!;
+ expect(p.left).toBe(true);expect(p.jump).toBe(true);expect(p.fire).toBe(true);
+ inject([button(0,false)]);await step(1);p=partyPads.get().pads[0]!;
+ expect(p.left).toBe(true);expect(p.jump).toBe(false);expect(p.fire).toBe(true);
+ inject([button(13,false),button(2,false)]);await step(1);p=partyPads.get().pads[0]!;
+ expect(p.left).toBe(false);expect(p.jump).toBe(false);expect(p.fire).toBe(false);
+},{scene:'scenes/arcade.scene.json'});

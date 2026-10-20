@@ -24,3 +24,100 @@ test('seat assignment survives list reorder and suspension releases held input',
  assert.ok(events.some(e=>e[1]===0&&e[5]===0&&e[7]===1));
  assert.ok(events.some(e=>e[1]===1&&e[5]===2&&e[7]===1));
 });
+
+import { VirtualPad } from '../../web/touch-controls.mjs';
+test('virtual pad chords, duplicate fingers, short taps and cancellation preserve edges',()=>{
+ const events=[]; const bridge=new GamepadBridge(e=>events.push(e)); const virtual=new VirtualPad();
+ const poll=()=>bridge.poll([],true,false,virtual);
+ virtual.press(1,13);poll(); virtual.press(2,0);poll(); virtual.press(3,2);poll();
+ assert.deepEqual(events.map(e=>[e[5],e[7]]),[[13,1],[0,1],[2,1]]);
+ events.length=0; virtual.press(4,2);poll();virtual.release(3);poll();assert.equal(events.length,0);
+ virtual.release(4);poll();assert.deepEqual(events.map(e=>[e[5],e[7]]),[[2,0]]);
+ events.length=0;virtual.reset();poll();assert.deepEqual(events.map(e=>[e[5],e[7]]),[[0,0],[13,0]]);
+ events.length=0;virtual.press(5,6);poll();virtual.release(5);poll();
+ assert.deepEqual(events.map(e=>[e[5],e[7]]),[[6,1],[6,0]]);
+});
+test('virtual and physical holds merge on seat zero and suspension releases both',()=>{
+ const events=[];const bridge=new GamepadBridge(e=>events.push(e));const virtual=new VirtualPad();
+ virtual.press(1,2);bridge.poll([pad(0,[2])],true,false,virtual);
+ events.length=0;virtual.reset();bridge.poll([pad(0,[2])],true,false,virtual);assert.equal(events.length,0);
+ virtual.press(2,13);bridge.poll([pad(0,[2])],true,false,virtual);
+ events.length=0;bridge.poll([pad(0,[2])],false,false,virtual);
+ assert.deepEqual(events.map(e=>[e[5],e[7]]),[[2,0],[13,0]]);
+});
+
+test('floating joystick anchors at touch, clamps travel and rejects a second owner',()=>{
+ const virtual=new VirtualPad();
+ assert.equal(virtual.beginStick(1,90,160),true);
+ assert.equal(virtual.beginStick(2,20,20),false);
+ assert.equal(virtual.moveStick(2,900,900),false);
+ assert.equal(virtual.axis(0),0);
+ virtual.moveStick(1,106,160);assert.equal(virtual.axis(0),.5);
+ virtual.moveStick(1,-900,160);assert.equal(virtual.axis(0),-1);
+ virtual.moveStick(1,90,190);assert.equal(virtual.axis(0),0);assert.equal(virtual.axis(1),0);
+ assert.equal(virtual.stick.x,90);assert.equal(virtual.stick.y,160);
+ virtual.press(2,0);virtual.press(3,2);virtual.release(2);
+ assert.equal(virtual.stick.id,1);assert.equal(virtual.down(2),true);
+ virtual.release(1);assert.equal(virtual.stick,null);assert.equal(virtual.axis(0),0);assert.equal(virtual.down(2),true);
+ virtual.reset();assert.equal(virtual.down(2),false);
+});
+test('floating joystick sends recorded analog edges, deadzone, chords and neutral on release',()=>{
+ const events=[];const bridge=new GamepadBridge(e=>events.push(e));const virtual=new VirtualPad();
+ const poll=()=>bridge.poll([],true,false,virtual);
+ virtual.beginStick(1,100,100);virtual.moveStick(1,104,100);poll();assert.equal(events.length,0);
+ virtual.moveStick(1,116,100);virtual.press(2,0);virtual.press(3,2);poll();
+ assert.ok(events.some(e=>e[0]===6&&e[1]===0&&e[5]===0&&e[3]===.5));
+ assert.equal(events.filter(e=>e[0]===5&&e[7]===1).length,2);
+ events.length=0;virtual.release(1);poll();
+ assert.deepEqual(events.map(e=>[e[0],e[3]]),[[6,0]]);
+ assert.equal(virtual.down(0),true);assert.equal(virtual.down(2),true);
+ events.length=0;virtual.reset();poll();assert.equal(events.filter(e=>e[0]===5&&e[7]===0).length,2);
+});
+test('physical and floating joystick keep strongest movement and release on suspension',()=>{
+ const events=[];const bridge=new GamepadBridge(e=>events.push(e));const virtual=new VirtualPad();
+ virtual.beginStick(1,100,100);virtual.moveStick(1,68,100);
+ bridge.poll([pad(0,[],[.5,0])],true,false,virtual);
+ assert.ok(events.some(e=>e[0]===6&&e[3]===-1));
+ events.length=0;virtual.release(1);bridge.poll([pad(0,[],[.5,0])],true,false,virtual);
+ assert.ok(events.some(e=>e[0]===6&&e[3]===.5));
+ events.length=0;bridge.poll([pad(0,[],[.5,0])],false,false,virtual);
+ assert.ok(events.some(e=>e[0]===6&&e[3]===0));
+});
+
+test('touch overlay only captures gameplay, handles cancel and releases on screen/focus changes',async()=>{
+ const {installTouchControls}=await import('../../web/touch-controls.mjs');
+ class Element extends EventTarget {
+  constructor(){super();this.hidden=false;this.style={};this.dataset={};this.classes=new Set();this.classList={add:x=>this.classes.add(x),remove:x=>this.classes.delete(x),toggle:(x,on)=>on?this.classes.add(x):this.classes.delete(x)};}
+  setAttribute(){} setPointerCapture(){} focus(){}
+  getBoundingClientRect(){return {left:0,top:72};}
+ }
+ const panel=new Element(),zone=new Element(),stick=new Element(),nub=new Element();
+ const buttons=[6,0,2].map(button=>{const e=new Element();e.dataset.pad=String(button);return e;});
+ panel.querySelector=selector=>({'.touch-zone':zone,'.touch-stick':stick,'.touch-nub':nub}[selector]);
+ panel.querySelectorAll=()=>buttons;
+ const launch={hidden:true},fullscreen={open:false},canvas=new Element(),doc=new EventTarget(),win=new EventTarget(),media=new EventTarget();
+ doc.createElement=()=>panel;doc.body={append(){}};doc.hidden=false;
+ doc.querySelector=selector=>selector==='#launch'?launch:fullscreen;media.matches=true;
+ const originals=new Map();
+ for(const [name,value] of Object.entries({document:doc,window:win,matchMedia:()=>media,MutationObserver:class{observe(){}}})){
+  originals.set(name,Object.getOwnPropertyDescriptor(globalThis,name));Object.defineProperty(globalThis,name,{value,configurable:true,writable:true});
+ }
+ const pointer=(element,type,values={})=>{const event=new Event(type,{cancelable:true});Object.assign(event,{button:0,pointerId:1,clientX:90,clientY:180},values);element.dispatchEvent(event);return event;};
+ try{
+  const touch=installTouchControls(canvas,()=>{});
+  assert.equal(panel.hidden,true);
+  pointer(zone,'pointerdown');assert.equal(touch.pad.stick,null);
+  touch.setPlaying(true);assert.equal(panel.hidden,false);
+  assert.equal(pointer(zone,'pointerdown').defaultPrevented,true);
+  assert.equal(stick.hidden,false);assert.equal(stick.style.left,'90px');assert.equal(stick.style.top,'108px');
+  pointer(zone,'pointermove',{clientX:122});assert.equal(touch.pad.axis(0),1);
+  pointer(buttons[1],'pointerdown',{pointerId:2});pointer(buttons[2],'pointerdown',{pointerId:3});
+  pointer(zone,'pointercancel');assert.equal(stick.hidden,true);assert.equal(touch.pad.axis(0),0);assert.equal(touch.pad.down(0),true);assert.equal(touch.pad.down(2),true);
+  touch.setPlaying(false);assert.equal(panel.hidden,true);assert.equal(touch.pad.down(0),false);assert.equal(touch.pad.down(2),false);
+  touch.setPlaying(true);pointer(zone,'pointerdown');win.dispatchEvent(new Event('blur'));assert.equal(stick.hidden,true);
+  pointer(zone,'pointerdown');win.dispatchEvent(new Event('resize'));assert.equal(stick.hidden,true);
+  pointer(zone,'pointerdown');doc.hidden=true;doc.dispatchEvent(new Event('visibilitychange'));assert.equal(panel.hidden,true);assert.equal(touch.pad.stick,null);
+  doc.hidden=false;doc.dispatchEvent(new Event('visibilitychange'));assert.equal(panel.hidden,false);assert.equal(touch.pad.stick,null);
+  fullscreen.open=true;doc.dispatchEvent(new Event('bubble-visibility'));assert.equal(panel.hidden,true);
+ }finally{for(const [name,descriptor] of originals){if(descriptor)Object.defineProperty(globalThis,name,descriptor);else delete globalThis[name];}}
+});

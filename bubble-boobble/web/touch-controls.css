@@ -1,0 +1,17 @@
+/* The canvas keeps its full size; menus receive their own taps when controls hide. */
+#touch-controls { position: fixed; inset: 0; pointer-events: none; touch-action: none; user-select: none; -webkit-user-select: none; }
+#touch-controls[hidden], #touch-controls [hidden] { display: none; }
+#touch-controls .touch-zone { position: absolute; left: 0; top: max(72px, env(safe-area-inset-top)); bottom: 0; width: 50%; pointer-events: auto; touch-action: none; overflow: hidden; }
+#touch-controls .touch-stick { position: absolute; width: 104px; height: 104px; transform: translate(-50%, -50%); box-sizing: border-box; border: 2px solid #ebf5ff66; border-radius: 50%; background: #ebf5ff16; pointer-events: none; }
+#touch-controls .touch-nub { position: absolute; left: 30px; top: 30px; width: 40px; height: 40px; box-sizing: border-box; border: 1px solid #ffffff99; border-radius: 50%; background: #ebf5ff77; }
+#touch-controls button { box-sizing: border-box; min-width: 44px; min-height: 44px; margin: 0; padding: 4px; border: 2px solid #ebf5ff88; border-radius: 50%; background: #131d3188; color: #ebf5ff; font: bold 11px system-ui, sans-serif; pointer-events: auto; touch-action: none; }
+#touch-controls button.held { background: #70f08988; border-color: #70f089; }
+#touch-controls .touch-pause { position: absolute; right: max(20px, env(safe-area-inset-right)); top: max(14px, env(safe-area-inset-top)); background: #131d31aa; }
+#touch-controls .touch-actions { position: absolute; right: max(24px, env(safe-area-inset-right)); bottom: max(22px, env(safe-area-inset-bottom)); display: flex; align-items: end; gap: 14px; }
+#touch-controls .touch-jump { width: 66px; height: 66px; transform: translateY(-22px); }
+#touch-controls .touch-fire { width: 80px; height: 80px; }
+@media (max-width: 400px) {
+  #touch-controls .touch-actions { right: max(12px, env(safe-area-inset-right)); gap: 8px; }
+  #touch-controls .touch-jump { width: 54px; height: 54px; }
+  #touch-controls .touch-fire { width: 64px; height: 64px; }
+}

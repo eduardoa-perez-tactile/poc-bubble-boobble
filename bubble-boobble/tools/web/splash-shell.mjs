@@ -11,10 +11,11 @@ export function writeSplashShell({ project, site }) {
   if (!launch.test(html)) throw new Error('Pinned engine shell changed: could not locate launch screen.');
   html = html.replace(launch, readFileSync(join(project, 'web/splash.html'), 'utf8').trimEnd());
   html = html.replace('<title>Game Engine</title>', '<title>Bubble Madness</title>');
-  html = html.replace('</head>', '    <link rel="preload" href="./splash/arcade.ttf" as="font" type="font/ttf" crossorigin />\n    <link rel="stylesheet" href="./splash/splash.css" />\n  </head>');
+  html = html.replace('</head>', '    <link rel="preload" href="./splash/arcade.ttf" as="font" type="font/ttf" crossorigin />\n    <link rel="stylesheet" href="./splash/splash.css" />\n    <link rel="stylesheet" href="./splash/touch-controls.css" />\n  </head>');
   const assets = join(site, 'splash');
   mkdirSync(assets, { recursive: true });
   copyFileSync(join(project, 'web/splash.css'), join(assets, 'splash.css'));
+  copyFileSync(join(project, 'web/touch-controls.css'), join(assets, 'touch-controls.css'));
   copyFileSync(join(project, 'web/splash/logo.webp'), join(assets, 'logo.webp'));
   copyFileSync(join(project, 'assets/reference/arcade.ttf'), join(assets, 'arcade.ttf'));
   for (const skin of skins) copyFileSync(join(project, `assets/ui/dragon-results/${skin}.png`), join(assets, `${skin}.png`));
