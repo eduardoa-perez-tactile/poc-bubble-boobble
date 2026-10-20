@@ -79,3 +79,28 @@ worldTest('arcade recorded controller moves fires and pauses classic campaign',a
  inject([{type:'gamepadButton',pad:0,button:6,down:true}]);await step(1);
  expect(session.get().game!.Paused).toBe(false);expect(desktopState.get().screen).toBe('play');
 },{scene});
+
+worldTest('arcade virtual dpad and fire drive classic gameplay and release',async({step,cheat})=>{
+ await step(2);await cheat(ResetArcade,{ready:false});
+ const inject=(events:unknown[])=>(globalThis as unknown as {__gameengine_host:(op:string,arg:string)=>string}).__gameengine_host('test.input',JSON.stringify(events));
+ const button=(button:number,down:boolean)=>({type:'gamepadButton',pad:0,button,down});
+ const start=session.get().game!.Players[0]!.X;
+ inject([button(14,true),button(2,true)]);await step(3);
+ expect(session.get().game!.Players[0]!.X>start).toBe(true);
+ expect(session.get().game!.Bubbles.length>0).toBe(true);
+ inject([button(14,false),button(2,false)]);await step(1);
+ const stopped=session.get().game!.Players[0]!.X;
+ await step(3);expect(session.get().game!.Players[0]!.X).toBe(stopped);
+},{scene});
+
+worldTest('arcade floating joystick axis combines with jump fire and releases',async({step,cheat})=>{
+ await step(2);await cheat(ResetArcade,{ready:false});
+ const inject=(events:unknown[])=>(globalThis as unknown as {__gameengine_host:(op:string,arg:string)=>string}).__gameengine_host('test.input',JSON.stringify(events));
+ const start=session.get().game!.Players[0]!.X;
+ inject([{type:'gamepadAxis',pad:0,axis:0,value:.5},{type:'gamepadButton',pad:0,button:0,down:true},{type:'gamepadButton',pad:0,button:2,down:true}]);await step(3);
+ expect(session.get().game!.Players[0]!.X>start).toBe(true);
+ expect(session.get().game!.Bubbles.length>0).toBe(true);
+ inject([{type:'gamepadAxis',pad:0,axis:0,value:0},{type:'gamepadButton',pad:0,button:0,down:false},{type:'gamepadButton',pad:0,button:2,down:false}]);await step(1);
+ const stopped=session.get().game!.Players[0]!.X;
+ await step(3);expect(session.get().game!.Players[0]!.X).toBe(stopped);
+},{scene});

@@ -6,8 +6,16 @@ https://eduardoa-perez-tactile.github.io/poc-bubble-boobble/
 Desktop WebGPU browsers are the initial target. Keyboard controls work for solo, AI co-op and
 local two-player co-op; standard-map controllers feed the same recorded engine input. The
 bridge allocates up to ten stable seats, releasing held buttons on disconnect/focus loss.
-Physical controller hardware still requires playtesting. Mobile gameplay touch controls and
-the unused level generator are outside this release scope.
+Physical controller hardware still requires playtesting. Touchscreen browsers show a floating joystick and translucent Jump/Fire buttons during gameplay,
+with Pause at the top. Press anywhere in the left half below the HUD, then drag left/right
+for movement. The joystick appears under that finger and disappears on release. Jump and
+Fire accept other fingers simultaneously. The full canvas stays available; no bottom deck
+is reserved. Menus and pause screens hide the overlay and use direct taps on their buttons.
+Controls release on cancellation, focus loss, backgrounding, rotation and screen changes.
+Physical and virtual input merge on player one; the strongest horizontal axis wins.
+The engine records these as normal SDL controller events; no engine fork is required.
+A phone browser with WebGPU support is still required. Actual phone browser/GPU compatibility
+and touch ergonomics require device playtesting. The unused level generator remains outside scope.
 
 ## Local toolchain
 

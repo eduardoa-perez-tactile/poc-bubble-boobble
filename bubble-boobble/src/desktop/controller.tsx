@@ -1,4 +1,4 @@
-import { openBrowserFullscreen } from './browser';
+import { openBrowserFullscreen, reportBrowserScreen } from './browser';
 import { developmentMenuEnabled } from './development';
 import { read, app, Time } from '@gameengine/runtime';
 import { createEffect, untrack, onCleanup, defineUI, emit, useDoc, useResource, views, type ViewHandle } from '@gameengine/ui';
@@ -14,6 +14,8 @@ const desktopUI=defineUI({name:'DesktopUI',root(){
  let developmentReported=false;
  createEffect(()=>{if(control()?.active&&!developmentReported){developmentReported=true;emit(DesktopIntent,{action:'development-menu',index:developmentMenuEnabled?1:0});}});
  const state=useDoc(desktopState),save=useDoc(desktopSaveState),arcade=useDoc(session);
+ let reportedScreen='';
+ createEffect(()=>{const next=control()?.active?state().screen:'';if(next!==reportedScreen){reportedScreen=next;reportBrowserScreen(next);}});
  let fullscreenPreference:boolean|undefined;
  createEffect(()=>{const value=save().settings.fullscreen;if(!desktopSaveState.loaded())return;if(fullscreenPreference!==undefined&&value!==fullscreenPreference)openBrowserFullscreen();fullscreenPreference=value;});
  onCleanup(app.onLifecycle(phase=>{const s=session.get();if(phase==='background'&&desktopState.get().screen==='play'&&control()?.active&&s.active&&s.game&&!s.game.Paused)emit(DesktopIntent,{action:'pause'});}));
