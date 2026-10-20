@@ -2,6 +2,36 @@
 
 This game uses Trond's [live Office Arcade guide](https://webgames.tactilews.com/agents/), re-read on 20 October 2026. Office Arcade runs the exported authoritative engine server directly; the client connects to the same publication's secure `/socket` endpoint. There is no project-owned Node server or health wrapper.
 
+## Verified release artifact
+
+The actual browser and authoritative Linux exports from clean game revision `cd5516d91da52dc1d6fa96c7663c00ef126177a3` passed `arcade:verify` and were packaged successfully. The final [Ubuntu24.04 CI run 39435591999](https://github.com/eduardoa-perez-tactile/poc-bubble-boobble/actions/runs/39435591999) passed all 15 tooling tests, the real release cook, production authoritative game load, shared-library checks and WebSocket upgrade. The full-source release check, including the pipeline gate, typecheck, cook and 600-frame cooked smoke, also passed without a bypass.
+
+| Evidence | Project-relative path / value |
+|---|---|
+| Browser export | `build/arcade/web-cd5516d/` |
+| Complete Linux server export | `build/arcade/ci-cd5516d/server-linux-x64/` |
+| Verified release ZIP | `build/arcade/bubble-madness-multiplayer-cd5516d.zip` |
+| ZIP receipt | `build/arcade/bubble-madness-multiplayer-cd5516d.zip.json` |
+| Static pair / package reports | `.gameengine/online-release-verify.json`, `.gameengine/online-release-package.json` |
+| ZIP bytes | `56482515` |
+| ZIP SHA-256 | `22062f49ee398085f8c1bcc7a1f573a29f07443784c7a531e29003dcda53a1bd` |
+| Exact cooked-script SHA-256, both targets | `86592386670aa8d0758ae79a51ca5a08fc279b38820f74fab501a79084d4163b` |
+| Engine version / source revision | `0.1.15` / `f4334da17701bf419fabae9f806d9e34edd947b0` |
+
+The recorded pair can be rechecked from the game project directory:
+
+```sh
+npm run arcade:verify -- --web build/arcade/web-cd5516d --server build/arcade/ci-cd5516d/server-linux-x64
+```
+
+It was packaged with the following command; use a fresh output path if repeating it because existing outputs are refused:
+
+```sh
+npm run arcade:package -- --web build/arcade/web-cd5516d --server build/arcade/ci-cd5516d/server-linux-x64 --out build/arcade/bubble-madness-multiplayer-cd5516d.zip
+```
+
+A later documentation-only commit does not change this built game's script identity. Keep the artifact attributed to its recorded `cd5516d` revision and provenance; do not relabel or restamp it as a later revision. The ZIP is ready for review and publication when requested. It has not been uploaded to Office Arcade, and actual browser multiplayer acceptance remains deferred.
+
 ## Current feasibility
 
 The working machine is macOS arm64. Engine 0.1.15's server builder explicitly refuses cross-target exports (`E_CROSS`): Linux x64 must be built on Linux x64 because V8 and Dawn prebuilts are specific to the OS. No Docker, Podman, Colima or Orb runtime is on this machine's PATH. The game repository's read-only Actions runners endpoint reports zero registered self-hosted runners; the engine repository's runner inventory is inaccessible to this account. Existing GitHub Pages CI deploys prebuilt artifacts and does not establish a Linux engine toolchain.
@@ -10,7 +40,7 @@ Further archive inspection established a build path that does not require propri
 
 **Engine 0.1.15 guide/CLI gap:** `build server` unconditionally calls `requireEngineCheckout`, so the official installed Linux distribution cannot use that command even though it already carries a suitable production server executable. `tools/arcade/prebuilt-server.mjs` provides an explicit assembly workaround: verify the pinned official runtime archive, invoke the real engine CLI's release cook, then export that exact official production host as `gameengine-server`, its WebGPU library, complete cooked content and the same `server.json` contract as the source builder. It never substitutes a Node simulation, pretends a dry run is runnable, creates a fake source checkout or overrides match identities.
 
-The [Linux server workflow](../../.github/workflows/office-arcade-server.yml) runs this path on GitHub-hosted Ubuntu 24.04, then loads the actual cooked game in the production host and verifies its real WebSocket upgrade. It uploads a TAR artifact that preserves permissions. It uses public checksummed engine binaries, needs no private engine source/token and does not publish or contact Office Arcade. **[Run 39433292713](https://github.com/eduardoa-perez-tactile/poc-bubble-boobble/actions/runs/39433292713) succeeded** for source `d3048539129a3b1574fef50744c0be5f8a0d3d26`; the server job completed in 35 seconds. It passed the actual release cook, Linux library resolution, authoritative cooked-game startup and RFC6455 upgrade, then uploaded the permission-preserving server TAR. That evidence applies to the recorded revision; regenerate matching artifacts after source changes. It runs automatically only for pushes to `codex/online-wave-survival`, allowing this new feature workflow to build before merging. It also retains `workflow_dispatch` for reuse once registered on the default branch. Each pushed feature revision gets a fresh build; retain its source SHA when pairing artifacts. The source-build route below remains available when an authorized full Linux engine checkout exists.
+The [Linux server workflow](../../.github/workflows/office-arcade-server.yml) runs this path on GitHub-hosted Ubuntu 24.04, then loads the actual cooked game in the production host and verifies its real WebSocket upgrade. It uploads a TAR artifact that preserves permissions. It uses public checksummed engine binaries, needs no private engine source/token and does not publish or contact Office Arcade. **[Run 39433292713](https://github.com/eduardoa-perez-tactile/poc-bubble-boobble/actions/runs/39433292713) succeeded** for source `d3048539129a3b1574fef50744c0be5f8a0d3d26`; the server job completed in 35 seconds. It passed the actual release cook, Linux library resolution, authoritative cooked-game startup and RFC6455 upgrade, then uploaded the permission-preserving server TAR. That initial evidence applies to the recorded revision; the final matching pair is established by run 39435591999 and the artifact evidence above. Regenerate both targets after gameplay/build changes. It runs automatically only for pushes to `codex/online-wave-survival`, allowing this new feature workflow to build before merging. It also retains `workflow_dispatch` for reuse once registered on the default branch. Each pushed feature revision gets a fresh build; retain its source SHA when pairing artifacts. The source-build route below remains available when an authorized full Linux engine checkout exists.
 
 ## Build server with the official runtime
 
@@ -46,7 +76,7 @@ That wrapper executes the guide's actual `build server --target linux-x64 --auth
 
 An already-created export can be stamped on its original build machine with `node tools/arcade/run.mjs stamp --engine-root ROOT --export EXPORT --target web` (or `linux-x64`). A stamp is a local provenance record, not a cryptographic attestation of the build process. Never stamp a stale export as if it were freshly built.
 
-The actual clean `a915d3a` browser/Linux exports exposed the transpiler-metadata mismatch above and were correctly rejected by the cooked-script verifier. After aligning both environment flags, a pure bundle comparison using the full-source and public-runtime CLIs produced identical 3,745,111-byte scripts with SHA-256 `86592386670aa8d0758ae79a51ca5a08fc279b38820f74fab501a79084d4163b`. Regenerate both actual exports from the next clean revision and retain the exact artifact comparison; the scratch bundling proof does not substitute for final export verification.
+The actual clean `a915d3a` browser/Linux exports exposed the transpiler-metadata mismatch above and were correctly rejected by the cooked-script verifier. After aligning both environment flags, a pure bundle comparison using the full-source and public-runtime CLIs produced identical 3,745,111-byte scripts with SHA-256 `86592386670aa8d0758ae79a51ca5a08fc279b38820f74fab501a79084d4163b`. Both actual targets were then rebuilt from clean revision `cd5516d`, and the full cooked-artifact verifier passed with that same exact script SHA-256. The paired release ZIP and final CI evidence are recorded above; the scratch proof was followed by real export verification.
 
 ## Verify and package
 
@@ -71,7 +101,7 @@ The full desktop-tier combined suite passed 332/332 cases with a peak of 11 draw
 
 Independent review identified stale result state on new-room entry and an engine match object surviving a closed transport. UI fixes reset results, cache the reclaim token before best-effort leave and explicitly tear down the closed local match so it cannot keep simulating. This code-level lifecycle follow-up does not establish browser reconnect; token reclaim still depends on a surviving room with other connected peers.
 
-The installed-SDK final check passed typecheck, validation, desktop cook and 600 cooked smoke frames. Its pipeline checker falsely labels built-in material program `7946469ed20397e0` stale because the installed distribution omits `crates/gameengine-render/src/materials/*.gen.json`. The full exact engine source contains that valid hash in `standard.gen.json` at line 144, and its direct source-CLI `pipelineIssues` check returned `ok: true, issues: []` without a bypass. Recapturing alone cannot fix the installed checker metadata. The full matching source CLI subsequently passed the real release check, including its pipeline gate, typecheck, desktop cook and 600 cooked smoke frames, without removing a valid program or bypassing validation. A matching final browser/server ZIP has not yet been established, and nothing has been uploaded to Office Arcade.
+The installed-SDK final check passed typecheck, validation, desktop cook and 600 cooked smoke frames. Its pipeline checker falsely labels built-in material program `7946469ed20397e0` stale because the installed distribution omits `crates/gameengine-render/src/materials/*.gen.json`. The full exact engine source contains that valid hash in `standard.gen.json` at line 144, and its direct source-CLI `pipelineIssues` check returned `ok: true, issues: []` without a bypass. Recapturing alone cannot fix the installed checker metadata. The full matching source CLI subsequently passed the real release check, including its pipeline gate, typecheck, desktop cook and 600 cooked smoke frames, without removing a valid program or bypassing validation. The matching final browser/server ZIP is verified and recorded above; nothing has been uploaded to Office Arcade.
 
 ## Read-only deployment inspection
 
@@ -99,6 +129,6 @@ The implementation task has not run `prepare_publish`, uploaded files or publish
 
 ## Acceptance still required
 
-Repeat target-environment startup/socket verification for any rebuilt Linux artifact; the linked successful run establishes that path only for its recorded revision. Against the eventual published URL, verify two separate browser contexts share movement, jump, fire, capture/rescue and match outcome, collect console/request failures and screenshots, and exercise disconnect/rejoin according to the verified engine policy. Additionally test ten actual browser clients and mixed human/AI rooms. Record source/build identity and distinguish engine network harness results, static checks and browser observations.
+Linux dependency resolution, authoritative cooked-game startup and WebSocket-upgrade acceptance are complete for the final matching revision in CI run 39435591999. Remaining deployed gameplay acceptance requires the eventual published URL: verify two separate browser contexts share movement, jump, fire, capture/rescue and match outcome, collect console/request failures and screenshots, and exercise disconnect/rejoin according to the verified engine policy. Additionally test ten actual browser clients and mixed human/AI rooms. Record source/build identity and distinguish engine network harness results, static checks and browser observations.
 
 `PROJECT.md` restricts playtesting to engine APIs and specifically requires an explicit user request for browser automation. Browser acceptance remains deferred under that rule; a socket upgrade or static check cannot substitute for it. Draft findings for Trond in the experience log. Sending messages to Slack requires a user request.
