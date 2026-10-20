@@ -58,12 +58,31 @@ engine's full release gates; release pipeline coverage must be current first.
 
 ## Publish
 
+The browser loading screen uses the game's arcade font, logo, palette and ten dragon sprites.
+Its HTML, styles and event-driven loading indicator live in `web/splash.html`, `web/splash.css`
+and `web/splash.mjs`; `tools/web/splash-shell.mjs` installs them during export. Bootstrap art is
+copied outside the game packs so it can display before the engine loads. `web/splash/logo.webp`
+is a 700px-wide version of `assets/branding/bubble-madness-logo.png`, exported at WebP quality 95
+with its transparency intact; the font and portraits are copied unchanged.
+
+After a fresh web build, `npm run web:preview-splash` captures loading, ready, expanded controls
+and error states in `artifacts/browser-splash/`, checks five viewport sizes, and verifies the
+real engine's loading-to-ready transition. This isolated headless capture never starts gameplay
+or opens the user's browser. The normal deployment checks remain required before publishing.
+
 Commit the finished source, then run `npm run web:verify`. It records native checks, the real
 V8/WebAssembly test lane, a fresh web export and browser acceptance for that exact clean SHA.
 `npm run web:publish` refuses dirty/stale/unverified artifacts. It uploads only the compiled
 static site to a prerelease and dispatches `.github/workflows/web-playtest.yml` on main.
 The workflow deploys the supplied artifact; GitHub-hosted CI does not build the proprietary engine.
 Check the deployment completes and the public `playtest-build.json` matches the verified SHA.
+
+When the project's engine-only playtest restriction applies, use
+`npm run web:verify -- --defer-browser-playtest` and
+`npm run web:publish -- --defer-browser-playtest`. Native checks, WebAssembly parity and a
+clean export remain mandatory. Browser gameplay acceptance is recorded as **deferred**, not
+passed, with the exact command and policy reason disclosed in the release notes. Both commands
+require the explicit flag; a real failed browser test or stale evidence cannot be waived by it.
 
 The browser menu replaces Quit with How to Play. Fullscreen in Settings opens an explicit
 browser button, because browsers require a direct user gesture for fullscreen. F11 also opens

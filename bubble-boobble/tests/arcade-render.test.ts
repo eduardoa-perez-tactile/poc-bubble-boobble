@@ -131,14 +131,11 @@ renderTest(
     await cheat(ResetArcade, { scenario: "boundary-campaign-win" });
     await step(1);
     const result = render.probe({ width: 768, height: 720, points: [[1,49]] });
-    // Round 25 has a different tile; test the encoded dim factor against its
-    // source palette in the dedicated visual golden, not round-one colors.
-    expect(result.points[0]!.rgba[0]).toBeLessThanOrEqual(35);
-    expect(result.points[0]!.rgba[1]).toBeLessThanOrEqual(35);
-    expect(result.points[0]!.rgba[2]).toBeLessThanOrEqual(35);
+    // The dedicated result screen replaces the old dimmed arena and combat HUD.
+    expect(result.points[0]!.rgba.slice(0,3)).toEqual([8,12,27]);
     const resultHud = render.probe({width:768,height:720,points:hudPoints});
-    expect(resultHud.points[0]!.rgba.slice(0,3)).toEqual([35,30,15]);
-    expect(resultHud.points[1]!.rgba.slice(0,3)).toEqual([32,34,35]);
+    expect(resultHud.points[0]!.rgba.slice(0,3)).toEqual([8,12,27]);
+    expect(resultHud.points[1]!.rgba.slice(0,3)).toEqual([8,12,27]);
     render.expectScreenshot("result", { width: 768, height: 720 });
   },
   { scene },

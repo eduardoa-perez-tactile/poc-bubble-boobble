@@ -34,6 +34,7 @@
     "web:build": "node tools/web/toolchain.mjs export",
     "web:serve": "node tools/web/toolchain.mjs serve",
     "web:test": "node tools/web/smoke.mjs",
+    "web:preview-splash": "node tools/web/splash-preview.mjs",
     "web:publish": "node tools/web/publish.mjs",
     "web:verify": "node tools/web/verify.mjs",
     "web:test-controls": "node --test tools/web/controls.test.mjs"

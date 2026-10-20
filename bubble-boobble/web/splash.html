@@ -1,0 +1,37 @@
+    <div id="launch" data-phase="loading">
+      <div class="splash-bubbles" aria-hidden="true">
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div>
+      <main class="splash-content" aria-labelledby="name">
+        <h1 id="name" class="visually-hidden">Bubble Madness</h1>
+        <img class="splash-logo" src="./splash/logo.webp" alt="Bubble Madness" width="350" height="252" fetchpriority="high" />
+        <p class="splash-tagline">TEN DRAGONS. ONE MAD ADVENTURE.</p>
+        <div class="splash-loading">
+          <p id="status" role="status">Preparing game…</p>
+          <progress id="load-progress" max="1" aria-label="Game loading progress"></progress>
+        </div>
+        <button id="start" disabled>START GAME<span aria-hidden="true"> ▶</span></button>
+        <p class="splash-motto">TRAP ENEMIES. POP BUBBLES. COLLECT FRUIT.</p>
+        <details class="splash-controls">
+          <summary>HOW TO PLAY</summary>
+          <div class="splash-control-grid">
+            <section aria-label="Player one controls"><h2>PLAYER 1</h2><p><kbd>A</kbd> <kbd>D</kbd> / <kbd>←</kbd> <kbd>→</kbd> MOVE</p><p><kbd>W</kbd> / <kbd>↑</kbd> JUMP</p><p><kbd>SPACE</kbd> FIRE</p></section>
+            <section aria-label="Player two controls"><h2>PLAYER 2</h2><p><kbd>J</kbd> <kbd>L</kbd> MOVE</p><p><kbd>I</kbd> JUMP</p><p><kbd>K</kbd> FIRE</p></section>
+            <section class="splash-shared-controls" aria-label="Controller and menu controls"><h2>GAMEPAD</h2><p>STICK / D-PAD MOVE · A JUMP · X FIRE · START PAUSE</p><p><kbd>ESC</kbd> PAUSE · <kbd>M</kbd> MUTE · <kbd>F11</kbd> FULLSCREEN</p><p class="splash-coop">CHOOSE BUBBLE MADNESS FOR UP TO 10 DRAGONS.<br>CLASSIC CO-OP: CHOOSE MODE IN SETTINGS.</p></section>
+          </div>
+        </details>
+        <div class="splash-dragons" aria-label="Meet your ten dragons">
+          <img src="./splash/green.png" alt="Bub" width="48" height="48" />
+          <img src="./splash/blue.png" alt="Bob" width="48" height="48" />
+          <img src="./splash/red.png" alt="Ember" width="48" height="48" />
+          <img src="./splash/yellow.png" alt="Sunny" width="48" height="48" />
+          <img src="./splash/purple.png" alt="Plum" width="48" height="48" />
+          <img src="./splash/orange.png" alt="Tango" width="48" height="48" />
+          <img src="./splash/cyan.png" alt="Mist" width="48" height="48" />
+          <img src="./splash/pink.png" alt="Rosie" width="48" height="48" />
+          <img src="./splash/ivory.png" alt="Pearl" width="48" height="48" />
+          <img src="./splash/slate.png" alt="Flint" width="48" height="48" />
+        </div>
+        <p class="splash-compat">DESKTOP BROWSER WITH WEBGPU REQUIRED.<br>SAVES STAY IN THIS BROWSER.</p>
+      </main>
+    </div>
