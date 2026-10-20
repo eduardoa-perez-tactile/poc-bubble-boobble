@@ -1,0 +1,303 @@
+{
+  "$schemaVersion": 1,
+  "guid": "c732196c-a01d-4753-bda3-a308c10b6479",
+  "name": "dragon-podium-place",
+  "title": "Dragon podium place",
+  "kind": "widget",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Dragon podium place",
+      "style": {
+        "dir": "row",
+        "pad": 0,
+        "align": "center",
+        "radius": 0,
+        "w": 196,
+        "h": 158
+      },
+      "children": [
+        "dp_base",
+        "dp_edge",
+        "dp_dragon",
+        "dp_rank",
+        "dp_name",
+        "dp_kills",
+        "dp_mode"
+      ]
+    },
+    "dp_base": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          72
+        ],
+        "w": 196,
+        "h": 86,
+        "bg": "#5d4924",
+        "radius": 0
+      },
+      "show": "occupied"
+    },
+    "dp_edge": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          72
+        ],
+        "w": 196,
+        "h": 3,
+        "bg": "#ffdc6a"
+      },
+      "show": "occupied"
+    },
+    "dp_dragon": {
+      "type": "icon",
+      "name": "Icon",
+      "image": "ui/sprites/star",
+      "style": {
+        "size": 32,
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          4
+        ],
+        "w": 64,
+        "h": 64
+      },
+      "property": "image",
+      "show": "occupied"
+    },
+    "dp_rank": {
+      "type": "label",
+      "name": "Label",
+      "text": "{rank}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          80
+        ],
+        "w": 190,
+        "fontSize": 16,
+        "textAlign": "center",
+        "color": "#ffdc6a"
+      },
+      "show": "occupied"
+    },
+    "dp_name": {
+      "type": "label",
+      "name": "Label",
+      "text": "{name}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          105
+        ],
+        "w": 190,
+        "fontSize": 13,
+        "textAlign": "center",
+        "color": "#ebf5ff"
+      },
+      "show": "occupied"
+    },
+    "dp_kills": {
+      "type": "label",
+      "name": "Label",
+      "text": "{killLabel}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          128
+        ],
+        "w": 190,
+        "fontSize": 11,
+        "textAlign": "center",
+        "color": "#ffdc6a"
+      },
+      "show": "occupied"
+    },
+    "dp_mode": {
+      "type": "label",
+      "name": "Label",
+      "text": "{mode}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          146
+        ],
+        "w": 190,
+        "fontSize": 7,
+        "textAlign": "center",
+        "color": "#a8c5df"
+      },
+      "show": "occupied"
+    }
+  },
+  "properties": {
+    "rank": {
+      "type": "text",
+      "default": ""
+    },
+    "name": {
+      "type": "text",
+      "default": ""
+    },
+    "mode": {
+      "type": "text",
+      "default": ""
+    },
+    "image": {
+      "type": "image",
+      "default": "ui/sprites/star"
+    },
+    "place": {
+      "type": "enum",
+      "values": [
+        "gold",
+        "silver",
+        "bronze"
+      ],
+      "default": "gold",
+      "poses": {
+        "silver": {
+          "set": {
+            "dp_base": {
+              "offset": [
+                0,
+                90
+              ],
+              "h": 68,
+              "bg": "#28364a"
+            },
+            "dp_edge": {
+              "offset": [
+                0,
+                90
+              ],
+              "bg": "#c0d7eb"
+            },
+            "dp_dragon": {
+              "offset": [
+                0,
+                22
+              ]
+            },
+            "dp_rank": {
+              "offset": [
+                0,
+                94
+              ],
+              "fontSize": 12
+            },
+            "dp_name": {
+              "offset": [
+                0,
+                112
+              ]
+            }
+          }
+        },
+        "bronze": {
+          "set": {
+            "dp_base": {
+              "offset": [
+                0,
+                105
+              ],
+              "h": 53,
+              "bg": "#493124"
+            },
+            "dp_edge": {
+              "offset": [
+                0,
+                105
+              ],
+              "bg": "#f3ac75"
+            },
+            "dp_dragon": {
+              "offset": [
+                0,
+                37
+              ]
+            },
+            "dp_rank": {
+              "offset": [
+                0,
+                109
+              ],
+              "fontSize": 11
+            },
+            "dp_name": {
+              "offset": [
+                0,
+                126
+              ],
+              "fontSize": 11
+            },
+            "dp_kills": {
+              "offset": [
+                0,
+                143
+              ],
+              "fontSize": 10
+            },
+            "dp_mode": {
+              "hide": true
+            }
+          }
+        }
+      }
+    },
+    "occupied": {
+      "type": "yesno",
+      "default": true
+    },
+    "killLabel": {
+      "type": "text",
+      "default": ""
+    }
+  }
+}

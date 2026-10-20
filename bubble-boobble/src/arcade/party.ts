@@ -20,7 +20,7 @@ export function createPartyGame(levels:Level[], seed:number, slots:PartySlot[]=d
   if (!Number.isInteger(bossWave)||bossWave<2||bossWave>100) throw new Error('Invalid boss wave');
   if(!levels.length)throw new Error('no levels supplied');
   const g=createGame(slots.length>6?[createPartyArena(levels[0]!)]:levels.slice(0,1),seed,slots.length);
-  g.Party={Wave:1,BossWave:bossWave,Phase:'prepare',Timer:partyPrepareTicks,Slots:slots.slice(),ToSpawn:0,SpawnTick:0,Spawned:0,Telegraphs:[]};
+  g.Party={Kills:slots.map(()=>0),Wave:1,BossWave:bossWave,Phase:'prepare',Timer:partyPrepareTicks,Slots:slots.slice(),ToSpawn:0,SpawnTick:0,Spawned:0,Telegraphs:[]};
   g.Enemies=[];g.Companions=Array.from({length:slots.length},()=>null);
   for(let i=0;i<g.Players.length;i++) {
     g.Players[i]!.Skin=partyColors[i];
@@ -33,7 +33,7 @@ export function createPartyGame(levels:Level[], seed:number, slots:PartySlot[]=d
 }
 export function copyParty(g:GameState) {
   const p=g.Party;
-  return p?{...p,Slots:p.Slots.slice(),Telegraphs:p.Telegraphs.map(t=>({...t})),...(p.Boss?{Boss:{...p.Boss}}:{}),...(p.LastKill?{LastKill:{...p.LastKill}}:{})}:undefined;
+  return p?{...p,Kills:p.Kills?.slice(),Slots:p.Slots.slice(),Telegraphs:p.Telegraphs.map(t=>({...t})),...(p.Boss?{Boss:{...p.Boss}}:{}),...(p.LastKill?{LastKill:{...p.LastKill}}:{})}:undefined;
 }
 const occupied=(g:GameState)=>g.Party!.Slots.reduce((n,s)=>n+(s!=='empty'?1:0),0);
 export function partyWaveBudget(wave:number,team:number) { return Math.min(32,3+wave*2+Math.max(0,Math.min(team,6)-1)*2 + Math.ceil(Math.max(0,team-6)/2)); }

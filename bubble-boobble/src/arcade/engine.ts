@@ -1,3 +1,4 @@
+import { partyRanking } from './party-config';
 import { partyPads, reducePartyPadInput, readPartyAction, applyPartyAction } from './party-input';
 import { createPartyGame } from './party';
 import { respawn } from './player';
@@ -76,6 +77,6 @@ export const ArcadeStep=defineSystem({
     stepGame(game,inputs);
     session.set({...current,game});
     setDesktopRunScore(game.Score,game.Party?.Wave??game.Level.number);
-    if(game.State!==oldState&&(game.State===3||game.State===4))finishDesktopRun(game.State===4,game.Score,game.Party?.Wave??game.Level.number);
+    if(game.State!==oldState&&(game.State===3||game.State===4))finishDesktopRun(game.State===4,game.Score,game.Party?.Wave??game.Level.number,partyRanking(game));
   },
 });

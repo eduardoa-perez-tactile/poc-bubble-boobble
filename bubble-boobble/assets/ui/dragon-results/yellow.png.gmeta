@@ -1,0 +1,7 @@
+guid = "45735cbe-db55-4510-9f53-92af41ab342e"
+importer = "texture"
+[settings]
+atlas = "dragon-results"
+filter = "nearest"
+compression = "none"
+trim = false

@@ -14,3 +14,8 @@
 .desktop-menu-blue { position: absolute; left: 592px; top: 550px; width: 96px; height: 96px; }
 .desktop-settings-dragon { width: 96px; height: 96px; }
 .desktop-account .ud-desktop-profile-row__dpr_image { transform: scaleX(-1); }
+
+.desktop-results { width: 768px; height: 720px; font-family: "reference/arcade"; }
+.desktop-results .ud-desktop-button__root { width: 296px; height: 44px; }
+
+.desktop-results-screen { background-color: #080c1b; }

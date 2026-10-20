@@ -311,6 +311,46 @@ declare module '@gameengine/ui' {
       refs: never;
     };
     /**
+     * Dragon podium place: a widget (ui/docs/dragon-podium-place.ui.json)
+     *
+     * Properties:
+     *   - `rank`: text, default ""
+     *   - `name`: text, default ""
+     *   - `mode`: text, default ""
+     *   - `image`: image, default "ui/sprites/star"
+     *   - `place`: enum gold | silver | bronze, default "gold"
+     *   - `occupied`: yesno, default true
+     *   - `killLabel`: text, default ""
+     * Events: none
+     * Code areas: none
+     * Refs: none
+     */
+    'dragon-podium-place': {
+      props: { rank: string | { loc: string } | LocText; name: string | { loc: string } | LocText; mode: string | { loc: string } | LocText; image: string; place: 'gold' | 'silver' | 'bronze'; occupied: boolean; killLabel: string | { loc: string } | LocText };
+      areas: never;
+      refs: never;
+    };
+    /**
+     * Dragon result row: a widget (ui/docs/dragon-result-row.ui.json)
+     *
+     * Properties:
+     *   - `rank`: text, default ""
+     *   - `name`: text, default ""
+     *   - `mode`: text, default ""
+     *   - `kills`: text, default ""
+     *   - `leader`: yesno, default false
+     *   - `color`: enum green | blue | red | yellow | purple | orange | cyan | pink | ivory | slate, default "green"
+     *   - `image`: image, default "ui/sprites/star"
+     * Events: none
+     * Code areas: none
+     * Refs: none
+     */
+    'dragon-result-row': {
+      props: { rank: string | { loc: string } | LocText; name: string | { loc: string } | LocText; mode: string | { loc: string } | LocText; kills: string | { loc: string } | LocText; leader: boolean; color: 'green' | 'blue' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'pink' | 'ivory' | 'slate'; image: string };
+      areas: never;
+      refs: never;
+    };
+    /**
      * Game mode card: a widget, button (ui/docs/game-mode-card.ui.json)
      *
      * Properties:
@@ -398,6 +438,34 @@ declare module '@gameengine/ui' {
       props: { status: string | { loc: string } | LocText; heading: string | { loc: string } | LocText; mode0: string | { loc: string } | LocText; sel0: boolean; mode1: string | { loc: string } | LocText; sel1: boolean; mode2: string | { loc: string } | LocText; sel2: boolean; mode3: string | { loc: string } | LocText; sel3: boolean; mode4: string | { loc: string } | LocText; sel4: boolean; mode5: string | { loc: string } | LocText; sel5: boolean; startSelected: boolean; backSelected: boolean; startLabel: string | { loc: string } | LocText; mode6: string | { loc: string } | LocText; sel6: boolean; mode7: string | { loc: string } | LocText; sel7: boolean; mode8: string | { loc: string } | LocText; sel8: boolean; mode9: string | { loc: string } | LocText; sel9: boolean };
       areas: never;
       refs: 'dragon-0' | 'dragon-1' | 'dragon-2' | 'dragon-3' | 'dragon-4' | 'dragon-5' | 'start-party' | 'menu' | 'dragon-6' | 'dragon-7' | 'dragon-8' | 'dragon-9';
+    };
+    /**
+     * Run results: a view, screen (ui/docs/run-results.ui.json)
+     *
+     * Properties:
+     *   - `eyebrow`: text, default ""
+     *   - `title`: text, default ""
+     *   - `subtitle`: text, default ""
+     *   - `score`: text, default ""
+     *   - `champion`: text, default ""
+     *   - `stats`: text, default ""
+     *   - `hint`: text, default ""
+     *   - `won`: yesno, default false
+     *   - `party`: yesno, default false
+     *   - `ready`: yesno, default false
+     *   - `showStats`: yesno, default false
+     *   - `ranking`: list of dragon-result-row
+     *   - `buttons`: list of desktop-button
+     *   - `podium`: list of dragon-podium-place
+     *   - `moreRanks`: yesno, default false
+     * Events: `press (<item>)`
+     * Code areas: `confetti`
+     * Refs: `result-score`, `result-stats`
+     */
+    'run-results': {
+      props: { eyebrow: string | { loc: string } | LocText; title: string | { loc: string } | LocText; subtitle: string | { loc: string } | LocText; score: string | { loc: string } | LocText; champion: string | { loc: string } | LocText; stats: string | { loc: string } | LocText; hint: string | { loc: string } | LocText; won: boolean; party: boolean; ready: boolean; showStats: boolean; ranking: readonly { key: string; rank?: string | { loc: string } | LocText; name?: string | { loc: string } | LocText; mode?: string | { loc: string } | LocText; kills?: string | { loc: string } | LocText; leader?: boolean; color?: 'green' | 'blue' | 'red' | 'yellow' | 'purple' | 'orange' | 'cyan' | 'pink' | 'ivory' | 'slate'; image?: string }[]; buttons: readonly { key: string; label?: string | { loc: string } | LocText; selected?: boolean }[]; podium: readonly { key: string; rank?: string | { loc: string } | LocText; name?: string | { loc: string } | LocText; mode?: string | { loc: string } | LocText; image?: string; place?: 'gold' | 'silver' | 'bronze'; occupied?: boolean; killLabel?: string | { loc: string } | LocText }[]; moreRanks: boolean };
+      areas: 'confetti';
+      refs: 'result-score' | 'result-stats';
     };
   }
 }
