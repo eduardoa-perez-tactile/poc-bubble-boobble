@@ -7,7 +7,8 @@ import { pathToFileURL } from 'node:url';
 export async function extendWebShell({project,engineRoot,sdk}) {
   const site=join(project,'build/web/site');
   const loader=join(site,'gameengine-web-player.js');
-  writeFileSync(loader,browserSaveCompatibility(readFileSync(loader,'utf8')));
+  const engineVersion=JSON.parse(readFileSync(join(sdk,'engine-version.json'),'utf8')).version;
+  writeFileSync(loader,browserSaveCompatibility(readFileSync(loader,'utf8'),engineVersion));
   let source=readFileSync(join(engineRoot,'platform/web/player.ts'),'utf8');
   const replace=(before,after)=>{if(!source.includes(before))throw new Error(`Pinned engine shell changed: ${before}`);source=source.replace(before,after);};
   replace("import { InputQueue, bindInput } from './input.ts';",`import { InputQueue, bindInput } from ${JSON.stringify(join(engineRoot,'platform/web/input.ts'))};\nimport { installControls } from ${JSON.stringify(join(project,'web/controls.mjs'))};\nimport { installSplash } from ${JSON.stringify(join(project,'web/splash.mjs'))};`);
@@ -19,7 +20,7 @@ export async function extendWebShell({project,engineRoot,sdk}) {
   if(!visibility)throw new Error('Pinned engine visibility handler changed');
   source+='\n'+visibility[0].replace("'visibilitychange'","'bubble-visibility'")+'\n';
   const {build}=await import(pathToFileURL(join(sdk,'node_modules/esbuild/lib/main.js')).href);
-  await build({stdin:{contents:source,resolveDir:project,loader:'ts'},outfile:join(site,'player.js'),bundle:true,format:'esm',platform:'browser',target:'es2022',minify:true});
+  await build({stdin:{contents:source,resolveDir:join(engineRoot,'platform/web'),loader:'ts'},outfile:join(site,'player.js'),bundle:true,format:'esm',platform:'browser',target:'es2022',minify:true});
   writeSplashShell({project,site});
   const git=args=>{const r=spawnSync('git',args,{cwd:project,encoding:'utf8'});if(r.status!==0)throw new Error(r.stderr);return r.stdout.trim();};
   writeFileSync(join(site,'playtest-build.json'),JSON.stringify({sha:git(['rev-parse','HEAD']),dirty:!!git(['status','--porcelain']),exportedAt:new Date().toISOString(),name:'Bubble Madness',shell:'bubble-web-v2'},null,2)+'\n');

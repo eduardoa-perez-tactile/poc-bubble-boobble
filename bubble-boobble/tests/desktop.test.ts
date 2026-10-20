@@ -76,6 +76,9 @@ renderTest('desktop account buttons match reference hit rectangles',async({input
  render.expectScreenshot('name',{width:768,height:720});
  await ui.press(keys.find(b=>b.label==='DEL')!.id!);await step(1);await ui.press(keys.find(b=>b.label==='CREATE PROFILE')!.id!);await step(1);
  expect(desktopState.get().status).toBe('use 1 to 16 characters');
+ const model=desktopModel(desktopState.get(),desktopSaveState.get(),0,false);
+ expect(model.buttons.find(b=>b.key==='create-profile')!.selected).toBe(true);
+ expect(model.keys.find(b=>b.key==='delete-char')!.selected).toBe(false);
  render.expectScreenshot('invalid-name',{width:768,height:720});
 },{scene});
 renderTest('desktop title animation uses reference global phase and wraps',async({input,step,render,ui,world})=>{

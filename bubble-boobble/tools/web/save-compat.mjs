@@ -5,7 +5,10 @@
  * acknowledges the synchronous memory flush; IndexedDB completes outside the wasm call.
  * Patch only this exported loader, never the installed SDK or shared source checkout.
  */
-export function browserSaveCompatibility(source) {
+export function browserSaveCompatibility(source, engineVersion='0.1.13') {
+  // 0.1.14 introduced engine-owned browser persistence and flush completion.
+  // Keep that implementation intact; this workaround is only for the old SDK.
+  if(engineVersion!=='0.1.13')return source;
   const begin='var _fd_sync=function(fd){';
   const end=';_fd_sync.isAsync=true;';
   const start=source.indexOf(begin),stop=source.indexOf(end,start);
