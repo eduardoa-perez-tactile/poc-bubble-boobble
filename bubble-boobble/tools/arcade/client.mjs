@@ -21,10 +21,14 @@ export async function rpc(name, args = {}, fetcher = fetch) {
   if (!response.ok) throw new Error(`Office Arcade ${name}: HTTP ${response.status}: ${await response.text()}`);
   return decodeRpc(await response.json());
 }
-export async function publish({ slug, zip, fetcher = fetch }) {
-  validSlug(slug);
+export function verifiedRelease(zip) {
   const bytes = readFileSync(zip), receipt = json(`${zip}.json`);
   if (!receipt.ok || receipt.zipSha256 !== digest(bytes) || bytes.length > 1024 ** 3) throw new Error('ZIP requires a matching verified release receipt; run arcade:package first.');
+  return { bytes, receipt };
+}
+export async function publish({ slug, zip, fetcher = fetch }) {
+  validSlug(slug);
+  const { bytes, receipt } = verifiedRelease(zip);
   const games = await rpc('list_games', {}, fetcher);
   if (!Array.isArray(games)) throw new Error('Unexpected list_games result.');
   if (games.some(game => game.slug === slug)) throw new Error('This address already exists; choose a new slug.');

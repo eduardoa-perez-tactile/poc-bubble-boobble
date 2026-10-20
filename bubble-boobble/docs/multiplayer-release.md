@@ -2,6 +2,34 @@
 
 This game uses Trond's [live Office Arcade guide](https://webgames.tactilews.com/agents/), re-read on 20 October 2026. Office Arcade runs the exported authoritative engine server directly; the client connects to the same publication's secure `/socket` endpoint. There is no project-owned Node server or health wrapper.
 
+## One-command deployment and updates
+
+The first publication is live at [Bubble Madness multiplayer](https://webgames.tactilews.com/bubble-madness-mp-cd5516d-20261020t141208-1fa6/) (20 October 2026, publication ID `f3a94c84-7c08-420e-994b-2019e3031296`, built code revision `cd5516d`). Office Arcade reported `published`; `check_game` returned HTTP 200 with no missing linked files. A separate secure WebSocket upgrade to the hosted `/socket` succeeded. These checks do not establish browser gameplay.
+
+From this project directory, on the office network/VPN:
+
+```sh
+npm run arcade:deploy -- --zip build/arcade/bubble-madness-multiplayer-cd5516d.zip
+```
+
+For each update, first build fresh matching browser/Linux exports from the same clean code revision using the build instructions below. Then deploy them together in one command:
+
+```sh
+npm run arcade:deploy -- --web /absolute/path/to/web-export --server /absolute/path/to/linux-server-export
+```
+
+That form verifies and packages the exports before upload. Alternatively, supply a newly verified ZIP with `--zip`. Supplying an old ZIP deploys that ZIP's recorded revision; it does not build current source. The script needs only Node and office/VPN access for a prepackaged ZIP; packing exports also needs the existing ZIP tools. No account or credentials are required.
+
+`tools/arcade/deploy.mjs` validates the ZIP checksum receipt, generates a unique `bubble-madness-mp-COMMIT-TIMESTAMP-NONCE` address, uploads once, polls until `published` or `failed`, and runs `check_game`. Every deployment gets a new URL because Office Arcade does not overwrite existing addresses. The previous publication remains available. Use `--prefix NAME` to change the generated prefix, or `--slug UNUSED-NAME` for an explicit address. A local JSON receipt in `build/arcade/deployments/` records the exact build, publication state, file check and play/socket URLs, with `browserVerified: false`.
+
+Use `--dry-run --zip RELEASE.zip` for local validation without any network calls. The default publication wait is ten minutes; `--timeout-seconds` changes it. After an interruption or timeout, do not upload again: resume monitoring the original address instead:
+
+```sh
+npm run arcade:deploy -- --resume bubble-madness-mp-cd5516d-20261020t141208-1fa6
+```
+
+Resume never prepares or uploads another release. The initial receipt is preserved, with a separate resume receipt. Failure exits nonzero and never reports queued as published. Unknown server states and HTTP/tool errors stop the command for inspection. It does not install a recurring job or automatically publish on Git pushes. Browser acceptance remains governed by `PROJECT.md`.
+
 ## Verified release artifact
 
 The actual browser and authoritative Linux exports from clean game revision `cd5516d91da52dc1d6fa96c7663c00ef126177a3` passed `arcade:verify` and were packaged successfully. The final [Ubuntu24.04 CI run 39435591999](https://github.com/eduardoa-perez-tactile/poc-bubble-boobble/actions/runs/39435591999) passed all 15 tooling tests, the real release cook, production authoritative game load, shared-library checks and WebSocket upgrade. The full-source release check, including the pipeline gate, typecheck, cook and 600-frame cooked smoke, also passed without a bypass.
@@ -30,7 +58,7 @@ It was packaged with the following command; use a fresh output path if repeating
 npm run arcade:package -- --web build/arcade/web-cd5516d --server build/arcade/ci-cd5516d/server-linux-x64 --out build/arcade/bubble-madness-multiplayer-cd5516d.zip
 ```
 
-A later documentation-only commit does not change this built game's script identity. Keep the artifact attributed to its recorded `cd5516d` revision and provenance; do not relabel or restamp it as a later revision. The ZIP is ready for review and publication when requested. It has not been uploaded to Office Arcade, and actual browser multiplayer acceptance remains deferred.
+A later documentation-only commit does not change this built game's script identity. Keep the artifact attributed to its recorded `cd5516d` revision and provenance; do not relabel or restamp it as a later revision. The ZIP was published using the deployment script above; actual browser multiplayer acceptance remains deferred.
 
 ## Current feasibility
 
@@ -101,7 +129,7 @@ The full desktop-tier combined suite passed 332/332 cases with a peak of 11 draw
 
 Independent review identified stale result state on new-room entry and an engine match object surviving a closed transport. UI fixes reset results, cache the reclaim token before best-effort leave and explicitly tear down the closed local match so it cannot keep simulating. This code-level lifecycle follow-up does not establish browser reconnect; token reclaim still depends on a surviving room with other connected peers.
 
-The installed-SDK final check passed typecheck, validation, desktop cook and 600 cooked smoke frames. Its pipeline checker falsely labels built-in material program `7946469ed20397e0` stale because the installed distribution omits `crates/gameengine-render/src/materials/*.gen.json`. The full exact engine source contains that valid hash in `standard.gen.json` at line 144, and its direct source-CLI `pipelineIssues` check returned `ok: true, issues: []` without a bypass. Recapturing alone cannot fix the installed checker metadata. The full matching source CLI subsequently passed the real release check, including its pipeline gate, typecheck, desktop cook and 600 cooked smoke frames, without removing a valid program or bypassing validation. The matching final browser/server ZIP is verified and recorded above; nothing has been uploaded to Office Arcade.
+The installed-SDK final check passed typecheck, validation, desktop cook and 600 cooked smoke frames. Its pipeline checker falsely labels built-in material program `7946469ed20397e0` stale because the installed distribution omits `crates/gameengine-render/src/materials/*.gen.json`. The full exact engine source contains that valid hash in `standard.gen.json` at line 144, and its direct source-CLI `pipelineIssues` check returned `ok: true, issues: []` without a bypass. Recapturing alone cannot fix the installed checker metadata. The full matching source CLI subsequently passed the real release check, including its pipeline gate, typecheck, desktop cook and 600 cooked smoke frames, without removing a valid program or bypassing validation. The matching final browser/server ZIP is verified and published as recorded above; deployed gameplay remains unverified.
 
 ## Read-only deployment inspection
 
@@ -125,7 +153,7 @@ npm run arcade:publish -- --slug NEW-AVAILABLE-SLUG --zip build/arcade/bubble-ma
 
 The command validates the ZIP receipt, calls `list_games`, refuses an occupied slug, calls `prepare_publish` with exactly `{slug, multiplayer: true}`, and uploads the raw ZIP using the returned URL and headers. It accepts only the documented same-origin HTTPS upload contract and stops on JSON-RPC/tool/HTTP errors. HTTP 202 is reported as **queued**. Use `arcade:status` until the returned state is `published` or `failed`; queued is not successful deployment. Use `arcade:check` after publication, then the returned play and secure socket URLs. Existing or failed publication addresses cannot be overwritten.
 
-The implementation task has not run `prepare_publish`, uploaded files or published anything. Office Arcade offers no public egress, host mounts or host ports; only `/tmp` is suitable for temporary writes. A process restart loses in-memory matches.
+The authorized first deployment used `prepare_publish`, uploaded this verified ZIP and reached `published`. Office Arcade offers no public egress, host mounts or host ports; only `/tmp` is suitable for temporary writes. A process restart loses in-memory matches.
 
 ## Acceptance still required
 

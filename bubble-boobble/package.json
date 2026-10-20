@@ -46,6 +46,7 @@
     "arcade:verify": "node tools/arcade/run.mjs verify",
     "arcade:package": "node tools/arcade/run.mjs package",
     "arcade:publish": "node tools/arcade/run.mjs publish",
+    "arcade:deploy": "node tools/arcade/deploy.mjs",
     "arcade:test": "node --test tools/arcade/*.test.mjs",
     "arcade:fetch-runtime": "node tools/arcade/prebuilt-server.mjs fetch",
     "arcade:build-prebuilt-server": "node tools/arcade/prebuilt-server.mjs build",
