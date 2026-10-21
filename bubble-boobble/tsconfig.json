@@ -106,7 +106,9 @@
       "@gameengine/gws": ["./.gameengine/engine/packages/gws/src/index.ts"],
       "@gameengine/gws/*": ["./.gameengine/engine/packages/gws/src/*"],
       "@gameengine/playwright": ["./.gameengine/engine/packages/playwright/src/index.ts"],
-      "@gameengine/playwright/*": ["./.gameengine/engine/packages/playwright/src/*"]
+      "@gameengine/playwright/*": ["./.gameengine/engine/packages/playwright/src/*"],
+      "@gameengine/analytics-legacy": ["./.gameengine/engine/packages/analytics-legacy/src/index.ts"],
+      "@gameengine/analytics-legacy/*": ["./.gameengine/engine/packages/analytics-legacy/src/*"]
     }
   },
   "include": [

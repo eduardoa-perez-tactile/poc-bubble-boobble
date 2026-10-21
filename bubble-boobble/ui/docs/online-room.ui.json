@@ -1,0 +1,330 @@
+{
+  "$schemaVersion": 1,
+  "guid": "8a718296-3e62-4dc6-a593-465a6d14a681",
+  "name": "online-room",
+  "title": "Online room",
+  "kind": "view",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Online room",
+      "style": {
+        "w": 768,
+        "h": 720,
+        "pad": 0,
+        "bg": "#080c1bf5",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0.5
+        ],
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "children": [
+        "or_title",
+        "or_subtitle",
+        "or_detail",
+        "or_status",
+        "or_rooms",
+        "or_primary",
+        "or_secondary",
+        "or_ready",
+        "or_friends",
+        "or_capacity"
+      ]
+    },
+    "or_title": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "title",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          50
+        ],
+        "w": "90%",
+        "h": 48,
+        "fontSize": 28,
+        "fitMin": 9,
+        "textAlign": "center",
+        "color": "#ffdc6a"
+      }
+    },
+    "or_subtitle": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "subtitle",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          108
+        ],
+        "w": "90%",
+        "h": 38,
+        "fontSize": 14,
+        "fitMin": 9,
+        "textAlign": "center",
+        "color": "#80dadd"
+      }
+    },
+    "or_detail": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "detail",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          162
+        ],
+        "w": "90%",
+        "h": 64,
+        "fontSize": 13,
+        "fitMin": 9,
+        "textAlign": "center",
+        "color": "#a3b3ce"
+      }
+    },
+    "or_status": {
+      "type": "label",
+      "name": "Label",
+      "text": "Label",
+      "property": "status",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          568
+        ],
+        "w": "90%",
+        "h": 36,
+        "fontSize": 12,
+        "fitMin": 9,
+        "textAlign": "center",
+        "color": "#ffdc6a"
+      }
+    },
+    "or_rooms": {
+      "type": "element",
+      "name": "Element",
+      "children": [
+        "or_rows"
+      ],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          244
+        ],
+        "w": "90%",
+        "h": 310
+      },
+      "show": "showRooms",
+      "scroll": {
+        "axis": "vertical",
+        "snap": "items",
+        "bounce": true
+      }
+    },
+    "or_rows": {
+      "type": "repeat",
+      "doc": "online-room-row",
+      "property": "rooms",
+      "style": {
+        "gap": 12,
+        "w": "100%",
+        "dir": "column"
+      }
+    },
+    "or_primary": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "connect",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          -144,
+          618
+        ],
+        "w": 264,
+        "h": 44
+      },
+      "props": {
+        "label": {
+          "property": "primary"
+        }
+      }
+    },
+    "or_secondary": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "back",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          144,
+          618
+        ],
+        "w": 264,
+        "h": 44
+      },
+      "props": {
+        "label": {
+          "property": "secondary"
+        }
+      }
+    },
+    "or_ready": {
+      "type": "label",
+      "name": "Label",
+      "text": "JUMP STRAIGHT IN",
+      "show": "setup",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          300
+        ],
+        "w": "90%",
+        "h": 38,
+        "fontSize": 24,
+        "fitMin": 10,
+        "textAlign": "center",
+        "color": "#80dadd"
+      }
+    },
+    "or_friends": {
+      "type": "label",
+      "name": "Label",
+      "text": "FRIENDS CAN JOIN WHILE YOU PLAY",
+      "show": "setup",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          366
+        ],
+        "w": "90%",
+        "h": 38,
+        "fontSize": 14,
+        "fitMin": 10,
+        "textAlign": "center",
+        "color": "#ebf5ff"
+      }
+    },
+    "or_capacity": {
+      "type": "label",
+      "name": "Label",
+      "text": "ROOM FOR TEN DRAGONS",
+      "show": "setup",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          420
+        ],
+        "w": "90%",
+        "h": 38,
+        "fontSize": 16,
+        "fitMin": 10,
+        "textAlign": "center",
+        "color": "#ffdc6a"
+      }
+    }
+  },
+  "view": {
+    "behaviour": "screen"
+  },
+  "properties": {
+    "title": {
+      "type": "text",
+      "default": ""
+    },
+    "subtitle": {
+      "type": "text",
+      "default": ""
+    },
+    "status": {
+      "type": "text",
+      "default": ""
+    },
+    "detail": {
+      "type": "text",
+      "default": ""
+    },
+    "primary": {
+      "type": "text",
+      "default": ""
+    },
+    "secondary": {
+      "type": "text",
+      "default": ""
+    },
+    "setup": {
+      "type": "yesno",
+      "default": true
+    },
+    "rooms": {
+      "type": "list",
+      "of": "online-room-row",
+      "default": []
+    },
+    "showRooms": {
+      "type": "yesno",
+      "default": false
+    }
+  },
+  "transition": {
+    "type": "instant"
+  }
+}

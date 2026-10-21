@@ -1,4 +1,4 @@
-import { defineSystem, PointerDown, PointerUp, PointerMove, PointerHover, MouseDown, MouseUp, read, write } from '@gameengine/runtime';
+import { defineSystem, multiplayer, PointerDown, PointerUp, PointerMove, PointerHover, MouseDown, MouseUp, read, write } from '@gameengine/runtime';
 import { ArcadeControl, EditorPointer } from '../schema.gen.ts';
 import { desktopAction, desktopState } from '../desktop/index.ts';
 export const ArcadeEditorInput=defineSystem({
@@ -7,6 +7,7 @@ export const ArcadeEditorInput=defineSystem({
   events:[PointerDown,PointerUp,PointerMove,PointerHover,MouseDown,MouseUp],
   runIf:{resource:ArcadeControl,field:'active',value:true},
   run(ctx){
+    if(multiplayer.match())return;
     if(desktopState.get().screen!=='editor')return;
     const paint=(world:readonly number[],begin=false,erase=false)=>{
       const col=Math.floor((world[0]!-24)/16),row=Math.floor((720-world[1]!-146)/16);

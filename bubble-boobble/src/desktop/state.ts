@@ -1,7 +1,7 @@
 import { updatePartyPads } from '../arcade/party-input';
 import { defaultPartySlots, partySize, type DragonResult } from '../arcade/party-config';
 import type { PartySlot } from '../arcade/types';
-import { defineDoc, defineSystem, query, read, ActionState, TextInput, PointerHover, PointerDown, KeyEvent } from '@gameengine/runtime';
+import { multiplayer, defineDoc, defineSystem, query, read, ActionState, TextInput, PointerHover, PointerDown, KeyEvent } from '@gameengine/runtime';
 import type { DocHandle, DocValue } from '@gameengine/runtime';
 import { DesktopIntent, ArcadeControl } from '../schema.gen.ts';
 import campaignData from '../../data/levels.json';
@@ -12,7 +12,7 @@ import { partyGridSelection, modeGridSelection, desktopButtonRect } from './layo
 import { getDesktopButtons } from './model.ts';
 const campaign=campaignData as Level[];
 export type PlayMode='solo'|'ai'|'human';
-export type DesktopScreen='title'|'menu'|'profiles'|'new-profile'|'settings'|'scores'|'help'|'credits'|'editor'|'play'|'pause'|'result'|'party'|'modes';
+export type DesktopScreen='title'|'menu'|'profiles'|'new-profile'|'settings'|'scores'|'help'|'credits'|'editor'|'play'|'pause'|'result'|'party'|'modes'|'online';
 export const RESULT_INPUT_DELAY = 45;
 export interface DesktopState {dragonResults?:DragonResult[];resultStartedStep?:number;resultReady?:boolean;developmentMenu?:boolean;partySlots:PartySlot[];partyRun:boolean;partyEditing:boolean;screen:DesktopScreen;confirmKeys:number;playMode:PlayMode;name:string;status:string;statusStartedStep:number;selected:number;custom:boolean;recorded:boolean;won:boolean;score:number;round:number;tool:number;template:number;painting:boolean;deleteHeldAt:number;level:Level;history:Level[]}
 export const initialDesktopState:DesktopState={developmentMenu:false,partySlots:defaultPartySlots.slice(),partyRun:false,partyEditing:false,screen:'title',confirmKeys:0,playMode:'solo',name:'',status:'',statusStartedStep:-1,selected:0,custom:false,recorded:false,won:false,score:0,round:1,tool:0,template:0,painting:false,deleteHeldAt:-1,level:cloneLevel(campaign[0]!),history:[]};
@@ -33,6 +33,8 @@ export function desktopAction(action:string,value='',index=0,x=0,y=0,now=0){
  if(action==='choose-mode'){navigate('modes');return;}
  if(action==='classic-mode'){desktopAction('start');return;}
  if(action==='madness-mode'){desktopAction('party');return;}
+ if(action==='online-exit'){request('quit');navigate(index===1?'menu':'online');return;}
+ if(action==='online-mode'){navigate('online');return;}
  if(action==='mode-back'){navigate('menu');return;}
  if(action==='navigate'){navigate(value as DesktopScreen);return;}
  if(action==='select'){patch({selected:index});return;}
@@ -76,7 +78,8 @@ export function desktopAction(action:string,value='',index=0,x=0,y=0,now=0){
  if(action==='theme'){remember();const number=s.level.number%25+1;patch({level:{...s.level,number,tiles:s.level.tiles.map(row=>row.map(t=>t?number:0))}});}
 }
 export const DesktopSystem=defineSystem({name:'DesktopSystem',resources:[read(ArcadeControl)],query:query(read(ActionState)),events:[DesktopIntent,TextInput,PointerHover,PointerDown,KeyEvent],run(ctx,q){
- if(!ctx.get(ArcadeControl).active)return;
+ if(!ctx.get(ArcadeControl).active||multiplayer.match())return;
+ if(desktopState.get().screen==='online'){for(const e of ctx.events.read(DesktopIntent))if(e.action==='menu'||e.action==='online-exit')desktopAction(e.action,e.value,e.index);return;}
  const pads=updatePartyPads(ctx.input);
  const padScreen=desktopState.get().screen;
  if(padScreen==='party')for(const slot of pads.joinedSlots)desktopAction('party-join','',slot);

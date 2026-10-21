@@ -374,14 +374,91 @@ declare module '@gameengine/ui' {
      *   - `classicSelected`: yesno, default false
      *   - `madnessSelected`: yesno, default false
      *   - `backSelected`: yesno, default false
-     * Events: `classic-mode`, `madness-mode`, `mode-back`
+     *   - `onlineSelected`: yesno, default false
+     * Events: `classic-mode`, `madness-mode`, `mode-back`, `online-mode`
      * Code areas: none
-     * Refs: `classic-mode`, `madness-mode`, `mode-back`
+     * Refs: `classic-mode`, `madness-mode`, `mode-back`, `online-mode`
      */
     'mode-select': {
-      props: { classicSelected: boolean; madnessSelected: boolean; backSelected: boolean };
+      props: { classicSelected: boolean; madnessSelected: boolean; backSelected: boolean; onlineSelected: boolean };
       areas: never;
-      refs: 'classic-mode' | 'madness-mode' | 'mode-back';
+      refs: 'classic-mode' | 'madness-mode' | 'mode-back' | 'online-mode';
+    };
+    /**
+     * Online bar: a view, screen (ui/docs/online-bar.ui.json)
+     *
+     * Properties:
+     *   - `identity`: text, default "ONLINE"
+     *   - `score`: text, default ""
+     *   - `wave`: text, default ""
+     *   - `alive`: text, default ""
+     *   - `objective`: text, default ""
+     * Events: `menu`
+     * Code areas: none
+     * Refs: `score`, `wave`, `alive`, `identity`, `menu`, `objective`
+     */
+    'online-bar': {
+      props: { identity: string | { loc: string } | LocText; score: string | { loc: string } | LocText; wave: string | { loc: string } | LocText; alive: string | { loc: string } | LocText; objective: string | { loc: string } | LocText };
+      areas: never;
+      refs: 'score' | 'wave' | 'alive' | 'identity' | 'menu' | 'objective';
+    };
+    /**
+     * Online end: a view, screen (ui/docs/online-end.ui.json)
+     *
+     * Properties:
+     *   - `eyebrow`: text, default ""
+     *   - `title`: text, default ""
+     *   - `detail`: text, default ""
+     *   - `stats`: text, default ""
+     *   - `prompt`: text, default ""
+     *   - `ready`: yesno, default false
+     * Events: `results`, `end-leave`
+     * Code areas: none
+     * Refs: `title`, `stats`, `results`, `end-leave`
+     */
+    'online-end': {
+      props: { eyebrow: string | { loc: string } | LocText; title: string | { loc: string } | LocText; detail: string | { loc: string } | LocText; stats: string | { loc: string } | LocText; prompt: string | { loc: string } | LocText; ready: boolean };
+      areas: never;
+      refs: 'title' | 'stats' | 'results' | 'end-leave';
+    };
+    /**
+     * Online room: a view, screen (ui/docs/online-room.ui.json)
+     *
+     * Properties:
+     *   - `title`: text, default ""
+     *   - `subtitle`: text, default ""
+     *   - `status`: text, default ""
+     *   - `detail`: text, default ""
+     *   - `primary`: text, default ""
+     *   - `secondary`: text, default ""
+     *   - `setup`: yesno, default true
+     *   - `rooms`: list of online-room-row
+     *   - `showRooms`: yesno, default false
+     * Events: `press (<item>)`, `connect`, `back`
+     * Code areas: none
+     * Refs: `connect`, `back`
+     */
+    'online-room': {
+      props: { title: string | { loc: string } | LocText; subtitle: string | { loc: string } | LocText; status: string | { loc: string } | LocText; detail: string | { loc: string } | LocText; primary: string | { loc: string } | LocText; secondary: string | { loc: string } | LocText; setup: boolean; rooms: readonly { key: string; title?: string | { loc: string } | LocText; detail?: string | { loc: string } | LocText; label?: string | { loc: string } | LocText; disabled?: boolean }[]; showRooms: boolean };
+      areas: never;
+      refs: 'connect' | 'back';
+    };
+    /**
+     * Online room row: a widget, button (ui/docs/online-room-row.ui.json)
+     *
+     * Properties:
+     *   - `title`: text, default ""
+     *   - `detail`: text, default ""
+     *   - `label`: text, default ""
+     *   - `disabled`: yesno, default false
+     * Events: `<id>`
+     * Code areas: none
+     * Refs: none
+     */
+    'online-room-row': {
+      props: { title: string | { loc: string } | LocText; detail: string | { loc: string } | LocText; label: string | { loc: string } | LocText; disabled: boolean };
+      areas: never;
+      refs: never;
     };
     /**
      * Party dragon card: a widget, button (ui/docs/party-dragon-card.ui.json)

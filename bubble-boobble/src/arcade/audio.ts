@@ -1,4 +1,5 @@
-import { ActionState, app, defineSystem, query, read, write, PlayMusic, StopMusic, SetBusVolume, PlaySound, LoadSoundBank, UnloadSoundBank } from '@gameengine/runtime';
+import { authoritativeWorld } from '../online/world-system';
+import { ActionState, multiplayer, app, defineSystem, query, read, write, PlayMusic, StopMusic, SetBusVolume, PlaySound, LoadSoundBank, UnloadSoundBank } from '@gameengine/runtime';
 import { ArcadeAudio, ArcadeControl, ArcadePlatformState, DesktopIntent } from '../schema.gen.ts';
 import { session } from './session.ts';
 import { desktopGameRequest, desktopSaveState, desktopState } from '../desktop/index.ts';
@@ -7,7 +8,17 @@ export const ArcadeAudioSystem=defineSystem({
  name:'ArcadeAudioSystem',after:['ArcadeStep'],query:query(read(ActionState)),resources:[read(ArcadeControl),write(ArcadeAudio)],events:[DesktopIntent],
  runIf:{resource:ArcadeControl,field:'active',value:true},
  run(ctx,q){
-  const old=ctx.get(ArcadeAudio),s=session.get(),save=desktopSaveState.get();let muted=old.muted,native=old.native,sfxPriority=old.sfxPriority;
+  if(authoritativeWorld.get().started)return;
+  const old=ctx.get(ArcadeAudio),s=session.get();
+  if(multiplayer.match()||(s.active&&s.mode==='online')){
+   // The host drains audio after rollback and the mixer deduplicates a playing track.
+   // Reassert current music so catch-up cannot skip a transition; SFX play in presentation.
+   const g=s.active?s.game:null,track=!g?'menu':g.State===4?'win':g.State===3?'gameover':g.Hurry?'hurry':'theme';
+   ctx.events.emit(PlayMusic,{track:`reference/audio/${tracks[track]}`,crossfade:0,volume:.5});
+   if(track!==old.track)ctx.setField(ArcadeAudio,'track',track);
+   return;
+  }
+  const save=desktopSaveState.get();let muted=old.muted,native=old.native,sfxPriority=old.sfxPriority;
   for(const intent of ctx.events.read(DesktopIntent))if(intent.action==='native-audio')native=intent.value==='1';
   if(native!==old.native){ctx.setField(ArcadeAudio,'native',native);if(native)ctx.events.emit(StopMusic,{fade:0});}
   if(desktopState.get().screen!=='new-profile')for(const c of q.chunks())for(let i=0;i<c.length;i++)if(c.is(ActionState,i,'name','mute')&&c.col(ActionState).justPressed[i])muted=!muted;

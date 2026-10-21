@@ -1,0 +1,222 @@
+{
+  "$schemaVersion": 1,
+  "guid": "8858e0e7-23d3-41a4-9f83-6818c69b8ff9",
+  "name": "online-end",
+  "title": "Online end",
+  "kind": "view",
+  "root": "root",
+  "nodes": {
+    "root": {
+      "type": "element",
+      "name": "Online end",
+      "style": {
+        "w": 768,
+        "h": 720,
+        "pad": 0,
+        "bg": "#080c1be8",
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0.5
+        ],
+        "offset": [
+          0,
+          0
+        ]
+      },
+      "children": [
+        "oe_eyebrow",
+        "oe_title",
+        "oe_detail",
+        "oe_stats",
+        "oe_prompt",
+        "oe_results",
+        "oe_leave"
+      ]
+    },
+    "oe_eyebrow": {
+      "type": "label",
+      "name": "Label",
+      "text": "{eyebrow}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          156
+        ],
+        "w": "90%",
+        "h": 24,
+        "fontSize": 12,
+        "fitMin": 8,
+        "color": "#8cdae1",
+        "textAlign": "center"
+      }
+    },
+    "oe_title": {
+      "type": "label",
+      "name": "Label",
+      "text": "{title}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          206
+        ],
+        "w": "90%",
+        "h": 62,
+        "fontSize": 36,
+        "fitMin": 24,
+        "color": "#ffdc6a",
+        "textAlign": "center"
+      },
+      "point": "title"
+    },
+    "oe_detail": {
+      "type": "label",
+      "name": "Label",
+      "text": "{detail}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          292
+        ],
+        "w": "90%",
+        "h": 56,
+        "fontSize": 14,
+        "fitMin": 8,
+        "color": "#ebf5ff",
+        "textAlign": "center"
+      }
+    },
+    "oe_stats": {
+      "type": "label",
+      "name": "Label",
+      "text": "{stats}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          380
+        ],
+        "w": "90%",
+        "h": 38,
+        "fontSize": 17,
+        "fitMin": 8,
+        "color": "#73f5aa",
+        "textAlign": "center"
+      },
+      "point": "stats"
+    },
+    "oe_prompt": {
+      "type": "label",
+      "name": "Label",
+      "text": "{prompt}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          460
+        ],
+        "w": "90%",
+        "h": 26,
+        "fontSize": 12,
+        "fitMin": 8,
+        "color": "#92a5bc",
+        "textAlign": "center"
+      }
+    },
+    "oe_results": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "results",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          516
+        ],
+        "w": 320,
+        "h": 44
+      },
+      "props": {
+        "label": "VIEW RESULTS"
+      },
+      "show": "ready"
+    },
+    "oe_leave": {
+      "type": "use",
+      "doc": "desktop-button",
+      "key": "end-leave",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          578
+        ],
+        "w": 320,
+        "h": 44
+      },
+      "props": {
+        "label": "BROWSE GAMES"
+      }
+    }
+  },
+  "view": {
+    "behaviour": "screen"
+  },
+  "properties": {
+    "eyebrow": {
+      "type": "text",
+      "default": ""
+    },
+    "title": {
+      "type": "text",
+      "default": ""
+    },
+    "detail": {
+      "type": "text",
+      "default": ""
+    },
+    "stats": {
+      "type": "text",
+      "default": ""
+    },
+    "prompt": {
+      "type": "text",
+      "default": ""
+    },
+    "ready": {
+      "type": "yesno",
+      "default": false
+    }
+  }
+}

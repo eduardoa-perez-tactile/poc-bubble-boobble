@@ -397,6 +397,93 @@
       "package": "Bubble Madness"
     },
     {
+      "name": "OnlineAudioState",
+      "kind": "resource",
+      "sim": false,
+      "fields": [
+        {
+          "name": "tick",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "wave",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "state",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "downed",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "bossHP",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "room",
+          "kind": "string",
+          "scalar": "u32",
+          "lanes": 1
+        }
+      ],
+      "package": "Bubble Madness"
+    },
+    {
+      "name": "OnlineLocalControls",
+      "kind": "resource",
+      "sim": false,
+      "fields": [
+        {
+          "name": "move",
+          "kind": "f32",
+          "scalar": "f32",
+          "lanes": 1
+        },
+        {
+          "name": "jump",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "fire",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        }
+      ],
+      "package": "Bubble Madness"
+    },
+    {
+      "name": "OnlineWorldInput",
+      "kind": "event",
+      "sim": true,
+      "fields": [],
+      "package": "Bubble Madness"
+    },
+    {
+      "name": "OnlineWorldSnapshot",
+      "kind": "event",
+      "sim": true,
+      "fields": [],
+      "package": "Bubble Madness"
+    },
+    {
       "name": "PortInput",
       "kind": "resource",
       "sim": true,

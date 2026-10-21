@@ -24,7 +24,7 @@ import { checkPowerSpawns, updateItems } from "./items";
 import { createRNG, float64, intN, rngHex } from "./rng";
 export function createGame(
   levels: Level[],
-  seed: number,
+  seed: number | bigint,
   count = 1,
 ): GameState {
   if (!Number.isInteger(count) || count < 1 || count > 10) throw new Error("expected one to ten players");

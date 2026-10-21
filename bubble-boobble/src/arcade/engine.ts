@@ -4,7 +4,7 @@ import { createPartyGame } from './party';
 import { respawn } from './player';
 import { resetPartyPads } from './party-input';
 import { enableCompanion } from './companion';
-import { ActionState, WorldView, defineSystem, query, read, write } from '@gameengine/runtime';
+import { ActionState, WorldView, defineSystem, multiplayer, query, read, write } from '@gameengine/runtime';
 import { ArcadeControl, ArcadeInput } from '../schema.gen.ts';
 import campaign from '../../data/levels.json';
 import { session } from './session.ts';
@@ -12,9 +12,10 @@ import { copyGame, createGame, stepGame } from './game.ts';
 import type { Input, Level } from './types.ts';
 import { desktopGameRequest, desktopSaveState, desktopState, finishDesktopRun, showDesktopPause, setDesktopRunScore } from '../desktop/index.ts';
 export const ArcadeStep=defineSystem({
-  name:'ArcadeStep',after:['DesktopSystem'],query:query(read(ActionState)),
+  name:'ArcadeStep',after:['DesktopSystem','OnlineWaveStep'],query:query(read(ActionState)),
   resources:[write(ArcadeControl),write(WorldView)],events:[ArcadeInput],
   run(ctx,q){
+    if(multiplayer.match())return;
     if(!ctx.get(ArcadeControl).active)return;
     const control=ctx.get(ArcadeControl), request=desktopGameRequest.get();
     let current=session.get();
@@ -44,6 +45,9 @@ export const ArcadeStep=defineSystem({
         const game=copyGame(current.game);game.Paused=request.action==='pause';current={...current,game};session.set(current);
       }
     }
+    // A lost socket or leave must never turn the last online snapshot into a local match.
+    // A later explicit offline start replaces the session in the request handling above.
+    if(current.mode==='online')return;
     if(control.skip){ctx.setField(ArcadeControl,'skip',false);return;}
     if(!current.active||!current.game)return;
     const inputs:Input[]=reducePartyPadInput(partyPads.get().pads,[]).inputs.slice(0,current.game.Players.length);

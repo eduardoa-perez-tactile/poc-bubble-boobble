@@ -403,6 +403,93 @@ export const schemaIr = {
       "package": "Bubble Madness"
     },
     {
+      "name": "OnlineAudioState",
+      "kind": "resource",
+      "sim": false,
+      "fields": [
+        {
+          "name": "tick",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "wave",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "state",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "downed",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1
+        },
+        {
+          "name": "bossHP",
+          "kind": "i32",
+          "scalar": "i32",
+          "lanes": 1,
+          "default": -1
+        },
+        {
+          "name": "room",
+          "kind": "string",
+          "scalar": "u32",
+          "lanes": 1
+        }
+      ],
+      "package": "Bubble Madness"
+    },
+    {
+      "name": "OnlineLocalControls",
+      "kind": "resource",
+      "sim": false,
+      "fields": [
+        {
+          "name": "move",
+          "kind": "f32",
+          "scalar": "f32",
+          "lanes": 1
+        },
+        {
+          "name": "jump",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        },
+        {
+          "name": "fire",
+          "kind": "bool",
+          "scalar": "u8",
+          "lanes": 1
+        }
+      ],
+      "package": "Bubble Madness"
+    },
+    {
+      "name": "OnlineWorldInput",
+      "kind": "event",
+      "sim": true,
+      "fields": [],
+      "package": "Bubble Madness"
+    },
+    {
+      "name": "OnlineWorldSnapshot",
+      "kind": "event",
+      "sim": true,
+      "fields": [],
+      "package": "Bubble Madness"
+    },
+    {
       "name": "PortInput",
       "kind": "resource",
       "sim": true,
@@ -787,6 +874,48 @@ export interface MovementInputValue {
 }
 /** MovementInput (event, sim) */
 export const MovementInput = typeToken<MovementInputViews, MovementInputValue>('MovementInput', 'event', { sig: 'move:i32:1,jump:bool:1,paused:bool:1', read: (v: MovementInputViews, i: number, o: Record<string, unknown>) => { o.move = v.move[i]; o.jump = v.jump[i] !== 0; o.paused = v.paused[i] !== 0; return o; } });
+
+export interface OnlineAudioStateViews {
+  tick: Int32Array;
+  wave: Int32Array;
+  state: Int32Array;
+  downed: Int32Array;
+  bossHP: Int32Array;
+  room: Uint32Array;
+}
+export interface OnlineAudioStateValue {
+  tick: number;
+  wave: number;
+  state: number;
+  downed: number;
+  bossHP: number;
+  room: string;
+}
+/** OnlineAudioState (resource, presentation-only) */
+export const OnlineAudioState = typeToken<OnlineAudioStateViews, OnlineAudioStateValue>('OnlineAudioState', 'resource', { sig: 'tick:i32:1,wave:i32:1,state:i32:1,downed:i32:1,bossHP:i32:1,room:string:1', read: (v: OnlineAudioStateViews, i: number, o: Record<string, unknown>) => { o.tick = v.tick[i]; o.wave = v.wave[i]; o.state = v.state[i]; o.downed = v.downed[i]; o.bossHP = v.bossHP[i]; o.room = $r.str(v.room[i]!); return o; } });
+
+export interface OnlineLocalControlsViews {
+  move: Float32Array;
+  jump: Uint8Array;
+  fire: Uint8Array;
+}
+export interface OnlineLocalControlsValue {
+  move: number;
+  jump: boolean;
+  fire: boolean;
+}
+/** OnlineLocalControls (resource, presentation-only) */
+export const OnlineLocalControls = typeToken<OnlineLocalControlsViews, OnlineLocalControlsValue>('OnlineLocalControls', 'resource', { sig: 'move:f32:1,jump:bool:1,fire:bool:1', read: (v: OnlineLocalControlsViews, i: number, o: Record<string, unknown>) => { o.move = v.move[i]; o.jump = v.jump[i] !== 0; o.fire = v.fire[i] !== 0; return o; } });
+
+export type OnlineWorldInputViews = Record<string, never>;
+export type OnlineWorldInputValue = Record<string, never>;
+/** OnlineWorldInput (event, sim) */
+export const OnlineWorldInput = typeToken<OnlineWorldInputViews, OnlineWorldInputValue>('OnlineWorldInput', 'event');
+
+export type OnlineWorldSnapshotViews = Record<string, never>;
+export type OnlineWorldSnapshotValue = Record<string, never>;
+/** OnlineWorldSnapshot (event, sim) */
+export const OnlineWorldSnapshot = typeToken<OnlineWorldSnapshotViews, OnlineWorldSnapshotValue>('OnlineWorldSnapshot', 'event');
 
 export interface PortInputViews {
   move: Int32Array;

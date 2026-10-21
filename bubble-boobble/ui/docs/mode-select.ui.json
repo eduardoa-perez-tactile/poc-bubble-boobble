@@ -31,7 +31,8 @@
         "ms_classic",
         "ms_madness",
         "ms_back",
-        "ms_hint"
+        "ms_hint",
+        "ms_online"
       ]
     },
     "ms_brand": {
@@ -97,15 +98,19 @@
       "style": {
         "position": "anchored",
         "anchor": [
-          0,
+          0.1875,
           0
         ],
         "offset": [
-          100,
+          0,
           168
         ],
-        "w": 272,
-        "h": 380
+        "w": "29.6875%",
+        "h": 380,
+        "pivot": [
+          0.5,
+          0
+        ]
       },
       "props": {
         "label": "CLASSIC",
@@ -123,15 +128,19 @@
       "style": {
         "position": "anchored",
         "anchor": [
-          0,
+          0.5,
           0
         ],
         "offset": [
-          396,
+          0,
           168
         ],
-        "w": 272,
-        "h": 380
+        "w": "29.6875%",
+        "h": 380,
+        "pivot": [
+          0.5,
+          0
+        ]
       },
       "props": {
         "label": "BUBBLE MADNESS",
@@ -149,11 +158,11 @@
       "style": {
         "position": "anchored",
         "anchor": [
-          0,
+          0.5,
           0
         ],
         "offset": [
-          264,
+          0,
           606
         ],
         "w": 240,
@@ -184,6 +193,36 @@
         "textAlign": "center",
         "color": "#829fb1"
       }
+    },
+    "ms_online": {
+      "type": "use",
+      "doc": "game-mode-card",
+      "key": "online-mode",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.8125,
+          0
+        ],
+        "offset": [
+          0,
+          168
+        ],
+        "w": "29.6875%",
+        "h": 380,
+        "pivot": [
+          0.5,
+          0
+        ]
+      },
+      "props": {
+        "label": "ONLINE",
+        "description": "JOIN FRIENDS / WAVE SURVIVAL",
+        "players": "1-10 PLAYERS + AI",
+        "selected": {
+          "property": "onlineSelected"
+        }
+      }
     }
   },
   "view": {
@@ -202,6 +241,10 @@
       "default": false
     },
     "backSelected": {
+      "type": "yesno",
+      "default": false
+    },
+    "onlineSelected": {
       "type": "yesno",
       "default": false
     }

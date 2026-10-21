@@ -1,0 +1,43 @@
+name: Build Office Arcade Linux server
+# Artifact build only. Never publishes or contacts Office Arcade.
+on:
+  push:
+    branches: [codex/online-wave-survival]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  server:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: bubble-boobble
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+      - name: Fetch pinned official engine runtime
+        env:
+          ARCADE_RUNTIME_ROOT: ${{ runner.temp }}/gameengine-0.1.15
+        run: node tools/arcade/prebuilt-server.mjs fetch --out "$ARCADE_RUNTIME_ROOT"
+      - name: Test release tooling
+        run: npm run arcade:test
+      - name: Cook and assemble real authoritative server
+        env:
+          ARCADE_RUNTIME_ROOT: ${{ runner.temp }}/gameengine-0.1.15
+        run: node tools/arcade/prebuilt-server.mjs build --runtime-root "$ARCADE_RUNTIME_ROOT" --out build/arcade/server-linux-x64
+      - name: Verify production startup and WebSocket upgrade
+        run: |
+          node tools/arcade/smoke-server.mjs --server build/arcade/server-linux-x64 > build/arcade/server-startup.json
+          cat build/arcade/server-startup.json
+      - name: Archive complete export with executable permissions
+        run: tar -czf build/arcade/bubble-madness-server-linux-x64.tar.gz -C build/arcade server-linux-x64 server-startup.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bubble-madness-server-linux-x64-${{ github.sha }}
+          path: bubble-boobble/build/arcade/bubble-madness-server-linux-x64.tar.gz
+          if-no-files-found: error
+          retention-days: 14

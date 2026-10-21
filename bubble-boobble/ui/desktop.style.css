@@ -19,3 +19,6 @@
 .desktop-results .ud-desktop-button__root { width: 296px; height: 44px; }
 
 .desktop-results-screen { background-color: #080c1b; }
+
+.online-room, .online-bar, .online-end { width: 768px; height: 720px; font-family: "reference/arcade"; }
+.online-room .ud-online-room__or_detail, .online-room .ud-online-room__or_status { white-space: pre-wrap; }
