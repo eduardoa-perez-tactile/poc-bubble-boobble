@@ -34,7 +34,7 @@ function fixture(t) {
   }
   put(web, 'build-report.json', JSON.stringify({ ok: true, config: 'release', dryRun: false }));
   for (const file of ['index.html', 'player.js', 'gameengine-web-player.js', 'gameengine_web_player.wasm', 'splash/splash.css']) put(web, `site/${file}`, 'fixture');
-  put(web, 'site/playtest-build.json', JSON.stringify({ sha: 'a'.repeat(40), dirty: false, shell: 'bubble-web-v2' }));
+  put(web, 'site/playtest-build.json', JSON.stringify({ sha: 'a'.repeat(40), dirty: false, shell: 'bubble-web-v3' }));
   put(server, 'gameengine-server', elf()); chmodSync(join(server, 'gameengine-server'), 0o755);
   put(server, 'libgameengine_webgpu.so', elf());
   put(server, 'server.json', JSON.stringify({ target: 'linux-x64', authority: 'server', port: 8787, mode: 'realtime' }));
@@ -53,6 +53,12 @@ test('rejects Mac executable and requires executable server bit', t => {
 test('verifies matched artifacts and rejects modification after stamp', t => {
   const options = fixture(t); assert.equal(verifyExports(options).ok, true);
   put(options.web, 'site/player.js', 'changed'); assert.throws(() => verifyExports(options), /changed after/);
+});
+test('rejects the previous browser shell without background world transport', t => {
+  const o = fixture(t);
+  put(o.web, 'site/playtest-build.json', JSON.stringify({ sha: 'a'.repeat(40), dirty: false, shell: 'bubble-web-v2' }));
+  stamp(o.web, 'web');
+  assert.throws(() => verifyExports(o), /background transport build provenance/);
 });
 test('rejects dirty, wrong engine and differing cooked simulation', t => {
   const o = fixture(t), p = join(o.server, stampName), original = JSON.parse(readFileSync(p));

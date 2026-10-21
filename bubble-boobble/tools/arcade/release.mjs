@@ -124,7 +124,7 @@ export function verifyExports({ web, server }) {
   if (!report.ok || report.dryRun || report.config !== 'release') fail('Web export must be an actual release build.');
   for (const file of ['site/index.html', 'site/player.js', 'site/gameengine-web-player.js', 'site/gameengine_web_player.wasm', 'site/splash/splash.css', 'site/playtest-build.json']) if (!existsSync(join(web, file))) fail(`Missing complete browser shell file: ${file}`);
   const shell = json(join(web, 'site/playtest-build.json'));
-  if (shell.sha !== client.revision || shell.dirty || shell.shell !== 'bubble-web-v2') fail('Browser controls/splash build provenance does not match the release.');
+  if (shell.sha !== client.revision || shell.dirty || shell.shell !== 'bubble-web-v3') fail('Browser controls/splash/background transport build provenance does not match the release.');
   const config = json(join(server, 'server.json'));
   if (config.target !== 'linux-x64' || config.authority !== 'server' || config.port !== 8787 || config.mode !== 'realtime') fail('Server export must be linux-x64, authoritative realtime, port 8787.');
   checkElf(join(server, 'gameengine-server'));
