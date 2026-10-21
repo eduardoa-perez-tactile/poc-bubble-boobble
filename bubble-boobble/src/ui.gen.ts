@@ -389,16 +389,37 @@ declare module '@gameengine/ui' {
      *
      * Properties:
      *   - `identity`: text, default "ONLINE"
-     *   - `notice`: text, default ""
-     *   - `showNotice`: yesno, default false
+     *   - `score`: text, default ""
+     *   - `wave`: text, default ""
+     *   - `alive`: text, default ""
+     *   - `objective`: text, default ""
      * Events: `menu`
      * Code areas: none
-     * Refs: `menu`
+     * Refs: `score`, `wave`, `alive`, `identity`, `menu`, `objective`
      */
     'online-bar': {
-      props: { identity: string | { loc: string } | LocText; notice: string | { loc: string } | LocText; showNotice: boolean };
+      props: { identity: string | { loc: string } | LocText; score: string | { loc: string } | LocText; wave: string | { loc: string } | LocText; alive: string | { loc: string } | LocText; objective: string | { loc: string } | LocText };
       areas: never;
-      refs: 'menu';
+      refs: 'score' | 'wave' | 'alive' | 'identity' | 'menu' | 'objective';
+    };
+    /**
+     * Online end: a view, screen (ui/docs/online-end.ui.json)
+     *
+     * Properties:
+     *   - `eyebrow`: text, default ""
+     *   - `title`: text, default ""
+     *   - `detail`: text, default ""
+     *   - `stats`: text, default ""
+     *   - `prompt`: text, default ""
+     *   - `ready`: yesno, default false
+     * Events: `results`, `end-leave`
+     * Code areas: none
+     * Refs: `title`, `stats`, `results`, `end-leave`
+     */
+    'online-end': {
+      props: { eyebrow: string | { loc: string } | LocText; title: string | { loc: string } | LocText; detail: string | { loc: string } | LocText; stats: string | { loc: string } | LocText; prompt: string | { loc: string } | LocText; ready: boolean };
+      areas: never;
+      refs: 'title' | 'stats' | 'results' | 'end-leave';
     };
     /**
      * Online room: a view, screen (ui/docs/online-room.ui.json)

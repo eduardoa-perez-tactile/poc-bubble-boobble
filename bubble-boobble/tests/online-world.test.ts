@@ -7,7 +7,8 @@ import { hurtPlayer } from '../src/arcade/player';
 import { createOnlineWaveGame } from '../src/online/rules';
 import { copyGame, stepGame } from '../src/arcade/game';
 import { compactOnlineNavigation, restoreOnlineNavigation } from '../src/online/navigation';
-import { applyWorldEvents, createWorldState, advanceWorld, stepWorld, worldHumanCount, WORLD_CONTROL_TIMEOUT, WORLD_ROOM_LIMIT } from '../src/online/world-rules';
+import { applyWorldEvents, createWorldState, advanceWorld, stepWorld, worldHumanCount, WORLD_CONTROL_TIMEOUT, WORLD_ROOM_LIMIT, WORLD_TAKEOVER_DELAY } from '../src/online/world-rules';
+import { projectWorld, isPublicWorld } from '../src/online/world-public';
 const join = (player: number): WorldInputEvent => ({ kind: 'join', player, name: `Visitor ${player}` });
 const intent = (player: number, data: unknown): WorldInputEvent => ({ kind: 'input', player, data });
 const apply = (state: ReturnType<typeof createWorldState>, events: WorldInputEvent[]) => applyWorldEvents(state, events, campaign);
@@ -30,7 +31,7 @@ worldTest('world solo starts immediately with one dragon and midbattle joins pre
   expect(JSON.stringify(state)).toBe(before);
 });
 
-worldTest('world full rooms reject joins atomically and leaving hands the same dragon to AI', () => {
+worldTest('world full rooms reject joins atomically and pending departures remain claimable', () => {
   let state = apply(createWorldState(), [join(0), intent(0, { action: 'create' })]);
   const id = state.rooms[0]!.id;
   for (let player = 1; player < 10; player++) state = apply(state, [join(player), intent(player, { action: 'join', room: id })]);
@@ -43,8 +44,9 @@ worldTest('world full rooms reject joins atomically and leaving hands the same d
   const game = state.rooms[0]!.game;
   game.Players[9]!.X = 333; game.Players[9]!.Power.Shoes = true;
   state = apply(state, [{ kind: 'leave', player: 9 }]);
-  expect(state.rooms[0]!.game.Party!.Slots[9]).toBe('ai');
-  expect(!!state.rooms[0]!.game.Companions![9]).toBe(true);
+  expect(state.rooms[0]!.game.Party!.Slots[9]).toBe('human');
+  expect(state.rooms[0]!.game.Companions![9]).toBe(null);
+  expect(state.rooms[0]!.pendingTakeovers[0]!.slot).toBe(9);
   expect(state.rooms[0]!.game.Players[9]!.X).toBe(333);
   expect(state.rooms[0]!.notices.slice(-1)[0]!.label).toBe('P10 FLINT');
   expect(state.rooms[0]!.notices.slice(-1)[0]!.kind).toBe('leave');
@@ -54,7 +56,69 @@ worldTest('world full rooms reject joins atomically and leaving hands the same d
   expect(state.rooms[0]!.game.Companions![9]).toBe(null);
   expect(state.rooms[0]!.game.Players[9]!.X).toBe(333);
   expect(state.rooms[0]!.game.Players[9]!.Power.Shoes).toBe(true);
+  expect(state.rooms[0]!.pendingTakeovers.length).toBe(0);
   expect(state.peers.find(peer => peer.player === 9)!.error).toBe(undefined);
+});
+
+worldTest('world AI takeover waits exactly five simulated seconds with a public countdown', () => {
+  let state = apply(createWorldState(), [join(0), join(1), intent(0, { action: 'create' })]);
+  state = apply(state, [intent(1, { action: 'join', room: state.rooms[0]!.id }), intent(0, { action: 'controls', move: 1, jump: true, fire: true })]);
+  for (const player of state.rooms[0]!.game.Players) player.Invincible = 2000;
+  const dragon = state.rooms[0]!.game.Players[0]!; dragon.Lives = 2; dragon.Power.Shoes = true;
+  const actor = JSON.stringify(dragon), old = JSON.stringify(state);
+  let next = apply(state, [{ kind: 'leave', player: 0 }]);
+  expect(JSON.stringify(state)).toBe(old);
+  expect(JSON.stringify(next.rooms[0]!.game.Players[0])).toBe(actor);
+  expect(projectWorld(next).rooms[0]!.pendingTakeovers).toEqual([{ slot: 0, label: 'P1 BUB', remainingTicks: 300 }]);
+  expect(isPublicWorld(projectWorld(next))).toBe(true);
+  for (let tick = 1; tick < WORLD_TAKEOVER_DELAY; tick++) next = stepWorld(next);
+  expect(next.rooms[0]!.game.Party!.Slots[0]).toBe('human');
+  expect(next.rooms[0]!.game.Companions![0]).toBe(null);
+  expect(next.rooms[0]!.game.Counters.Blown).toBe(0);
+  expect(next.rooms[0]!.game.Counters.Jumps).toBe(0);
+  expect(next.rooms[0]!.game.Tick).toBe(299);
+  expect(projectWorld(next).rooms[0]!.pendingTakeovers[0]!.remainingTicks).toBe(1);
+  next = stepWorld(next);
+  expect(next.rooms[0]!.game.Party!.Slots[0]).toBe('ai');
+  expect(!!next.rooms[0]!.game.Companions![0]).toBe(true);
+  expect(next.rooms[0]!.pendingTakeovers.length).toBe(0);
+  expect(next.rooms[0]!.game.Tick).toBe(300);
+  expect(next.rooms[0]!.owners[1]).toBe(1);
+  expect(next.rooms[0]!.game.Players[0]!.Lives).toBe(2);
+  expect(next.rooms[0]!.game.Players[0]!.Power.Shoes).toBe(true);
+});
+
+worldTest('world claiming a pending dragon cancels takeover without respawning or restoring health', () => {
+  let state = apply(createWorldState(), [join(0), intent(0, { action: 'create' })]);
+  state.rooms[0]!.game.Players[0]!.Invincible = 2000;
+  state.rooms[0]!.game.Players[0]!.Power.Shoes = true;
+  state = apply(state, [intent(0, { action: 'leave' })]);
+  for (let tick = 0; tick < 100; tick++) state = stepWorld(state);
+  const before = JSON.stringify(state.rooms[0]!.game.Players[0]);
+  state = apply(state, [join(2), intent(2, { action: 'join', room: state.rooms[0]!.id })]);
+  expect(state.rooms[0]!.owners[0]).toBe(2);
+  expect(state.rooms[0]!.pendingTakeovers.length).toBe(0);
+  expect(JSON.stringify(state.rooms[0]!.game.Players[0])).toBe(before);
+  for (let tick = 0; tick < 210; tick++) state = stepWorld(state);
+  expect(state.rooms[0]!.game.Party!.Slots[0]).toBe('human');
+  expect(state.rooms[0]!.game.Companions![0]).toBe(null);
+  expect(state.rooms[0]!.game.Players[0]!.Power.Shoes).toBe(true);
+});
+
+worldTest('world stale controls only neutralize a connected human and ended rooms cancel countdowns', () => {
+  let state = apply(createWorldState(), [join(0), intent(0, { action: 'create' }), intent(0, { action: 'controls', move: 1, jump: false, fire: true })]);
+  state.rooms[0]!.game.Players[0]!.Invincible = 2000;
+  for (let tick = 0; tick < WORLD_TAKEOVER_DELAY + 1; tick++) state = stepWorld(state);
+  expect(state.peers[0]!.input).toEqual({ Move: 0, Jump: false, Fire: false });
+  expect(state.rooms[0]!.owners[0]).toBe(0);
+  expect(state.rooms[0]!.game.Party!.Slots[0]).toBe('human');
+  expect(state.rooms[0]!.pendingTakeovers.length).toBe(0);
+  state = apply(state, [intent(0, { action: 'leave' })]);
+  expect(state.rooms[0]!.pendingTakeovers.length).toBe(1);
+  state.rooms[0]!.game.State = State.GameOver;
+  state = stepWorld(state);
+  expect(state.rooms[0]!.pendingTakeovers.length).toBe(0);
+  expect(state.rooms[0]!.game.Companions![0]).toBe(null);
 });
 
 worldTest('world controls use server identity clamp movement and expire held inputs', () => {

@@ -9,12 +9,15 @@ import { compactOnlineNavigation, restoreOnlineNavigation } from './navigation';
 
 export const WORLD_ROOM_LIMIT = 4;
 export const WORLD_CONTROL_TIMEOUT = 60;
+export const WORLD_TAKEOVER_DELAY = 300;
 export const WORLD_ROOM_IDLE_TICKS = 1800;
-export interface WorldNotice { id: number; tick: number; slot: number; kind: 'join' | 'leave'; label: string }
+export interface WorldNotice { id: number; tick: number; slot: number; kind: 'join' | 'leave' | 'ai'; label: string }
+export interface WorldPendingTakeover { slot: number; label: string; takeoverTick: number }
 export interface WorldPeer { player: number; name: string; room: string | null; input: Input; lastInputTick: number; jumpPulse: boolean; firePulse: boolean; error?: string }
 export interface WorldRoom {
   id: string; title: string; owners: (number | null)[]; game: GameState;
   notices: WorldNotice[]; nextNotice: number; createdTick: number; emptySince: number | null; endedTick: number | null;
+  pendingTakeovers: WorldPendingTakeover[];
 }
 export interface WorldState { tick: number; nextRoom: number; peers: WorldPeer[]; rooms: WorldRoom[] }
 const neutral = (): Input => ({ Move: 0, Jump: false, Fire: false });
@@ -22,7 +25,7 @@ const ended = (room: WorldRoom) => room.game.State === State.GameOver || room.ga
 export const worldHumanCount = (room: WorldRoom): number => room.owners.filter(owner => owner !== null).length;
 export function createWorldState(): WorldState { return { tick: 0, nextRoom: 1, peers: [], rooms: [] }; }
 function copyState(state: WorldState): WorldState {
-  return { ...state, peers: state.peers.map(peer => ({ ...peer, input: { ...peer.input } })), rooms: state.rooms.map(room => ({ ...room, owners: room.owners.slice(), notices: room.notices.slice() })) };
+  return { ...state, peers: state.peers.map(peer => ({ ...peer, input: { ...peer.input } })), rooms: state.rooms.map(room => ({ ...room, owners: room.owners.slice(), notices: room.notices.slice(), pendingTakeovers: (room.pendingTakeovers ?? []).slice() })) };
 }
 function copyRoomGame(room: WorldRoom): GameState {
   const game = copyGame(room.game); restoreOnlineNavigation(game); return game;
@@ -37,8 +40,12 @@ function leaveRoom(state: WorldState, peer: WorldPeer): void {
     if (slot >= 0) {
       const game = copyRoomGame(room);
       room.owners[slot] = null;
-      game.Party!.Slots[slot] = 'ai';
-      enableCompanion(game, slot);
+      // Keep the departed dragon in place with neutral human input during the grace period.
+      // Its health, powers and physical state are ordinary ongoing gameplay, never reset here.
+      game.Companions![slot] = null;
+      if (slot === 1) delete game.Companion;
+      room.pendingTakeovers = room.pendingTakeovers.filter(pending => pending.slot !== slot);
+      if (!ended(room)) room.pendingTakeovers.push({ slot, label: `P${slot + 1} ${partyNames[slot]!}`, takeoverTick: state.tick + WORLD_TAKEOVER_DELAY });
       compactOnlineNavigation(game); room.game = game;
       notice(state, room, slot, 'leave');
       if (!worldHumanCount(room)) room.emptySince = state.tick;
@@ -87,7 +94,7 @@ export function applyWorldEvents(previous: WorldState, events: readonly WorldInp
       const number = state.nextRoom++;
       const slots: PartySlot[] = Array.from({ length: 10 }, (_, slot) => slot === 0 ? 'human' : 'empty');
       const game = createPartyGame(levels, number, slots);
-      const room: WorldRoom = { id: `room-${number}`, title: `WAVE SURVIVAL ${number}`, owners: [peer.player, ...Array(9).fill(null)], game, notices: [], nextNotice: 1, createdTick: state.tick, emptySince: null, endedTick: null };
+      const room: WorldRoom = { id: `room-${number}`, title: `WAVE SURVIVAL ${number}`, owners: [peer.player, ...Array(9).fill(null)], game, notices: [], nextNotice: 1, createdTick: state.tick, emptySince: null, endedTick: null, pendingTakeovers: [] };
       state.rooms.push(room); peer.room = room.id; peer.input = neutral(); peer.lastInputTick = state.tick; delete peer.error;
       notice(state, room, 0, 'join'); continue;
     }
@@ -96,7 +103,7 @@ export function applyWorldEvents(previous: WorldState, events: readonly WorldInp
       if (!room) { peer.error = 'This game is no longer available. Choose another game.'; continue; }
       if (ended(room)) { peer.error = 'This game has ended. Start or join another game.'; continue; }
       if (room.id === peer.room) { delete peer.error; continue; }
-      let slot = room.owners.findIndex((owner, slot) => owner === null && room.game.Party!.Slots[slot] === 'ai');
+      let slot = room.owners.findIndex((owner, slot) => owner === null && (room.game.Party!.Slots[slot] === 'ai' || room.pendingTakeovers.some(pending => pending.slot === slot)));
       if (slot < 0) slot = room.owners.findIndex((owner, slot) => owner === null && room.game.Party!.Slots[slot] === 'empty');
       if (slot < 0) { peer.error = 'This game already has ten human players. Choose another game.'; continue; }
       leaveRoom(state, peer);
@@ -105,6 +112,7 @@ export function applyWorldEvents(previous: WorldState, events: readonly WorldInp
       if (slot === 1) delete game.Companion;
       if (wasEmpty) { game.Players[slot]!.Lives = 1; respawn(game, slot); }
       compactOnlineNavigation(game); room.game = game; room.owners[slot] = peer.player; room.emptySince = null;
+      room.pendingTakeovers = room.pendingTakeovers.filter(pending => pending.slot !== slot);
       peer.room = room.id; peer.input = neutral(); peer.lastInputTick = state.tick; delete peer.error;
       notice(state, room, slot, 'join');
     }
@@ -119,6 +127,12 @@ export function stepWorld(previous: WorldState): WorldState {
   for (const room of state.rooms) {
     if (!ended(room)) {
       const game = copyRoomGame(room);
+      const ready = room.pendingTakeovers.filter(pending => pending.takeoverTick <= state.tick);
+      for (const pending of ready) if (room.owners[pending.slot] === null) {
+        game.Party!.Slots[pending.slot] = 'ai'; enableCompanion(game, pending.slot);
+        notice(state, room, pending.slot, 'ai');
+      }
+      room.pendingTakeovers = room.pendingTakeovers.filter(pending => pending.takeoverTick > state.tick);
       const inputs = room.owners.map(owner => {
         const peer = owner === null ? undefined : state.peers.find(peer => peer.player === owner && peer.room === room.id);
         return peer ? { Move: peer.input.Move, Jump: peer.input.Jump || peer.jumpPulse, Fire: peer.input.Fire || peer.firePulse } : neutral();
@@ -126,6 +140,7 @@ export function stepWorld(previous: WorldState): WorldState {
       stepGame(game, inputs); compactOnlineNavigation(game); room.game = game;
     }
     if (ended(room) && room.endedTick === null) room.endedTick = state.tick;
+    if (ended(room)) room.pendingTakeovers = [];
   }
   for (const peer of state.peers) { peer.jumpPulse = false; peer.firePulse = false; }
   for (const room of state.rooms.slice()) {

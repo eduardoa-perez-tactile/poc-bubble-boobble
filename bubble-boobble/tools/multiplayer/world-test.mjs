@@ -73,15 +73,33 @@ export async function runWorldTest({cooked,host,out}){
   record('authoritative-control-gameplay',{blown:room(first.document,id).game.data.Counters.Blown,walked:room(first.document,id).game.data.Counters.Walked,player0:actor(room(first.document,id).game,0)});
   first.hold({move:0,jump:false,fire:false});
   const departing=peers[9],slot=room(first.document,id).owners.indexOf(departing.player);departing.close();
-  await first.wait(value=>room(value.document,id)?.humans===9&&room(value.document,id).owners[slot]===null&&room(value.document,id).game.data.Party.Slots[slot]==='ai','disconnect converts the dragon to AI');
+  await first.wait(value=>room(value.document,id)?.humans===9&&room(value.document,id).owners[slot]===null&&room(value.document,id).pendingTakeovers?.some(pending=>pending.slot===slot),'disconnect starts a visible pending takeover');
+  assert.equal(room(first.document,id).game.data.Party.Slots[slot],'human');
   assert.ok(room(first.document,id).notices.some(notice=>notice.kind==='leave'&&notice.slot===slot));
-  record('disconnect-replaced-by-ai',{room:id,slot,humans:9});
-  overflow.send({action:'join',room:id});await first.wait(value=>room(value.document,id)?.owners[slot]===overflow.player,'fresh participant takes AI slot');
-  assert.equal(room(first.document,id).game.data.Party.Slots[slot],'human');record('fresh-late-join-takes-ai-slot',{room:id,slot,player:overflow.player});
+  record('disconnect-pending-countdown',{room:id,slot,pending:room(first.document,id).pendingTakeovers.find(pending=>pending.slot===slot),tick:first.tick});
+  overflow.send({action:'join',room:id});await first.wait(value=>room(value.document,id)?.owners[slot]===overflow.player,'fresh participant cancels pending takeover');
+  assert.equal(room(first.document,id).game.data.Party.Slots[slot],'human');assert.ok(!room(first.document,id).pendingTakeovers.some(pending=>pending.slot===slot));
+  record('fresh-participant-cancels-pending-ai',{room:id,slot,player:overflow.player});
+  // Use real controls during the five-second grace; no invulnerability, clock changes or cheats.
+  for(const peer of peers.filter(peer=>!peer.closed&&room(first.document,id).owners.includes(peer.player)))peer.hold({move:peer.player%2?1:-1,jump:false,fire:true});
+  const secondDeparture=peers[8],delayedSlot=room(first.document,id).owners.indexOf(secondDeparture.player);secondDeparture.close();
+  await first.wait(value=>room(value.document,id)?.pendingTakeovers?.some(pending=>pending.slot===delayedSlot),'another disconnect starts its own grace period');
+  const leftAt=room(first.document,id).notices.findLast(notice=>notice.kind==='leave'&&notice.slot===delayedSlot).tick,due=leftAt+300;
+  await first.wait(value=>{
+   const current=room(value.document,id);
+   if(value.document.tick<due)assert.equal(current.game.data.Party.Slots[delayedSlot],'human');
+   return current.game.data.Party.Slots[delayedSlot]==='ai';
+  },'AI starts only after five authoritative seconds',20000);
+  const startedAt=room(first.document,id).notices.findLast(notice=>notice.kind==='ai'&&notice.slot===delayedSlot).tick;
+  assert.equal(startedAt-leftAt,300);assert.ok(first.document.tick>=due);assert.ok(!room(first.document,id).pendingTakeovers.some(pending=>pending.slot===delayedSlot));
+  record('disconnect-replaced-by-ai-after-five-seconds',{room:id,slot:delayedSlot,leftAt,startedAt,delayTicks:startedAt-leftAt});
+  const recovery=await connect(server.ready,'World test delayed replacement');peers.push(recovery);recovery.send({action:'join',room:id});
+  await first.wait(value=>room(value.document,id)?.owners[delayedSlot]===recovery.player,'fresh participant takes the AI dragon');
+  assert.equal(room(first.document,id).game.data.Party.Slots[delayedSlot],'human');record('fresh-late-join-takes-ai-slot',{room:id,slot:delayedSlot,player:recovery.player});
   late.send({action:'create'});await late.wait(value=>value.document.rooms.length>=2&&value.document.peers.some(p=>p.player===value.player&&p.room!==id&&p.room!==null),'second room appears in live browser catalogue');
   const secondId=late.document.peers.find(p=>p.player===late.player).room;assert.notEqual(secondId,id);
   await first.wait(value=>!!room(value.document,secondId)&&room(value.document,id)?.humans===9,'first room continues beside independent room');
-  assert.equal(room(first.document,id).game.data.Party.Slots[1],'ai');assert.equal(room(first.document,secondId).humans,1);
+  assert.equal(room(first.document,id).game.data.Party.Slots[1],'human');assert.ok(room(first.document,id).pendingTakeovers.some(pending=>pending.slot===1));assert.equal(room(first.document,secondId).humans,1);
   record('live-room-list-and-independent-games',{rooms:first.document.rooms.map(r=>({id:r.id,humans:r.humans,wave:r.wave,phase:r.phase})),tick:first.tick});
   const measurements={elapsedMillis:performance.now()-first.startedAt,worldTick:first.tick,peers:peers.map(peer=>({player:peer.player,receivedBytes:peer.receivedBytes,packets:peer.packets,snapshots:peer.snapshotCount,maxWebSocketPayloadBytes:peer.maxWebSocketPayloadBytes,maxDocumentBytes:peer.maxDocumentBytes,meanReceivedPayloadBytesPerSecond:peer.receivedBytes/((performance.now()-peer.startedAt)/1000)})),serverProcessAtTenPeers:tenPeerProcess,serverProcessAtEnd:processStats(server.child.pid),serverSimulationMillisPerTick:null,limits:'Packet payload sizes exclude WebSocket/TCP headers. Process CPU/RSS are coarse OS samples including startup/networking, not isolated sim timings. World protocol exposes no per-tick simulation profiler.'};
   const report={ok:true,measurements,scope:'Actual cooked engine authoritative world with ten raw Node WebSocket protocol peers; no Node gameplay simulation',compiledBrowserClientVerified:false,browserAcceptance:false,game:server.ready.game,build:server.ready.build,checks};

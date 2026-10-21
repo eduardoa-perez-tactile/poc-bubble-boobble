@@ -24,16 +24,40 @@
         ]
       },
       "children": [
+        "ob_top",
+        "ob_score",
+        "ob_wave",
+        "ob_alive",
         "ob_identity",
         "ob_menu",
-        "ob_notice"
+        "ob_objective"
       ]
     },
-    "ob_identity": {
+    "ob_top": {
+      "type": "element",
+      "name": "Element",
+      "children": [],
+      "style": {
+        "pad": 0,
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          0,
+          0
+        ],
+        "w": "100%",
+        "h": 72,
+        "bg": "#080c1bf5",
+        "attach": true
+      }
+    },
+    "ob_score": {
       "type": "label",
       "name": "Label",
-      "text": "Label",
-      "property": "identity",
+      "text": "{score}",
       "style": {
         "position": "anchored",
         "anchor": [
@@ -41,15 +65,82 @@
           0
         ],
         "offset": [
-          24,
-          54
+          16,
+          8
         ],
-        "w": "72%",
+        "w": "32%",
+        "h": 26,
+        "fontSize": 13,
+        "fitMin": 8,
+        "color": "#73f5aa"
+      },
+      "point": "score"
+    },
+    "ob_wave": {
+      "type": "label",
+      "name": "Label",
+      "text": "{wave}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0.5,
+          0
+        ],
+        "offset": [
+          0,
+          8
+        ],
+        "w": "30%",
+        "h": 26,
+        "fontSize": 13,
+        "fitMin": 8,
+        "color": "#ffdc6a"
+      },
+      "point": "wave"
+    },
+    "ob_alive": {
+      "type": "label",
+      "name": "Label",
+      "text": "{alive}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          1,
+          0
+        ],
+        "offset": [
+          -16,
+          8
+        ],
+        "w": "28%",
+        "h": 26,
+        "fontSize": 12,
+        "fitMin": 8,
+        "color": "#ebf5ff"
+      },
+      "point": "alive"
+    },
+    "ob_identity": {
+      "type": "label",
+      "name": "Label",
+      "text": "{identity}",
+      "style": {
+        "position": "anchored",
+        "anchor": [
+          0,
+          0
+        ],
+        "offset": [
+          16,
+          42
+        ],
+        "w": "76%",
         "h": 24,
         "fontSize": 10,
-        "fitMin": 9,
-        "color": "#ffdc6a"
-      }
+        "fitMin": 8,
+        "color": "#8cdae1"
+      },
+      "point": "identity"
     },
     "ob_menu": {
       "type": "use",
@@ -62,22 +153,20 @@
           0
         ],
         "offset": [
-          -24,
-          50
+          -16,
+          38
         ],
-        "w": 124,
+        "w": 108,
         "h": 30
       },
       "props": {
         "label": "MENU"
       }
     },
-    "ob_notice": {
+    "ob_objective": {
       "type": "label",
       "name": "Label",
-      "text": "Label",
-      "property": "notice",
-      "show": "showNotice",
+      "text": "{objective}",
       "style": {
         "position": "anchored",
         "anchor": [
@@ -86,16 +175,17 @@
         ],
         "offset": [
           0,
-          92
+          76
         ],
-        "w": "75%",
-        "h": 30,
-        "bg": "#080c1be8",
-        "fontSize": 13,
-        "fitMin": 9,
+        "w": "92%",
+        "h": 36,
+        "fontSize": 10,
+        "fitMin": 8,
+        "color": "#ebf5ff",
         "textAlign": "center",
-        "color": "#ffdc6a"
-      }
+        "bg": "#080c1bdd"
+      },
+      "point": "objective"
     }
   },
   "view": {
@@ -109,13 +199,21 @@
       "type": "text",
       "default": "ONLINE"
     },
-    "notice": {
+    "score": {
       "type": "text",
       "default": ""
     },
-    "showNotice": {
-      "type": "yesno",
-      "default": false
+    "wave": {
+      "type": "text",
+      "default": ""
+    },
+    "alive": {
+      "type": "text",
+      "default": ""
+    },
+    "objective": {
+      "type": "text",
+      "default": ""
     }
   }
 }

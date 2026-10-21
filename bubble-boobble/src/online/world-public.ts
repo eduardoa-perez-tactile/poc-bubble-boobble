@@ -12,7 +12,8 @@ export interface PackedActors { fields: string[]; rows: PublicValue[][] }
 export interface PackedGame { version: 1; data: Record<string, PublicValue>; actors: Record<PublicActor, PackedActors> }
 export interface PublicRoom {
  id: string; title: string; owners: (number | null)[]; humans: number; wave: number;
- phase: 'prepare' | 'combat' | 'rest' | 'boss'; ended: boolean; notices: WorldNotice[]; game?: PackedGame;
+ phase: 'prepare' | 'combat' | 'rest' | 'boss'; ended: boolean; notices: WorldNotice[];
+ pendingTakeovers: {slot:number;label:string;remainingTicks:number}[]; game?: PackedGame;
 }
 export interface PublicWorld { version: 1; tick: number; rooms: PublicRoom[]; peers: { player: number; room: string | null; error?: string }[] }
 const privateFields = new Set(['Campaign','RNG','Companion','Companions','OnlineNavigationGraphs','OnlineNavigationGraphIndices']);
@@ -65,7 +66,7 @@ export function projectWorld(state: WorldState): PublicWorld {
  const ordered=state.rooms.slice().sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0);
  const roomPeers=state.peers.filter(peer=>peer.room!==null);
  const errorPeers=state.peers.filter(peer=>peer.room===null&&!!peer.error).sort((a,b)=>a.player-b.player).slice(0,64);
- const result:PublicWorld={version:1,tick:state.tick,rooms:ordered.map(room=>({id:room.id,title:room.title,owners:room.owners.slice(),humans:room.owners.filter(owner=>owner!==null).length,wave:room.game.Party?.Wave??1,phase:room.game.Party?.Phase??'prepare',ended:room.game.State===State.GameOver||room.game.State===State.Won,notices:room.notices.map(notice=>({...notice}))})),peers:[...roomPeers,...errorPeers].sort((a,b)=>a.player-b.player).map(peer=>({player:peer.player,room:peer.room,...(peer.error?{error:peer.error.slice(0,96)}:{})}))};
+ const result:PublicWorld={version:1,tick:state.tick,rooms:ordered.map(room=>({id:room.id,title:room.title,owners:room.owners.slice(),humans:room.owners.filter(owner=>owner!==null).length,wave:room.game.Party?.Wave??1,phase:room.game.Party?.Phase??'prepare',ended:room.game.State===State.GameOver||room.game.State===State.Won,notices:room.notices.map(notice=>({...notice})),pendingTakeovers:(room.pendingTakeovers??[]).map(pending=>({slot:pending.slot,label:pending.label,remainingTicks:Math.max(0,pending.takeoverTick-state.tick)}))})),peers:[...roomPeers,...errorPeers].sort((a,b)=>a.player-b.player).map(peer=>({player:peer.player,room:peer.room,...(peer.error?{error:peer.error.slice(0,96)}:{})}))};
  if(publicBytes(result)>PUBLIC_WORLD_LIMIT)throw new Error('Public room metadata exceeds its document budget');
  const first=ordered.length?Math.floor(state.tick/3)%ordered.length:0;
  for(let index=0;index<ordered.length;index++){
@@ -104,7 +105,13 @@ export function isPublicWorld(value: unknown): value is PublicWorld {
  for(const room of value.rooms){
   if(!object(room)||typeof room.id!=='string'||!/^room-[1-9][0-9]*$/.test(room.id)||ids.has(room.id)||typeof room.title!=='string'||room.title.length>96||!Array.isArray(room.owners)||room.owners.length!==10||!room.owners.every(owner=>owner===null||finite(owner)&&Number.isInteger(owner)&&owner>=0&&owner<=0xffffffff)||room.humans!==room.owners.filter(owner=>owner!==null).length||!finite(room.wave)||!Number.isInteger(room.wave)||typeof room.phase!=='string'||!['prepare','combat','rest','boss'].includes(room.phase)||typeof room.ended!=='boolean'||!Array.isArray(room.notices)||room.notices.length>32)return false;
   ids.add(room.id);
-  for(const notice of room.notices)if(!object(notice)||!Number.isInteger(notice.id)||!Number.isInteger(notice.tick)||!Number.isInteger(notice.slot)||!finite(notice.slot)||notice.slot<0||notice.slot>=10||!['join','leave'].includes(String(notice.kind))||typeof notice.label!=='string'||notice.label.length>64)return false;
+  if(!Array.isArray(room.pendingTakeovers)||room.pendingTakeovers.length>10)return false;
+  const pendingSlots=new Set<number>();
+  for(const pending of room.pendingTakeovers){
+   if(!object(pending)||!Number.isInteger(pending.slot)||!finite(pending.slot)||pending.slot<0||pending.slot>=10||pendingSlots.has(pending.slot)||room.owners[pending.slot]!==null||typeof pending.label!=='string'||pending.label.length>64||!Number.isInteger(pending.remainingTicks)||!finite(pending.remainingTicks)||pending.remainingTicks<0||pending.remainingTicks>300)return false;
+   pendingSlots.add(pending.slot);
+  }
+  for(const notice of room.notices)if(!object(notice)||!Number.isInteger(notice.id)||!Number.isInteger(notice.tick)||!Number.isInteger(notice.slot)||!finite(notice.slot)||notice.slot<0||notice.slot>=10||!['join','leave','ai'].includes(String(notice.kind))||typeof notice.label!=='string'||notice.label.length>64)return false;
   if(room.game!==undefined&&!packedGame(room.game))return false;
  }
  if(!value.peers.every(peer=>object(peer)&&finite(peer.player)&&Number.isInteger(peer.player)&&peer.player>=0&&peer.player<=0xffffffff&&(peer.room===null||typeof peer.room==='string'&&ids.has(peer.room))&&(peer.error===undefined||typeof peer.error==='string'&&peer.error.length<=96)))return false;

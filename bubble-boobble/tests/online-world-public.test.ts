@@ -9,7 +9,7 @@ import { PUBLIC_GAME_LIMIT, PUBLIC_WORLD_LIMIT, hydratePublicGame, isPublicWorld
 import type { WorldState } from '../src/online/world-rules';
 
 function fixture(count=1,humans=10): WorldState {
- const rooms=Array.from({length:count},(_,index)=>({id:`room-${index+1}`,title:`WAVE SURVIVAL ${index+1}`,owners:Array.from({length:10},(_,slot)=>slot<humans?index*10+slot:null),game:createOnlineWaveGame(campaign,{players:humans,mode:'realtime',seed:String(index+1)}),notices:[{id:1,tick:0,slot:0,kind:'join' as const,label:'P1 GREEN'}],nextNotice:2,createdTick:0,emptySince:null,endedTick:null}));
+ const rooms=Array.from({length:count},(_,index)=>({id:`room-${index+1}`,title:`WAVE SURVIVAL ${index+1}`,owners:Array.from({length:10},(_,slot)=>slot<humans?index*10+slot:null),game:createOnlineWaveGame(campaign,{players:humans,mode:'realtime',seed:String(index+1)}),notices:[{id:1,tick:0,slot:0,kind:'join' as const,label:'P1 GREEN'}],nextNotice:2,createdTick:0,emptySince:null,endedTick:null,pendingTakeovers:[]}));
  return {tick:0,nextRoom:count+1,rooms,peers:rooms.flatMap(room=>room.owners.flatMap(owner=>owner===null?[]:[{player:owner,name:'PRIVATE PEER NAME',room:room.id,input:{Move:0,Jump:false,Fire:false},lastInputTick:0,jumpPulse:false,firePulse:false}]))};
 }
 worldTest('online public snapshots strip private simulation data and never mutate authoritative rooms',()=>{
@@ -93,4 +93,16 @@ worldTest('online public pressure trims only copied cosmetic rows and bounds lob
 worldTest('online public snapshots retain a complete burst of thirty-two roster notices',()=>{
  const state=fixture();state.rooms[0]!.notices=Array.from({length:32},(_,index)=>({id:index+1,tick:index,slot:index%10,kind:index%2?'leave':'join',label:`P${index%10+1} DRAGON`}));
  const wire=projectWorld(state);expect(isPublicWorld(wire)).toBe(true);expect(wire.rooms[0]!.notices.length).toBe(32);expect(wire.rooms[0]!.notices[31]!.id).toBe(32);
+});
+
+worldTest('online public snapshots bound and validate forty pending takeover countdowns',()=>{
+ const state=fixture(4);state.tick=50;state.peers=[];
+ for(const room of state.rooms){room.owners=Array(10).fill(null);room.pendingTakeovers=room.owners.map((_,slot)=>({slot,label:`P${slot+1} DRAGON`,takeoverTick:350}));}
+ const wire=projectWorld(state);
+ expect(isPublicWorld(wire)).toBe(true);expect(publicBytes(wire)).toBeLessThan(PUBLIC_WORLD_LIMIT);
+ expect(wire.rooms.every(room=>room.pendingTakeovers.length===10&&room.pendingTakeovers.every(pending=>pending.remainingTicks===300))).toBe(true);
+ const invalid=JSON.parse(JSON.stringify(wire));invalid.rooms[0].pendingTakeovers[0].remainingTicks=301;
+ expect(isPublicWorld(invalid)).toBe(false);
+ invalid.rooms[0].pendingTakeovers[0].remainingTicks=299;invalid.rooms[0].pendingTakeovers[1].slot=0;
+ expect(isPublicWorld(invalid)).toBe(false);
 });

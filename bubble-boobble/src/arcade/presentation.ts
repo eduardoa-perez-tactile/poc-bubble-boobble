@@ -478,7 +478,7 @@ export function sceneDraws(tick: number, feel?:FeelState, view?:{width:number;he
         : null,
     level = editor ? ui.level : g?.Level;
   if (level) {
-    const layout=arenaLayout(level,view);
+    const layout=arenaLayout(level,view,online?120:48);
     if(level.arena==='courtyard')clip={left:layout.viewportLeft,top:layout.viewportTop,right:layout.viewportRight,bottom:layout.viewportBottom};
     if(level.arena==='courtyard')images[0]={image:'solid/ink',x:-2000,y:-2000,w:4768,h:4720};
     const boardStart=images.length;

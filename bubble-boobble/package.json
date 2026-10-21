@@ -37,7 +37,7 @@
     "web:preview-splash": "node tools/web/splash-preview.mjs",
     "web:publish": "node tools/web/publish.mjs",
     "web:verify": "node tools/web/verify.mjs",
-    "web:test-controls": "node --test tools/web/controls.test.mjs tools/web/world-transport.test.mjs",
+    "web:test-controls": "node --test tools/web/controls.test.mjs tools/web/world-transport.test.mjs tools/web/online-background.test.mjs tools/web/background-sockets.test.mjs tools/web/extend-shell.test.mjs",
     "arcade:list": "node tools/arcade/run.mjs list",
     "arcade:status": "node tools/arcade/run.mjs status",
     "arcade:check": "node tools/arcade/run.mjs check",

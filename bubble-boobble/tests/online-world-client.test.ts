@@ -32,6 +32,9 @@ renderTest('world client new game cannot reopen old results while creation waits
     const state = createRoom(); state.tick = 100; state.rooms[0]!.game.State = State.GameOver;
     mock.handlers[0]!({ kind: 'snapshot', tick: 100, document: projectWorld(state) }); await step(4); render.stats({ width: 768, height: 720 });
     expect(ui.interactables().some(button => button.label === 'BROWSE GAMES')).toBe(true);
+    expect(ui.interactables().some(button => button.label === 'NEW GAME')).toBe(false);
+    await step(184);render.stats({width:768,height:720});
+    await ui.press(ui.interactables().find(button => button.label === 'VIEW RESULTS')!.id!);await step(2);render.stats({width:768,height:720});
     await ui.press(ui.interactables().find(button => button.label === 'NEW GAME')!.id!); await step(2); render.stats({ width: 768, height: 720 });
     await ui.press(ui.interactables().find(button => button.label === 'START GAME NOW')!.id!); await step(2);
     // This was already in flight when the create intent was sent; it still owns the old room.
