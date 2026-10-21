@@ -1,8 +1,8 @@
 # Office Arcade release
 
-The current [Dynamic online Wave Survival](multiplayer-dynamic-worlds.md) build is live at [Play Bubble Madness](https://webgames.tactilews.com/bubble-madness-mp-8509a49-20261020t152237-19da/). It uses authoritative worlds with immediate start and joining during combat. The historical `cd5516d` URL and ZIP below remain the previous fixed-match implementation.
+The current [Dynamic online Wave Survival](multiplayer-dynamic-worlds.md) build is live at [Play Bubble Madness](https://webgames.tactilews.com/bubble-madness-mp-86dc75d-20261021t081826-1882/). It uses authoritative worlds with immediate start and joining during combat. The historical `cd5516d` URL and ZIP below remain the previous fixed-match implementation.
 
-This game uses Trond's [live Office Arcade guide](https://webgames.tactilews.com/agents/), re-read on 20 October 2026. Office Arcade runs the exported authoritative engine server directly; the client connects to the same publication's secure `/socket` endpoint. There is no project-owned Node server or health wrapper.
+This game uses Trond's [live Office Arcade guide](https://webgames.tactilews.com/agents/), re-read on 21 October 2026. Office Arcade runs the exported authoritative engine server directly; the client connects to the same publication's secure `/socket` endpoint. There is no project-owned Node server or health wrapper.
 
 ## One-command deployment and updates
 
@@ -11,7 +11,7 @@ The previous fixed-match publication is live at [Bubble Madness multiplayer](htt
 From this project directory, on the office network/VPN:
 
 ```sh
-npm run arcade:deploy -- --zip build/arcade/bubble-madness-performance-8509a49.zip
+npm run arcade:deploy -- --zip build/arcade/bubble-madness-polish-86dc75d.zip
 ```
 
 For each update, first build fresh matching browser/Linux exports from the same clean code revision using the build instructions below. Then deploy them together in one command:
@@ -32,9 +32,19 @@ npm run arcade:deploy -- --resume bubble-madness-mp-cd5516d-20261020t141208-1fa6
 
 Resume never prepares or uploads another release. The initial receipt is preserved, with a separate resume receipt. Failure exits nonzero and never reports queued as published. Unknown server states and HTTP/tool errors stop the command for inspection. It does not install a recurring job or automatically publish on Git pushes. Browser acceptance remains governed by `PROJECT.md`.
 
-## Current performance release
+## Current HUD, end-flow and background-connection release
 
-The latest build is [Play Bubble Madness](https://webgames.tactilews.com/bubble-madness-mp-8509a49-20261020t152237-19da/), published from clean revision `8509a4910afe0669ee04de710e453192567a632a`. [Linux CI 39447593321](https://github.com/eduardoa-perez-tactile/poc-bubble-boobble/actions/runs/39447593321) passed production world startup, library resolution and WebSocket upgrade. Browser export `build/arcade/web-8509a49/` and server export `build/arcade/ci-8509a49/server-linux-x64/` passed exact pairing and packaging.
+The current build is [Play Bubble Madness](https://webgames.tactilews.com/bubble-madness-mp-86dc75d-20261021t081826-1882/), published on 21 October from clean revision `86dc75d291f611af5880075c06a22577be4bc6af`. It includes the compact online HUD, reserved arena space, manual results after a minimum three-second Game Over stage, five-second authoritative AI handover and the hidden-window socket correction. The Chrome enemy-entry hitch remains unconfirmed; no performance fix for that symptom is claimed.
+
+[Ubuntu Linux CI 39568110753](https://github.com/eduardoa-perez-tactile/poc-bubble-boobble/actions/runs/39568110753) passed 24 tooling tests, actual production world startup, library resolution and socket upgrade. Clean browser export `build/arcade/web-86dc75d/` and Linux export `build/arcade/ci-86dc75d/server-linux-x64/` passed exact script/config/input pairing. Both contain script SHA-256 `b80e23579500e2156f114d87290e1ae62a54b5f36e5769e0d8db7d4d42efdd5f`.
+
+ZIP `build/arcade/bubble-madness-polish-86dc75d.zip`: 56,501,903 bytes, SHA-256 `23a9910342ddd63808060cc6ff51311efc664f66d73f8de679a966731263b90e`. Reports: `.gameengine/online-polish-release-verify-final.json` and `.gameengine/online-polish-release-package-final.json`. The release gate now requires browser shell `bubble-web-v3`; the first packaging attempt correctly stopped on its stale v2 expectation. Both targets were rebuilt from the new clean revision after correcting that check; no exports were restamped.
+
+Office Arcade reported `published`, entry and linked-file checks passed, and an independent secure WebSocket upgrade passed. The hosted `player.js` SHA-256 matches the clean export (`0dae997850e4668771925fc2f2d1d356b5663160198fe1f8e0a3c6db7e955ccd`); hosted metadata confirms the exact revision and shell v3. Receipt: `build/arcade/deployments/bubble-madness-mp-86dc75d-20261021t081826-1882-deploy-1792570706649-5518.json`. Extra checks: `.gameengine/online-polish-hosted-{socket,shell}.json`. Browser gameplay and window-switch acceptance remain unverified under the project workflow preference. Earlier publications retain their original builds.
+
+## Previous performance release
+
+That performance build is [Play Bubble Madness](https://webgames.tactilews.com/bubble-madness-mp-8509a49-20261020t152237-19da/), published from clean revision `8509a4910afe0669ee04de710e453192567a632a`. [Linux CI 39447593321](https://github.com/eduardoa-perez-tactile/poc-bubble-boobble/actions/runs/39447593321) passed production world startup, library resolution and WebSocket upgrade. Browser export `build/arcade/web-8509a49/` and server export `build/arcade/ci-8509a49/server-linux-x64/` passed exact pairing and packaging.
 
 Release ZIP: `build/arcade/bubble-madness-performance-8509a49.zip`, 56,499,465 bytes, SHA-256 `53cc1c67109f71179846a86eb577d7319978684d330f360569a1748564a05177`. Both targets contain exact script SHA-256 `981275e7c0462ef480d11c8c2bf63057c5675b43d10b892eb2846937c8278822`. Reports: `.gameengine/performance-release-verify.json` and `.gameengine/performance-release-package.json`.
 
@@ -55,7 +65,7 @@ Clean game revision `989dd4747d5b442ee0c87080fefba2f931791b57` now has a matchin
 | ZIP SHA-256 | `0b838e58cfeebc870c9675bcfe32b5d3fb8b2b143e3dc7ff19c5874d8c670f3c` |
 | Exact cooked script SHA-256 | `f9be30be853702c08032d5e2ac076ae0613d3a2b5bdcc7653d787683f732c302` |
 
-This package was published on 20 October 2026 at [Play Bubble Madness](https://webgames.tactilews.com/bubble-madness-mp-989dd47-20261020t150140-1341/). Office Arcade reached `published`; entry/linked-file checks and an independent hosted secure WebSocket upgrade passed. Browser gameplay remains unverified. The deployment command above uses this dynamic-world ZIP. Later documentation-only commits preserve its original built source identity. Native cooked-authority gameplay evidence is separate in [the dynamic-world specification](multiplayer-dynamic-worlds.md); actual browser acceptance remains unverified.
+This package was published on 20 October 2026 at [Play Bubble Madness](https://webgames.tactilews.com/bubble-madness-mp-989dd47-20261020t150140-1341/). Office Arcade reached `published`; entry/linked-file checks and an independent hosted secure WebSocket upgrade passed. Browser gameplay remains unverified. The deployment command above uses the current follow-up ZIP. Later documentation-only commits preserve its original built source identity. Native cooked-authority gameplay evidence is separate in [the dynamic-world specification](multiplayer-dynamic-worlds.md); actual browser acceptance remains unverified.
 
 ## Previous fixed-match release artifact
 
